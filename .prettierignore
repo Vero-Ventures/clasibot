@@ -41,5 +41,3 @@ next-env.d.ts
 
 # drizzle
 /drizzle
-
-*.md
