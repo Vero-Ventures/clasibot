@@ -40,6 +40,16 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | null
+    | undefined;
+  size?: 'default' | 'sm' | 'lg' | 'icon' | null | undefined;
   asChild?: boolean;
 }
 

@@ -25,7 +25,7 @@ export function DatePicker({
           id="DatePickerButton"
           variant={'outline'}
           className={cn(
-            'w-[280px] w-full justify-center border-2 border-gray-300 pr-4 text-center font-normal mb:pr-6',
+            'w-full justify-center border-2 border-gray-300 pr-4 text-center font-normal mb:pr-6',
             !date && 'text-muted-foreground'
           )}>
           <CalendarIcon className="mr-2 h-4 w-4" />
@@ -41,9 +41,9 @@ export function DatePicker({
           id="DatePickerDropdownCalendar"
           mode="single"
           selected={date || undefined}
-          onSelect={(day) => setDate(day ?? null)}
-          initialFocus
+          onSelect={(day: Date | null) => setDate(day ?? null)}
           className="bg-white"
+          required // Add the required prop
         />
       </PopoverContent>
     </Popover>

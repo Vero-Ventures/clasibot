@@ -18,10 +18,10 @@ type ToasterToast = ToastProps & {
 
 // Define the toaster action types within a typed object.
 type ActionType = {
-  ADD_TOAST: 'ADD_TOAST',
-  UPDATE_TOAST: 'UPDATE_TOAST',
-  DISMISS_TOAST: 'DISMISS_TOAST',
-  REMOVE_TOAST: 'REMOVE_TOAST',
+  ADD_TOAST: 'ADD_TOAST';
+  UPDATE_TOAST: 'UPDATE_TOAST';
+  DISMISS_TOAST: 'DISMISS_TOAST';
+  REMOVE_TOAST: 'REMOVE_TOAST';
 };
 
 // Set an initial count value to 0.

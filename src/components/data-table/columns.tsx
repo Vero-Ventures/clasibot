@@ -181,10 +181,15 @@ export const selectionColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'account',
     header: 'Account',
-    cell: ({ row }) => row.getValue('account'),
+    cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
+      row.getValue('account'),
     // Filter function takes a row and filter value as arguments. Also takes a column ID which is not used.
     // Column ID is needed to match the expected function signature.
-    filterFn: (row, columnId, filterValue) => {
+    filterFn: (
+      row: Row<Transaction> | Row<CategorizedTransaction>,
+      columnId: string,
+      filterValue: string
+    ) => {
       // Filter values should be an array of strings, if no filter value is provided, return true.
       if (!filterValue || filterValue.length === 0) {
         return true;
@@ -214,10 +219,15 @@ export const reviewColumns = (
   {
     accessorKey: 'account',
     header: 'Account',
-    cell: ({ row }) => row.getValue('account'),
+    cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
+      row.getValue('account'),
     // Filter function takes a row and filter value as arguments. Also takes a column ID which is not used.
     // Column ID is needed to match the expected function signature.
-    filterFn: (row, columnId, filterValue) => {
+    filterFn: (
+      row: Row<Transaction> | Row<CategorizedTransaction>,
+      columnId: string,
+      filterValue: string
+    ) => {
       // Filter values should be an array of strings, if no filter value is provided, return true.
       if (!filterValue || filterValue.length === 0) {
         return true;
@@ -232,7 +242,11 @@ export const reviewColumns = (
   {
     accessorKey: 'categories',
     header: 'Categories',
-    cell: ({ row }) => {
+    cell: ({
+      row,
+    }: {
+      row: Row<Transaction> | Row<CategorizedTransaction>;
+    }) => {
       const categories: Category[] = row.getValue('categories');
       return categories.length > 0 ? (
         <select
@@ -266,7 +280,11 @@ export const reviewColumns = (
   {
     accessorKey: 'confidence',
     header: 'Confidence',
-    cell: ({ row }) => {
+    cell: ({
+      row,
+    }: {
+      row: Row<Transaction> | Row<CategorizedTransaction>;
+    }) => {
       // Define the confidence value assosiated with each classification method.
       const LLMClassified = 33;
       const DatabaseClassified = 66;
