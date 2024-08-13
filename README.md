@@ -574,9 +574,13 @@ How to get the project running on a new machine.
 
   - `npm run lint` - Runs lint code checker and displays a list of warnings and errors in the terminal.
 
-  - `npx prisma` - View commands for Prisma ORM to interact with database.
+  - `npm run db:generate` - 
 
-  - `npx prisma studio` - Launches a GUI for the Prisma database where you can view and edit the database information. After launching, the localhost port being used is shown in the terminal.
+  - `npm run db:migrate` - 
+
+  - `npm run db:push` - 
+
+  - `npm run studio` - 
 
 - **Other Information**
 
