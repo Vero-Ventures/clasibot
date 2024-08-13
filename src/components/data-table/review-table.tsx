@@ -67,7 +67,7 @@ export function ReviewTable({
     if (selectedAccounts.includes(account)) {
       // Filter out the account from the selected accounts and set the state with the filtered array.
       setSelectedAccounts(
-        selectedAccounts.filter(arrayAccount => arrayAccount !== account)
+        selectedAccounts.filter((arrayAccount) => arrayAccount !== account)
       );
     } else {
       // If the account is not selected, add it to the selected accounts and update the state.
@@ -115,8 +115,8 @@ export function ReviewTable({
 
   return (
     <div className="w-full">
-      <div className="md:w-3/4 md:align-start  lg:w-5/6">
-        <div className="flex justify-center py-4 px-2 mb:px-4 popout:px-6 md:justify-start lg:px-10">
+      <div className="md:align-start md:w-3/4 lg:w-5/6">
+        <div className="flex justify-center px-2 py-4 mb:px-4 popout:px-6 md:justify-start lg:px-10">
           {/* Create an input to take text and filter to transactions with matching names. */}
           <Input
             id="NameFilterInput"
@@ -124,12 +124,12 @@ export function ReviewTable({
             // Set the input value to the name filter value or an empty string if none is found.
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             // When the input value changes, update the name filter value with the new value.
-            onChange={event =>
+            onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className="max-w-xs mr-2 w-2/3 popout:mr-4 popout:w-1/2 md:w-2/3 md:mr-6"
+            className="mr-2 w-2/3 max-w-xs popout:mr-4 popout:w-1/2 md:mr-6 md:w-2/3"
           />
-          <div className="max-w-48 ml-2 popout:ml-4 popout:w-1/4 md:w-1/3 md:ml-6">
+          <div className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
             {/* Create a dropdown menu to select accounts to filter by. */}
             <DropdownMenu>
               {/* Create a button to trigger the dropdown menu. */}
@@ -137,15 +137,15 @@ export function ReviewTable({
                 <Button
                   id="AccountsDropdownButton"
                   variant="outline"
-                  className="bg-blue-500 w-full hover:bg-blue-800 hover:text-white text-white">
+                  className="w-full bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
                   {/* Chevron down acts a down arrow icon */}
-                  Accounts <ChevronDown className="h-4 mt-1 w-4 ml-2" />
+                  Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               {/* Define the content of the dropdown menu. */}
               <DropdownMenuContent align="center">
                 {/* For each account, create a checkbox item in the dropdown menu. */}
-                {account_names.map(account => {
+                {account_names.map((account) => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={account}
@@ -169,15 +169,15 @@ export function ReviewTable({
       {/* Container for the table */}
       <div
         id="TableContainer"
-        className="rounded-md border-2 border-gray-300 rounded mt-2">
+        className="mt-2 rounded rounded-md border-2 border-gray-300">
         <Table>
           {/* Define the top row of the table with the column labels. */}
           <TableHeader>
             {/* Get the header group to prepare the table header row. */}
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {/* Map over the columns (header groups) inside the react table header row. */}
-                {headerGroup.headers.map(header => {
+                {headerGroup.headers.map((header) => {
                   return (
                     // Create a table head object using the current header's id and column header.
                     <TableHead key={header.id}>
@@ -196,7 +196,7 @@ export function ReviewTable({
           <TableBody>
             {/* If there are rows within the table, mao over them to create the rows. */}
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
+              table.getRowModel().rows.map((row) => (
                 //  Create a table row object for the current row.
                 <TableRow
                   key={row.id}
@@ -207,7 +207,7 @@ export function ReviewTable({
                   // Set the cursor to a pointer when hovering over the row.
                   style={{ cursor: 'pointer' }}>
                   {/* Iterate over the column values inside the row. */}
-                  {row.getVisibleCells().map(cell => (
+                  {row.getVisibleCells().map((cell) => (
                     // Use the cell's id as the key for the table cell.
                     <TableCell key={cell.id}>
                       {/* Populate the table cell using the value for that cell from the current row */}
@@ -224,7 +224,7 @@ export function ReviewTable({
               <TableRow>
                 <TableCell
                   colSpan={reviewColumns.length}
-                  className="font-bold text-2xl pl-14 mb:pl-0 mb:text-center">
+                  className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
                   No results found.
                 </TableCell>
               </TableRow>
@@ -236,18 +236,18 @@ export function ReviewTable({
       <div className="flex items-center justify-between py-2">
         <div
           id="SelectedAndCurrentRowsInfo"
-          className=" text-sm text-muted-foreground mt-0.5 ml-2 mr-2 text-center p-2">
+          className="text-muted-foreground ml-2 mr-2 mt-0.5 p-2 text-center text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div
           id="PaginationButtonsContainer"
-          className="grid grid-rows-2 space-y-1 sm:grid-rows-1 sm:grid-cols-2 sm:space-y-0 sm:space-x-2">
+          className="grid grid-rows-2 space-y-1 sm:grid-cols-2 sm:grid-rows-1 sm:space-x-2 sm:space-y-0">
           <div>
             <Button
               id="PreviousPageButton"
               variant="outline"
-              className="translate-y-12 sm:translate-y-0 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 w-20"
+              className="w-20 translate-y-12 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:translate-y-0"
               size="sm"
               // When the previous page button is clicked, move to the previous page.
               onClick={() => table.previousPage()}
@@ -261,7 +261,7 @@ export function ReviewTable({
               id="NextPageButton"
               variant="outline"
               size="sm"
-              className="absolute -translate-y-10 sm:translate-y-0 sm:relative border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 w-20"
+              className="absolute w-20 -translate-y-10 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:relative sm:translate-y-0"
               // When the next page button is clicked, move to the next page.
               onClick={() => table.nextPage()}
               // Disable the button if the table cannot move to the next page.
@@ -278,14 +278,14 @@ export function ReviewTable({
               handleSave(
                 table
                   .getFilteredSelectedRowModel()
-                  .rows.map(row => row.original)
+                  .rows.map((row) => row.original)
               )
             }
             // Disable the button if the table is currently saving or no rows are selected.
             disabled={
               isSaving || table.getFilteredSelectedRowModel().rows.length === 0
             }
-            className="bg-blue-500 hover:bg-blue-600 rounded font-bold text-white py-2 px-4  h-12 w-24 ml-2 mr-4">
+            className="ml-2 mr-4 h-12 w-24 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
             {/* Display either a the save button text or a saving message depending on the saving state. */}
             {isSaving ? 'Saving...' : 'Save'}
           </Button>

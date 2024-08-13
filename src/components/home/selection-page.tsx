@@ -65,7 +65,7 @@ export default function SelectionPage({
     <>
       <h1
         id="PageAndCompanyName"
-        className="text-center text-3xl font-bold mb-4 m-auto">
+        className="m-auto mb-4 text-center text-3xl font-bold">
         My Transactions - <span className="text-blue-900">{company_name}</span>
       </h1>
       {/* Display the selection table with the fetched transactions. */}

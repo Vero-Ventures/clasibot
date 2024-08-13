@@ -16,13 +16,13 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement;
 };
 
-// Define the toaster action types.
-const actionTypes = {
+// Define the toaster action types within a typed object.
+type ActionType = {
   ADD_TOAST: 'ADD_TOAST',
   UPDATE_TOAST: 'UPDATE_TOAST',
   DISMISS_TOAST: 'DISMISS_TOAST',
   REMOVE_TOAST: 'REMOVE_TOAST',
-} as const;
+};
 
 // Set an initial count value to 0.
 let count = 0;
@@ -32,9 +32,6 @@ function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER;
   return count.toString();
 }
-
-// Define the 'action type' type.
-type ActionType = typeof actionTypes;
 
 // Define the action types using toast.
 type Action =
@@ -105,7 +102,7 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         // Map over the toasts and update the toast if the toast ID matches the action toast ID.
-        toasts: state.toasts.map(t => {
+        toasts: state.toasts.map((t) => {
           if (t.id === action.toast.id) {
             return { ...t, ...action.toast };
           } else {
@@ -125,7 +122,7 @@ export const reducer = (state: State, action: Action): State => {
         addToRemoveQueue(toastId);
       } else {
         // If the toast ID is undefined, add all toasts to the remove queue.
-        state.toasts.forEach(removeToast => {
+        state.toasts.forEach((removeToast) => {
           addToRemoveQueue(removeToast.id);
         });
       }
@@ -133,7 +130,7 @@ export const reducer = (state: State, action: Action): State => {
       // Return the state with the toasts filtered by the toast ID.
       return {
         ...state,
-        toasts: state.toasts.map(t => {
+        toasts: state.toasts.map((t) => {
           if (t.id === toastId) {
             return {
               ...t,
@@ -158,7 +155,7 @@ export const reducer = (state: State, action: Action): State => {
       // Otherwise, return the state with the toasts filtered by the toast ID.
       return {
         ...state,
-        toasts: state.toasts.filter(t => t.id !== action.toastId),
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
       };
   }
 };
@@ -174,7 +171,7 @@ function dispatch(action: Action) {
   // Update the memory state using the reducer and action.
   memoryState = reducer(memoryState, action);
   // Call each listener with the memory state.
-  listeners.forEach(listener => {
+  listeners.forEach((listener) => {
     listener(memoryState);
   });
 }
@@ -204,7 +201,7 @@ function toast({ ...props }: Toast) {
       id,
       open: true,
       // Define the onOpenChange function using the open value.
-      onOpenChange: open => {
+      onOpenChange: (open) => {
         // If the open value is now false, dismiss the toast.
         if (!open) {
           dismiss();

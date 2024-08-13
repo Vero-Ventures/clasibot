@@ -12,7 +12,7 @@ export default async function Page() {
   if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
     // If the user status is invalid or there is an error, display the pricing table.
     return (
-      <div className="flex flex-col lg:flex-row px-4">
+      <div className="flex flex-col px-4 lg:flex-row">
         {/* Display the pricing table above the homepage. Move to left on larger screens*/}
         <div className="w-full lg:w-4/12">
           <PricingTable />

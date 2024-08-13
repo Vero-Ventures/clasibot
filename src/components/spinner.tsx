@@ -5,7 +5,7 @@ const Spinner = () => {
   return (
     <div
       id="SpinnerContainer"
-      className="flex justify-center items-center pt-20">
+      className="flex items-center justify-center pt-20">
       <div
         id="SpinnerCircle1"
         className={`${circleCommonClasses} animate-bounce`}

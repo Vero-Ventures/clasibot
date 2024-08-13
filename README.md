@@ -574,13 +574,13 @@ How to get the project running on a new machine.
 
   - `npm run lint` - Runs lint code checker and displays a list of warnings and errors in the terminal.
 
-  - `npm run db:generate` - 
+  - `npm run db:generate` -
 
-  - `npm run db:migrate` - 
+  - `npm run db:migrate` -
 
-  - `npm run db:push` - 
+  - `npm run db:push` -
 
-  - `npm run studio` - 
+  - `npm run studio` -
 
 - **Other Information**
 

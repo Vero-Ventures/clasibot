@@ -94,6 +94,8 @@ export default function Page() {
         form.reset();
       }
     } catch (error) {
+      // If there is an error, log the error to the console.
+      console.error(error);
       // If there is an error, display an error toast using the defined error function.
       toastError(values);
     } finally {
@@ -106,14 +108,14 @@ export default function Page() {
     <main className="flex flex-col items-center justify-between p-12">
       <h1
         id="FormTitle"
-        className="scroll-m-20 tracking-tight font-extrabold text-4xl md:text-5xl">
+        className="scroll-m-20 text-4xl font-extrabold tracking-tight md:text-5xl">
         Contact Us
       </h1>
       <Form {...form}>
         <form
           id="ContactForm"
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col w-full max-w-md gap-4">
+          className="flex w-full max-w-md flex-col gap-4">
           <FormField
             control={form.control}
             name="email"
@@ -157,18 +159,18 @@ export default function Page() {
               </FormItem>
             )}
           />
-          <div className="flex flex-col md:flex-row justify-end gap-4">
+          <div className="flex flex-col justify-end gap-4 md:flex-row">
             <Link href="/" className="w-full md:w-auto">
               <Button
                 id="ReturnHomeButton"
-                className="bg-gray-500 hover:bg-gray-600 transition-colors duration-300 text-white rounded-lg shadow-md w-full md:w-auto px-4 py-2">
+                className="w-full rounded-lg bg-gray-500 px-4 py-2 text-white shadow-md transition-colors duration-300 hover:bg-gray-600 md:w-auto">
                 Go back to home
               </Button>
             </Link>
             <Button
               type="submit"
               id="SubmitButton"
-              className={`${loading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'} transition-colors duration-300 text-white rounded-lg shadow-md w-full md:w-auto px-4 py-2 `}
+              className={`${loading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'} w-full rounded-lg px-4 py-2 text-white shadow-md transition-colors duration-300 md:w-auto`}
               disabled={loading}>
               {loading ? 'Submitting...' : 'Submit'}
             </Button>

@@ -48,7 +48,7 @@ const sentryConfig = {
 
 // Export the final configuration as a default export function.
 // Returns the result of a config function that is passed the sentry config data.
-export async function sentryConfig () {
+export async function config() {
   const mdxConfig = await withMDX()(nextConfig);
   return withSentryConfig(mdxConfig, sentryConfig);
 }

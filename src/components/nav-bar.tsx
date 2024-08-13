@@ -37,7 +37,7 @@ const Navbar = async () => {
   const stripePortalUrl = `${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
-    <nav className="flex flex-col md:flex-row justify-between items-center shadow-md bg-gray-900 py-4 px-6">
+    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md md:flex-row">
       <div id="GeneralNavBarContent" className="flex items-center space-x-4">
         <Link href="/">
           <Image
@@ -51,7 +51,7 @@ const Navbar = async () => {
         </Link>
         <Link href="/">
           <div id="SiteInfoContainer" className="flex flex-col">
-            <div className="font-bold text-white text-2xl">
+            <div className="text-2xl font-bold text-white">
               <span id="SiteName" className="text-green-400">
                 {siteConfig.name}
               </span>
@@ -65,7 +65,7 @@ const Navbar = async () => {
       {/* Display information only show if the user is logged in. */}
       {session?.user && (
         <>
-          <div className="mt-6 mb-4">
+          <div className="mb-4 mt-6">
             <ChangeCompanyButton />
           </div>
           {/* Display user session information: Name and Subscription Status. */}
@@ -98,8 +98,8 @@ const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
   stripePortalUrl,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-      <div className="text-white text-center md:text-left md:mb-0 md:mt-2 lg:mt-1 xl:mt-0 md:mr-4">
+    <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+      <div className="text-center text-white md:mb-0 md:mr-4 md:mt-2 md:text-left lg:mt-1 xl:mt-0">
         Welcome,
         <span className="block xl:hidden">{name}</span>
         <span className="hidden xl:inline"> {name}</span>
@@ -109,7 +109,7 @@ const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
       </div>
       <Button asChild id="ManageAccountButton" variant="link">
         <Link
-          className="text-white underline underline-offset-4 bg-gray-700 hover:bg-gray-500 !mb-1 md:!mb-0 md:!ml-6 lg:!ml-8"
+          className="!mb-1 bg-gray-700 text-white underline underline-offset-4 hover:bg-gray-500 md:!mb-0 md:!ml-6 lg:!ml-8"
           href={stripePortalUrl}>
           <span className="font-bold">Manage Account</span>
         </Link>

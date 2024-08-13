@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   // Extract the pathname from the URL.
   const pathname = request.nextUrl.pathname;
   // Define allowed paths using the footer items from the site config.
-  const allowedPaths = siteConfig.footerItems.map(item => item.href);
+  const allowedPaths = siteConfig.footerItems.map((item) => item.href);
   // If the pathname is in the allowed paths or is the landing page, continue with the default middleware.
   if (allowedPaths.includes(pathname) || pathname === '/') {
     return NextResponse.next();

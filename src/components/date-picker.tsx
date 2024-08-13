@@ -25,10 +25,10 @@ export function DatePicker({
           id="DatePickerButton"
           variant={'outline'}
           className={cn(
-            'w-[280px] justify-center text-center font-normal w-full pr-4 mb:pr-6 border-2 border-gray-300',
+            'w-[280px] w-full justify-center border-2 border-gray-300 pr-4 text-center font-normal mb:pr-6',
             !date && 'text-muted-foreground'
           )}>
-          <CalendarIcon className="h-4 w-4 mr-2" />
+          <CalendarIcon className="mr-2 h-4 w-4" />
           {/* Button text either says a date, or a message indicating to pick a date. */}
           {/* If date is not null, format the date as MM/dd/yyyy. Otherwise, display the message. */}
           {date !== null && format(date, 'MM/dd/yyyy')}
@@ -41,7 +41,7 @@ export function DatePicker({
           id="DatePickerDropdownCalendar"
           mode="single"
           selected={date || undefined}
-          onSelect={day => setDate(day ?? null)}
+          onSelect={(day) => setDate(day ?? null)}
           initialFocus
           className="bg-white"
         />

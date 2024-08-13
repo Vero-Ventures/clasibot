@@ -43,7 +43,7 @@ export default function ReviewPage({
       // Create a record to store the categories.
       const initialCategories: Record<string, string> = {};
       // Loop through each transaction.
-      categorizedTransactions.forEach(transaction => {
+      categorizedTransactions.forEach((transaction) => {
         // Look for the first category in the categorization results.
         const firstCategory =
           categorizationResults[transaction.transaction_ID]?.[0]?.name;
@@ -87,7 +87,7 @@ export default function ReviewPage({
     try {
       // Update each selected row with the selected category.
       await Promise.all(
-        selectedRows.map(async transaction => {
+        selectedRows.map(async (transaction) => {
           // Get the transaction ID of the current transactions.
           const transactionID = transaction.transaction_ID;
 
@@ -104,7 +104,7 @@ export default function ReviewPage({
           // Using the transaction categories and, find the category with the matching name.
           // Get the account ID from the selected category.
           const accountID = transaction.categories.find(
-            category => category.name === categoryName
+            (category) => category.name === categoryName
           )?.id;
 
           // Check that the account ID and purchase object are present.
@@ -152,7 +152,7 @@ export default function ReviewPage({
     <>
       <h1
         id="PageAndCompanyName"
-        className="text-center text-3xl font-bold mb-4 m-auto">
+        className="m-auto mb-4 text-center text-3xl font-bold">
         Classification Results -{' '}
         <span className="text-blue-900">{company_name}</span>
       </h1>
@@ -167,25 +167,25 @@ export default function ReviewPage({
       />
       {/* Only display modal after attempt to save sets modal open to true */}
       <div
-        className={`flex justify-center items-center fixed top-0 left-0 bg-gray-900 bg-opacity-50 w-full h-full ${isModalOpen ? '' : 'hidden'}`}>
-        <div className="bg-white rounded-lg w-96 p-6 mx-4">
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${isModalOpen ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
           {/* If an error is present, display an error message */}
           {errorMsg ? (
             <>
-              <h2 className="font-bold text-red-500 text-2xl mb-4 text-center">
+              <h2 className="mb-4 text-center text-2xl font-bold text-red-500">
                 Error
               </h2>
-              <p className="font-medium text-gray-800 mb-6 text-center">
+              <p className="mb-6 text-center font-medium text-gray-800">
                 {errorMsg}
               </p>
             </>
           ) : (
             // If no error is present, display a success message
             <>
-              <h2 className="font-bold text-green-500 text-2xl mb-4 text-center">
+              <h2 className="mb-4 text-center text-2xl font-bold text-green-500">
                 Success
               </h2>
-              <p className="font-medium text-gray-800 mb-6 text-center">
+              <p className="mb-6 text-center font-medium text-gray-800">
                 Transactions have been saved.
               </p>
             </>
@@ -194,7 +194,7 @@ export default function ReviewPage({
           <div id="ReturnButtonContainer" className="flex justify-center">
             <Button
               id="ReturnButton"
-              className="bg-blue-500 hover:bg-blue-600 rounded font-bold text-white py-2 px-4"
+              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
               onClick={() => window.location.reload()}>
               Return to Transactions
             </Button>

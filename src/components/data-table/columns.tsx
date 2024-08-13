@@ -44,7 +44,7 @@ const commonColumns = [
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         // Convert the checked value to a boolean then set the checked value of all rows to that value.
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
@@ -58,7 +58,7 @@ const commonColumns = [
         // Use the row value and getIsSelected to check if the row is selected.
         checked={row.getIsSelected()}
         // Use the row value and toggleSelected to toggle the selected value of the row.
-        onCheckedChange={value => row.toggleSelected(!!value)}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
@@ -236,16 +236,16 @@ export const reviewColumns = (
       const categories: Category[] = row.getValue('categories');
       return categories.length > 0 ? (
         <select
-          className="border border-gray-700 rounded-lg px-2 py-1"
-          onClick={e => e.stopPropagation()}
+          className="rounded-lg border border-gray-700 px-2 py-1"
+          onClick={(e) => e.stopPropagation()}
           // If the user changes the category, call the handleCategoryChange function with the new value.
           // Needed to save the correct category when the transactions are saved.
-          onChange={e => {
+          onChange={(e) => {
             handleCategoryChange(row.original.transaction_ID, e.target.value);
           }}
           value={selectedCategories[row.original.transaction_ID]}>
           {/* Map the categories associated with the transaction to a dropdown */}
-          {categories.map(category => (
+          {categories.map((category) => (
             // Define the key, value, and display text using the categorization name.
             <option key={category.name} value={category.name}>
               {category.name}
