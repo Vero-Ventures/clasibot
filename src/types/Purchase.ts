@@ -14,17 +14,20 @@ export type Purchase = {
   };
   // id: Integer as a string.
   id: string;
+  // The type of payment for the purchase.
   // purchase_type: 'Check' | 'Cash Expense' | 'Credit Card Expense';
   purchase_type: string;
-  // date: YYYY-MM-DD.
+  // date: String in the format 'YYYY-MM-DD'.
   date: string;
-  // Total positive or negative decimal value of the purchase.
+  // Total positive OR negative decimal value of the purchase.
+  // Positive vs Negative depends the type of account the purchase is associated with.
+  // Happens as a result of how accounting for different account types is done.
   total: number;
-  // The account that the purchase is associated with.
+  // The account that the purchase is associated with (bank account, credit card, etc).
   primary_account: string;
-  // The name related to the purchase (e.g. the payee).
+  // The name related to the purchase (the payee of the transaction).
   purchase_name: string;
   // The category that the purchase is associated with.
-  // Not always present, will be defined as 'None' if it is not.
+  // Not always present, if it is not: defined as 'None'.
   purchase_category: string;
 };

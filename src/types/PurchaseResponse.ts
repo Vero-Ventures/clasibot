@@ -6,22 +6,25 @@ export type PurchaseResponse = {
   Id: string;
   // SyncToken: Integer as a string.
   SyncToken: string;
+  // The type of payment used for the purchase.
   // PaymentType: 'Check' | 'Cash Expense' | 'Credit Card Expense'.
   PaymentType: string;
-  // TxnDate: Date in the format 'YYYY-MM-DD'.
+  // TxnDate: Date as a string in the format 'YYYY-MM-DD'.
   TxnDate: string;
-  // Total positive or negative decimal value of the purchase.
+  // Total positive OR negative decimal value of the purchase.
+  // Positive vs Negative depends the type of account the purchase is associated with.
+  // Happens as a result of how accounting for different account types is done.
   TotalAmt: number;
-  // AccountRef: Reference to the account used to make the purchase
-  // value: Id of the account (integer as a string).
-  // name: Name of the account.
+  // AccountRef: Reference to the account used to make the purchase (bank account, credit card, etc).
+  //    value: Id of the account the pruchase was made by. (integer as a string).
+  //    name: Name of the account the pruchase was made by.
   AccountRef: { value: string; name: string };
-  // AccountRef: Reference to the vendor / payee the purchase was made from.
-  // value: Id of the vendor account (integer as a string).
-  // name: Name of the vendor account
+  // AccountRef: Reference to the vendor the purchase was made from.
+  //    value: Id of the account for the vendor. (integer as a string).
+  //    name: Name of the account for the vendor.
   EntityRef: { value: string; name: string };
   // An array of objects representing the lines of the purchase.
-  // Important Line (AccountBasedExpenseLineDetail) may be not present.
+  // Key Line (AccountBasedExpenseLineDetail) may be not present.
   Line: [
     {
       // DetailType: Defines the content of the line element.
@@ -30,8 +33,9 @@ export type PurchaseResponse = {
       // AccountBasedExpenseLineDetail: Details of the account used for the purchase.
       AccountBasedExpenseLineDetail: {
         // AccountRef: Reference to the account used for the purchase.
-        // value: Id of the account (integer as a string).
-        // name: Name of the account.
+        // Account related to the purchase defines the pruchase classification
+        //    value: Id of the account connected to the purchase (integer as a string).
+        //    name: Name of the account.
         AccountRef: { value: string; name: string };
       };
     },

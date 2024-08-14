@@ -15,6 +15,6 @@ export type ClassifiedCategory = {
   // The name of the category.
   name: string;
   // The method of classification:
-  // Fuzzy or Exact Match by Fuse, Database Lookup, or LLM
+  // 'Matching', 'Database', or 'LLM'
   classifiedBy: string;
 };
