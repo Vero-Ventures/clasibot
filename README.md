@@ -82,15 +82,33 @@ The application also focuses on a simple to use interface that makes it easy to 
 
   Defines the environment variables used throughout the site and what they are used for. Environment variables for the same elements or similar functionalities are grouped together.
 
-- **`middleware.ts`**
-
-  Configures how the Auth middleware handles redirects non-logged in users to view a landing page and redirect back to the landing page if they visit any other page. Also defines the behavior for when the user signs in through QuickBooks.
-
 - **`tailwind.config.ts`**
 
   Configures the tailwind design elements such as standard screen sizes and element spacings. Can be modified to include custom values to use in tailwind class names.
 
+- **Src**
+
+  - `middleware.ts`
+  
+    Configures how the Auth middleware handles redirects non-logged in users to view a landing page and redirect back to the landing page if they visit any other page. Also defines the behavior for when the user signs in through QuickBooks.
+
+
 - **Actions**
+
+  - **LLM Prediction:**
+    Create LLM predictions or supply information used in predictions.
+
+    - `customSearch.ts`
+
+      Calls the Google custom search API to search for information about a passed query (a transaction).
+
+    - `knowlegeGraph.ts`
+
+      Calls the Google knowledge graph API to get information about a passed query by looking for element related through the knowledge graph.
+
+    - `llm.ts`
+
+      Defines the prompts and instructions for the LLM as well as functions to query a single transaction or a batch of transactions.
 
   - **Stripe:**
     Interact with the stripe payment API
@@ -126,40 +144,48 @@ The application also focuses on a simple to use interface that makes it easy to 
 
       Looks for a transaction in the database by its name and finds the top 3 categories (and their related accounts) for that transaction then returns them as a list.
 
-  - **`Quickbooks.ts`**
+  - **Quickbooks.ts**
     Interacts with QuickBooks API + Helper functions.
 
-    - **checkFaultProperty**
 
-    A helper function that checks QuickBooks API response to see if they are errors.
+    - `get-accounts.ts`
 
-    - **getAccounts**
+      A QuickBooks API call that gets the users accounts, the QuickBooks element that defines the possible classifications a user can assign to a transaction. It formats results to the Account specified type and returns the results as a JSON object.
 
-    A QuickBooks API call that gets the users accounts, the QuickBooks element that defines the possible classifications a user can assign to a transaction. It formats results to the Account specified type and returns the results as a JSON object.
+    - `get-transactions`
 
-    - **getTransactions**
+      A QuickBooks API call that gets the users transactions within a specified date range (default of 2 years). Returned transactions must be of specified types related to expenses and must contain a name and amount value. It formats results to the Transaction type and returns the results as a JSON object.
 
-    A QuickBooks API call that gets the users transactions within a specified date range (default of 2 years). Returned transactions must be of specified types related to expenses and must contain a name and amount value. It formats results to the Transaction type and returns the results as a JSON object.
 
-    - **findPurchases**
+    - `helpers.ts`
 
-      A QuickBooks API call .It formats the results to one of two type objects depending on the call. Used in conjunction with the update purchase function to save transactions. Finds a specific purchase based off a transaction ID and returns it as either the QuickBooks response or a Purchase type object.
+      - **Check Fault Property**
 
-    - **updatePurchase**
+        A helper function that checks QuickBooks API response to see if they are errors.
 
-      Works in conjunction with the findPurchases function and the returned QBO object from that method. Takes a QuickBooks Purchase object with an updated account ID and updates the transaction related to that Purchase.
+      - **Create Query Result**
 
-    - **findIndustry**
+        A helper function that creates a standardized header to be returned along with API call functions that informs the function caller of the result of the API call. Either returns a standardized success message or a failure result with the API failure message and details.
 
-      Uses the users information to find the industry type related to their account. This is one of a set list of types defined by QuickBooks that all companies assign when created.
+    - `purchases.ts`
 
-    - **createQueryResult**
+      - **Find Purchase** / **Find Formatted Purchase**
 
-      A helper function that creates a standardized header to be returned along with API call functions that informs the function caller of the result of the API call. Either returns a standardized success message or a failure result with the API failure message and details.
+        A QuickBooks API call. The different methods formats the results to one of two type objects depending on which is called. Used in conjunction with the update purchase function to save transactions. Finds a specific purchase based off a transaction ID and returns it as either the QuickBooks response or a Purchase type object.
 
-    - **getCompanyName**
+      - **updatePurchase**
 
-      Uses the user details element of the API to fetch the name of the company currently selected by the user. Needed for clarity for users linked to multiple companies as many bookkeepers are.
+        Works in conjunction with the `Find Purchase` functions and the returned QBO object from that method. Takes a QuickBooks Purchase object with an updated account ID and updates the transaction related to that Purchase.
+
+    - `user-info.ts`
+
+      - **Find Industry**
+
+        Uses the users information to find the industry type related to their account. This is one of a set list of types defined by QuickBooks that all companies assign when created.
+
+      - **Get Company Name**
+
+        Uses the user details element of the API to fetch the name of the company currently selected by the user. Needed for clarity for users linked to multiple companies as many bookkeepers are.
 
   - **Other**
 
@@ -170,18 +196,6 @@ The application also focuses on a simple to use interface that makes it easy to 
     - `contact.ts`
 
       The action that handles the contact us page by converting the form into an email that is sent to the Clasibot email through Node Mailer. Also returns a message indicating the Node Mailer's success.
-
-    - `customSearch.ts`
-
-      Calls the Google custom search API to search for information about a passed query (a transaction).
-
-    - `knowlegeGraph.ts`
-
-      Calls the Google knowledge graph API to get information about a passed query by looking for element related through the knowledge graph.
-
-    - `llm.ts`
-
-      Defines the prompts and instructions for the LLM as well as functions to query a single transaction or a batch of transactions.
 
     - `qbclients.ts`
 
@@ -255,11 +269,11 @@ The application also focuses on a simple to use interface that makes it easy to 
 
     - `privacy-policy/page.tsx`
 
-      Defines a basic privacy policy page by using a react component to convert a markdown datafile into a visual component. Also has a return to home button at the bottom that takes users to the appropriate page (landing or home).
+      Defines a basic privacy policy page by using a react component to convert a markdown datafile into a visual component. Also has a return to home button at the bottom that takes users to the appropriate page (landing or home). `Privacy policy` folder also contains the markdown file to be displayed.
 
     - `terms-of-service/page.tsx`
 
-      Defines a simple terms of service page using the same method and return button as the privacy policy page.
+      Defines a simple terms of service page using the same method and return button as the privacy policy page. Like the privacy policy, the `terms of service` folder also contains the markdown file to be displayed.
 
   - **Components**
 
@@ -304,13 +318,11 @@ The application also focuses on a simple to use interface that makes it easy to 
 
       - Contains components from the libraries that used across the site.
 
-        - Toast
+        - `Toast` - Contains the toast library related files.
 
-        - Radix-UI
+        - `Other` - Contains components from React, Radix-UI, and Shadcn.
 
-        - Shadcn
-
-    - **Other**
+    - **Inputs**
 
       - `change-company-button.txs`
 
@@ -320,21 +332,9 @@ The application also focuses on a simple to use interface that makes it easy to 
 
         Defines a simple date picker input element that is used to select the range of dates to fetch transactions from on the selection page.
 
-      - `footer.tsx`
-
-        Defines the layout and design of the footer which includes copyright information as well as links to the 'contact us', 'privacy policy' and 'terms of service' pages.
-
       - `home-button.tsx`
 
         A simple button design that redirects the users to either the landing or home page as appropriate.
-
-      - `nav-bar.tsx`
-
-        Defines the design of the navbar for both the landing page (non-logged in users) and the home page (logged in users), including a logo, title, and subtitle in both. The home page navbar also includes a button to switch companies, some user information, an account management button, and an option for the user to sign out.
-
-      - `pricing-table.tsx`
-
-        Calls information from Stripe to get the pricing of a Clasibot subscription and defines how to display it to the user in a way they can interact with.
 
       - `sign-in-button.tsx`
 
@@ -344,6 +344,30 @@ The application also focuses on a simple to use interface that makes it easy to 
 
         Defines a button for the navbar that will sign the user out of their account and return them to the landing page.
 
+    - **Site Elements**
+        
+      - `footer.tsx`
+
+        Defines the layout and design of the footer which includes copyright information as well as links to the 'contact us', 'privacy policy' and 'terms of service' pages.
+
+      - `nav-bar.tsx`
+
+        Defines the design of the navbar for both the landing page (non-logged in users) and the home page (logged in users), including a logo, title, and subtitle in both. The home page navbar also includes a button to switch companies, some user information, an account management button, and an option for the user to sign out.
+
+      - `pricing-table.tsx`
+
+        Calls information from Stripe to get the pricing of a Clasibot subscription and defines how to display it to the user in a way they can interact with.
+
+    - **Other**
+
+      - `confidence-bar.tsx`
+
+        A shadcn component that displays a green progress bar with a hover card that displays on top when the user hovers over it. Used to denote how confident the prediction is by the way it was created.
+
+      - `markdown.tsx`
+
+        Defines how do render the markdown files used by `privacy policy` and `terms of service` as react elements to be rendered onto the page.
+
       - `spinner.tsx`
 
         Defines a basic loading animation to be displayed when classifying or saving transactions on the home page.
@@ -352,13 +376,13 @@ The application also focuses on a simple to use interface that makes it easy to 
 
         Defines an alert to be displayed to the user if they try to classify transactions without a valid subscription.
 
-  - **Config**
+  - **Site Config**
 
     - `site.ts`
 
       Defines basic information about the site, including the site name, description, and footer items. Also sets a href associated with the footer items that is used to allow non-logged in users to access them through the middleware.
 
-  - **Lib**
+  <!-- - **Lib**
 
     - `db.ts`
 
@@ -372,7 +396,7 @@ The application also focuses on a simple to use interface that makes it easy to 
 
     - `schema.prisma`
 
-      Defines the schema of the Prisma database. Defines user information, subscription information that is associated with a user, the transactions saved to the database for the second step of the pipeline, and the classifications associated with the saved transactions.
+      Defines the schema of the Prisma database. Defines user information, subscription information that is associated with a user, the transactions saved to the database for the second step of the pipeline, and the classifications associated with the saved transactions. -->
 
   - **Types**
 
@@ -390,7 +414,11 @@ The application also focuses on a simple to use interface that makes it easy to 
 
     - `Purchase.ts`
 
-      Defines a set of key information relating to a purchase object from the QuickBooks API. This is potentially returned by the get_purchase function in the QuickBooks action but is currently unused. It would define the important information from the purchase into a formatted type while also including a transaction result object within the purchase object.
+      Defines a set of key information relating to a purchase object from the QuickBooks API. This is potentially returned by the `findFormattedPurchase` function in the `purchase.ts` folder within the QuickBooks actions but is currently unused. It would define the important information from the purchase into a formatted type while also including a transaction result object within the purchase object.
+
+    - `PurchaseResult.ts`
+
+      Defines a type for the unformatted result returned by the presently used `findPurchase` function in the `purchase.ts` file in the QuickBooks actions. Defines the key information needed to make a purchase update query as well as some other notable data about the purchase. Also defines an error object to make error handling in calling functions easier.
 
     - `QueryResult.ts`
 
