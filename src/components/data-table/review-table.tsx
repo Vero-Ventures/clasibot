@@ -228,7 +228,7 @@ export function ReviewTable({
         {/* Inform the user of the current rows displayed compared to the total rows fetched. */}
         <div
           id="SelectedAndCurrentRowsInfo"
-          className="text-muted-foreground ml-2 mr-2 mt-0.5 p-2 text-center text-sm">
+          className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>

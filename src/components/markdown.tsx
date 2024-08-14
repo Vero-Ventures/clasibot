@@ -9,7 +9,7 @@ export default function Markdown({
   // Returns the child content wrapped in a styled article element.
   // Converts the markdown content to HTML using the prose class.
   return (
-    <article className="prose prose-slate mx-auto p-6 md:prose-xl">
+    <article className="prose prose-slate md:prose-xl mx-auto p-6">
       {children}
     </article>
   );
