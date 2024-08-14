@@ -1,5 +1,5 @@
 import prisma from '@/lib/db';
-import { getAccounts } from '../quickbooks';
+import { getAccounts } from '../quickbooks/get-accounts';
 import type { Account } from '@/types/Account';
 import type { Transaction } from '@/types/Transaction';
 

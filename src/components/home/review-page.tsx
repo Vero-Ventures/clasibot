@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { findPurchases, updatePurchase } from '@/actions/quickbooks';
+import { findPurchases, updatePurchase } from '@/actions/quickbooks/purchases';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction } from '@/types/Transaction';
 import { Button } from '@/components/ui/button';

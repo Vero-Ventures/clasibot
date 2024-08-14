@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getTransactions } from '@/actions/quickbooks';
+import { getTransactions } from '@/actions/quickbooks/get-transactions';
 import { SelectionTable } from '@/components/data-table/selection-table';
 import type { Transaction } from '@/types/Transaction';
 import { filterToUncategorized } from '@/utils/filter-transactions';

@@ -1,7 +1,7 @@
 'use server';
 import Fuse from 'fuse.js';
 import { batchQueryLLM } from '@/actions/llm-prediction/llm';
-import { getAccounts } from '@/actions/quickbooks';
+import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { checkSubscription } from '@/actions/stripe';
 import {
   addTransactions,

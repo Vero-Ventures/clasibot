@@ -1,11 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { classifyTransactions } from '@/actions/classify';
-import {
-  getTransactions,
-  findIndustry,
-  getCompanyName,
-} from '@/actions/quickbooks';
+import { getTransactions } from '@/actions/quickbooks/get-transactions';
+import { findIndustry, getCompanyName } from '@/actions/quickbooks/user-info';
 import { checkSubscription } from '@/actions/stripe';
 import { filterOutUncategorized } from '@/utils/filter-transactions';
 import { getSession } from 'next-auth/react';
