@@ -5,7 +5,7 @@ import { Purchase } from '@/types/Purchase';
 import { PurchaseResponse } from '@/types/PurchaseResponse';
 
 // Find a specific purchase object by its ID.
-export async function findPurchases(id: string): Promise<PurchaseResponse> {
+export async function findPurchase(id: string): Promise<PurchaseResponse> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();

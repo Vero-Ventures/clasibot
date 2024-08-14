@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { findPurchases, updatePurchase } from '@/actions/quickbooks/purchases';
+import { findPurchase, updatePurchase } from '@/actions/quickbooks/purchases';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction } from '@/types/Transaction';
 import { Button } from '@/components/ui/button';
@@ -75,7 +75,7 @@ export default function ReviewPage({
         selectedRows.map(async (transaction) => {
           const transactionID = transaction.transaction_ID;
           // Find the matching the purchase object from QuickBooks.
-          const purchaseObj = await findPurchases(transactionID);
+          const purchaseObj = await findPurchase(transactionID);
           // Get the id of the selected category.
           const categoryName = selectedCategories[transactionID];
 
