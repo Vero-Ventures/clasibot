@@ -1,6 +1,3 @@
-/**
- * Defines how the contact us page works as well as its form submission and page layout.
- */
 'use client';
 
 import { useState } from 'react';
@@ -44,17 +41,15 @@ export default function Page() {
     },
   });
 
-  // Use the toast hook to display messages to the user.
+  // Create a toast hook to display messages to the user.
   const { toast } = useToast();
-
-  // Define a function to display an error toast message.
+  // Create a toast object with the error title and description.
+  // Includes an action button to retry the form submission (resend the email).
   const toastError = (values: z.infer<typeof formSchema>) => {
-    // Create a toast object with the error title and description.
     toast({
       variant: 'destructive',
       title: 'Uh oh! Something went wrong.',
       description: 'There was a problem with your request.',
-      // Define a toast action to retry sending the email.
       action: (
         <ToastAction
           id="RetryEmail"
@@ -70,10 +65,8 @@ export default function Page() {
 
   // Define a function to handle form submission using the Zod schema.
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Set the loading state to true.
     setLoading(true);
 
-    // Destructure the email, subject, and body from the form values.
     const { email, subject, body } = values;
 
     try {
@@ -81,10 +74,8 @@ export default function Page() {
       const response = await contactAction({ email, subject, body });
 
       if (response.message === 'error') {
-        // If the response message is an error, display an error toast.
         toastError(values);
       } else {
-        // If the response message is not an error, display a success toast.
         toast({
           title: 'Email sent!',
           description: "We'll get back to you as soon as possible.",
@@ -94,9 +85,8 @@ export default function Page() {
         form.reset();
       }
     } catch (error) {
-      // If there is an error, log the error to the console.
+      // If there is an error, log the error to the console and display an error toast.
       console.error(error);
-      // If there is an error, display an error toast using the defined error function.
       toastError(values);
     } finally {
       // After successful OR failed sending, the loading state to false.
@@ -105,7 +95,7 @@ export default function Page() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-between p-12">
+    <main id="ContactUsContainer" className="flex flex-col items-center justify-between p-12">
       <h1
         id="FormTitle"
         className="scroll-m-20 text-4xl font-extrabold tracking-tight md:text-5xl">

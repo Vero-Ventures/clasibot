@@ -1,16 +1,13 @@
-/**
- * Defines the columns used by the selection and review data tables.
- */
 import type { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ConfidenceBar } from '@/components/ui/confidence-bar';
+import { ConfidenceBar } from '@/components/confidence-bar';
 import type { Category, ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
 import { format } from 'date-fns';
 
-// Define button for a sortable header
+// Define button format for a sortable header
 const sortableHeader = (
   column: Column<Transaction> | Column<CategorizedTransaction>,
   title: string
@@ -36,9 +33,9 @@ const commonColumns = [
     }: {
       table: Table<Transaction> | Table<CategorizedTransaction>;
     }) => (
-      // Row contains a checkboxe to select all or individual rows.
+      // Row contains a checkbox to select all or individual rows.
       <Checkbox
-        // Check if all rows are selected (Checked), or if some or no rows are selected (Unchecked).
+        // Check if all rows are selected (Checked), or if some / no rows are selected (Unchecked).
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -57,7 +54,7 @@ const commonColumns = [
       <Checkbox
         // Use the row value and getIsSelected to check if the row is selected.
         checked={row.getIsSelected()}
-        // Use the row value and toggleSelected to toggle the selected value of the row.
+        // When checked status changes, toggle the selection value.
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
@@ -67,7 +64,7 @@ const commonColumns = [
     enableHiding: false,
   },
 
-  // Define the Date column
+  // Define the Date column.
   {
     accessorKey: 'date',
     header: ({
@@ -81,21 +78,20 @@ const commonColumns = [
     }: {
       row: Row<Transaction> | Row<CategorizedTransaction>;
     }) => {
-      // Populate the date column with the date value from the row.
+      // Convert the date value from the row to a Month-Day-Year format.
       const formattedDate = format(
         new Date(row.getValue('date')),
-        'MM/dd/yyyy'
+        'MM/DD/YYYY'
       );
-      // Return the formatted date inside a div.
       return <div>{formattedDate}</div>;
     },
-    // Define the function for date column
+    // Define a filter function for date column
     filterFn: (
       row: Row<Transaction> | Row<CategorizedTransaction>,
       _: string,
       filterValue: string
     ) => {
-      // Split the passed filter value into a start and end date using the string ' to '.
+      // Use the string  ' to ' to split the filter value into a start and end date.
       // Convert the resulting strings into dates, or null if the string is empty.
       const [startDate, endDate] = filterValue
         .split(' to ')
@@ -106,12 +102,11 @@ const commonColumns = [
             return new Date(date);
           }
         });
-      // Return true if the row date is within the range
+      // Convert the row's date into a date object for comparison.
       const rowDate = new Date(row.getValue('date'));
-      // Determine if the row should be filtered out and return true or false.
       return (
-        // Check if the start / end date exists or the row date is within the range -
-        // - If either is true for both dates, return true.
+        // Check if the date does not exist or if the row date is within the correct side of the filter date -
+        // - If either is true for both the start and end dates, return true.
         (!startDate || rowDate >= startDate) && (!endDate || rowDate <= endDate)
       );
     },
@@ -126,11 +121,10 @@ const commonColumns = [
       column: Column<Transaction> | Column<CategorizedTransaction>;
     }) => sortableHeader(column, 'Type'),
     cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
-      // Populate the column with the transaction type value from the row.
       row.getValue('transaction_type'),
   },
 
-  // Define the Payee column
+  // Define the Payee / Name column
   {
     accessorKey: 'name',
     header: ({
@@ -139,8 +133,31 @@ const commonColumns = [
       column: Column<Transaction> | Column<CategorizedTransaction>;
     }) => sortableHeader(column, 'Payee'),
     cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
-      // Populate the column with the name value from the row.
       row.getValue('name'),
+  },
+
+  // Define the Account column. Uses a custom filter function to filter by account.
+  {
+    accessorKey: 'account',
+    header: 'Account',
+    cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
+      row.getValue('account'),
+    // Filter function takes the rows value and an array of account names (filterValue).
+    // Column ID is needed to match the expected function signature for filter function to work.
+    filterFn: (
+      row: Row<Transaction> | Row<CategorizedTransaction>,
+      columnId: string,
+      filterValue: string
+    ) => {
+      // Filter values should be an array of strings.
+      // If no filter value is provided, return true to display all rows.
+      if (!filterValue || filterValue.length === 0) {
+        return true;
+      }
+      // Check if the account value is included in the filter value array.
+      // Return the result as a boolean value to determine filtering.
+      return filterValue.includes(row.getValue('account'));
+    },
   },
 
   // Define the Amount column
@@ -171,37 +188,13 @@ const commonColumns = [
 
 // Define the columns for the selection table.
 export const selectionColumns: ColumnDef<Transaction>[] = [
-  // Define the order of the columns. Start with the select, date, type, payee, and account columns.
+  // Define the order of the columns using the common columns define above.
   commonColumns[0],
   commonColumns[1],
   commonColumns[2],
   commonColumns[3],
-
-  // Define the Account column. Use a custom filter function to filter by account.
-  {
-    accessorKey: 'account',
-    header: 'Account',
-    cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
-      row.getValue('account'),
-    // Filter function takes a row and filter value as arguments. Also takes a column ID which is not used.
-    // Column ID is needed to match the expected function signature.
-    filterFn: (
-      row: Row<Transaction> | Row<CategorizedTransaction>,
-      columnId: string,
-      filterValue: string
-    ) => {
-      // Filter values should be an array of strings, if no filter value is provided, return true.
-      if (!filterValue || filterValue.length === 0) {
-        return true;
-      }
-      // Check if the account value is included in the filter value array.
-      // Return the result as a boolean value to determine filtering.
-      return filterValue.includes(row.getValue('account'));
-    },
-  },
-
-  // Define the Amount column from common columns.
   commonColumns[4],
+  commonColumns[5],
 ];
 
 // Define the columns for the review table.
@@ -214,29 +207,7 @@ export const reviewColumns = (
   commonColumns[1],
   commonColumns[2],
   commonColumns[3],
-
-  // Define the Account column. Use a custom filter function to filter by account.
-  {
-    accessorKey: 'account',
-    header: 'Account',
-    cell: ({ row }: { row: Row<Transaction> | Row<CategorizedTransaction> }) =>
-      row.getValue('account'),
-    // Filter function takes a row and filter value as arguments. Also takes a column ID which is not used.
-    // Column ID is needed to match the expected function signature.
-    filterFn: (
-      row: Row<Transaction> | Row<CategorizedTransaction>,
-      columnId: string,
-      filterValue: string
-    ) => {
-      // Filter values should be an array of strings, if no filter value is provided, return true.
-      if (!filterValue || filterValue.length === 0) {
-        return true;
-      }
-      // Check if the account value is included in the filter value array.
-      // Return the result as a boolean value to determine filtering.
-      return filterValue.includes(row.getValue('account'));
-    },
-  },
+  commonColumns[4],
 
   // Define the Categories column.
   {
@@ -252,15 +223,14 @@ export const reviewColumns = (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"
           onClick={(e) => e.stopPropagation()}
-          // If the user changes the category, call the handleCategoryChange function with the new value.
-          // Needed to save the correct category when the transactions are saved.
+          // Use a callback function (handleCategoryChange) when selected category for a row changes.
+          // Allows the correct category to be recorded when the transactions are saved.
           onChange={(e) => {
             handleCategoryChange(row.original.transaction_ID, e.target.value);
           }}
           value={selectedCategories[row.original.transaction_ID]}>
           {/* Map the categories associated with the transaction to a dropdown */}
           {categories.map((category) => (
-            // Define the key, value, and display text using the categorization name.
             <option key={category.name} value={category.name}>
               {category.name}
             </option>
@@ -273,9 +243,6 @@ export const reviewColumns = (
     },
   },
 
-  // Define the amount column.
-  commonColumns[4],
-
   // Define the Confidence column
   {
     accessorKey: 'confidence',
@@ -285,38 +252,34 @@ export const reviewColumns = (
     }: {
       row: Row<Transaction> | Row<CategorizedTransaction>;
     }) => {
-      // Define the confidence value assosiated with each classification method.
+      // Define the inital confidence value as well as the value for each classification method.
       const LLMClassified = 33;
       const DatabaseClassified = 66;
       const FuseClassified = 100;
-
-      // Define confidence value as 0 to start.
       let confidenceValue = 0;
 
-      // Define categories as the categories associated with the row.
       const categories: ClassifiedCategory[] = row.getValue('categories');
 
-      // Determine the confidence value based on how the categories were determined.
-      // Each method has an associated percentage: Fuse Match - 100%, Database Lookup - 66%, LLM Prediction - 33%.
+      // Determine the highest confidence value present from how the categories were determined.
       if (categories.length > 0) {
         // If any category is found, the lowest possible confidence value is 33% (LLM).
         confidenceValue = LLMClassified;
         // Iterate through the categories to determine the confidence value.
         for (const category of categories) {
-          // If a database lookup is found, change the confidence value to 66%.
+          // If a database lookup is found, change minimum confidence value to 66%.
+           // Further iterations can only equal or increase the confidence value.
           if (category.classifiedBy === 'Database') {
             confidenceValue = DatabaseClassified;
-            // Further iterations can only equal or increase the confidence value.
           }
+          // If the category is classified by fuze match, change the confidence value to 100%.
+          // Then break the loop as the highest confidence value has been reached.
           if (category.classifiedBy === 'Matching') {
-            // If the category is classified by fuze match, change the confidence value to 100%.
             confidenceValue = FuseClassified;
-            // Break the loop as the highest confidence value has been reached.
             break;
           }
         }
       }
-      // Define a hover text based on the confidence value.
+      // Determine the hover text to display ontop of the confidence bar.
       let hoverText = '';
       if (confidenceValue === 0) {
         hoverText = 'No categorization results found.';
@@ -330,7 +293,7 @@ export const reviewColumns = (
       if (confidenceValue === FuseClassified) {
         hoverText = 'Results found by name matching.';
       }
-      // Return a confidence bar with it's UI and hover text based on the confidence value.
+      // Create and return a confidence bar with it's values determined by the confidence value.
       return (
         <ConfidenceBar confidence={confidenceValue} hoverText={hoverText} />
       );

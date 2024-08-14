@@ -273,48 +273,70 @@ export async function getTransactions(
 }
 
 // Find a specific purchase object by its ID.
-export async function findPurchases(
-  id: string,
-  formatResult: boolean
-): Promise<string | Purchase> {
+export async function findPurchases(id: string): Promise<PurchaseResponse> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
 
-    // Create tracker to indicate if the query was successful or not.
-    let success = true;
-
     // Search by ID for a specific purchase object.
     const response: PurchaseResponse = await new Promise((resolve) => {
       qbo.getPurchase(id, (err: Error, data: PurchaseResponse) => {
-        // If there is an error, check if it has a 'Fault' property
+        // If there is an error, throw an error if it has a 'Fault' property.
         if (err && checkFaultProperty(err)) {
-          // Set the success tracker to false to indicate an error occurred.
-          success = false;
+          throw new Error('Error finding purchase');
         }
         // Resolve the data to allow the caller and the result formatter to access the results.
         resolve(data);
       });
     });
 
-    // If the user does not want a formatted result, return the raw response.
-    // This is primarily used for updating the purchase classification.
-    if (!formatResult) {
-      return JSON.stringify(response);
-    } else {
-      // ** Call to unused functionality to return a formatted purchase result. **
-      return JSON.stringify(createFormattedPurchase(success, response));
-    }
+    return response;
   } catch (error) {
-    // Return any caught errors.
-    return JSON.stringify(error);
+    // Log any caught errors and return an empty purchase response that indicates an error.
+    console.error(error);
+    const errorResonse: PurchaseResponse = {
+      Id: '',
+      SyncToken: '',
+      PaymentType: '',
+      TxnDate: '',
+      TotalAmt: 0,
+      AccountRef: { value: '', name: '' },
+      EntityRef: { value: '', name: '' },
+      Line: [
+        {
+          DetailType: '',
+          AccountBasedExpenseLineDetail: {
+            AccountRef: { value: '', name: '' },
+          },
+        },
+      ],
+      Error: [{ Message: 'Error', Detail: 'Error finding purchase' }],
+    };
+    return errorResonse;
   }
 }
 
-function createFormattedPurchase(
-  success: boolean,
-  response: PurchaseResponse
-): Purchase {
+export async function getFormattedPurchase(id: string): Promise<Purchase> {
+
+  // Create the QuickBooks API object.
+  const qbo = await createQBObject();
+
+  // Create tracker to indicate if the query was successful or not.
+  let success = true;
+
+  // Search by ID for a specific purchase object.
+  const response: PurchaseResponse = await new Promise((resolve) => {
+    qbo.getPurchase(id, (err: Error, data: PurchaseResponse) => {
+      // If there is an error, check if it has a 'Fault' property
+      if (err && checkFaultProperty(err)) {
+        // Set the success tracker to false to indicate an error occurred.
+        success = false;
+      }
+      // Resolve the data to allow the caller and the result formatter to access the results.
+      resolve(data);
+    });
+  });
+
   // Create a formatted result object based on the query results.
   const queryResult = createQueryResult(success, response);
 
@@ -361,12 +383,9 @@ function createFormattedPurchase(
 // Update a specific purchase object passed to the function.
 // Takes a new account ID string and the raw purchase data to update.
 // Defines the relevant structure of the purchase object in the function definition.
-export async function updatePurchase(purchase: {
-  Id: string;
-  SyncToken: string;
-  PaymentType: string;
-  Line: unknown;
-}): Promise<string> {
+export async function updatePurchase(
+  purchase: PurchaseResponse
+): Promise<string> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();

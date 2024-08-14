@@ -3,7 +3,9 @@ import Link from 'next/link';
 // The 404 page component that displays a link to the home page.
 const NotFoundPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-100 pt-20 md:pt-40">
+    <div
+      id="404PageContainer"
+      className="flex flex-col items-center justify-center bg-gray-100 pt-20 md:pt-40">
       <h1 id="ErrorCode" className="mb-4 text-6xl font-bold text-gray-800">
         404
       </h1>
@@ -20,5 +22,4 @@ const NotFoundPage = () => {
   );
 };
 
-// Export the NotFoundPage component.
 export default NotFoundPage;

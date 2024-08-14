@@ -1,21 +1,19 @@
-/**
- * Defines how the landing page for the application is displayed.
- */
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import SignInButton from '@/components/inputs/sign-in-button';
 import { siteConfig } from '@/site-config/site';
 
+// Landing Page.
 export default async function Page() {
-  // Get the current session.
+  // Get the server session and send user to home page if they are already logged in.
   const session = await getServerSession();
   if (session) {
-    // If session is present, user is logged in. Redirect to home page.
     redirect('/home');
   }
+
   return (
     <main
-      id="MainContentContainer"
+      id="LandingPageContainer"
       className="flex h-full w-full max-w-xs flex-1 flex-col items-center justify-center px-4 pb-p20 text-center sm:pb-p15 md:max-w-3xl lg:pb-p10 2xl:pb-p5">
       <h1
         id="SiteTitle"

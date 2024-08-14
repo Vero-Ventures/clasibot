@@ -17,7 +17,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { DatePicker } from '@/components/date-picker';
+import { DatePicker } from '@/components/inputs/date-picker';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -37,7 +37,8 @@ import {
 import { ChevronDown } from 'lucide-react';
 import type { Transaction } from '@/types/Transaction';
 
-// Takes a list of transactions, a boolean indicating if the table is presently classifying, and a function to handle classification.
+// Function Values: list of transactions, list of account names, and a value to indicate classification is in progress.
+// Function Callbacks: A function to handle classifing the transactions.
 export function SelectionTable({
   transactions,
   account_names,
@@ -49,67 +50,53 @@ export function SelectionTable({
   isClassifying: boolean;
   handleClassify: (selectedRows: Transaction[]) => void;
 }>) {
-  // Create state to track and set the sorting state.
+  // Create states to track and set the important values.
+  // Column to sort by, column filtering rules, Columns to display, selected Rows, and accounts to display Rows from.
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  // Create state to track and set the currently filtered columns.
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  // Create state to track and set the column visibility state for each column.
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-
-  // Create state to track and set the currently selected rows.
   const [rowSelection, setRowSelection] = useState({});
-
-  // Create state to track and set the currently selected accounts.
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
-  // Define the default start and end date (two years ago and today).
+  // Define the default start and end date (two years ago & today).
   const currentDate = new Date();
   const twoYearsAgo = new Date();
   twoYearsAgo.setFullYear(currentDate.getFullYear() - 2);
 
-  // Create state to track and set the start and end date for the date filter.
+  // Create state to track and set the start and end dates for the date filter.
   const [startDate, setStartDate] = useState<Date | null>(twoYearsAgo);
   const [endDate, setEndDate] = useState<Date | null>(currentDate);
 
-  // Define a function to handle changing the start date.
   function changeStartDate(date: Date | null) {
-    // Update the date filter value with the new start date.
     table.getColumn('date')?.setFilterValue(`${date} to ${endDate}`);
-    // Update the recorded start date value.
     setStartDate(date);
   }
 
-  // Define a function to handle changing the end date.
   function changeEndDate(date: Date | null) {
-    // Update the date filter value with the new end date.
     table.getColumn('date')?.setFilterValue(`${startDate} to ${date}`);
-    // Update the recorded end date value.
     setEndDate(date);
   }
 
-  // Function to update the account selection state.
   function updateAccountSelection(account: string) {
-    // If the account is already selected, remove it from the selected accounts.
+    // If the account is selected: Filter it out and update the selected accounts state.
     if (selectedAccounts.includes(account)) {
-      // Filter out the account from the selected accounts and set the state with the filtered array.
       setSelectedAccounts(
         selectedAccounts.filter((arrayAccount) => arrayAccount !== account)
       );
     } else {
-      // If the account is not selected, add it to the selected accounts and update the state.
+      // Otherwise, add it to the selected accounts and update the state.
       setSelectedAccounts([...selectedAccounts, account]);
     }
   }
 
-  // Update the selected accounts state when the account names change.
+  // Updates the 'selected accounts' state whenever the 'account names' value changes.
   useEffect(() => {
     setSelectedAccounts(account_names);
   }, [account_names]);
 
-  // Call the react table, passing in the passed transactions and the selection columns.
+  // Creates the react table using passed data, helper functions, and state elements.
   const table = useReactTable({
+    // Pass the list of transactions for the rows and the list of columns to display.
     data: transactions,
     columns: selectionColumns,
     // Pass the set state functions to table actions.
@@ -131,42 +118,37 @@ export function SelectionTable({
     },
   });
 
-  // Update the table when the selected accounts change.
+  // Update the account filter in the table when the selected accounts change.
   useEffect(() => {
     // If no accounts are selected, set the account filter value to false to show all results.
-    // No filter -> all strings contain '' -> all transactions (rows) are shown.
     if (selectedAccounts.length === 0) {
       table.getColumn('account')?.setFilterValue(() => false);
     }
-    // If accounts are selected, set the account filter to the array of selected accounts.
-    // Filter by accounts -> only show transactions (rows) with accounts in selectedAccounts.
+    // Otherwise update the filter function with the new array of account names.
     table.getColumn('account')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
   return (
     <div className="w-full">
+      {/* Container for the top row of filters: name and date. */}
       <div
-        id="TableFilterContainer"
+        id="TopFiltersContainer"
         className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
-        {/* Container for the name search input */}
-        <div id="TextSearchContainer" className="mx-auto w-4/5 sm:w-3/4">
-          {/* Create an input to take text and filter to transactions with matching names. */}
-          <Input
-            id="NameFilterInput"
-            placeholder="Filter by name..."
-            // Set the input value to the name filter value or an empty string if none is found.
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              // When the input value changes, update the name filter value with the new value.
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
-            className="w-full border-2 border-gray-300"
-          />
-        </div>
-
-        {/* Create a date picker to filter by date range. */}
+        {/* Create an input to take text and filter to transactions with matching names. */}
+        <Input
+          id="NameFilterInput"
+          placeholder="Filter by name..."
+          // Set the input value to the name filter from the table (or an empty string)..
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          // When the input value changes, update the name filter value with the new value.
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="mr-2 w-2/3 max-w-xs popout:mr-4 popout:w-1/2 md:mr-6 md:w-2/3"
+        />
+        {/* Create a date picker to fetch transactions by date range. */}
         <div
-          id="FilterSelectionContainer"
+          id="DateSelectionContainer"
           className="mx-auto flex w-11/12 items-center md:w-5/6">
           <div className="mt-2 grid w-full grid-cols-2 gap-x-6 px-2 mb:gap-x-12 sm:gap-x-16 md:mt-0 md:gap-x-6">
             {/* Start and End Date pickers. */}
@@ -176,48 +158,47 @@ export function SelectionTable({
         </div>
       </div>
 
-      {/* Container for the accounts and columns filters */}
+      {/* Container for bottom row of filters: accounts and columns. */}
       <div
-        id="FilterElementsContainer"
+        id="BottomFiltersContainer"
         className="mx-auto mt-8 grid grid-cols-2 gap-x-4 px-4 popout:gap-x-6 md:gap-x-12 md:px-6 lg:gap-x-20 lg:px-8 xl:gap-x-24 xl:px-10">
         {/* Create a dropdown menu to select accounts to filter by. */}
-        <DropdownMenu>
-          {/* Create a button to trigger the dropdown menu. */}
-          <DropdownMenuTrigger asChild>
-            <Button
-              id="AccountsDropdownButton"
-              variant="outline"
-              className="w-full bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
-              {/* Chevron down acts a down arrow icon */}
-              Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          {/* Define the content of the dropdown menu. */}
-          <DropdownMenuContent align="center">
-            {/* For each account, create a checkbox item in the dropdown menu. */}
-            {account_names.map((account) => {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={account}
-                  className="capitalize focus:bg-blue-300"
-                  // Set the checkbox item to checked if the account is in the selected accounts.
-                  checked={selectedAccounts.includes(account)}
-                  // When the checkbox is clicked, update the account selection state.
-                  // Use eslint-disable-next-line to ignore the unused value warning which is needed for function format.
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  onCheckedChange={() => updateAccountSelection(account)}>
-                  {/* Display the account name */}
-                  {account}
-                </DropdownMenuCheckboxItem>
-              );
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div
+          id="AccountFilter"
+          className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
+          <DropdownMenu>
+            {/* Define a button to trigger the dropdown menu. */}
+            <DropdownMenuTrigger asChild>
+              <Button
+                id="AccountsDropdownButton"
+                variant="outline"
+                className="w-full bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
+                {/* Chevron down acts a down arrow icon */}
+                Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            {/* Define the content of the dropdown menu. */}
+            <DropdownMenuContent align="center">
+              {/* For each account, create a checkbox item in the dropdown menu. */}
+              {account_names.map((account) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={account}
+                    className="capitalize focus:bg-blue-300"
+                    checked={selectedAccounts.includes(account)}
+                    onCheckedChange={() => updateAccountSelection(account)}>
+                    {account}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Define a dropdown menu to select which columns are displayed. */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {/* Button defines the base button that opens and closes the dropdown. */}
+            {/* Define a button to trigger the dropdown menu. */}
             <Button
               id="ColumnFilterButton"
               variant="outline"
@@ -226,9 +207,9 @@ export function SelectionTable({
               Columns <ChevronDown className="ml-2 mt-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          {/* Dropdown menu content defines what is shown in the dropdown */}
+          {/* Define the content of the dropdown menu. */}
           <DropdownMenuContent align="center">
-            {/* Gets the columns and filters to the ones that can be hidden then maps over them. */}
+            {/* Gets the columns and filters out the ones that cannot be hidden. */}
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -254,7 +235,6 @@ export function SelectionTable({
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
                     }>
-                    {/* Display the field name for the column. */}
                     {field}
                   </DropdownMenuCheckboxItem>
                 );
@@ -263,20 +243,19 @@ export function SelectionTable({
         </DropdownMenu>
       </div>
 
-      {/* Container for the table */}
+      {/* Container for the table. */}
       <div
         id="TableContainer"
-        className="mt-2 rounded rounded-md border-2 border-gray-300">
+        className="mt-2 rounded border-2 border-gray-300">
         <Table>
           {/* Define the top row of the table with the column labels. */}
           <TableHeader>
-            {/* Get the header group to prepare the table header row. */}
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {/* Map over the columns (header groups) inside the react table header row. */}
                 {headerGroup.headers.map((header) => {
                   return (
-                    // Create a table head object using the current header's id and column header.
+                    // Create a table head object using the current header id and column header.
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
@@ -291,23 +270,19 @@ export function SelectionTable({
             ))}
           </TableHeader>
           <TableBody>
-            {/* If there are rows within the table, mao over them to create the rows. */}
             {table.getRowModel().rows?.length ? (
+              // Iterate through the rows of the table to create the table body.
               table.getRowModel().rows.map((row) => (
-                //  Create a table row object for the current row.
                 <TableRow
                   key={row.id}
-                  // Sets the row's background color depending on the selected state of the row.
+                  // Updates the row's background color depending on the selected state of the row.
                   className={`${row.getIsSelected() ? 'bg-blue-100' : ''} hover:bg-blue-100`}
-                  // When the row is clicked, toggle the selected state of the row.
                   onClick={() => row.toggleSelected(!row.getIsSelected())}
-                  // Set the cursor to a pointer when hovering over the row.
                   style={{ cursor: 'pointer' }}>
-                  {/* Iterate over the column values inside the row. */}
+                  {/* Iterate over the column values (cells) inside the current row. */}
                   {row.getVisibleCells().map((cell) => (
-                    // Use the cell's id as the key for the table cell.
                     <TableCell key={cell.id}>
-                      {/* Populate the table cell using the value for that cell from the current row */}
+                      {/* Populate the new cell using the value from the current cell. */}
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -317,11 +292,11 @@ export function SelectionTable({
                 </TableRow>
               ))
             ) : (
-              // If there are no rows in the table, instead displays a message indicating there are no results.
-              <TableRow>
+              // If the table is empty (no rows), display a message to indicate there are no results.
+              <TableRow id="EmptyTable">
                 <TableCell
                   colSpan={selectionColumns.length}
-                  className="h-24 pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
+                  className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
                   No results found.
                 </TableCell>
               </TableRow>
@@ -331,13 +306,16 @@ export function SelectionTable({
       </div>
 
       {/* Pagination buttons for the table, each page holds 10 rows + the header row. */}
-      <div className="flex items-center justify-between py-2">
+      <div
+        id="SelectionTableButtonsContainer"
+        className="flex items-center justify-between py-2">
         <div
           id="SelectedAndCurrentRowsInfo"
           className="text-muted-foreground ml-2 mr-2 mt-0.5 p-2 text-center text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
+        {/* Pagination buttons for the table. Each page holds the header row and 10 transaction rows. */}
         <div
           id="PaginationButtonsContainer"
           className="grid grid-rows-2 space-y-1 sm:grid-cols-2 sm:grid-rows-1 sm:space-x-2 sm:space-y-0">
@@ -347,9 +325,8 @@ export function SelectionTable({
               variant="outline"
               className="w-20 translate-y-12 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:translate-y-0"
               size="sm"
-              // When the previous page button is clicked, move to the previous page.
               onClick={() => table.previousPage()}
-              // Disable the button if the table cannot move to the previous page
+              // Disable the button if the table cannot move to the previous page.
               disabled={!table.getCanPreviousPage()}>
               Previous
             </Button>
@@ -360,7 +337,6 @@ export function SelectionTable({
               variant="outline"
               size="sm"
               className="absolute w-20 -translate-y-10 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:relative sm:translate-y-0"
-              // When the next page button is clicked, move to the next page.
               onClick={() => table.nextPage()}
               // Disable the button if the table cannot move to the next page.
               disabled={!table.getCanNextPage()}>
@@ -372,7 +348,7 @@ export function SelectionTable({
           <Button
             id="ClassifyButton"
             onClick={() =>
-              // When the classify button is clicked, call the handle classify function with the selected rows.
+              // Calls the handleClassify function with the currently selected rows.
               handleClassify(
                 table
                   .getFilteredSelectedRowModel()
@@ -385,6 +361,7 @@ export function SelectionTable({
               table.getFilteredSelectedRowModel().rows.length === 0
             }
             className="ml-2 mr-4 h-12 w-24 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
+              {/* Display either the classify button text or a classifing message depending on the classifing state. */}
             {isClassifying ? 'Classifying...' : 'Classify'}
           </Button>
         </div>
