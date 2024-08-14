@@ -3,7 +3,7 @@
  */
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import SignInButton from '@/components/sign-in-button';
+import SignInButton from '@/components/inputs/sign-in-button';
 import { siteConfig } from '@/site-config/site';
 
 export default async function Page() {

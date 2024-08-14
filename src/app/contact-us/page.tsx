@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ToastAction } from '@/components/ui/toast';
-import { useToast } from '@/components/ui/use-toast';
+import { ToastAction } from '@/components/ui/toasts/toast';
+import { useToast } from '@/components/ui/toasts/use-toast';
 import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';

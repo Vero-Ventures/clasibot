@@ -4,7 +4,7 @@
  */
 import { checkSubscription } from '@/actions/stripe';
 import HomePage from '@/components/home';
-import PricingTable from '@/components/pricing-table';
+import PricingTable from '@/components/site-elements/pricing-table';
 
 export default async function Page() {
   // Check if the user has a valid subscription

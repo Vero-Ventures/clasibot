@@ -4,9 +4,9 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/site-config/site';
 import { Analytics } from '@vercel/analytics/react';
-import Footer from '@/components/footer';
-import Navbar from '@/components/nav-bar';
-import { Toaster } from '@/components/ui/toaster';
+import Footer from '@/components/site-elements/footer';
+import Navbar from '@/components/site-elements/nav-bar';
+import { Toaster } from '@/components/ui/toasts/toaster';
 import './globals.css';
 
 // Define the metadata for the site.

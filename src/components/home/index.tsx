@@ -16,7 +16,7 @@ import { getSession } from 'next-auth/react';
 import ReviewPage from '@/components/home/review-page';
 import SelectionPage from '@/components/home/selection-page';
 import { UnpaidAlert } from '@/components/unpaid-alert';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
 

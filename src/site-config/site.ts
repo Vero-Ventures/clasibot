@@ -1,14 +1,13 @@
 /**
- * Defines the configuration of the website.
- * Contains basic information about the site: name, description, and footer items.
+ * Defines the configuration information for the website.
  */
 export type SiteConfig = typeof siteConfig;
 
-// Defines the name of the website, a basic description, and the footer content items.
 export const siteConfig = {
   name: 'ClasiBot',
   description: 'Classify transactions using AI',
-  // Defines the labels and page links of each of the footer items.
+  // Defines the labels and page links for each of the footer items.
+  // Also used to define the paths users can visit when not logged in.
   footerItems: [
     {
       label: 'Privacy Policy',

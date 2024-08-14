@@ -1,7 +1,10 @@
 'use client';
 // Inspired by react-hot-toast library
 import { useEffect, useState } from 'react';
-import type { ToastActionElement, ToastProps } from '@/components/ui/toast';
+import type {
+  ToastActionElement,
+  ToastProps,
+} from '@/components/ui/toasts/toast';
 import type { ReactNode } from 'react';
 
 // Define the limit and delay constants.

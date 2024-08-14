@@ -4,10 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { checkSubscription } from '@/actions/stripe';
 import { Button } from '@/components/ui/button';
-import SignOutButton from '@/components/sign-out-button';
-import ChangeCompanyButton from '@/components/change-company-button';
+import SignOutButton from '@/components/inputs/sign-out-button';
+import ChangeCompanyButton from '@/components/inputs/change-company-button';
 import { siteConfig } from '@/site-config/site';
-import logo from '@/assets/logo.svg';
 
 const Navbar = async () => {
   // Define the session using the options, and get the server session.
@@ -42,7 +41,7 @@ const Navbar = async () => {
         <Link href="/">
           <Image
             id="LogoImage"
-            src={logo}
+            src="@/assests/logo.svg"
             width={40}
             height={40}
             className="h-auto w-12"
