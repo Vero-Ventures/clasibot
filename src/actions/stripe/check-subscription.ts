@@ -1,8 +1,3 @@
-/**
- * Check the user's subscription status and return the status and validity.
- * Returns error if the user session is not found or the user subscription is not found.
- */
-
 'use server';
 import { Stripe } from 'stripe';
 import prisma from '@/lib/db';
@@ -22,8 +17,6 @@ export default async function checkSubscription(): Promise<
   // Get the current session.
   const session = await getServerSession(options);
 
-  // If the session doesn't exist or the user ID isn't found, return an error.
-  // Prevents unauthorized access to the subscription status.
   if (!session?.userId) {
     return { error: 'Error getting session' };
   }
@@ -33,7 +26,6 @@ export default async function checkSubscription(): Promise<
     where: { userId: session.userId },
   });
 
-  // If the user subscription isn't found or does not have a Stripe ID, return an error.
   if (!userSubscription?.stripeId) {
     return { error: 'User Subscription not found!' };
   }
@@ -43,8 +35,8 @@ export default async function checkSubscription(): Promise<
     customer: userSubscription.stripeId,
   });
 
-  // Return the subscription status and validity.
   const subStatus = subscription.data[0]?.status;
+
   // Return if  the subscription is active and valid.
   return {
     status: subStatus || 'inactive',

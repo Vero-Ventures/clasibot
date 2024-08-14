@@ -1,8 +1,3 @@
-/**
- * Creates a new customer session for the user and returns the client secret.
- * Returns an error if the user session is not found, the user subscription is not found, or the user does not have a Stripe customer ID.
- */
-
 'use server';
 import { Stripe } from 'stripe';
 import prisma from '@/lib/db';
@@ -22,7 +17,6 @@ export default async function createCustomerSession(): Promise<
   // Get the current session.
   const userId = (await getServerSession(options))?.userId;
 
-  // If the session doesn't exist or the user ID isn't found, return an error.
   if (!userId) {
     return { error: 'User not found!' };
   }
@@ -33,12 +27,10 @@ export default async function createCustomerSession(): Promise<
     include: { subscription: true },
   });
 
-  // If the user or subscription doesn't exist, return an error.
   if (!user?.subscription) {
     return { error: 'User not found!' };
   }
 
-  // Check for a user stripe ID.
   const userStripeId = user.subscription?.stripeId;
   // If the user has a stripe ID, create a new customer session with the user's stripe ID.
   if (userStripeId) {

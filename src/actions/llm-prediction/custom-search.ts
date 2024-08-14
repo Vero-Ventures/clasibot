@@ -1,18 +1,11 @@
-/**
- * This file contains the action for fetching custom search results.
- * Returns a list of custom search results. Returns an empty array instead if custom search is disabled or an error occurs.
- */
 'use server';
 import type { customsearch_v1 } from 'googleapis';
 import { google } from 'googleapis';
 
-// takes a query string and returns a list of custom search results.
 export async function fetchCustomSearch(
   query: string
 ): Promise<customsearch_v1.Schema$Result[]> {
-  // Check if custom search is disabled.
   const enableCustomSearch = process.env.ENABLE_GOOGLE_CSE === 'false';
-
   // If custom search is disabled, return an empty array.
   if (enableCustomSearch) {
     return [];
@@ -43,9 +36,8 @@ export async function fetchCustomSearch(
         return [];
       }
     } catch (error) {
-      // Log the error.
+      // Log the error and return an empty array.
       console.error('Error fetching custom search:', error);
-      // Return an empty array.
       return [];
     }
   }

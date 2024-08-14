@@ -1,7 +1,3 @@
-/**
- * Define the function to get the top categories for a transaction and return the top 3 categories as an array.
- */
-
 'use server';
 import prisma from '@/lib/db';
 import type { Category } from '@/types/Category';
@@ -11,7 +7,7 @@ interface Classification {
   category: string;
   count: number;
 }
-// Takes a transaction name and a list of valid categories
+
 export async function getTopCategoriesForTransaction(
   name: string,
   validCategories: Category[]
@@ -23,7 +19,6 @@ export async function getTopCategoriesForTransaction(
       include: { classifications: true },
     });
 
-    // If no transaction is found, return an empty array.
     if (!transaction?.classifications) {
       return [];
     }
@@ -50,18 +45,15 @@ export async function getTopCategoriesForTransaction(
     );
 
     const maxCount = 3;
-    // Take the top 3 classifications.
+    // Take the top 3 classifications and return them.
     const topClassifications = filteredClassifications.slice(0, maxCount);
-
-    // Return the top 3 classifications.
     return topClassifications.map((classification: Classification) => ({
       id: validCategoryMap[classification.category],
       name: classification.category,
     }));
   } catch (error) {
-    // Log the error.
+    // Catch any errors, log them, and return an empty array.
     console.error('Error searching the database:', error);
-    // Catch any errors and return an empty array.
     return [];
   }
 }

@@ -1,7 +1,3 @@
-/**
- * Checks for a user's stripe ID and creates a new customer ID if one doesn't exist and returns a success response.
- * Otherwise, returns an error response if the customer is not found or already has a stripe ID
- */
 
 'use server';
 import { Stripe } from 'stripe';
@@ -24,7 +20,6 @@ export default async function createCustomerID(
     include: { subscription: true },
   });
 
-  // If the user or subscription doesn't exist, return an error.
   if (!user?.subscription) {
     return Response.json({ error: 'User not found!' });
   }
@@ -51,6 +46,7 @@ export default async function createCustomerID(
       },
     });
 
+    // Return a response indicating the customer was created.
     return Response.json({ message: 'Customer created!' });
   } else {
     // If the user already has a stripe ID, return an error.

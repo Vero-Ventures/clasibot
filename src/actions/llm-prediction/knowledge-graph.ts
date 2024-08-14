@@ -1,7 +1,3 @@
-/**
- * Fetches knowledge graph results from the Google Knowledge Graph API.
- * Returns either an array of knowledge graph results or an empty array if no results are found.
- */
 'use server';
 import { google } from 'googleapis';
 
@@ -12,7 +8,6 @@ interface KnowledgeGraphResult {
   detailedDescription: string;
 }
 
-// Takes a query string.
 export async function fetchKnowledgeGraph(
   query: string
 ): Promise<KnowledgeGraphResult[]> {
@@ -33,7 +28,6 @@ export async function fetchKnowledgeGraph(
 
     // If a response is returned, reformat the data to be returned.
     if (response.data.itemListElement) {
-      // Return the reformatted results.
 
       return response.data.itemListElement.map(
         (item: {
@@ -43,12 +37,12 @@ export async function fetchKnowledgeGraph(
           };
           resultScore: number;
         }) => {
-          // Define an empty description, then check if a detailed description is returned and update the description.
+          // Define an empty description, then check if a detailed description was returned and update the description.
           let description = '';
           if (item.result.detailedDescription) {
             description = item.result.detailedDescription.articleBody;
           }
-          // Reformatted result also has a name, result score, and a detailed description.
+          // Return the reformatted result.
           return {
             name: item.result.name,
             resultScore: item.resultScore,
@@ -61,7 +55,7 @@ export async function fetchKnowledgeGraph(
       return [];
     }
   } catch (error) {
-    // Log any errors that occur.
+    // Log any errors that occur and return an empty array.
     console.error('Error fetching knowledge graph:', error);
     return [];
   }

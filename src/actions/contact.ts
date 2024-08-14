@@ -1,7 +1,3 @@
-/**
- * Defines an action to send an email to the contact email using the 'Contact Us' form information.
- * Returns a success message if the email is sent successfully, otherwise returns an error message.
- */
 'use server';
 import nodemailer from 'nodemailer';
 
@@ -16,8 +12,7 @@ export async function contactAction({
   body: string;
 }): Promise<{ message: string }> {
   try {
-    // Create a new nodemailer transporter with the email server details.
-    // The host email name, port to use, the secure status of the port.
+    // Create a new nodemailer transporter object to send the email.
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT ?? '465'),

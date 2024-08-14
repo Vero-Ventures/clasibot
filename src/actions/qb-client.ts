@@ -1,7 +1,3 @@
-/**
- * Defines a helper method to create a QuickBooks API object using the server session.
- * QB object is used to make QuickBooks API calls.
- */
 'use server';
 import QB from 'node-quickbooks';
 import { getServerSession } from 'next-auth';
@@ -33,6 +29,7 @@ export async function createQBObject() {
     useSecret = process.env.DEV_CLIENT_SECRET;
   }
 
+  // Define the API version used by the current codebase.
   const minorVersion = 73;
 
   // Create the QuickBooks API calls object.
