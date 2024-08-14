@@ -6,8 +6,8 @@ import { checkSubscription } from '@/actions/stripe';
 import { Button } from '@/components/ui/button';
 import SignOutButton from '@/components/sign-out-button';
 import ChangeCompanyButton from '@/components/change-company-button';
-import { siteConfig } from '@/config/site';
-import logo from '@/public/logo.svg';
+import { siteConfig } from '@/site-config/site';
+import logo from '@/assets/logo.svg';
 
 const Navbar = async () => {
   // Define the session using the options, and get the server session.

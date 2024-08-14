@@ -4,7 +4,7 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import SignInButton from '@/components/sign-in-button';
-import { siteConfig } from '@/config/site';
+import { siteConfig } from '@/site-config/site';
 
 export default async function Page() {
   // Get the current session.

@@ -2,7 +2,7 @@ import { default as defaultMiddleware } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import type { NextRequestWithAuth } from 'next-auth/middleware';
-import { siteConfig } from '@/config/site';
+import { siteConfig } from '@/site-config/site';
 
 export function middleware(request: NextRequest) {
   // Get the callback URL from the query string.

@@ -27,19 +27,17 @@ const config: Config = {
       spacing: {
         120: '460px',
       },
+      // Custom padding sizes based on percentages of container.
       padding: {
         p20: '20%',
         p15: '15%',
         p10: '10%',
         p5: '5%',
       },
+      // Defines a custom sizing based on the bug report button.
+      // Defines the size the button expands from an icon to include text.
       screens: {
         popout: '600px',
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       keyframes: {
         'accordion-down': {

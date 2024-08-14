@@ -14,6 +14,7 @@ const __dirname = path.dirname(__filename);
 const targetFile = path.join(
   __dirname,
   '..',
+  '..',
   'node_modules',
   'jose',
   'dist',

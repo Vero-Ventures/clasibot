@@ -2,7 +2,7 @@
  * Defines the root layout component for the application.
  */
 import type { Metadata } from 'next';
-import { siteConfig } from '@/config/site';
+import { siteConfig } from '@/site-config/site';
 import { Analytics } from '@vercel/analytics/react';
 import Footer from '@/components/footer';
 import Navbar from '@/components/nav-bar';
