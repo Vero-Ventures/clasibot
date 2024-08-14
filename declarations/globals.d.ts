@@ -1,4 +1,5 @@
 // Declare the interface for the Stripe Pricing Table component within the JSX namespace.
+// Allows the stripe table to be rendered inside typescript files.
 declare namespace JSX {
   interface IntrinsicElements {
     'stripe-pricing-table': React.DetailedHTMLProps<

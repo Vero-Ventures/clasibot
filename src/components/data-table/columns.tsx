@@ -304,11 +304,11 @@ export const reviewColumns = (
         // Iterate through the categories to determine the confidence value.
         for (const category of categories) {
           // If a database lookup is found, change the confidence value to 66%.
-          if (category.classifiedBy === 'Database Lookup') {
+          if (category.classifiedBy === 'Database') {
             confidenceValue = DatabaseClassified;
             // Further iterations can only equal or increase the confidence value.
           }
-          if (category.classifiedBy === 'Fuzzy or Exact Match by Fuse') {
+          if (category.classifiedBy === 'Matching') {
             // If the category is classified by fuze match, change the confidence value to 100%.
             confidenceValue = FuseClassified;
             // Break the loop as the highest confidence value has been reached.

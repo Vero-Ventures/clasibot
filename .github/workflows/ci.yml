@@ -1,5 +1,7 @@
 name: CI
 
+# When a pull request is opened, synchronized, or reopened,
+# This workflow will checkout the repo, install dependancies, and run a prettier check.
 on:
   pull_request:
     types: [opened, synchronize, reopened]

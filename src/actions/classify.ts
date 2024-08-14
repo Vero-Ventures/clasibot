@@ -124,7 +124,7 @@ async function classifyWithFuse(
           const newCategory = {
             id: account.id,
             name: account.name,
-            classifiedBy: 'Fuzzy or Exact Match by Fuse',
+            classifiedBy: 'Matching',
           };
           // Check if the category is not already in the possible valid categories.
           if (
@@ -153,7 +153,7 @@ async function classifyWithFuse(
           results[uncategorized.transaction_ID] = topCategories.map(
             (category) => ({
               ...category,
-              classifiedBy: 'Database Lookup',
+              classifiedBy: 'Database',
             })
           );
           // Also records the category was classified by the database lookup.

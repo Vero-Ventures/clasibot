@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { getTransactions } from '@/actions/quickbooks';
 import { SelectionTable } from '@/components/data-table/selection-table';
 import type { Transaction } from '@/types/Transaction';
-import { filterUncategorized } from '@/utils/filter-transactions';
+import { filterToUncategorized } from '@/utils/filter-transactions';
 
 // Selection page takes a function to handle classification, a boolean to check if classifying, and the company name.
 export default function SelectionPage({
@@ -70,7 +70,7 @@ export default function SelectionPage({
       </h1>
       {/* Display the selection table with the fetched transactions. */}
       <SelectionTable
-        transactions={filterUncategorized(transactions)}
+        transactions={filterToUncategorized(transactions)}
         account_names={accounts}
         isClassifying={isClassifying}
         handleClassify={handleClassify}

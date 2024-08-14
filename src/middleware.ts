@@ -5,22 +5,27 @@ import type { NextRequestWithAuth } from 'next-auth/middleware';
 import { siteConfig } from '@/site-config/site';
 
 export function middleware(request: NextRequest) {
-  // Get the callback URL from the query string.
+
   const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
-  // Extract the pathname from the URL.
   const pathname = request.nextUrl.pathname;
-  // Define allowed paths using the footer items from the site config.
+
+  // Define allowed paths using the footer items array inside site config file.
   const allowedPaths = siteConfig.footerItems.map((item) => item.href);
-  // If the pathname is in the allowed paths or is the landing page, continue with the default middleware.
+
+  // Continue with the default middleware for landing page and allowed paths.
   if (allowedPaths.includes(pathname) || pathname === '/') {
     return NextResponse.next();
   }
-  // If the pathname is not in allowed paths and the callback URL is present, rewrite the URL.
+
+  // If callback URL is present, the user is trying to be forced to log in.
+  // Redirect to landing page instead where the sign in button is located.
   if (callbackUrl) {
     const baseUrl = new URL(request.url);
     return NextResponse.redirect(new URL(baseUrl.origin));
   }
-  // If not accessing a restricted or allowed page, continue with the default middleware.
-  // Only done when redirecting to login page.
+
+  // Callback URL is not present when login is done by landing page button.
+  // If not an allowed path and callback URL is not present, must be a valid login attempt.
+  // Continue with the default middleware to take user to QuickBooks login page.
   return defaultMiddleware(request as NextRequestWithAuth);
 }

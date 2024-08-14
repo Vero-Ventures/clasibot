@@ -11,7 +11,7 @@ import {
   getCompanyName,
 } from '@/actions/quickbooks';
 import { checkSubscription } from '@/actions/stripe';
-import { filterCategorized } from '@/utils/filter-transactions';
+import { filterOutUncategorized } from '@/utils/filter-transactions';
 import { getSession } from 'next-auth/react';
 import ReviewPage from '@/components/home/review-page';
 import SelectionPage from '@/components/home/selection-page';
@@ -174,7 +174,7 @@ export default function HomePage() {
     const result: Record<string, ClassifiedCategory[]> | { error: string } =
       // Use the past 5 years of transactions to classify the passed transactions.
       await classifyTransactions(
-        filterCategorized(pastTransactionsResult),
+        filterOutUncategorized(pastTransactionsResult),
         selectedRows
       );
     if ('error' in result) {
