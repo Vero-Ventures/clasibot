@@ -12,6 +12,9 @@ export async function POST(req: Request) {
     return Response.json(response, { status: 200 });
   } catch (error) {
     // Catch any errors and return them with a bad request response using the status 400.
-    return Response.json({ error: 'Error fetching data', errorMessage: error }, { status: 400 });
+    return Response.json(
+      { error: 'Error fetching data', errorMessage: error },
+      { status: 400 }
+    );
   }
 }

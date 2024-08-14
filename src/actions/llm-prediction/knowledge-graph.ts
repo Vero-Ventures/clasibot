@@ -28,7 +28,6 @@ export async function fetchKnowledgeGraph(
 
     // If a response is returned, reformat the data to be returned.
     if (response.data.itemListElement) {
-
       return response.data.itemListElement.map(
         (item: {
           result: {

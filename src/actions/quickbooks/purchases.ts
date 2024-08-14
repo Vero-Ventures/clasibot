@@ -1,8 +1,8 @@
 'use server';
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
-import { Purchase } from '@/types/Purchase';
-import { PurchaseResponse } from '@/types/PurchaseResponse';
+import type { Purchase } from '@/types/Purchase';
+import type { PurchaseResponse } from '@/types/PurchaseResponse';
 
 // Find a specific purchase object by its ID.
 export async function findPurchase(id: string): Promise<PurchaseResponse> {

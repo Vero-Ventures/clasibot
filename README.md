@@ -89,9 +89,8 @@ The application also focuses on a simple to use interface that makes it easy to 
 - **Src**
 
   - `middleware.ts`
-  
-    Configures how the Auth middleware handles redirects non-logged in users to view a landing page and redirect back to the landing page if they visit any other page. Also defines the behavior for when the user signs in through QuickBooks.
 
+    Configures how the Auth middleware handles redirects non-logged in users to view a landing page and redirect back to the landing page if they visit any other page. Also defines the behavior for when the user signs in through QuickBooks.
 
 - **Actions**
 
@@ -147,7 +146,6 @@ The application also focuses on a simple to use interface that makes it easy to 
   - **Quickbooks.ts**
     Interacts with QuickBooks API + Helper functions.
 
-
     - `get-accounts.ts`
 
       A QuickBooks API call that gets the users accounts, the QuickBooks element that defines the possible classifications a user can assign to a transaction. It formats results to the Account specified type and returns the results as a JSON object.
@@ -155,7 +153,6 @@ The application also focuses on a simple to use interface that makes it easy to 
     - `get-transactions`
 
       A QuickBooks API call that gets the users transactions within a specified date range (default of 2 years). Returned transactions must be of specified types related to expenses and must contain a name and amount value. It formats results to the Transaction type and returns the results as a JSON object.
-
 
     - `helpers.ts`
 
@@ -345,7 +342,7 @@ The application also focuses on a simple to use interface that makes it easy to 
         Defines a button for the navbar that will sign the user out of their account and return them to the landing page.
 
     - **Site Elements**
-        
+
       - `footer.tsx`
 
         Defines the layout and design of the footer which includes copyright information as well as links to the 'contact us', 'privacy policy' and 'terms of service' pages.

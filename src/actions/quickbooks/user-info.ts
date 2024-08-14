@@ -72,7 +72,7 @@ export async function getCompanyName(): Promise<string> {
       QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
     };
 
-     // Search for a company info object related to the user.
+    // Search for a company info object related to the user.
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property

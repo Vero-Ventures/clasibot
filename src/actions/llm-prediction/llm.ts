@@ -55,7 +55,6 @@ export async function queryLLM(
       },
     ];
 
-
     // Await the generated text response.
     let response = await generateText({
       model,

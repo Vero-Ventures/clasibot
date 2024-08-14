@@ -1,8 +1,10 @@
 'use server';
-import { QueryResult } from '@/types/QueryResult';
+import type { QueryResult } from '@/types/QueryResult';
 
 // Check for fault property in returned error objects.
-export function checkFaultProperty(error: unknown): error is { Fault: unknown } {
+export function checkFaultProperty(
+  error: unknown
+): error is { Fault: unknown } {
   if (typeof error === 'object' && error !== null) {
     // If an object was passed, check if it has a 'Fault' property.
     return 'Fault' in error;
