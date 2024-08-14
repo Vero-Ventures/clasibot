@@ -17,7 +17,7 @@ export type Transaction = {
   account: string;
   // The category that the transaction is associated with.
   category: string;
-  // Total positive or negative value of the purchase.
+  // Total positive or negative decimal value of the purchase.
   amount: number;
 };
 

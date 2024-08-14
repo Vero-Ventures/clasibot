@@ -18,7 +18,7 @@ export type Purchase = {
   purchase_type: string;
   // date: YYYY-MM-DD.
   date: string;
-  // Total positive or negative value of the purchase.
+  // Total positive or negative decimal value of the purchase.
   total: number;
   // The account that the purchase is associated with.
   primary_account: string;
