@@ -5,7 +5,6 @@ import type { NextRequestWithAuth } from 'next-auth/middleware';
 import { siteConfig } from '@/site-config/site';
 
 export function middleware(request: NextRequest) {
-
   const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
   const pathname = request.nextUrl.pathname;
 

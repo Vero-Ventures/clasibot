@@ -267,7 +267,7 @@ export const reviewColumns = (
         // Iterate through the categories to determine the confidence value.
         for (const category of categories) {
           // If a database lookup is found, change minimum confidence value to 66%.
-           // Further iterations can only equal or increase the confidence value.
+          // Further iterations can only equal or increase the confidence value.
           if (category.classifiedBy === 'Database') {
             confidenceValue = DatabaseClassified;
           }

@@ -317,7 +317,6 @@ export async function findPurchases(id: string): Promise<PurchaseResponse> {
 }
 
 export async function getFormattedPurchase(id: string): Promise<Purchase> {
-
   // Create the QuickBooks API object.
   const qbo = await createQBObject();
 

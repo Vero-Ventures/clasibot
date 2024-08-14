@@ -361,7 +361,7 @@ export function SelectionTable({
               table.getFilteredSelectedRowModel().rows.length === 0
             }
             className="ml-2 mr-4 h-12 w-24 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
-              {/* Display either the classify button text or a classifing message depending on the classifing state. */}
+            {/* Display either the classify button text or a classifing message depending on the classifing state. */}
             {isClassifying ? 'Classifying...' : 'Classify'}
           </Button>
         </div>

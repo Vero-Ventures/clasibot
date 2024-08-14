@@ -95,7 +95,9 @@ export default function Page() {
   };
 
   return (
-    <main id="ContactUsContainer" className="flex flex-col items-center justify-between p-12">
+    <main
+      id="ContactUsContainer"
+      className="flex flex-col items-center justify-between p-12">
       <h1
         id="FormTitle"
         className="scroll-m-20 text-4xl font-extrabold tracking-tight md:text-5xl">
