@@ -192,7 +192,7 @@ export async function batchQueryLLM(
     results.push({
       transaction_ID,
       possibleCategories,
-      classifiedBy: 'LLM',
+      classifiedBy: 'LLM API',
     });
   }
   // Return the results.
