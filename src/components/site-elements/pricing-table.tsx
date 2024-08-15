@@ -59,7 +59,7 @@ export default function PricingTable() {
       {customerSession && (
         <stripe-pricing-table
           pricing-table-id={usePublic ?? ''}
-          publishable-key={useSecret ?? ''}
+          stripe-private-key={useSecret ?? ''}
           customer-session-client-secret={customerSession}
         />
       )}
