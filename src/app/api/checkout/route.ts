@@ -1,8 +1,10 @@
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { Subscription } from '@/db/schema';
 import { Stripe } from 'stripe';
 import { getServerSession } from 'next-auth/next';
 import type { NextRequest } from 'next/server';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import { eq } from 'drizzle-orm';
 
 // Define the Stripe instance using the private key. Key value is determined by the enviroment.
 const stripe = new Stripe(
@@ -37,23 +39,22 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Error getting session' });
     }
 
-    // Find the user in the database using their ID, limited to true subscriptions.
-    const user = await prisma.user.findUnique({
-      where: { id: serverSession.userId },
-      include: { subscription: true },
-    });
+    // Find the user's their subscription using the server session.
+    const subscription = await db
+      .select()
+      .from(Subscription)
+      .where(eq(Subscription.userId, serverSession.userId));
 
-    if (!user || !user.subscription?.stripeId) {
+    // If the subscription is missing (user does not exist or has no subscription), return an error.
+    if (!subscription) {
       return Response.json({ error: 'User missing stripeId!' });
     }
-
-    const userStripeId = user.subscription?.stripeId;
 
     // Create the session using the stripe checkout.
     const session = await stripe.checkout.sessions.create({
       // Define the payment method and customer ID.
       payment_method_types: ['card'],
-      customer: userStripeId,
+      customer: subscription[0].stripeId,
       // Define a single line item being purchased with the priceID and the tier.
       line_items: [
         {
