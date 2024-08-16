@@ -389,19 +389,19 @@ The application also focuses on a simple to use interface that makes it easy to 
 
       Defines the schema for the database with 4 basic objects and a relationship table.
 
-        - User: Contains the basic account information for the User, alongside a randomly generated ID. Also contains a foreign key ID that connects the User object to their Subscription object.
+      - User: Contains the basic account information for the User, alongside a randomly generated ID. Also contains a foreign key ID that connects the User object to their Subscription object.
 
-        - Subscription: Contains a User's stripe ID used to connect to the payment system to purchase subscriptions and check their validity. Like the user contains a randomly generated ID alongside a foreign key for the connected User object using the User ID.
+      - Subscription: Contains a User's stripe ID used to connect to the payment system to purchase subscriptions and check their validity. Like the user contains a randomly generated ID alongside a foreign key for the connected User object using the User ID.
 
-        - Transaction: A transaction that is recorded in the database using a serialized numbering system that also records the transaction's name. It is connected to its related Classifications through the relationship table.
+      - Transaction: A transaction that is recorded in the database using a serialized numbering system that also records the transaction's name. It is connected to its related Classifications through the relationship table.
 
-        - Classification: A classification that is recorded in the database using a serialized numbering system just like the Transactions. It records the Classification, alongside how many times that Classification has been saved(called the count). It is connected to its related Classifications through the relationship table.
+      - Classification: A classification that is recorded in the database using a serialized numbering system just like the Transactions. It records the Classification, alongside how many times that Classification has been saved(called the count). It is connected to its related Classifications through the relationship table.
 
-          - Both the Transaction and Classification objects also have a related object that defines their many-to-many relationship with each other.
+        - Both the Transaction and Classification objects also have a related object that defines their many-to-many relationship with each other.
 
-        - Relationship Table  **(Transactions To Classifications)**: A dedicated table to record the relationships between Classification and Transactions. A Transaction may be categorized under many Classifications, and likewise a Classification may be used for many transactions. 
-        
-          To record these relationships, each column creates a primary key using the ID of the Transaction and the ID of the Classification. This records each unique relationship in an easy to search manner with no duplicates. Using the ID of one object, you can find all of its related objects through the other part of the key, which contains that object's ID. 
+      - Relationship Table **(Transactions To Classifications)**: A dedicated table to record the relationships between Classification and Transactions. A Transaction may be categorized under many Classifications, and likewise a Classification may be used for many transactions.
+
+        To record these relationships, each column creates a primary key using the ID of the Transaction and the ID of the Classification. This records each unique relationship in an easy to search manner with no duplicates. Using the ID of one object, you can find all of its related objects through the other part of the key, which contains that object's ID.
 
   - **Types**
 
