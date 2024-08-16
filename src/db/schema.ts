@@ -1,6 +1,12 @@
 // schema.ts
 
-import { pgTable, text, integer, serial, primaryKey } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  integer,
+  serial,
+  primaryKey,
+} from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -26,9 +32,12 @@ export const Transaction = pgTable('Transaction', {
   transactionName: text('transaction_name').unique(),
 });
 
-export const TransactionToClassificationsRelationship = relations(Transaction, ({ many }) => ({
-  classifications: many(Classification),
-}));
+export const TransactionToClassificationsRelationship = relations(
+  Transaction,
+  ({ many }) => ({
+    classifications: many(Classification),
+  })
+);
 
 export const Classification = pgTable('Classification', {
   id: serial('id').primaryKey(),
@@ -36,9 +45,12 @@ export const Classification = pgTable('Classification', {
   count: integer('count'),
 });
 
-const ClassificationToTransactionsRelationship = relations(Classification, ({ many }) => ({
-  transactions: many(Transaction),
-}));
+const ClassificationToTransactionsRelationship = relations(
+  Classification,
+  ({ many }) => ({
+    transactions: many(Transaction),
+  })
+);
 
 export const TransactionsToClassifications = pgTable(
   'TransactionsToClassifications',
@@ -52,5 +64,5 @@ export const TransactionsToClassifications = pgTable(
   },
   (t) => ({
     pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
-  }),
+  })
 );
