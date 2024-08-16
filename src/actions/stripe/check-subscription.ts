@@ -23,7 +23,7 @@ export default async function checkSubscription(): Promise<
     return { error: 'Error getting session' };
   }
 
-  // Find the user's subscription in the database.
+  // Find the user's subscription in the database by their session id.
   const userSubscription = await db
     .select()
     .from(Subscription)
@@ -39,9 +39,9 @@ export default async function checkSubscription(): Promise<
     customer: userSubscription[0].stripeId,
   });
 
+  // Check and return if the subscription is active and valid.
   const subStatus = subscription.data[0]?.status;
 
-  // Return if  the subscription is active and valid.
   return {
     status: subStatus || 'inactive',
     valid: subStatus === 'active' || subStatus === 'trialing',

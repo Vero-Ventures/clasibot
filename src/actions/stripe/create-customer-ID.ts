@@ -37,13 +37,14 @@ export default async function createCustomerID(
       return Response.json({ error: 'User not found!' });
     }
 
-    // Assert that the user has an email by use of the null return check above.
+    // Create a customer object with the user's email and name.
+    // Assert non-null email from the null return check above.
     const customer = await stripe.customers.create({
       email: user[0].email!,
       name: `${user[0].firstName} ${user[0].lastName}`,
     });
 
-    // Create a subscription object connected to the user with the new stripe ID in their subscription field.
+    // Create a subscription object connected to the user with the new stripe ID.
     await db.insert(Subscription).values({
       userId,
       stripeId: customer.id,

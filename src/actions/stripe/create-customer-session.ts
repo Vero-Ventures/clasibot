@@ -19,21 +19,24 @@ export default async function createCustomerSession(): Promise<
   // Get the current session.
   const userId = (await getServerSession(options))?.userId;
 
+  // If the user ID is not found, return an error.
   if (!userId) {
     return { error: 'User not found!' };
   }
 
+  // Find the user's subscription in the database by their session id.
   const userSubscription = await db
     .select()
     .from(Subscription)
     .where(eq(Subscription.userId, userId));
 
+  // If not matching subscription is found, return an error.
   if (!userSubscription[0]) {
     return { error: 'User subscription not found!' };
   }
 
-  const userStripeId = userSubscription[0]?.stripeId;
   // If the user has a stripe ID, create a new customer session with the user's stripe ID.
+  const userStripeId = userSubscription[0]?.stripeId;
   if (userStripeId) {
     // Created session sets the pricing table component to enabled.
     const customerSession = await stripe.customerSessions.create({
