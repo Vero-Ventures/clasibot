@@ -8,7 +8,7 @@ import {
   primaryKey,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { not, relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 
 export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
