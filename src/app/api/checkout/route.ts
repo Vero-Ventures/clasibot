@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       .from(Subscription)
       .where(eq(Subscription.userId, serverSession.userId));
 
-    // If the subscription is missing (user does not exist or has no subscription), return an error.
+    // If the subscription is missing, return an error.
     if (!subscription) {
       return Response.json({ error: 'User missing stripeId!' });
     }

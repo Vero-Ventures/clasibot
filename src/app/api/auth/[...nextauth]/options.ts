@@ -1,4 +1,5 @@
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { Subscription, User } from '@/db/schema';
 import { refreshToken } from '@/lib/refresh-token';
 import NextAuth, { getServerSession } from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
@@ -9,6 +10,7 @@ import type {
 } from 'next';
 import { cookies } from 'next/headers';
 import { createCustomerID } from '@/actions/stripe';
+import { eq } from 'drizzle-orm';
 
 export const config = {
   providers: [],
@@ -127,30 +129,33 @@ export const options: NextAuthOptions = {
           return false;
         }
 
-        // Check if the user already exists in the database using their email.
-        const userData = await prisma.user.findUnique({
-          where: { email },
-        });
+        // Find the user data in the database using the email.
+        const userData = await db
+          .select()
+          .from(User)
+          .where(eq(User.email, email));
 
         // If the user does not exist, create a new user in the database.
         if (!userData) {
           try {
-            // Create a new user in the database.
-            await prisma.user.create({
-              data: {
-                email,
-                id: user.id,
-                first_name: firstName,
-                last_name: lastName,
-                // Leave industry and subscription fields empty for now.
-                industry: '',
-                subscription: {
-                  create: {},
-                },
-              },
-              // Include the subscription data in the user data
-              include: { subscription: true },
+            // Create a new blank subscription in the database, and a user that contains the subscription.
+            const newSubscription = await db
+              .insert(Subscription)
+              .values({
+                userId: user.id,
+                stripeId: '',
+              })
+              .returning();
+
+            await db.insert(User).values({
+              email,
+              id: user.id,
+              firstName,
+              lastName,
+              industry: '',
+              subscriptionId: newSubscription[0].id,
             });
+
             // Create the stripe customerID for the user.
             await createCustomerID(user.id);
           } catch (createError) {
