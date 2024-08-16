@@ -1,5 +1,5 @@
 {
-  "id": "74c58df5-2b10-46ce-81d6-a79d8ad3e55a",
+  "id": "39f77dbc-fea4-4da4-b6e4-8d25b2311187",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -46,10 +46,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "'upgry0co411zrlqd43lnlzwr'"
+          "default": "gen_random_uuid()"
         },
         "user_id": {
           "name": "user_id",
@@ -59,7 +59,7 @@
         },
         "stripe_id": {
           "name": "stripe_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
@@ -177,10 +177,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "'l6iaz1pfc24djz53f3gf0652'"
+          "default": "gen_random_uuid()"
         },
         "first_name": {
           "name": "first_name",
@@ -208,7 +208,7 @@
         },
         "subscription_id": {
           "name": "subscription_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }

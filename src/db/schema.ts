@@ -6,25 +6,25 @@ import {
   integer,
   serial,
   primaryKey,
+  uuid,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { createId } from '@paralleldrive/cuid2';
 
 export const User = pgTable('User', {
-  id: text('id').primaryKey().default(createId()),
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
   firstName: text('first_name'),
   lastName: text('last_name'),
   email: text('email').unique(),
   industry: text('industry'),
-  subscriptionId: text('subscription_id')
+  subscriptionId: uuid('subscription_id')
     .unique()
     .references(() => Subscription.id, { onDelete: 'cascade' }),
 });
 
 export const Subscription = pgTable('Subscription', {
-  id: text('id').primaryKey().default(createId()),
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
   userId: text('user_id').unique(),
-  stripeId: text('stripe_id').unique(),
+  stripeId: uuid('stripe_id').unique(),
 });
 
 export const Transaction = pgTable('Transaction', {

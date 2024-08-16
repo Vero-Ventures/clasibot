@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS "Classification" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Subscription" (
-	"id" text PRIMARY KEY DEFAULT 'upgry0co411zrlqd43lnlzwr' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text,
-	"stripe_id" text,
+	"stripe_id" uuid,
 	CONSTRAINT "Subscription_user_id_unique" UNIQUE("user_id"),
 	CONSTRAINT "Subscription_stripe_id_unique" UNIQUE("stripe_id")
 );
@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS "TransactionsToClassifications" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "User" (
-	"id" text PRIMARY KEY DEFAULT 'l6iaz1pfc24djz53f3gf0652' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"first_name" text,
 	"last_name" text,
 	"email" text,
 	"industry" text,
-	"subscription_id" text,
+	"subscription_id" uuid,
 	CONSTRAINT "User_email_unique" UNIQUE("email"),
 	CONSTRAINT "User_subscription_id_unique" UNIQUE("subscription_id")
 );
