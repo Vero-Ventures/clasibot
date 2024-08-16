@@ -68,7 +68,7 @@ The application also focuses on a simple to use interface that makes it easy to 
   - ESlint Code Analyzer
   - Ruff Formatter
   - Sentry (Error Handling)
-  - Prisma ORM
+  - Drizzle ORM
   - Docker
 
 - **Computational Resources:**
@@ -379,21 +379,29 @@ The application also focuses on a simple to use interface that makes it easy to 
 
       Defines basic information about the site, including the site name, description, and footer items. Also sets a href associated with the footer items that is used to allow non-logged in users to access them through the middleware.
 
-  <!-- - **Lib**
+  - **DB**
 
-    - `db.ts`
+    - `index.ts`
 
-      Sets up the Prisma database to be used throughout the app.
+      Defines the connection to the Postgres database through Drizzle using an ENV connection url. Exports the Drizzle db object that interacts with the hosted Postgres database.
 
-    - `refresh-token.ts`
+    - `schema.ts`
 
-      A function that makes an API call to Intuit (QuickBooks) OAuth to get a new access token by making use of the refresh token.
+      Defines the schema for the database with 4 basic objects and a relationship table.
 
-  - **Prisma**
+        - User: Contains the basic account information for the User, alongside a randomly generated ID. Also contains a foreign key ID that connects the User object to their Subscription object.
 
-    - `schema.prisma`
+        - Subscription: Contains a User's stripe ID used to connect to the payment system to purchase subscriptions and check their validity. Like the user contains a randomly generated ID alongside a foreign key for the connected User object using the User ID.
 
-      Defines the schema of the Prisma database. Defines user information, subscription information that is associated with a user, the transactions saved to the database for the second step of the pipeline, and the classifications associated with the saved transactions. -->
+        - Transaction: A transaction that is recorded in the database using a serialized numbering system that also records the transaction's name. It is connected to its related Classifications through the relationship table.
+
+        - Classification: A classification that is recorded in the database using a serialized numbering system just like the Transactions. It records the Classification, alongside how many times that Classification has been saved(called the count). It is connected to its related Classifications through the relationship table.
+
+          - Both the Transaction and Classification objects also have a related object that defines their many-to-many relationship with each other.
+
+        - Relationship Table  **(Transactions To Classifications)**: A dedicated table to record the relationships between Classification and Transactions. A Transaction may be categorized under many Classifications, and likewise a Classification may be used for many transactions. 
+        
+          To record these relationships, each column creates a primary key using the ID of the Transaction and the ID of the Classification. This records each unique relationship in an easy to search manner with no duplicates. Using the ID of one object, you can find all of its related objects through the other part of the key, which contains that object's ID. 
 
   - **Types**
 
@@ -481,7 +489,7 @@ This a brief overview each element of the app that a user would encounter and ea
 
   The landing page is very minimal in function, mostly aiming to direct users to the QuickBooks sign in.
 
-  It consists of just a simple display of the app's name, a call to action, and a sign in button that redirects to QuickBook login page.
+  It consists of just a simple display of the app's name, a call to action, and a sign in button that redirects to QuickBooks login page.
 
   ![Landing Page](readme-assets/Landing.png)
 
