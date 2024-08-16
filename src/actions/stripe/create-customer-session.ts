@@ -1,8 +1,10 @@
 'use server';
 import { Stripe } from 'stripe';
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { Subscription } from '@/db/schema';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import { eq } from 'drizzle-orm';
 
 // Create a new Stripe object with the private key.
 const stripe = new Stripe(
@@ -21,17 +23,16 @@ export default async function createCustomerSession(): Promise<
     return { error: 'User not found!' };
   }
 
-  // Find the user's subscription in the database, provided they have a subscription.
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { subscription: true },
-  });
+  const userSubscription = await db
+    .select()
+    .from(Subscription)
+    .where(eq(Subscription.userId, userId));
 
-  if (!user?.subscription) {
-    return { error: 'User not found!' };
+  if (!userSubscription[0]) {
+    return { error: 'User subscription not found!' };
   }
 
-  const userStripeId = user.subscription?.stripeId;
+  const userStripeId = userSubscription[0]?.stripeId;
   // If the user has a stripe ID, create a new customer session with the user's stripe ID.
   if (userStripeId) {
     // Created session sets the pricing table component to enabled.

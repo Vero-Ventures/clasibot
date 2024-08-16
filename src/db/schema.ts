@@ -45,7 +45,7 @@ export const Classification = pgTable('Classification', {
   count: integer('count'),
 });
 
-const ClassificationToTransactionsRelationship = relations(
+export const ClassificationToTransactionsRelationship = relations(
   Classification,
   ({ many }) => ({
     transactions: many(Transaction),

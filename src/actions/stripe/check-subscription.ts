@@ -1,8 +1,10 @@
 'use server';
 import { Stripe } from 'stripe';
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { Subscription } from '@/db/schema';
 import { getServerSession } from 'next-auth/next';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import { eq } from 'drizzle-orm';
 
 // Create a new Stripe object with the private key.
 const stripe = new Stripe(
@@ -22,17 +24,19 @@ export default async function checkSubscription(): Promise<
   }
 
   // Find the user's subscription in the database.
-  const userSubscription = await prisma.subscription.findFirst({
-    where: { userId: session.userId },
-  });
+  const userSubscription = await db
+    .select()
+    .from(Subscription)
+    .where(eq(Subscription.userId, session.userId));
 
-  if (!userSubscription?.stripeId) {
+  // If the user doesn't have a subscription, return an error.
+  if (!userSubscription[0]?.stripeId) {
     return { error: 'User Subscription not found!' };
   }
 
   // Get the subscription status from Stripe using a list of customers with matching ID's.
   const subscription = await stripe.subscriptions.list({
-    customer: userSubscription.stripeId,
+    customer: userSubscription[0].stripeId,
   });
 
   const subStatus = subscription.data[0]?.status;
