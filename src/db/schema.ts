@@ -8,7 +8,7 @@ import {
   primaryKey,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { not, relations } from 'drizzle-orm';
 
 export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
@@ -23,13 +23,13 @@ export const User = pgTable('User', {
 
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  userId: text('user_id').unique(),
-  stripeId: uuid('stripe_id').unique(),
+  userId: text('user_id').unique().notNull(),
+  stripeId: uuid('stripe_id').unique().notNull(),
 });
 
 export const Transaction = pgTable('Transaction', {
   id: serial('id').primaryKey(),
-  transactionName: text('transaction_name').unique(),
+  transactionName: text('transaction_name').unique().notNull(),
 });
 
 export const TransactionToClassificationsRelationship = relations(
@@ -41,8 +41,8 @@ export const TransactionToClassificationsRelationship = relations(
 
 export const Classification = pgTable('Classification', {
   id: serial('id').primaryKey(),
-  category: text('category').unique(),
-  count: integer('count'),
+  category: text('category').unique().notNull(),
+  count: integer('count').notNull(),
 });
 
 export const ClassificationToTransactionsRelationship = relations(
