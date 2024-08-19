@@ -16,13 +16,15 @@ export const User = pgTable('User', {
   lastName: text('last_name'),
   email: text('email').unique(),
   industry: text('industry'),
-  subscriptionId: uuid('subscription_id')
-    .unique(),
+  subscriptionId: uuid('subscription_id').unique(),
 });
 
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  userId: uuid('user_id').unique().notNull().references(() => User.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .unique()
+    .notNull()
+    .references(() => User.id, { onDelete: 'cascade' }),
   stripeId: text('stripe_id').unique(),
 });
 
