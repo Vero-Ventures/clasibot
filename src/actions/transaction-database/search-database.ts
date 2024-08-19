@@ -46,6 +46,7 @@ export async function getTopCategoriesForTransaction(
         .select()
         .from(Classification)
         .where(eq(Classification.id, relationship.classificationId));
+
       classifications.push(classification[0]);
     }
 
@@ -77,6 +78,7 @@ export async function getTopCategoriesForTransaction(
     const maxCount = 3;
     // Take the top 3 classifications and return them.
     const topClassifications = filteredClassifications.slice(0, maxCount);
+
     return topClassifications.map((classification: Classification) => ({
       id: validCategoryMap[classification.category],
       name: classification.category,
