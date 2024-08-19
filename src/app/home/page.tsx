@@ -25,7 +25,7 @@ export default async function Page() {
     // If the user status is invalid or there is an error, display the pricing table.
     // Pricing table displays above the homepage on smaller screens and to the left on larger screens.
     return (
-      <div className="flex-col lg:flex-row flex w-11/12 flex-grow lg:gap-x-12">
+      <div className="flex w-11/12 flex-grow flex-col lg:flex-row lg:gap-x-12">
         <div id="PricingTableContainer" className="w-full lg:w-4/12">
           <PricingTable publicKey={publicKey} tableID={tableID} />
         </div>
