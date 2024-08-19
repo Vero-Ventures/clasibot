@@ -31,7 +31,6 @@ export default async function createCustomerID(
   // If the user doesn't have a stripe ID, create a new customer with the user's email and name.
   if (!userStripeId) {
     const user = await db.select().from(User).where(eq(User.id, userId));
-
     // If the user doesn't exist, return an error.
     if (!user[0]) {
       return Response.json({ error: 'User not found!' });
@@ -45,10 +44,12 @@ export default async function createCustomerID(
     });
 
     // Create a subscription object connected to the user with the new stripe ID.
-    await db.insert(Subscription).values({
-      userId,
-      stripeId: customer.id,
-    });
+    await db
+      .update(Subscription)
+      .set({
+        stripeId: customer.id,
+      })
+      .where(eq(Subscription.userId, user[0].id));
 
     // Return a response indicating the customer was created.
     return Response.json({ message: 'Customer created!' });
