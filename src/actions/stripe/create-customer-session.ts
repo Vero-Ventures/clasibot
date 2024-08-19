@@ -1,7 +1,7 @@
 'use server';
 import { Stripe } from 'stripe';
 import { db } from '@/db/index';
-import { Subscription } from '@/db/schema';
+import { User, Subscription } from '@/db/schema';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
 import { eq } from 'drizzle-orm';
@@ -17,10 +17,21 @@ export default async function createCustomerSession(): Promise<
   { customerSession: string } | { error: string }
 > {
   // Get the current session.
-  const userId = (await getServerSession(options))?.userId;
+  const session = await getServerSession(options);
 
-  // If the user ID is not found, return an error.
-  if (!userId) {
+  // If the session doesn't have a user email, return an error.
+  if (!session?.user?.email) {
+    return { error: 'Error getting session' };
+  }
+
+  // Get user using the session email to find the subscription.
+  const user = await db
+    .select()
+    .from(User)
+    .where(eq(User.email, session.user?.email));
+
+  // If the user doesn't have a subscription, return an error.
+  if (!user[0]?.id) {
     return { error: 'User not found!' };
   }
 
@@ -28,7 +39,7 @@ export default async function createCustomerSession(): Promise<
   const userSubscription = await db
     .select()
     .from(Subscription)
-    .where(eq(Subscription.userId, userId));
+    .where(eq(Subscription.userId, user[0].id));
 
   // If not matching subscription is found, return an error.
   if (!userSubscription[0]) {
