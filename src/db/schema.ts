@@ -24,7 +24,7 @@ export const User = pgTable('User', {
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   userId: text('user_id').unique().notNull(),
-  stripeId: uuid('stripe_id').unique().notNull(),
+  stripeId: uuid('stripe_id').unique(),
 });
 
 export const Transaction = pgTable('Transaction', {
