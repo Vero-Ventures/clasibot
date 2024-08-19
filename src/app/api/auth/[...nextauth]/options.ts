@@ -136,25 +136,34 @@ export const options: NextAuthOptions = {
           .where(eq(User.email, email));
 
         // If the user does not exist, create a new user in the database.
-        if (!userData) {
+        if (userData.length === 0) {
           try {
+            // Create a new user in the database.
+            const newUser = await db
+              .insert(User)
+              .values({
+                email,
+                firstName,
+                lastName,
+                industry: '',
+                subscriptionId: null,
+              })
+              .returning();
+
             // Create a new blank subscription in the database, and a user that contains the subscription.
             const newSubscription = await db
               .insert(Subscription)
               .values({
-                userId: user.id,
-                stripeId: '',
+                userId: newUser[0].id,
+                stripeId: null,
               })
               .returning();
 
-            await db.insert(User).values({
-              email,
-              id: user.id,
-              firstName,
-              lastName,
-              industry: '',
-              subscriptionId: newSubscription[0].id,
-            });
+            // Update the user with the connection back to the subscription.
+            await db
+              .update(User)
+              .set({ subscriptionId: newSubscription[0].id })
+              .where(eq(User.id, newUser[0].id));
 
             // Create the stripe customerID for the user.
             await createCustomerID(user.id);
