@@ -165,7 +165,6 @@ export const options: NextAuthOptions = {
               .set({ subscriptionId: newSubscription[0].id })
               .where(eq(User.id, newUser[0].id));
 
-            console.log('New user created:', newUser[0]);
 
             // Create the stripe customerID for the user.
             await createCustomerID(newUser[0].id);
