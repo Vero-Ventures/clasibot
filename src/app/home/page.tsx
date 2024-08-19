@@ -14,13 +14,20 @@ export default async function Page() {
     publicKey = process.env.DEV_NEXT_PUBLIC_STRIPE_PUBLIC_KEY!;
   }
 
+  let tableID = '';
+  if (process.env.APP_CONFIG === 'production') {
+    tableID = process.env.PROD_PRICING_TABLE_ID!;
+  } else {
+    tableID = process.env.DEV_PRICING_TABLE_ID!;
+  }
+
   if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
     // If the user status is invalid or there is an error, display the pricing table.
     // Pricing table displays above the homepage on smaller screens and to the left on larger screens.
     return (
-      <div className="flex-collg:flex-row flex w-11/12 flex-grow lg:gap-x-12">
+      <div className="flex-col lg:flex-row flex w-11/12 flex-grow lg:gap-x-12">
         <div id="PricingTableContainer" className="w-full lg:w-4/12">
-          <PricingTable publicKey={publicKey} />
+          <PricingTable publicKey={publicKey} tableID={tableID} />
         </div>
         <div id="HomePageContainer" className="w-full lg:w-8/12">
           <HomePage />
