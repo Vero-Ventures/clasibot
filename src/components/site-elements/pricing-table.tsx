@@ -26,7 +26,6 @@ export default function PricingTable({
 
   // Use the useEffect hook to fetch the customer session.
   useEffect(() => {
-    console.log(publicKey);
     // Fetch the customer session.
     fetchCustomerSession();
     // Set an interval to fetch the customer session every 30 minutes.
