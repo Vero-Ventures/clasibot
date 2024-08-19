@@ -30,7 +30,7 @@ export default async function createCustomerSession(): Promise<
     .from(User)
     .where(eq(User.email, session.user?.email));
 
-  // If the user doesn't have a subscription, return an error.
+  // If the user does not exist, return an error.
   if (!user[0]?.id) {
     return { error: 'User not found!' };
   }

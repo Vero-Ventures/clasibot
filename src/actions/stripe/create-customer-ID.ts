@@ -21,6 +21,7 @@ export default async function createCustomerID(
     .from(Subscription)
     .where(eq(Subscription.userId, userId));
 
+  // If the subscription is missing, return an error.
   if (!subscription[0]) {
     return Response.json({ error: 'User not found!' });
   }
@@ -43,7 +44,7 @@ export default async function createCustomerID(
       name: `${user[0].firstName} ${user[0].lastName}`,
     });
 
-    // Create a subscription object connected to the user with the new stripe ID.
+    // Update the subscription object connected to the user with the new stripe ID.
     await db
       .update(Subscription)
       .set({
