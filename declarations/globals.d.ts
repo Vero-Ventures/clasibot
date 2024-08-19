@@ -7,7 +7,7 @@ declare namespace JSX {
       HTMLElement
     > & {
       'pricing-table-id': string;
-      'stripe-private-key': string;
+      'publishable-key': string;
       'customer-session-client-secret': string;
     };
   }
