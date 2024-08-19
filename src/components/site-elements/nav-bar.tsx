@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import SignOutButton from '@/components/inputs/sign-out-button';
 import ChangeCompanyButton from '@/components/inputs/change-company-button';
 import { siteConfig } from '@/site-config/site';
+import logo from '../../public/logo.svg';
 
 const Navbar = async () => {
   // Define the session using the options, and get the server session.
@@ -41,7 +42,7 @@ const Navbar = async () => {
         <Link href="/">
           <Image
             id="LogoImage"
-            src="@/assests/logo.svg"
+            src={logo}
             width={40}
             height={40}
             className="h-auto w-12"
