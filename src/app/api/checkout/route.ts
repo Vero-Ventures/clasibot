@@ -1,5 +1,5 @@
 import { db } from '@/db/index';
-import { Subscription } from '@/db/schema';
+import { User, Subscription } from '@/db/schema';
 import { Stripe } from 'stripe';
 import { getServerSession } from 'next-auth/next';
 import type { NextRequest } from 'next/server';
@@ -35,15 +35,31 @@ export async function POST(req: NextRequest) {
     // Get the server session using the options.
     const serverSession = await getServerSession(options);
 
-    if (!serverSession?.userId) {
+    // If the session doesn't have a user email, return an error.
+    if (!serverSession?.user?.email) {
       return Response.json({ error: 'Error getting session' });
     }
 
-    // Find the user's their subscription using the server session.
+    // Get the user using the email in the session.
+    const user = await db
+      .select()
+      .from(User)
+      .where(eq(User.id, serverSession.user.email));
+
+    // Check if the user is missing.
+    if (!user[0]?.id) {
+      return Response.json({ error: 'User not found!' });
+    }
+
+    console.log('Find subscription from user id: ', user[0].id);
+
+    // Find the user's their subscription using the fetched user.
     const subscription = await db
       .select()
       .from(Subscription)
-      .where(eq(Subscription.userId, serverSession.userId));
+      .where(eq(Subscription.userId, user[0].id));
+
+    console.log('User subscription: ', subscription);
 
     // If the subscription is missing, return an error.
     if (!subscription) {
@@ -54,7 +70,7 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       // Define the payment method and customer ID.
       payment_method_types: ['card'],
-      customer: subscription[0].stripeId,
+      customer: subscription[0].stripeId!,
       // Define a single line item being purchased with the priceID and the tier.
       line_items: [
         {
