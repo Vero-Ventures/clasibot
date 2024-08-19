@@ -17,14 +17,13 @@ export const User = pgTable('User', {
   email: text('email').unique(),
   industry: text('industry'),
   subscriptionId: uuid('subscription_id')
-    .unique()
-    .references(() => Subscription.id, { onDelete: 'cascade' }),
+    .unique(),
 });
 
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  userId: text('user_id').unique().notNull(),
-  stripeId: uuid('stripe_id').unique(),
+  userId: uuid('user_id').unique().notNull().references(() => User.id, { onDelete: 'cascade' }),
+  stripeId: text('stripe_id').unique(),
 });
 
 export const Transaction = pgTable('Transaction', {
