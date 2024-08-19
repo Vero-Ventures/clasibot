@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
-export default function PricingTable({ publicKey }: { publicKey: string }) {
+export default function PricingTable({
+  publicKey,
+  tableID,
+}: {
+  publicKey: string;
+  tableID: string;
+}) {
   // Create use state to store and update the customer sessi  on.
   const [customerSession, setCustomerSession] = useState('');
 
@@ -47,7 +53,7 @@ export default function PricingTable({ publicKey }: { publicKey: string }) {
       {/* Define the public and provate keys using a production check and a blank value for null env values. */}
       {customerSession && (
         <stripe-pricing-table
-          pricing-table-id="prctbl_1PfW1JB6Mh2CRTYeCybS5NlU"
+          pricing-table-id={tableID}
           publishable-key={publicKey}
           customer-session-client-secret={customerSession}
         />
