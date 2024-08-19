@@ -14,38 +14,35 @@ export async function addTransactions(
 ): Promise<void> {
   for (const transaction of transactions) {
     try {
-      // Check for an existing transaction with the same name.
+      // Make a variable for the transaction ID, used to update the transaction to classification relationship table.
+      // Related transaction either already exists or will be created in the following steps.
+      let transactionID = 0;
+
+      // Check for an existing transaction with the same name as the current transaction.
       const existingTransaction = await db
         .select()
         .from(DrizzleTransaction)
         .where(eq(DrizzleTransaction.transactionName, transaction.name));
 
-      // Get the transaction to classificaion relations for the transaction.
-      const transactionClassifications = await db
-        .select()
-        .from(TransactionsToClassifications)
-        .where(
-          eq(
-            TransactionsToClassifications.transactionId,
-            existingTransaction[0].id
-          )
-        );
+      // Check if there is an existing transaction.
+      if (!existingTransaction[0]) {
+        // Create a new transaction with the transaction name.
+        const newTransaction = await db
+          .insert(DrizzleTransaction)
+          .values({
+            transactionName: transaction.name,
+          })
+          .returning();
 
-      // Create an array to store the classifications for the transaction.
-      const classifications: {
-        id: number;
-        category: string;
-        count: number;
-      }[] = [];
-
-      // Get the classification for each relationship and add it to the classifications array.
-      for (const relationship of transactionClassifications) {
-        const classification = await db
-          .select()
-          .from(Classification)
-          .where(eq(Classification.id, relationship.classificationId));
-        classifications.push(classification[0]);
+        // Set the transaction ID to the ID of the new transaction.
+        transactionID = newTransaction[0].id;
+      } else {
+        // If an existing transaction is found, set the transaction ID to the ID of the existing transaction.
+        transactionID = existingTransaction[0].id;
       }
+
+      // Create an array to store all classifications in the database.
+      const classifications = await db.select().from(Classification);
 
       // Get the list of user accounts and parse them to a list of Account objects.
       const accounts = await getAccounts();
@@ -58,7 +55,7 @@ export async function addTransactions(
         accountNamesToCategories[account.name] = account.account_sub_type;
       }
 
-      // The transaction account value shows sub-account hierarchy (Eg. Job Expenses:Job Materials:Plants and Soil).
+      // The transaction account value uses a sub-account hierarchy (Eg. Job Expenses:Job Materials:Plants and Soil).
       // To check against the dictionary, split by ':' and grab the last value to isolate the deepest child account name.
       // (Eg. Job Expenses:Job Materials:Plants and Soil) -> (Plants and Soil).
       const splitAccounts = transaction.category.split(':');
@@ -69,27 +66,45 @@ export async function addTransactions(
       const baseTransactionCategory =
         accountNamesToCategories[deepestTransactionAccount];
 
-      // Check through array of classifications to see if the transaction has already been categorized.
+      // Check through array of classifications to see if the transactions category already exists.
       const existingCategory = classifications.find(
         (classification) => classification.category === baseTransactionCategory
       );
 
-      // Create variables to store the IDs needed to update the relationship table.
-      let relatedTransactionId: number;
-      let relatedClassificationId: number;
-
       // Create or update the classification for the transaction.
       if (existingCategory) {
-        // If the category already exists, increment its count by 1
+        // Get the transaction to classificaion relations for the transaction.
+        const transactionClassifications = await db
+          .select()
+          .from(TransactionsToClassifications)
+          .where(
+            eq(
+              TransactionsToClassifications.transactionId,
+              existingTransaction[0].id
+            )
+          );
+
+        // Check the relationship table to see if the transaction is already linked to the classification.
+        const existingRelationship = transactionClassifications.find(
+          (relationship) =>
+            relationship.classificationId === existingCategory.id
+        );
+
+        if (!existingRelationship) {
+          // If there is no relationship, Create a new one between the transaction and classification.
+          await db.insert(TransactionsToClassifications).values({
+            transactionId: transactionID,
+            classificationId: existingCategory.id,
+          });
+        }
+
+        // Update the count for the number of times the classification has been used.
         await db
           .update(Classification)
           .set({
             count: existingCategory.count + 1,
           })
           .where(eq(Classification.id, existingCategory.id));
-
-        // Record the id of the updated classification.
-        relatedClassificationId = existingCategory.id;
       } else {
         // If the category doesn't exist, create a new classification with a count of 1.
         const newClassification = await db
@@ -100,32 +115,12 @@ export async function addTransactions(
           })
           .returning();
 
-        // Record the id of the new classification.
-        relatedClassificationId = newClassification[0].id;
+        // Create a relationship between the transaction and new classification.
+        await db.insert(TransactionsToClassifications).values({
+          transactionId: transactionID,
+          classificationId: newClassification[0].id,
+        });
       }
-
-      // Create a new transaction if needed and record its id, or get the id of the existing transaction.
-      if (!existingTransaction[0]) {
-        // Create a new transaction with the transaction name.
-        const newTransaction = await db
-          .insert(DrizzleTransaction)
-          .values({
-            transactionName: transaction.name,
-          })
-          .returning();
-
-        // Record the id of the new transaction.
-        relatedTransactionId = newTransaction[0].id;
-      } else {
-        // Record the id of the existing transaction.
-        relatedTransactionId = existingTransaction[0].id;
-      }
-
-      // Create a new relationship between the transaction and classification.
-      await db.insert(TransactionsToClassifications).values({
-        transactionId: relatedTransactionId,
-        classificationId: relatedClassificationId,
-      });
     } catch (error) {
       // Catch and log any errors that occur during the transaction addition process.
       console.error('Error adding transaction:', error);
