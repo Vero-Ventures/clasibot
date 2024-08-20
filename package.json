@@ -22,6 +22,7 @@
     "@eslint/object-schema": "^2.1.4",
     "@hookform/resolvers": "^3.9.0",
     "@humanwhocodes/config-array": "github:humanwhocodes/config-array",
+    "@humanwhocodes/object-schema": "^2.0.3",
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
     "@next/mdx": "^14.2.5",
