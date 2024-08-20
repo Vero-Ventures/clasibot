@@ -27,6 +27,17 @@ export default function HomePage() {
   const [isSubscribed, setIsSubscribed] = useState(true);
   const [companyName, setCompanyName] = useState('');
 
+  // Define a state to track if the modal is open.
+  const [modal, setModal] = useState(false);
+
+  // Check the url for the 'activated' query parameter and set the modal state accordingly.
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('activated') === 'true') {
+      setModal(true);
+    }
+  }, []);
+
   // Gets the company name and update the related state asynchronously.
   const callCompanyName = async () => {
     const userCompanyName = await getCompanyName();
@@ -184,6 +195,28 @@ export default function HomePage() {
           company_name={companyName}
         />
       )}
+      {/* Show a modal informing new users their account is activated.*/}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <h2
+            id="ResultTitle"
+            className="mb-4 text-center text-2xl font-bold text-green-500">
+            Account Activated
+          </h2>
+          <p
+            id="ResultMessage"
+            className="mb-6 text-center font-medium text-gray-800">
+            You can now classify and save transactions.
+          </p>
+          <button
+            className="mx-28 h-12 w-28 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+            onClick={() => setModal(false)}>
+            {' '}
+            Close{' '}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

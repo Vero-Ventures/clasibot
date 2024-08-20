@@ -1,6 +1,6 @@
 {
-  "id": "39f77dbc-fea4-4da4-b6e4-8d25b2311187",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "edf5a81d-b234-48f2-b0f3-49046c8f81e2",
+  "prevId": "f519aaa0-5106-4984-ba88-f1bf336c3fe1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -18,13 +18,13 @@
           "name": "category",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "count": {
           "name": "count",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -53,19 +53,33 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "stripe_id": {
           "name": "stripe_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "Subscription_user_id_User_id_fk": {
+          "name": "Subscription_user_id_User_id_fk",
+          "tableFrom": "Subscription",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "Subscription_user_id_unique": {
@@ -98,7 +112,7 @@
           "name": "transaction_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -214,21 +228,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "User_subscription_id_Subscription_id_fk": {
-          "name": "User_subscription_id_Subscription_id_fk",
-          "tableFrom": "User",
-          "tableTo": "Subscription",
-          "columnsFrom": [
-            "subscription_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "User_email_unique": {

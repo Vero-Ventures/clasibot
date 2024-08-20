@@ -1,8 +1,10 @@
 'use server';
 import { Stripe } from 'stripe';
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { User, Subscription } from '@/db/schema';
 import { getServerSession } from 'next-auth/next';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import { eq } from 'drizzle-orm';
 
 // Create a new Stripe object with the private key.
 const stripe = new Stripe(
@@ -17,27 +19,41 @@ export default async function checkSubscription(): Promise<
   // Get the current session.
   const session = await getServerSession(options);
 
-  if (!session?.userId) {
+  // If the session doesn't have a user email, return an error.
+  if (!session?.user?.email) {
     return { error: 'Error getting session' };
   }
 
-  // Find the user's subscription in the database.
-  const userSubscription = await prisma.subscription.findFirst({
-    where: { userId: session.userId },
-  });
+  // Get user using the session email to find the subscription.
+  const user = await db
+    .select()
+    .from(User)
+    .where(eq(User.email, session.user?.email));
 
-  if (!userSubscription?.stripeId) {
+  // If the user does not exist, return an error.
+  if (!user[0]?.id) {
+    return { error: 'User not found!' };
+  }
+
+  // Find the user's subscription in the database by the ID from the user.
+  const userSubscription = await db
+    .select()
+    .from(Subscription)
+    .where(eq(Subscription.userId, user[0].id));
+
+  // If the user doesn't have a subscription, return an error.
+  if (!userSubscription[0]?.stripeId) {
     return { error: 'User Subscription not found!' };
   }
 
   // Get the subscription status from Stripe using a list of customers with matching ID's.
   const subscription = await stripe.subscriptions.list({
-    customer: userSubscription.stripeId,
+    customer: userSubscription[0].stripeId,
   });
 
+  // Check and return if the subscription is active and valid.
   const subStatus = subscription.data[0]?.status;
 
-  // Return if  the subscription is active and valid.
   return {
     status: subStatus || 'inactive',
     valid: subStatus === 'active' || subStatus === 'trialing',

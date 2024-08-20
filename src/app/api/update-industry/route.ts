@@ -1,6 +1,8 @@
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { User } from '@/db/schema';
 import { options } from '../auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
+import { eq } from 'drizzle-orm';
 
 export async function POST(req: Request) {
   // Get the current session.
@@ -21,10 +23,12 @@ export async function POST(req: Request) {
 
   try {
     // Update the user's industry using the email.
-    await prisma.user.update({
-      where: { email },
-      data: { industry },
-    });
+    await db
+      .update(User)
+      .set({
+        industry: industry,
+      })
+      .where(eq(User.email, email));
 
     // If the industry is updated successfully, return a success response with a status of 200.
     return Response.json(

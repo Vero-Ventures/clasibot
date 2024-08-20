@@ -1,4 +1,3 @@
-'use server';
 import type { QueryResult } from '@/types/QueryResult';
 
 // Check for fault property in returned error objects.

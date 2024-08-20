@@ -1,0 +1,1 @@
+ALTER TABLE "Subscription" ALTER COLUMN "stripe_id" DROP NOT NULL;

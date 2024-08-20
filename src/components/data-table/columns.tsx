@@ -81,7 +81,7 @@ const commonColumns = [
       // Convert the date value from the row to a Month-Day-Year format.
       const formattedDate = format(
         new Date(row.getValue('date')),
-        'MM/DD/YYYY'
+        'mm/dd/yyyy'
       );
       return <div>{formattedDate}</div>;
     },

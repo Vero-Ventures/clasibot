@@ -1,6 +1,12 @@
 'use server';
-import prisma from '@/lib/db';
 import type { Category } from '@/types/Category';
+import { db } from '@/db/index';
+import {
+  Transaction,
+  TransactionsToClassifications,
+  Classification,
+} from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 // Define the structure of the classification object.
 interface Classification {
@@ -13,13 +19,39 @@ export async function getTopCategoriesForTransaction(
   validCategories: Category[]
 ): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any transaction with classifications and the same name as the input.
-    const transaction = await prisma.transactionClassification.findUnique({
-      where: { transactionName: name },
-      include: { classifications: true },
-    });
+    // Find any transaction with the passed name.
+    const transaction = await db
+      .select()
+      .from(Transaction)
+      .where(eq(Transaction.transactionName, name));
 
-    if (!transaction?.classifications) {
+    // Get the transaction to classificaion relations for the transaction.
+    const transactionClassifications = await db
+      .select()
+      .from(TransactionsToClassifications)
+      .where(
+        eq(TransactionsToClassifications.transactionId, transaction[0].id)
+      );
+
+    // Create an array to store the classifications for the transaction.
+    const classifications: {
+      id: number;
+      category: string;
+      count: number;
+    }[] = [];
+
+    // Get the classification for each relationship and add it to the classifications array.
+    for (const relationship of transactionClassifications) {
+      const classification = await db
+        .select()
+        .from(Classification)
+        .where(eq(Classification.id, relationship.classificationId));
+
+      classifications.push(classification[0]);
+    }
+
+    // If there are no classifications, return an empty array
+    if (classifications.length === 0) {
       return [];
     }
 
@@ -32,10 +64,9 @@ export async function getTopCategoriesForTransaction(
       {}
     );
 
-    // Filter out any classifications that don't have a valid category using the dictionary.
-    const filteredClassifications = transaction.classifications.filter(
-      (classification: Classification) =>
-        Object.hasOwn(validCategoryMap, classification.category)
+    // Filter out any classifications without a valid category by checking against the dictionary.
+    const filteredClassifications = classifications.filter((classification) =>
+      Object.hasOwn(validCategoryMap, classification.category)
     );
 
     // Sort the classifications by count in descending order.
@@ -47,6 +78,7 @@ export async function getTopCategoriesForTransaction(
     const maxCount = 3;
     // Take the top 3 classifications and return them.
     const topClassifications = filteredClassifications.slice(0, maxCount);
+
     return topClassifications.map((classification: Classification) => ({
       id: validCategoryMap[classification.category],
       name: classification.category,

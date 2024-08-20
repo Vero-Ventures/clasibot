@@ -1,6 +1,8 @@
 'use server';
 import { Stripe } from 'stripe';
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { Subscription, User } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 // Create a new Stripe object with the private key.
 const stripe = new Stripe(
@@ -13,37 +15,42 @@ const stripe = new Stripe(
 export default async function createCustomerID(
   userId: string
 ): Promise<Response> {
-  // Find the user with the passed user ID and include the subscription.
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { subscription: true },
-  });
+  // Find the subscription whose user ID matches the passed value.
+  const subscription = await db
+    .select()
+    .from(Subscription)
+    .where(eq(Subscription.userId, userId));
 
-  if (!user?.subscription) {
+  // If the subscription is missing, return an error.
+  if (!subscription[0]) {
     return Response.json({ error: 'User not found!' });
   }
 
   // Check for a user stripe ID.
-  const userStripeId = user.subscription?.stripeId;
+  const userStripeId = subscription[0]?.stripeId;
 
   // If the user doesn't have a stripe ID, create a new customer with the user's email and name.
   if (!userStripeId) {
+    const user = await db.select().from(User).where(eq(User.id, userId));
+    // If the user doesn't exist, return an error.
+    if (!user[0]) {
+      return Response.json({ error: 'User not found!' });
+    }
+
+    // Create a customer object with the user's email and name.
+    // Assert non-null email from the null return check above.
     const customer = await stripe.customers.create({
-      email: user.email,
-      name: `${user.first_name} ${user.last_name}`,
+      email: user[0].email!,
+      name: `${user[0].firstName} ${user[0].lastName}`,
     });
 
-    // Update the user in the database with the new stripe ID in their subscription field.
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        subscription: {
-          update: {
-            stripeId: customer.id,
-          },
-        },
-      },
-    });
+    // Update the subscription object connected to the user with the new stripe ID.
+    await db
+      .update(Subscription)
+      .set({
+        stripeId: customer.id,
+      })
+      .where(eq(Subscription.userId, user[0].id));
 
     // Return a response indicating the customer was created.
     return Response.json({ message: 'Customer created!' });

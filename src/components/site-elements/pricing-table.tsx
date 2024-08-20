@@ -3,8 +3,14 @@ import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
-export default function PricingTable() {
-  // Create use state to store and update the customer session.
+export default function PricingTable({
+  publicKey,
+  tableID,
+}: {
+  publicKey: string;
+  tableID: string;
+}) {
+  // Create use state to store and update the customer sessi  on.
   const [customerSession, setCustomerSession] = useState('');
 
   // Create a function to fetch the customer session.
@@ -33,20 +39,7 @@ export default function PricingTable() {
 
     // Clear the interval when the component is unmounted to stop the repeated fetch.
     return () => clearInterval(interval);
-  }, []);
-
-  // Define the variables for the Stripe client ID and secret.
-  let usePublic;
-  let useSecret;
-
-  // Set the Stripe client ID and secret based on the environment.
-  if (process.env.APP_CONFIG === 'production') {
-    usePublic = process.env.DEV_NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
-    useSecret = process.env.DEV_STRIPE_PRIVATE_KEY;
-  } else {
-    usePublic = process.env.PROD_NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
-    useSecret = process.env.PROD_STRIPE_PRIVATE_KEY;
-  }
+  }, [publicKey]);
 
   return (
     <div className="pt-20">
@@ -56,10 +49,11 @@ export default function PricingTable() {
         strategy="afterInteractive"
       />
       {/* If the customer session is present (logged in user), load the table using the customer's session. */}
+      {/* Define the public and provate keys using a production check and a blank value for null env values. */}
       {customerSession && (
         <stripe-pricing-table
-          pricing-table-id={usePublic ?? ''}
-          stripe-private-key={useSecret ?? ''}
+          pricing-table-id={tableID}
+          publishable-key={publicKey}
           customer-session-client-secret={customerSession}
         />
       )}

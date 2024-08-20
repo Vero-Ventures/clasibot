@@ -6,30 +6,31 @@ import {
   integer,
   serial,
   primaryKey,
+  uuid,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { createId } from '@paralleldrive/cuid2';
 
 export const User = pgTable('User', {
-  id: text('id').primaryKey().default(createId()),
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
   firstName: text('first_name'),
   lastName: text('last_name'),
   email: text('email').unique(),
   industry: text('industry'),
-  subscriptionId: text('subscription_id')
-    .unique()
-    .references(() => Subscription.id, { onDelete: 'cascade' }),
+  subscriptionId: uuid('subscription_id').unique(),
 });
 
 export const Subscription = pgTable('Subscription', {
-  id: text('id').primaryKey().default(createId()),
-  userId: text('user_id').unique(),
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  userId: uuid('user_id')
+    .unique()
+    .notNull()
+    .references(() => User.id, { onDelete: 'cascade' }),
   stripeId: text('stripe_id').unique(),
 });
 
 export const Transaction = pgTable('Transaction', {
   id: serial('id').primaryKey(),
-  transactionName: text('transaction_name').unique(),
+  transactionName: text('transaction_name').unique().notNull(),
 });
 
 export const TransactionToClassificationsRelationship = relations(
@@ -41,11 +42,11 @@ export const TransactionToClassificationsRelationship = relations(
 
 export const Classification = pgTable('Classification', {
   id: serial('id').primaryKey(),
-  category: text('category').unique(),
-  count: integer('count'),
+  category: text('category').unique().notNull(),
+  count: integer('count').notNull(),
 });
 
-const ClassificationToTransactionsRelationship = relations(
+export const ClassificationToTransactionsRelationship = relations(
   Classification,
   ({ many }) => ({
     transactions: many(Transaction),

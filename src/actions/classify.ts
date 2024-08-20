@@ -31,7 +31,8 @@ export async function classifyTransactions(
 
   try {
     // Get valid categories from QuickBooks using helper method (categories present in the users account).
-    const validCategories: Category[] = await fetchValidCategories();
+    const validDBCategories: Category[] = await fetchValidCategories(true);
+    const validLLMCategories: Category[] = await fetchValidCategories(false);
 
     // Create an dictionary that ties strings to a list of categories.
     const results: Record<string, ClassifiedCategory[]> = {};
@@ -43,7 +44,7 @@ export async function classifyTransactions(
     await classifyWithFuse(
       uncategorizedTransactions,
       categorizedTransactions,
-      validCategories,
+      validDBCategories,
       results,
       noMatches
     );
@@ -54,7 +55,7 @@ export async function classifyTransactions(
       await classifyWithLLM(
         uncategorizedTransactions,
         noMatches,
-        validCategories,
+        validLLMCategories,
         results
       );
     }
@@ -204,15 +205,30 @@ async function classifyWithLLM(
 }
 
 // Helper method to fetch valid categories from QuickBooks that returns a promised array of Categories.
-async function fetchValidCategories(): Promise<Category[]> {
+async function fetchValidCategories(
+  filterToBase: boolean
+): Promise<Category[]> {
   // Define a list of valid categories using the get_accounts QuickBooks action.
   // Accounts are the QuickBooks name for both bank accounts and transaction categories.
   const validCategoriesResponse = JSON.parse(await getAccounts());
   // Return the valid categories as an array of category objects.
   // Removes the first value that indicates success or returns error codes.
-  return validCategoriesResponse.slice(1).map((category: Account): Category => {
-    return { id: category.id, name: category.name };
-  });
+  if (filterToBase) {
+    // Filter to base category is needed to match with the database.
+    // User info is not stored so only the base category is stored.
+    return validCategoriesResponse
+      .slice(1)
+      .map((category: Account): Category => {
+        return { id: category.id, name: category.account_sub_type };
+      });
+  } else {
+    // LLM data is not saved so it can use the full category name.
+    return validCategoriesResponse
+      .slice(1)
+      .map((category: Account): Category => {
+        return { id: category.id, name: category.name };
+      });
+  }
 }
 
 function createFuseInstance(

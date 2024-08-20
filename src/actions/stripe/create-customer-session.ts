@@ -1,8 +1,10 @@
 'use server';
 import { Stripe } from 'stripe';
-import prisma from '@/lib/db';
+import { db } from '@/db/index';
+import { User, Subscription } from '@/db/schema';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import { eq } from 'drizzle-orm';
 
 // Create a new Stripe object with the private key.
 const stripe = new Stripe(
@@ -15,24 +17,37 @@ export default async function createCustomerSession(): Promise<
   { customerSession: string } | { error: string }
 > {
   // Get the current session.
-  const userId = (await getServerSession(options))?.userId;
+  const session = await getServerSession(options);
 
-  if (!userId) {
+  // If the session doesn't have a user email, return an error.
+  if (!session?.user?.email) {
+    return { error: 'Error getting session' };
+  }
+
+  // Get user using the session email to find the subscription.
+  const user = await db
+    .select()
+    .from(User)
+    .where(eq(User.email, session.user?.email));
+
+  // If the user does not exist, return an error.
+  if (!user[0]?.id) {
     return { error: 'User not found!' };
   }
 
-  // Find the user's subscription in the database, provided they have a subscription.
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { subscription: true },
-  });
+  // Find the user's subscription in the database by their session id.
+  const userSubscription = await db
+    .select()
+    .from(Subscription)
+    .where(eq(Subscription.userId, user[0].id));
 
-  if (!user?.subscription) {
-    return { error: 'User not found!' };
+  // If not matching subscription is found, return an error.
+  if (!userSubscription[0]) {
+    return { error: 'User subscription not found!' };
   }
 
-  const userStripeId = user.subscription?.stripeId;
   // If the user has a stripe ID, create a new customer session with the user's stripe ID.
+  const userStripeId = userSubscription[0]?.stripeId;
   if (userStripeId) {
     // Created session sets the pricing table component to enabled.
     const customerSession = await stripe.customerSessions.create({
