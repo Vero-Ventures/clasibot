@@ -78,10 +78,7 @@ export async function addTransactions(
           .select()
           .from(TransactionsToClassifications)
           .where(
-            eq(
-              TransactionsToClassifications.transactionId,
-              existingTransaction[0].id
-            )
+            eq(TransactionsToClassifications.transactionId, transactionID)
           );
 
         // Check the relationship table to see if the transaction is already linked to the classification.
@@ -106,6 +103,11 @@ export async function addTransactions(
           })
           .where(eq(Classification.id, existingCategory.id));
       } else {
+        // Skip transactions with no base category (usually classified as -Split- in QBO).
+        if (!baseTransactionCategory) {
+          continue;
+        }
+
         // If the category doesn't exist, create a new classification with a count of 1.
         const newClassification = await db
           .insert(Classification)
