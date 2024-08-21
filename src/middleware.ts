@@ -16,8 +16,8 @@ export function middleware(request: NextRequest) {
 
   console.log('Allowed paths:', allowedPaths);
 
-  // Continue with the default middleware for landing page and allowed paths.
-  if (allowedPaths.includes(pathname) || pathname === '/' || pathname === '/home') {
+  // Ignore the middleware for landing page and allowed paths.
+  if (allowedPaths.includes(pathname) || pathname === '/') {
     return NextResponse.next();
   }
 
