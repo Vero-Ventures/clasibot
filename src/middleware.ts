@@ -10,6 +10,8 @@ export function middleware(request: NextRequest) {
 
   console.log('Middleware called with pathname:', pathname);
   console.log('Middleware called with callbackUrl:', callbackUrl);
+  const comparePaths = (pathname === '/');
+  console.log('Middleware called with comparePaths:', comparePaths);
 
 
   // Define allowed paths using the footer items array inside site config file.
@@ -17,15 +19,13 @@ export function middleware(request: NextRequest) {
 
   // Ignore the middleware for landing page, allowed paths, and signin call from home.
   if (allowedPaths.includes(pathname) || pathname === '/') {
+    console.log('Middleware allowed path:', pathname);
     return NextResponse.next();
   }
 
   // If callback URL is present, the user is trying to be forced to log in.
   // Redirect to landing page instead where the sign in button is located.
   if (callbackUrl) {
-    if (pathname === '/api/auth/signin' && callbackUrl === '/home') {
-      return NextResponse.next();
-    }
     const baseUrl = new URL(request.url);
     return NextResponse.redirect(new URL(baseUrl.origin));
   }
