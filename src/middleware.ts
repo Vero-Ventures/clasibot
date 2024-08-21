@@ -23,6 +23,9 @@ export function middleware(request: NextRequest) {
   // If callback URL is present, the user is trying to be forced to log in.
   // Redirect to landing page instead where the sign in button is located.
   if (callbackUrl) {
+    if (pathname === '/api/auth/signin' && callbackUrl === '/home') {
+      return NextResponse.next();
+    }
     const baseUrl = new URL(request.url);
     return NextResponse.redirect(new URL(baseUrl.origin));
   }
