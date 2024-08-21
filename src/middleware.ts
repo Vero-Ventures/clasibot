@@ -8,11 +8,16 @@ export function middleware(request: NextRequest) {
   const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
   const pathname = request.nextUrl.pathname;
 
+  console.log('Middleware called with pathname:', pathname);
+  console.log('Middleware called with callbackUrl:', callbackUrl);
+
   // Define allowed paths using the footer items array inside site config file.
   const allowedPaths = siteConfig.footerItems.map((item) => item.href);
 
+  console.log('Allowed paths:', allowedPaths);
+
   // Continue with the default middleware for landing page and allowed paths.
-  if (allowedPaths.includes(pathname) || pathname === '/') {
+  if (allowedPaths.includes(pathname) || pathname === '/' || pathname === '/home') {
     return NextResponse.next();
   }
 
