@@ -1,8 +1,7 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { DayPicker } from 'react-day-picker';
-import { buttonVariants } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';;
 import type { ComponentProps } from 'react';
 
 // Export the Calendar component props.
@@ -56,15 +55,6 @@ function Calendar({
           'aria-selected:bg-slate-100 aria-selected:text-slate-900 dark:aria-selected:bg-slate-800 dark:aria-selected:text-slate-50',
         day_hidden: 'invisible',
         ...classNames,
-      }}
-      // Define the external components of the DayPicker.
-      components={{
-        IconLeft: ({ ...props }) => (
-          <ChevronLeft {...props} className="h-4 w-4" />
-        ),
-        IconRight: ({ ...props }) => (
-          <ChevronRight {...props} className="h-4 w-4" />
-        ),
       }}
       // Add any additional passed props to the end of the DayPicker component.
       {...props}
