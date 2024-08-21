@@ -22,7 +22,10 @@ export function middleware(request: NextRequest) {
   // If callback URL is present, the user is trying to be forced to log in.
   // Redirect to landing page instead where the sign in button is located.
   if (callbackUrl) {
+    console.log('Callback is present.')
     const baseUrl = new URL(request.url);
+    console.log('Baseurl:', baseUrl);
+    console.log('Redirecting to:', baseUrl.origin);
     return NextResponse.redirect(new URL(baseUrl.origin));
   }
 
