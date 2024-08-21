@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
   console.log('Middleware called with pathname:', pathname);
   console.log('Middleware called with callbackUrl:', callbackUrl);
 
+
   // Define allowed paths using the footer items array inside site config file.
   const allowedPaths = siteConfig.footerItems.map((item) => item.href);
 
@@ -23,8 +24,7 @@ export function middleware(request: NextRequest) {
   // Redirect to landing page instead where the sign in button is located.
   if (callbackUrl) {
     const baseUrl = new URL(request.url);
-    console.log('Redirecting to:', baseUrl.origin + callbackUrl);
-    return NextResponse.redirect(new URL(baseUrl.origin + callbackUrl).toString());
+    return NextResponse.redirect(new URL(baseUrl.origin));
   }
 
   // Callback URL is not present when login is done by landing page button.
