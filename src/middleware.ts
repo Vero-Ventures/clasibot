@@ -9,15 +9,12 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   console.log('Middleware called with pathname:', pathname);
-  console.log('Middleware called with callbackUrl:', callbackUrl);
 
   // Define allowed paths using the footer items array inside site config file.
   const allowedPaths = siteConfig.footerItems.map((item) => item.href);
 
-  console.log('Allowed paths:', allowedPaths);
-
-  // Ignore the middleware for landing page and allowed paths.
-  if (allowedPaths.includes(pathname) || pathname === '/') {
+  // Ignore the middleware for landing page, allowed paths, and signin call from home.
+  if (allowedPaths.includes(pathname) || pathname === '/' || callbackUrl == '/home') {
     return NextResponse.next();
   }
 
