@@ -99,10 +99,6 @@ export async function getTransactions(
 
     // Get the results rows from the JSON response.
     const results = response.Rows.Row;
-
-    // Test return unformatted transactions.
-    return JSON.stringify(results);
-
     const formattedTransactions = [];
 
     // Create a formatted query result object based on the query results.
@@ -127,9 +123,10 @@ export async function getTransactions(
         const dateRow = 0;
         const transactionRow = 1;
         const nameRow = 2;
-        const accountRow = 3;
-        const categoryRow = 4;
-        const amountRow = 5;
+        // const memoRow = 3;
+        const accountRow = 4;
+        const categoryRow = 5;
+        const amountRow = 6;
 
         // Skip no-name transactions, transactions without an account, and transactions without an amount.
         if (
