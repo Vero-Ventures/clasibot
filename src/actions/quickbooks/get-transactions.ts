@@ -59,7 +59,7 @@ export async function getTransactions(
       start_date: startDate,
       end_date: endDate,
       limit: 1000,
-      columns: ['account_name', 'name', 'other_account', 'tx_date', 'txn_type'],
+      columns: ['account_name', 'name', 'other_account', 'tx_date', 'txn_type', 'memo'],
     };
 
     // Check if the user has multi-currency enabled and add the appropriate amount column to the parameters.
