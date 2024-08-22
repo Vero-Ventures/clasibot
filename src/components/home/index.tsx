@@ -27,9 +27,6 @@ export default function HomePage() {
   const [isSubscribed, setIsSubscribed] = useState(true);
   const [companyName, setCompanyName] = useState('');
 
-  // Track user session to prevent activation modal from loading incorrectly.
-  const [session, setSession] = useState(false);
-
   // Define a state to track if the modal is open.
   const [modal, setModal] = useState(false);
 
@@ -55,10 +52,6 @@ export default function HomePage() {
     const industry = await findIndustry();
     const session = await getSession();
     const email = session?.user?.email;
-
-    if (session) {
-      setSession(true);
-    }
 
     if (email) {
       // If an email is found, send a POST request to the update-industry endpoint.
@@ -182,8 +175,8 @@ export default function HomePage() {
   }
 
   console.log('Modal', modal);
-  console.log('Session', session);
-  console.log('Modal and Session', modal && session);
+  console.log('Session', isSubscribed);
+  console.log('Modal and Session', modal && isSubscribed);
 
   // Return the base homepage content and determine which table should be displayed.
   return (
@@ -208,7 +201,7 @@ export default function HomePage() {
       )}
       {/* Show a modal informing new users their account is activated.*/}
       <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal && session ? '' : 'hidden'}`}>
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal && isSubscribed ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
           <h2
             id="ResultTitle"
