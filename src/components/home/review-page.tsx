@@ -5,7 +5,6 @@ import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction } from '@/types/Transaction';
 import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
-import Link from 'next/link';
 
 // Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
@@ -177,8 +176,12 @@ export default function ReviewPage({
           <div id="ReturnButtonContainer" className="flex justify-center">
             <Button
               id="ReturnButton"
-              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
-              <Link href="/home">Return to Transactions</Link>
+              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => {
+                const url = window.location.origin + window.location.pathname;
+                window.location.href = url;
+              }}>
+              Return to Transactions
             </Button>
           </div>
         </div>
