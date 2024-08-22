@@ -595,25 +595,25 @@ How to get the project running on a new machine.
 
   - `cd ./frontend/` - Navigate terminal to frontend folder.
 
-  - `npm i` - Installs all packages used by the application.
+  - `bun i` - Installs all packages used by the application.
 
-  - `npm run dev` - Build app and host it locally in the development mode. After launching, the localhost port _(Default: 3000)_ being used is shown in the terminal.
+  - `bun dev` - Build app and host it locally in the development mode. After launching, the localhost port _(Default: 3000)_ being used is shown in the terminal.
 
-  - `npm run build` - Builds the app in production mode similar to `npm run dev` but does not host it.
+  - `bun build` - Builds the app in production mode similar to `bun dev` but does not host it.
 
-  - `npm next start` - Runs the app built by `npm run build` to host the app locally.
+  - `bun start` - Runs the app built by `npm run build` to host the app locally.
 
-  - `npm run format` - Runs a prettier check on all files and automatically updates them with the correct formatting. Use `npm run format:check` to get the issues without automatic changes.
+  - `bun format` - Runs a prettier check on all files and automatically updates them with the correct formatting. Use `bun format:check` to get the issues without automatic changes.
 
-  - `npm run lint` - Runs lint code checker and displays a list of warnings and errors in the terminal.
+  - `vun lint` - Runs lint code checker and displays a list of warnings and errors in the terminal.
 
-  - `npm run db:generate` -
+  - `bun db:generate` - Generates a migration for any new changes to the Drizzle schema. Run in conjunction with migrate to make changes to hosted database.
 
-  - `npm run db:migrate` -
+  - `bun db:migrate` - Takes generated migrations and sends them to the hosted database to update the schema.
 
-  - `npm run db:push` -
+  - `bun db:push` - Pushes schema changes directly to the database without dealing with migration files. This is more dangerous than using generate and migrate and should generally be avoided.
 
-  - `npm run studio` -
+  - `bun studio` - Launches a GUI method of interacting with the database through Drizzle. Runs at the locally hosted URL: at `https://local.drizzle.studio/`. Known to have issues reading relationships properly. Methods such as pgAdmin can be a much more effective way to view the database.
 
 - **Other Information**
 
