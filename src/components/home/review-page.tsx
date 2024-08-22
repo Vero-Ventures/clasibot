@@ -5,7 +5,7 @@ import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction } from '@/types/Transaction';
 import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
-import { Link } from 'lucide-react';
+import Link from 'next/link';
 
 // Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
