@@ -177,8 +177,7 @@ export default function ReviewPage({
           <div id="ReturnButtonContainer" className="flex justify-center">
             <Button
               id="ReturnButton"
-              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-              onClick={() => window.location.reload()}>
+              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
               <Link href="/home">Return to Transactions</Link>
             </Button>
           </div>
