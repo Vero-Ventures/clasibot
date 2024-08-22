@@ -5,6 +5,7 @@ import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction } from '@/types/Transaction';
 import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
+import { Link } from 'lucide-react';
 
 // Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
@@ -178,7 +179,7 @@ export default function ReviewPage({
               id="ReturnButton"
               className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
               onClick={() => window.location.reload()}>
-              Return to Transactions
+              <Link href="/home">Return to Transactions</Link>
             </Button>
           </div>
         </div>

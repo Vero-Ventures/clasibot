@@ -12,6 +12,7 @@ import { UnpaidAlert } from '@/components/unpaid-alert';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
+import { Session } from 'inspector';
 
 export default function HomePage() {
   // Create states to track and set the important values.
@@ -26,6 +27,9 @@ export default function HomePage() {
   const [isClassifying, setIsClassifying] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(true);
   const [companyName, setCompanyName] = useState('');
+
+  // Track user session to prevent activation modal from loading incorrectly.
+  const [session, setSession] = useState(false);
 
   // Define a state to track if the modal is open.
   const [modal, setModal] = useState(false);
@@ -52,6 +56,10 @@ export default function HomePage() {
     const industry = await findIndustry();
     const session = await getSession();
     const email = session?.user?.email;
+
+    if (session) {
+      setSession(true);
+    }
 
     if (email) {
       // If an email is found, send a POST request to the update-industry endpoint.
@@ -197,7 +205,7 @@ export default function HomePage() {
       )}
       {/* Show a modal informing new users their account is activated.*/}
       <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal ? '' : 'hidden'}`}>
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal && session ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
           <h2
             id="ResultTitle"
