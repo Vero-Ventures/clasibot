@@ -24,7 +24,7 @@ export default function HomePage() {
     Record<string, ClassifiedCategory[]>
   >({});
   const [isClassifying, setIsClassifying] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(true);
+  const [isSubscribed, setIsSubscribed] = useState('');
   const [companyName, setCompanyName] = useState('');
 
   // Define a state to track if the modal is open.
@@ -79,9 +79,9 @@ export default function HomePage() {
   const checkUserSubscription = async () => {
     const subscriptionResponse = await checkSubscription();
     if ('error' in subscriptionResponse || !subscriptionResponse.valid) {
-      setIsSubscribed(false);
+      setIsSubscribed('false');
     } else {
-      setIsSubscribed(true);
+      setIsSubscribed('true');
     }
   };
 
@@ -122,7 +122,7 @@ export default function HomePage() {
 
     if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
       // Set the subscription status to false and show a toast message.
-      setIsSubscribed(false);
+      setIsSubscribed('false');
       toast({
         variant: 'destructive',
         title: 'Notice',
@@ -175,14 +175,14 @@ export default function HomePage() {
   }
 
   console.log('Modal', modal);
-  console.log('Session', isSubscribed);
-  console.log('Modal and Session', modal && isSubscribed);
+  console.log('Subscribed', isSubscribed);
+  console.log('Modal and Session', modal && isSubscribed === 'true');
 
   // Return the base homepage content and determine which table should be displayed.
   return (
     <div id="TableContainer" className="container mx-auto px-4 py-8">
       {/* Display an alert if they are not subscribed. */}
-      {!isSubscribed && <UnpaidAlert />}
+      {isSubscribed === 'false' && <UnpaidAlert />}
 
       {/* If there are categorized transactions, display the review page. */}
       {categorizedTransactions.length > 0 ? (
@@ -201,7 +201,7 @@ export default function HomePage() {
       )}
       {/* Show a modal informing new users their account is activated.*/}
       <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal && isSubscribed ? '' : 'hidden'}`}>
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${modal && isSubscribed === 'true' ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
           <h2
             id="ResultTitle"
