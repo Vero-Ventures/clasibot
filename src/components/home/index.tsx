@@ -12,7 +12,6 @@ import { UnpaidAlert } from '@/components/unpaid-alert';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
-import { Session } from 'inspector';
 
 export default function HomePage() {
   // Create states to track and set the important values.
