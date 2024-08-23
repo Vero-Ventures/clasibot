@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { DayPicker } from 'react-day-picker';
-import { buttonVariants } from '@/components/ui/button';;
+import { buttonVariants } from '@/components/ui/button';
 import type { ComponentProps } from 'react';
 
 // Export the Calendar component props.
