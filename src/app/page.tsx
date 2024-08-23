@@ -11,6 +11,13 @@ export default async function Page() {
     redirect('/home');
   }
 
+  console.log('test');
+
+
+
+
+  
+
   return (
     <main
       id="LandingPageContainer"
