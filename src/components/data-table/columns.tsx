@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ConfidenceBar } from '@/components/confidence-bar';
 import type { Category, ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 // Define button format for a sortable header
 const sortableHeader = (
@@ -80,8 +80,8 @@ const commonColumns = [
     }) => {
       // Convert the date value from the row to a Month-Day-Year format.
       const formattedDate = format(
-        new Date(row.getValue('date')),
-        'mm/dd/yyyy'
+        parseISO(row.getValue('date')),
+        'MM/dd/yyyy'
       );
       return <div>{formattedDate}</div>;
     },
