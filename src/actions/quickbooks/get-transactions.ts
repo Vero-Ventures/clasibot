@@ -107,8 +107,6 @@ export async function getTransactions(
     // Get the results rows from the JSON response.
     const results = response.Rows.Row;
 
-    return JSON.stringify(results);
-
     const formattedTransactions = [];
 
     // Create a formatted query result object based on the query results.
@@ -140,7 +138,7 @@ export async function getTransactions(
 
         // Skip no-name transactions, transactions without an account, and transactions without an amount.
         if (
-          purchaseTransactions.includes(String(transaction.ColData[1].value)) &&
+          purchaseTransactions.includes(String(transaction.ColData[transactionRow].value)) &&
           transaction.ColData[dateRow].value !== '' &&
           transaction.ColData[amountRow].value !== ''
         ) {
