@@ -9,10 +9,12 @@ export default function SelectionPage({
   handleClassify,
   isClassifying,
   company_name,
+  finished_loading,
 }: Readonly<{
   handleClassify: (selectedRows: Transaction[]) => void;
   isClassifying: boolean;
   company_name: string;
+  finished_loading: boolean;
 }>) {
   // Create states to track and set the important values.
   // Transactions and account names.
@@ -64,6 +66,7 @@ export default function SelectionPage({
         transactions={transactions}
         account_names={accounts}
         foundTransactions={foundTransactions}
+        finished_loading={finished_loading}
         isClassifying={isClassifying}
         handleClassify={handleClassify}
       />

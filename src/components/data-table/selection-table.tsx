@@ -43,12 +43,14 @@ export function SelectionTable({
   transactions,
   account_names,
   foundTransactions,
+  finished_loading,
   isClassifying,
   handleClassify,
 }: Readonly<{
   transactions: Transaction[];
   account_names: string[];
   foundTransactions: boolean;
+  finished_loading: boolean;
   isClassifying: boolean;
   handleClassify: (selectedRows: Transaction[]) => void;
 }>) {
@@ -272,7 +274,7 @@ export function SelectionTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length && finished_loading ? (
               // Iterate through the rows of the table to create the table body.
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -299,7 +301,7 @@ export function SelectionTable({
                 <TableCell
                   colSpan={selectionColumns.length}
                   className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
-                  {foundTransactions ? 'No results found.' : 'Loading...'}
+                  {foundTransactions && finished_loading ? 'No results found.' : 'Loading...'}
                 </TableCell>
               </TableRow>
             )}

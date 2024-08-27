@@ -30,6 +30,10 @@ export default function HomePage() {
   // Define a state to track if the modal is open.
   const [modal, setModal] = useState(false);
 
+  // Define states to prevent showing the table until the page is loaded.
+  const [finishedLoadingIndustry, setFinishedLoadingIndustry] = useState(false);
+  const [finishedLoadingSubscription, setFinishedLoadingSubscription] = useState(false);
+
   // Check the url for the 'activated' query parameter and set the modal state accordingly.
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,6 +45,7 @@ export default function HomePage() {
   // Gets the company name and update the related state asynchronously.
   const callCompanyName = async () => {
     const userCompanyName = await getCompanyName();
+    console.log('Company Name:', userCompanyName);
     setCompanyName(userCompanyName);
   };
 
@@ -64,9 +69,11 @@ export default function HomePage() {
           },
           body: JSON.stringify({ industry, email }),
         });
+        setFinishedLoadingIndustry(true);
         if (!response.ok) {
           throw new Error('Failed to update industry');
         }
+        console.log('Response', response);
       } catch (error) {
         console.error('Error updating industry:', error);
       }
@@ -83,12 +90,13 @@ export default function HomePage() {
     } else {
       setIsSubscribed('true');
     }
+    setFinishedLoadingSubscription(true);
   };
 
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
     // Call the company name function, check the user subscription, and update the industry.
-    callCompanyName();
+    // callCompanyName();
     checkUserSubscription();
     updateIndustry();
   }, []);
@@ -193,6 +201,7 @@ export default function HomePage() {
           handleClassify={handleClassify}
           isClassifying={isClassifying}
           company_name={companyName}
+          finished_loading={finishedLoadingIndustry && finishedLoadingSubscription}
         />
       )}
       {/* Show a modal informing new users their account is activated.*/}
