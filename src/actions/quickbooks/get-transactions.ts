@@ -106,6 +106,9 @@ export async function getTransactions(
 
     // Get the results rows from the JSON response.
     const results = response.Rows.Row;
+
+    return JSON.stringify(results);
+
     const formattedTransactions = [];
 
     // Create a formatted query result object based on the query results.
