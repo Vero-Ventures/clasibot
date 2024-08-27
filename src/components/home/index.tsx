@@ -31,9 +31,9 @@ export default function HomePage() {
   const [modal, setModal] = useState(false);
 
   // Define states to prevent showing the table until the page is loaded.
-  const [finishedLoadingName, setFinishedLoadingName] = useState(false);
   const [finishedLoadingIndustry, setFinishedLoadingIndustry] = useState(false);
-  const [finishedLoadingSubscription, setFinishedLoadingSubscription] = useState(false);
+  const [finishedLoadingSubscription, setFinishedLoadingSubscription] =
+    useState(false);
 
   // Check the url for the 'activated' query parameter and set the modal state accordingly.
   useEffect(() => {
@@ -47,7 +47,6 @@ export default function HomePage() {
   const callCompanyName = async () => {
     const userCompanyName = await getCompanyName();
     setCompanyName(userCompanyName);
-    setFinishedLoadingName(true);
   };
 
   // Define the toast function using the useToast hook.
@@ -96,9 +95,9 @@ export default function HomePage() {
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
     // Check the user subscription, call the company name function, and update the industry.
+    // callCompanyName();
     checkUserSubscription();
     updateIndustry();
-    callCompanyName();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
@@ -201,7 +200,9 @@ export default function HomePage() {
           handleClassify={handleClassify}
           isClassifying={isClassifying}
           company_name={companyName}
-          finished_loading={finishedLoadingIndustry && finishedLoadingSubscription && finishedLoadingName}
+          finished_loading={
+            finishedLoadingIndustry && finishedLoadingSubscription
+          }
         />
       )}
       {/* Show a modal informing new users their account is activated.*/}
