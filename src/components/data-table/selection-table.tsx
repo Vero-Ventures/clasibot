@@ -132,6 +132,9 @@ export function SelectionTable({
     table.getColumn('account')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
+  console.log('Table: is loaded', finished_loading);
+  console.log('Table: found transactions', foundTransactions);
+
   return (
     <div className="w-full">
       {/* Container for the top row of filters: name and date. */}
@@ -274,7 +277,9 @@ export function SelectionTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length && finished_loading && foundTransactions ? (
+            {table.getRowModel().rows?.length &&
+            finished_loading &&
+            foundTransactions ? (
               // Iterate through the rows of the table to create the table body.
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -301,7 +306,9 @@ export function SelectionTable({
                 <TableCell
                   colSpan={selectionColumns.length}
                   className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
-                  {foundTransactions && finished_loading ? 'No results found.' : 'Loading...'}
+                  {foundTransactions && finished_loading
+                    ? 'No results found.'
+                    : 'Loading...'}
                 </TableCell>
               </TableRow>
             )}

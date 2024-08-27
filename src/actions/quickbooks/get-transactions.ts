@@ -138,7 +138,9 @@ export async function getTransactions(
 
         // Skip no-name transactions, transactions without an account, and transactions without an amount.
         if (
-          purchaseTransactions.includes(String(transaction.ColData[transactionRow].value)) &&
+          purchaseTransactions.includes(
+            String(transaction.ColData[transactionRow].value)
+          ) &&
           transaction.ColData[dateRow].value !== '' &&
           transaction.ColData[amountRow].value !== ''
         ) {

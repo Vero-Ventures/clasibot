@@ -44,6 +44,7 @@ export default function SelectionPage({
         // Update the accounts state with a list of unique account names.
         setAccounts(Array.from(accountNames));
         // Set the found transactions state to true.
+        console.log('Found transactions');
         setFoundTransactions(true);
       } catch (error) {
         // Log an error if fetching transactions fails.

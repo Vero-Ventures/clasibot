@@ -79,7 +79,7 @@ export default function HomePage() {
     } else {
       console.error('No user email found in session');
     }
-    console.log("Finished updating industry");
+    console.log('Finished updating industry');
   };
 
   // Define a function to check for valid user subsciptions.
@@ -91,15 +91,15 @@ export default function HomePage() {
       setIsSubscribed('true');
     }
     setFinishedLoadingSubscription(true);
-    console.log("Finished checking subscription");
+    console.log('Finished checking subscription');
   };
 
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
-    // Check the user subscription, call the company name function, and update the industry.
-    // callCompanyName();
+    // Check the user subscription, update the industry and call the company name.
     checkUserSubscription();
     updateIndustry();
+    // callCompanyName();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
@@ -182,6 +182,11 @@ export default function HomePage() {
     // Set the 'is classifying' status to false.
     setIsClassifying(false);
   }
+
+  console.log(
+    'Finished loading state: ',
+    finishedLoadingIndustry && finishedLoadingSubscription
+  );
 
   // Return the base homepage content and determine which table should be displayed.
   return (
