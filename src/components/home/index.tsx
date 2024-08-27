@@ -31,6 +31,7 @@ export default function HomePage() {
   const [modal, setModal] = useState(false);
 
   // Define states to prevent showing the table until the page is loaded.
+  const [finishedLoadingName, setFinishedLoadingName] = useState(false);
   const [finishedLoadingIndustry, setFinishedLoadingIndustry] = useState(false);
   const [finishedLoadingSubscription, setFinishedLoadingSubscription] = useState(false);
 
@@ -45,8 +46,8 @@ export default function HomePage() {
   // Gets the company name and update the related state asynchronously.
   const callCompanyName = async () => {
     const userCompanyName = await getCompanyName();
-    console.log('Company Name:', userCompanyName);
     setCompanyName(userCompanyName);
+    setFinishedLoadingName(true);
   };
 
   // Define the toast function using the useToast hook.
@@ -73,7 +74,6 @@ export default function HomePage() {
         if (!response.ok) {
           throw new Error('Failed to update industry');
         }
-        console.log('Response', response);
       } catch (error) {
         console.error('Error updating industry:', error);
       }
@@ -95,10 +95,10 @@ export default function HomePage() {
 
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
-    // Call the company name function, check the user subscription, and update the industry.
-    // callCompanyName();
+    // Check the user subscription, call the company name function, and update the industry.
     checkUserSubscription();
     updateIndustry();
+    callCompanyName();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
@@ -201,7 +201,7 @@ export default function HomePage() {
           handleClassify={handleClassify}
           isClassifying={isClassifying}
           company_name={companyName}
-          finished_loading={finishedLoadingIndustry && finishedLoadingSubscription}
+          finished_loading={finishedLoadingIndustry && finishedLoadingSubscription && finishedLoadingName}
         />
       )}
       {/* Show a modal informing new users their account is activated.*/}

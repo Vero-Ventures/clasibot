@@ -88,14 +88,8 @@ export async function getCompanyName(): Promise<string> {
       });
     });
 
-    // Get the company name from the JSON response and convert it to a string.
-    // Check for name existance is not needed, all companies must have a name.
-    const companyName = JSON.stringify(
-      response.QueryResponse.CompanyInfo[0].CompanyName
-    );
-
-    // Return the name value with the surrounding quotation marks removed.
-    return companyName.slice(1, -1);
+    // Return the name value from the company info.
+    return response.QueryResponse.CompanyInfo[0].CompanyName;
   } catch (error) {
     // Log the error and return an error string to the caller if the call fails.
     console.error('Error finding company name:', error);
