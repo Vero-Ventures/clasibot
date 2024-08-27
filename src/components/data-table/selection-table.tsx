@@ -42,14 +42,14 @@ import type { Transaction } from '@/types/Transaction';
 export function SelectionTable({
   transactions,
   account_names,
-  foundTransactions,
+  found_transactions,
   finished_loading,
   isClassifying,
   handleClassify,
 }: Readonly<{
   transactions: Transaction[];
   account_names: string[];
-  foundTransactions: boolean;
+  found_transactions: boolean;
   finished_loading: boolean;
   isClassifying: boolean;
   handleClassify: (selectedRows: Transaction[]) => void;
@@ -276,7 +276,7 @@ export function SelectionTable({
           <TableBody>
             {table.getRowModel().rows?.length &&
             finished_loading &&
-            foundTransactions ? (
+            found_transactions ? (
               // Iterate through the rows of the table to create the table body.
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -303,7 +303,7 @@ export function SelectionTable({
                 <TableCell
                   colSpan={selectionColumns.length}
                   className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
-                  {foundTransactions && finished_loading
+                  {found_transactions && finished_loading
                     ? 'No results found.'
                     : 'Loading...'}
                 </TableCell>

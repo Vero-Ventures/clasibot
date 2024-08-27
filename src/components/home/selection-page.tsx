@@ -65,7 +65,7 @@ export default function SelectionPage({
       <SelectionTable
         transactions={transactions}
         account_names={accounts}
-        foundTransactions={foundTransactions}
+        found_transactions={foundTransactions}
         finished_loading={finished_loading}
         isClassifying={isClassifying}
         handleClassify={handleClassify}

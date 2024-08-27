@@ -97,7 +97,7 @@ export default function HomePage() {
     // Check the user subscription, update the industry and call the company name.
     checkUserSubscription();
     updateIndustry();
-    // callCompanyName();
+    callCompanyName();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
