@@ -174,10 +174,6 @@ export default function HomePage() {
     setIsClassifying(false);
   }
 
-  console.log('Modal', modal);
-  console.log('Subscribed', isSubscribed);
-  console.log('Modal and Session', modal && isSubscribed === 'true');
-
   // Return the base homepage content and determine which table should be displayed.
   return (
     <div id="TableContainer" className="container mx-auto px-4 py-8">
