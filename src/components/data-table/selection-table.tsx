@@ -274,7 +274,7 @@ export function SelectionTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length && finished_loading ? (
+            {table.getRowModel().rows?.length && finished_loading && foundTransactions ? (
               // Iterate through the rows of the table to create the table body.
               table.getRowModel().rows.map((row) => (
                 <TableRow

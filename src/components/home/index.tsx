@@ -79,6 +79,7 @@ export default function HomePage() {
     } else {
       console.error('No user email found in session');
     }
+    console.log("Finished updating industry");
   };
 
   // Define a function to check for valid user subsciptions.
@@ -90,6 +91,7 @@ export default function HomePage() {
       setIsSubscribed('true');
     }
     setFinishedLoadingSubscription(true);
+    console.log("Finished checking subscription");
   };
 
   // Use the useEffect hook to call the setup methods on page load.
