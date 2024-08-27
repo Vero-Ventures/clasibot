@@ -42,11 +42,13 @@ import type { Transaction } from '@/types/Transaction';
 export function SelectionTable({
   transactions,
   account_names,
+  foundTransactions,
   isClassifying,
   handleClassify,
 }: Readonly<{
   transactions: Transaction[];
   account_names: string[];
+  foundTransactions: boolean;
   isClassifying: boolean;
   handleClassify: (selectedRows: Transaction[]) => void;
 }>) {
@@ -297,7 +299,7 @@ export function SelectionTable({
                 <TableCell
                   colSpan={selectionColumns.length}
                   className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
-                  No results found.
+                  {foundTransactions ? 'No results found.' : 'Loading...'}
                 </TableCell>
               </TableRow>
             )}
