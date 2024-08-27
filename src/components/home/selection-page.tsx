@@ -9,14 +9,17 @@ export default function SelectionPage({
   handleClassify,
   isClassifying,
   company_name,
+  finished_loading,
 }: Readonly<{
   handleClassify: (selectedRows: Transaction[]) => void;
   isClassifying: boolean;
   company_name: string;
+  finished_loading: boolean;
 }>) {
   // Create states to track and set the important values.
   // Transactions and account names.
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [foundTransactions, setFoundTransactions] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<string[]>([]);
 
   // Use the useEffect hook to fetch transactions on page load.
@@ -40,6 +43,8 @@ export default function SelectionPage({
         }
         // Update the accounts state with a list of unique account names.
         setAccounts(Array.from(accountNames));
+        // Set the found transactions state to true.
+        setFoundTransactions(true);
       } catch (error) {
         // Log an error if fetching transactions fails.
         console.error('Error fetching purchases:', error);
@@ -60,6 +65,8 @@ export default function SelectionPage({
       <SelectionTable
         transactions={transactions}
         account_names={accounts}
+        found_transactions={foundTransactions}
+        finished_loading={finished_loading}
         isClassifying={isClassifying}
         handleClassify={handleClassify}
       />

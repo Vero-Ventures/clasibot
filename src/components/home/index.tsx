@@ -30,6 +30,11 @@ export default function HomePage() {
   // Define a state to track if the modal is open.
   const [modal, setModal] = useState(false);
 
+  // Define states to prevent showing the table until the page is loaded.
+  const [finishedLoadingIndustry, setFinishedLoadingIndustry] = useState(false);
+  const [finishedLoadingSubscription, setFinishedLoadingSubscription] =
+    useState(false);
+
   // Check the url for the 'activated' query parameter and set the modal state accordingly.
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -64,6 +69,7 @@ export default function HomePage() {
           },
           body: JSON.stringify({ industry, email }),
         });
+        setFinishedLoadingIndustry(true);
         if (!response.ok) {
           throw new Error('Failed to update industry');
         }
@@ -83,14 +89,15 @@ export default function HomePage() {
     } else {
       setIsSubscribed('true');
     }
+    setFinishedLoadingSubscription(true);
   };
 
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
-    // Call the company name function, check the user subscription, and update the industry.
-    callCompanyName();
+    // Check the user subscription, update the industry and call the company name.
     checkUserSubscription();
     updateIndustry();
+    callCompanyName();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
@@ -174,10 +181,6 @@ export default function HomePage() {
     setIsClassifying(false);
   }
 
-  console.log('Modal', modal);
-  console.log('Subscribed', isSubscribed);
-  console.log('Modal and Session', modal && isSubscribed === 'true');
-
   // Return the base homepage content and determine which table should be displayed.
   return (
     <div id="TableContainer" className="container mx-auto px-4 py-8">
@@ -197,6 +200,9 @@ export default function HomePage() {
           handleClassify={handleClassify}
           isClassifying={isClassifying}
           company_name={companyName}
+          finished_loading={
+            finishedLoadingIndustry && finishedLoadingSubscription
+          }
         />
       )}
       {/* Show a modal informing new users their account is activated.*/}
