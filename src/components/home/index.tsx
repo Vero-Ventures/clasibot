@@ -79,7 +79,6 @@ export default function HomePage() {
     } else {
       console.error('No user email found in session');
     }
-    console.log('Finished updating industry');
   };
 
   // Define a function to check for valid user subsciptions.
@@ -91,7 +90,6 @@ export default function HomePage() {
       setIsSubscribed('true');
     }
     setFinishedLoadingSubscription(true);
-    console.log('Finished checking subscription');
   };
 
   // Use the useEffect hook to call the setup methods on page load.
@@ -182,11 +180,6 @@ export default function HomePage() {
     // Set the 'is classifying' status to false.
     setIsClassifying(false);
   }
-
-  console.log(
-    'Finished loading state: ',
-    finishedLoadingIndustry && finishedLoadingSubscription
-  );
 
   // Return the base homepage content and determine which table should be displayed.
   return (

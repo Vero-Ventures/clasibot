@@ -132,9 +132,6 @@ export function SelectionTable({
     table.getColumn('account')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
-  console.log('Table: is loaded', finished_loading);
-  console.log('Table: found transactions', foundTransactions);
-
   return (
     <div className="w-full">
       {/* Container for the top row of filters: name and date. */}
