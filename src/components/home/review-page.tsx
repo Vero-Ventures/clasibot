@@ -147,7 +147,7 @@ export default function ReviewPage({
         })
       );
       // Add the new transactions to the database.
-      addTransactions(newTransactions);
+      await addTransactions(newTransactions);
       // If no errors are thrown, set the error message to null.
       setErrorMsg(null);
     } catch (error) {
