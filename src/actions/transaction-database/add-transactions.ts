@@ -1,3 +1,4 @@
+'use server'
 import { getAccounts } from '../quickbooks/get-accounts';
 import { db } from '@/db/index';
 import {
