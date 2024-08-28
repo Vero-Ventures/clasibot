@@ -1,10 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { findPurchase, updatePurchase } from '@/actions/quickbooks/purchases';
+import type { Account } from '@/types/Account';
 import type { ClassifiedCategory } from '@/types/Category';
-import type { CategorizedTransaction } from '@/types/Transaction';
+import type { Transaction, CategorizedTransaction } from '@/types/Transaction';
 import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
+import { addTransactions } from '@/actions/transaction-database';
+import { getAccounts } from '@/actions/quickbooks/get-accounts';
 
 // Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
@@ -68,8 +71,9 @@ export default function ReviewPage({
   async function handleSave(selectedRows: CategorizedTransaction[]) {
     // Set the saving status to true.
     setIsSaving(true);
-
     try {
+      // Create an array to store the new transactions.
+      const newTransactions: Transaction[] = [];
       // Update each selected row with the selected category.
       await Promise.all(
         selectedRows.map(async (transaction) => {
@@ -99,6 +103,39 @@ export default function ReviewPage({
                 break;
               }
             }
+            // Create regular transaction using the transaction and the name of the selected category.
+            const newTransaction: Transaction = {
+              name: transaction.name,
+              category: categoryName,
+              amount: transaction.amount,
+              date: transaction.date,
+              account: transaction.account,
+              transaction_type: transaction.transaction_type,
+              transaction_ID: transactionID,
+            };
+
+            // Get accounts to check against if the category is classified by LLM.
+            const accounts = JSON.parse(await getAccounts());
+
+            // Find the classification method of the selected category.
+            for (const category of transaction.categories) {
+              if (category.name === categoryName) {
+                // Before storing LLM classified categories, switch from the account name to account_sub_type.
+                if (category.classifiedBy === 'LLM') {
+                  // Find the account with the matching name.
+                  const account = accounts.find(
+                    (account: Account) => account.name === transaction.account
+                  );
+                  // If the account is found, update the category name to the account_sub_type.
+                  if (account) {
+                    newTransaction.category = account.account_sub_type;
+                  }
+                }
+              }
+            }
+
+            // Push the new transaction to the new transactions array.
+            newTransactions.push(newTransaction);
 
             // Update the purchase in QuickBooks using the updated purchase object.
             const result = await updatePurchase(purchaseObj);
@@ -109,6 +146,8 @@ export default function ReviewPage({
           }
         })
       );
+      // Add the new transactions to the database.
+      await addTransactions(newTransactions);
       // If no errors are thrown, set the error message to null.
       setErrorMsg(null);
     } catch (error) {

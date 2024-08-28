@@ -2,7 +2,7 @@
  * Defines a formatted version of a transaction returned from the API.
  * Also defines a categorized version with an array of possible categories.
  */
-import type { Category } from './Category';
+import type { ClassifiedCategory } from './Category';
 
 export type Transaction = {
   // date: Date as a string in the format 'YYYY-MM-DD'.
@@ -28,5 +28,5 @@ export type Transaction = {
 export type CategorizedTransaction = Omit<Transaction, 'category'> & {
   // An array of category objects:
   //    The identified categories the transaction could be classified as.
-  categories: Category[];
+  categories: ClassifiedCategory[];
 };
