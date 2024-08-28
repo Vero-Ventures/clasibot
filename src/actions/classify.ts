@@ -52,12 +52,7 @@ export async function classifyTransactions(
     // If there are transactions present in the noMatches array, send them to the LLM API.
     // This categorizes transactions that failed the first two categorization methods.
     if (noMatches.length > 0) {
-      await classifyWithLLM(
-        uncategorizedTransactions,
-        noMatches,
-        validLLMCategories,
-        results
-      );
+      await classifyWithLLM(noMatches, validLLMCategories, results);
     }
 
     // Return the results array.
@@ -158,7 +153,6 @@ async function classifyWithFuse(
 
 // Helper method to classify transactions using the LLM API.
 async function classifyWithLLM(
-  uncategorizedTransactions: Transaction[],
   noMatches: Transaction[],
   validCategories: Category[],
   results: Record<string, ClassifiedCategory[]>
@@ -177,25 +171,6 @@ async function classifyWithLLM(
             classifiedBy: 'LLM API',
           })
         );
-
-        // Find the transaction to add by the transaction ID.
-        const transactionToAdd = uncategorizedTransactions.find(
-          (transaction) =>
-            transaction.transaction_ID === llmResult.transaction_ID
-        );
-
-        if (transactionToAdd) {
-          // If a transaction is found, record its associated categories.
-          const categorizedTransactionsToAdd = llmResult.possibleCategories.map(
-            (category) => ({
-              ...transactionToAdd,
-              category: category.name,
-            })
-          );
-
-          // Add the categorized transactions to the database.
-          await addTransactions(categorizedTransactionsToAdd);
-        }
       }
     }
   } catch (error) {
