@@ -142,7 +142,8 @@ export async function getTransactions(
             String(transaction.ColData[transactionRow].value)
           ) &&
           transaction.ColData[dateRow].value !== '' &&
-          transaction.ColData[amountRow].value !== ''
+          transaction.ColData[amountRow].value !== '' &&
+          transaction.ColData[nameRow].value !== ''
         ) {
           // Reads the values from the specified columns in the current row of the results.
           // Explicitly define the types due to values from the API being either a string or number.
