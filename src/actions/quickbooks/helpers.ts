@@ -1,4 +1,5 @@
 import type { QueryResult } from '@/types/QueryResult';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 
 // Check for fault property in returned error objects.
 export function checkFaultProperty(
@@ -15,7 +16,7 @@ export function checkFaultProperty(
 // Create a formatted result object based on the query results.
 export function createQueryResult(
   success: boolean,
-  results: { Error: { Message: string; Detail: string }[] }
+  results: ErrorResponse
 ): QueryResult {
   // Create a formatted result object with all fields set to null.
   const QueryResult: QueryResult = {
@@ -32,8 +33,8 @@ export function createQueryResult(
   } else {
     // Otherwise, set the query result to indicate failure and provide a error message and detail.
     QueryResult.result = 'Error';
-    QueryResult.message = results.Error[0].Message;
-    QueryResult.detail = results.Error[0].Detail;
+    QueryResult.message = results.Fault.Error[0].Message;
+    QueryResult.detail = results.Fault.Error[0].Detail;
   }
 
   // Return the formatted query result.
