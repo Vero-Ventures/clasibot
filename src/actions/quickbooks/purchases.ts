@@ -1,4 +1,5 @@
 'use server';
+import { ErrorResponse } from '@/types/ErrorResponse';
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
 import type { Purchase } from '@/types/Purchase';
@@ -57,21 +58,37 @@ export async function findPurchase(id: string): Promise<PurchaseResponse> {
 export async function getFormattedPurchase(id: string): Promise<Purchase> {
   // Create the QuickBooks API object.
   const qbo = await createQBObject();
+
+  // Define success and error trackers for query response creation.
   let success = true;
+  let error: ErrorResponse = {
+    Fault: {
+      Error: [
+        {
+          Message: '',
+          Detail: '',
+          code: '',
+          element: '',
+        },
+      ],
+      type: '',
+    },
+  };
 
   // Search by ID for a specific purchase object.
   const response: PurchaseResponse = await new Promise((resolve) => {
-    qbo.getPurchase(id, (err: Error, data: PurchaseResponse) => {
+    qbo.getPurchase(id, (err: ErrorResponse, data: PurchaseResponse) => {
       // If there is an error, check if it has a 'Fault' property
       if (err && checkFaultProperty(err)) {
         success = false;
+        error = err;
       }
       resolve(data);
     });
   });
 
   // Create a formatted result object based on the query results.
-  const queryResult = createQueryResult(success, response);
+  const queryResult = createQueryResult(success, error);
 
   // Create a formatted result object with all fields set to null.
   const formattedResult: Purchase = {
