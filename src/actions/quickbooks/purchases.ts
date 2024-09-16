@@ -26,6 +26,7 @@ export async function findPurchase(id: string): Promise<PurchaseResponse> {
   } catch (error) {
     console.error(error);
     // Return an empty purchase response that indicates an error.
+    // Query result is not used to keep purchases in format needed for purchase updates.
     const errorResonse: PurchaseResponse = {
       Id: '',
       SyncToken: '',
@@ -135,6 +136,7 @@ export async function getPurchases(): Promise<PurchaseResponse[]> {
     );
 
     // Create an array to store the purchase responses.
+    // Query result is not used to keep purchases in format needed for purchase updates.
     const purchases: PurchaseResponse[] = [];
 
     // Iterate through the response to add the individal purchases to the purchases array.
