@@ -1,8 +1,8 @@
 'use server';
-import { ErrorResponse } from '@/types/ErrorResponse';
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
 import type { Account } from '@/types/Account';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 
 // Get all accounts from the QuickBooks API.
 export async function getAccounts(): Promise<string> {

@@ -1,7 +1,8 @@
 'use server';
-import { ErrorResponse } from '@/types/ErrorResponse';
+
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Purchase } from '@/types/Purchase';
 import type { PurchaseResponse } from '@/types/PurchaseResponse';
 

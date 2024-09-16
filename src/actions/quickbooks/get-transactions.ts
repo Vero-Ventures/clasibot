@@ -1,7 +1,8 @@
 'use server';
-import { ErrorResponse } from '@/types/ErrorResponse';
+
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Transaction } from '@/types/Transaction';
 
 // Get all transactions from the QuickBooks API.
