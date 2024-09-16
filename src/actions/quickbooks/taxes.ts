@@ -91,7 +91,7 @@ export async function findTaxCode(id: string): Promise<string> {
       },
     };
 
-    // Get all tax code objects.
+    // Get a tax code by its ID.
     const response: TaxCode = await new Promise((resolve) => {
       qbo.getTaxCode(id, (err: ErrorResponse, data: TaxCode) => {
         if (err && checkFaultProperty(err)) {
@@ -160,111 +160,158 @@ function checkForCurrentTaxCode(taxCodeName: string): boolean {
   return validTaxCodeNames.includes(taxCodeName);
 }
 
-// // Get all the tax rates and returns them as an array of tax rate objects.
-// export async function getTaxRates(): Promise<string> {
-//   try {
-//     // Create the QuickBooks API object.
-//     const qbo = await createQBObject();
+// Get all the tax rates and returns them as an array of tax rate objects.
+export async function getTaxRates(): Promise<string> {
+  try {
+    // Create the QuickBooks API object.
+    const qbo = await createQBObject();
 
-//     // Define format of returned group of tax rate objects.
-//     type TaxCodeResponse = {
-//       QueryResponse: { TaxCode: TaxRate[] };
-//       Error: {
-//         Message: string;
-//         Detail: string;
-//       }[];
-//     };
+    // Define format of returned group of tax rate objects.
+    type TaxCodeResponse = {
+      QueryResponse: { TaxCode: TaxRate[] };
+      Error: {
+        Message: string;
+        Detail: string;
+      }[];
+    };
 
-//     // Define success and error trackers for query response creation.
-//     let success = true;
-//     let error: ErrorResponse = {
-//       Fault: {
-//         Error: [
-//           {
-//             Message: '',
-//             Detail: '',
-//             code: '',
-//             element: '',
-//           },
-//         ],
-//         type: '',
-//       },
-//     };
+    // Define success and error trackers for query response creation.
+    let success = true;
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
-//     // Get all tax rate objects.
-//     const response: any = await new Promise((resolve) => {
-//       qbo.findTaxRates((err: ErrorResponse, data: any) => {
-//         if (err && checkFaultProperty(err)) {
-//           success = false;
-//           error = err;
-//         }
-//         resolve(data);
-//       });
-//     });
+    // Get all tax rate objects.
+    const response: any = await new Promise((resolve) => {
+      qbo.findTaxRates((err: ErrorResponse, data: any) => {
+        if (err && checkFaultProperty(err)) {
+          success = false;
+          error = err;
+        }
+        resolve(data);
+      });
+    });
 
-//     // Create an array to store the tax rates.
-//     const taxRates = [];
+    // Create an array to store the tax rates.
+    const taxRates = [];
 
-//     // Create a query result and push it to the tax rates array.
-//     const queryResult = createQueryResult(success, error);
-//     taxRates.push(queryResult);
+    // Create a query result and push it to the tax rates array.
+    const queryResult = createQueryResult(success, error);
+    taxRates.push(queryResult);
 
-//     // Iterate through the response to format and add the individal tax rates to the array.
-//     for (const taxRate of response.QueryResponse.TaxRate) {
-//       // Push active tax rates that contain a valid rate value to the array.
-//       // Also check if the tax rate is in the list of current tax rates before pushing.
-//       if (
-//         taxRate.RateValue !== undefined &&
-//         taxRate.Active === true &&
-//         checkForCurrentTaxRate(taxRate.Name)
-//       ) {
-//         taxRates.push(taxRate);
-//       }
-//     }
+    // Iterate through the response to format and add the individal tax rates to the array.
+    for (const taxRate of response.QueryResponse.TaxRate) {
+      // Push active tax rates that contain a valid rate value to the array.
+      // Also check if the tax rate is in the list of current tax rates before pushing.
+      if (
+        taxRate.RateValue !== undefined &&
+        taxRate.Active === true &&
+        checkForCurrentTaxRate(taxRate.Name)
+      ) {
+        taxRates.push(taxRate);
+      }
+    }
 
-//     // Return the array of formatted tax rates.
-//     return JSON.stringify(taxRates);
-//   } catch (error) {
-//     return JSON.stringify(error);
-//   }
-// }
+    // Return the array of formatted tax rates.
+    return JSON.stringify(taxRates);
+  } catch (error) {
+    return JSON.stringify(error);
+  }
+}
 
-// // Get a specific tax rate using its ID.
-// export async function findTaxRate(id: string): Promise<string> {}
+// Get a specific tax rate using its ID.
+export async function findTaxRate(id: string): Promise<string> {
+  try {
+    // Create the QuickBooks API object.
+    const qbo = await createQBObject();
 
-// // Take a tax rate response from the API and format it by grabbing the relevant values from the whole response.
-// function formatTaxRate(taxRateResponse: TaxRate): TaxRate {
-//   // Create object with relevant elements from passed raw API tax rate object.
-//   const formattedTaxRate: TaxRate = {
-//     Id: taxRateResponse.Id,
-//     Name: taxRateResponse.Name,
-//     Description: taxRateResponse.Description,
-//     Active: taxRateResponse.Active,
-//     RateValue: taxRateResponse.RateValue,
-//     DisplayType: taxRateResponse.DisplayType,
-//   };
+    // Define success and error trackers for query response creation.
+    let success = true;
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
-//   // Return the formatted object just containing the relevant data.
-//   return formattedTaxRate;
-// }
+    // Get all a tax rate by its ID.
+    const response: TaxRate = await new Promise((resolve) => {
+      qbo.getTaxRate(id, (err: ErrorResponse, data: TaxRate) => {
+        if (err && checkFaultProperty(err)) {
+          success = false;
+          error = err;
+        }
+        resolve(data);
+      });
+    });
 
-// // Take a tax code name and check if it currently valid for use.
-// function checkForCurrentTaxRate(taxCodeName: string): boolean {
-//   // Define the names of the currently valid tax codes and return if it includes the passed name.
-//   const validTaxCodeNames = [
-//     'GST EP',
-//     'GST/HST (ITC) ZR',
-//     'NOTAXP',
-//     'GST (ITC)',
-//     'PST (BC) Purchase',
-//     'PST (MB) on purchase',
-//     'PST (SK) 2017 on purchases',
-//     'QST 9.975 (ITR)',
-//     'HST (ITC) NS',
-//     'HST (ITC) ON',
-//     'HST (ITC) NB 2016',
-//     'HST (NL) 2016',
-//     'HST (PE) 2016',
-//   ];
-//   return validTaxCodeNames.includes(taxCodeName);
-// }
+    // Create an array to store the tax codes.
+    const taxRateResult = [];
+
+    // Create a query result and push it to the result array.
+    const queryResult = createQueryResult(success, error);
+    taxRateResult.push(queryResult);
+
+    // Format the response and push it to the result array.
+    taxRateResult.push(formatTaxRate(response));
+
+    // Return the array of formatted tax rates.
+    return JSON.stringify(taxRateResult);
+  } catch (error) {
+    return JSON.stringify(error);
+  }
+}
+
+// Take a tax rate response from the API and format it by grabbing the relevant values from the whole response.
+function formatTaxRate(taxRateResponse: TaxRate): TaxRate {
+  // Create object with relevant elements from passed raw API tax rate object.
+  const formattedTaxRate: TaxRate = {
+    Id: taxRateResponse.Id,
+    Name: taxRateResponse.Name,
+    Description: taxRateResponse.Description,
+    Active: taxRateResponse.Active,
+    RateValue: taxRateResponse.RateValue,
+    DisplayType: taxRateResponse.DisplayType,
+  };
+
+  // Return the formatted object just containing the relevant data.
+  return formattedTaxRate;
+}
+
+// Take a tax code name and check if it currently valid for use.
+function checkForCurrentTaxRate(taxCodeName: string): boolean {
+  // Define the names of the currently valid tax codes and return if it includes the passed name.
+  const validTaxCodeNames = [
+    'GST EP',
+    'GST/HST (ITC) ZR',
+    'NOTAXP',
+    'GST (ITC)',
+    'PST (BC) Purchase',
+    'PST (MB) on purchase',
+    'PST (SK) 2017 on purchases',
+    'QST 9.975 (ITR)',
+    'HST (ITC) NS',
+    'HST (ITC) ON',
+    'HST (ITC) NB 2016',
+    'HST (NL) 2016',
+    'HST (PE) 2016',
+  ];
+  return validTaxCodeNames.includes(taxCodeName);
+}
