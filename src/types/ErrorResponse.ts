@@ -4,7 +4,7 @@
 export type ErrorResponse = {
   Fault: {
     Error: {
-        // Message: A short message indicating an error.
+      // Message: A short message indicating an error.
       Message: string;
       // Detail: Detail information regarding the error.
       Detail: string;
