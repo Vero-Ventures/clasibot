@@ -167,8 +167,8 @@ export async function getTaxRates(): Promise<string> {
     const qbo = await createQBObject();
 
     // Define format of returned group of tax rate objects.
-    type TaxCodeResponse = {
-      QueryResponse: { TaxCode: TaxRate[] };
+    type TaxRateResponse = {
+      QueryResponse: { TaxRate: TaxRate[] };
       Error: {
         Message: string;
         Detail: string;
@@ -192,8 +192,8 @@ export async function getTaxRates(): Promise<string> {
     };
 
     // Get all tax rate objects.
-    const response: any = await new Promise((resolve) => {
-      qbo.findTaxRates((err: ErrorResponse, data: any) => {
+    const response: TaxRateResponse = await new Promise((resolve) => {
+      qbo.findTaxRates((err: ErrorResponse, data: TaxRateResponse) => {
         if (err && checkFaultProperty(err)) {
           success = false;
           error = err;
