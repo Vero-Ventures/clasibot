@@ -65,7 +65,7 @@ export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('taxCode').unique().notNull(),
   count: integer('count').notNull(),
-})
+});
 
 export const TaxCodesToTransactionsRelationship = relations(
   TaxCode,
@@ -104,13 +104,21 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-export const unclassifiedUserTransaction = pgTable('unclassifiedUserTransaction', {
-  id: uuid('id').primaryKey().defaultRandom().notNull(),
-  userId: uuid('user_id')
-    .unique()
-    .notNull()
-    .references(() => User.id, { onDelete: 'cascade' }),
-  qboID: text('qboID').notNull(),
-  classification: text('').array(),
-  TaxCode: text('').array()
-})
+
+export const unclassifiedUserTransaction = pgTable(
+  'unclassifiedUserTransaction',
+  {
+    id: uuid('id').primaryKey().defaultRandom().notNull(),
+    userId: uuid('user_id')
+      .unique()
+      .notNull()
+      .references(() => User.id, { onDelete: 'cascade' }),
+    qboID: text('qboID').notNull(),
+    classificationId: serial('')
+      .array()
+      .references(() => Classification.id),
+    taxCodeId: serial('')
+      .array()
+      .references(() => TaxCode.id),
+  }
+);
