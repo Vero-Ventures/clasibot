@@ -4,6 +4,7 @@ import { checkFaultProperty, createQueryResult } from './helpers';
 import type { TaxCode } from '@/types/TaxCode';
 import type { TaxRate } from '@/types/TaxRate';
 import type { ErrorResponse } from '@/types/ErrorResponse';
+import { Locations, TaxCodes, TaxRates } from '@/enums/taxes';
 
 // Get all the tax codes and returns them as an array of tax code objects.
 export async function getTaxCodes(): Promise<string> {
@@ -69,8 +70,55 @@ export async function getTaxCodes(): Promise<string> {
   }
 }
 
+// Get an array of the tax code names used by a specific location (province or territory).
+export async function getTaxCodesByLocation(
+  LocationName: Locations
+): Promise<string[]> {
+  const taxCodeNames = [];
+  // Push the nation wide tax codes that apply a 0% rate.
+  taxCodeNames.push(TaxCodes.Exempt, TaxCodes.ZeroRated, TaxCodes.OutOfScope);
+
+  // Push the nation wide GST tax code.
+  taxCodeNames.push(TaxCodes.Gst);
+
+  // Use switch case to add appropriate tax codes by location.
+  // Alberta and the territories have not additional tax codes.
+  switch (LocationName) {
+    case Locations.BC:
+      taxCodeNames.push(TaxCodes.GstPstBC, TaxCodes.PstBC);
+      break;
+    case Locations.MB:
+      taxCodeNames.push(TaxCodes.GstPstMB, TaxCodes.PstMB);
+      break;
+    case Locations.SK:
+      taxCodeNames.push(TaxCodes.GstPstSK, TaxCodes.PstSk);
+      break;
+    case Locations.QC:
+      taxCodeNames.push(TaxCodes.GstQstQC, TaxCodes.QstQC);
+      break;
+    case Locations.NS:
+      taxCodeNames.push(TaxCodes.HstNS);
+      break;
+    case Locations.ON:
+      taxCodeNames.push(TaxCodes.HstON);
+      break;
+    case Locations.NB:
+      taxCodeNames.push(TaxCodes.HstNB);
+      break;
+    case Locations.NL:
+      taxCodeNames.push(TaxCodes.HstNL);
+      break;
+    case Locations.PE:
+      taxCodeNames.push(TaxCodes.HstPE);
+      break;
+  }
+
+  // Return the array of tax code names.
+  return taxCodeNames;
+}
+
 // Get a specific tax code using its ID.
-export async function findTaxCode(id: string): Promise<string> {
+export async function findTaxCodebyId(id: string): Promise<string> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
@@ -119,6 +167,34 @@ export async function findTaxCode(id: string): Promise<string> {
   }
 }
 
+// Get specific tax codes by matching the names of found tax codes against the passed array of tax code names.
+// Only returns found matches, does not indicate if no match was found for one or more names in the passed string array.
+// Returns an empty array if no matches are found.
+export async function findTaxCodesbyNames(names: string[]): Promise<string> {
+  // Get all tax codes and make an array to store ones with matching names.
+  const allTaxCodes = JSON.parse(await getTaxCodes());
+  const matchingTaxCodes = [];
+
+
+
+  // Check if index 0, the query result value is a success.
+  // If it is not, return the error result instead.
+  if (allTaxCodes[0].result !== 'Success') {
+    return JSON.stringify(allTaxCodes[0]);
+  }
+
+  // Iterate through the remaining indicies to check for matching Tax Codes returned by the getTaxCodes call.
+  for (let index = 1; index < allTaxCodes.length; index++) {
+    // Check if the name of the current tax code is in the list of passed names.
+    if (names.includes(allTaxCodes[index].Name)) {
+      matchingTaxCodes.push(allTaxCodes[index]);
+    }
+  }
+
+  // Return the array of found tax codes with matching names.
+  return JSON.stringify(matchingTaxCodes);
+}
+
 // Take a tax code response from the API and format it by grabbing the relevant values from the whole response.
 function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
   // Create object with relevant elements from passed raw API tax code object.
@@ -137,27 +213,8 @@ function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
 
 // Take a tax code name and check if it currently valid for use.
 function checkForCurrentTaxCode(taxCodeName: string): boolean {
-  // Define the names of the currently valid tax codes and return if it includes the passed name.
-  const validTaxCodeNames = [
-    'Exempt',
-    'Zero-rated',
-    'Out of Scope',
-    'GST',
-    'GST/PST BC',
-    'PST BC',
-    'GST/PST MB',
-    'PST MB',
-    'GST/PST SK',
-    'PST SK',
-    'GST/QST QC - 9.975',
-    'QST QC - 9.975',
-    'HST NS',
-    'HST ON',
-    'HST NB 2016',
-    'HST NL 2016',
-    'HST PE 2016',
-  ];
-  return validTaxCodeNames.includes(taxCodeName);
+  // Check the tax code name against the Enum of valid tax codes.
+  return (Object.values(TaxCodes) as string[]).includes(taxCodeName);
 }
 
 // Get all the tax rates and returns them as an array of tax rate objects.
@@ -230,7 +287,7 @@ export async function getTaxRates(): Promise<string> {
 }
 
 // Get a specific tax rate using its ID.
-export async function findTaxRate(id: string): Promise<string> {
+export async function findTaxRateById(id: string): Promise<string> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
@@ -295,23 +352,8 @@ function formatTaxRate(taxRateResponse: TaxRate): TaxRate {
   return formattedTaxRate;
 }
 
-// Take a tax code name and check if it currently valid for use.
-function checkForCurrentTaxRate(taxCodeName: string): boolean {
-  // Define the names of the currently valid tax codes and return if it includes the passed name.
-  const validTaxCodeNames = [
-    'GST EP',
-    'GST/HST (ITC) ZR',
-    'NOTAXP',
-    'GST (ITC)',
-    'PST (BC) Purchase',
-    'PST (MB) on purchase',
-    'PST (SK) 2017 on purchases',
-    'QST 9.975 (ITR)',
-    'HST (ITC) NS',
-    'HST (ITC) ON',
-    'HST (ITC) NB 2016',
-    'HST (NL) 2016',
-    'HST (PE) 2016',
-  ];
-  return validTaxCodeNames.includes(taxCodeName);
+// Take a tax rate name and check if it currently valid for use.
+function checkForCurrentTaxRate(taxRateName: string): boolean {
+  // Check the tax rate name against the Enum of valid tax rates.
+  return (Object.values(TaxRates) as string[]).includes(taxRateName);
 }
