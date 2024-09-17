@@ -103,3 +103,14 @@ export const TransactionsToTaxCodes = pgTable(
     pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
   })
 );
+
+export const unclassifiedUserTransaction = pgTable('unclassifiedUserTransaction', {
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  userId: uuid('user_id')
+    .unique()
+    .notNull()
+    .references(() => User.id, { onDelete: 'cascade' }),
+  qboID: text('qboID').notNull(),
+  classification: text('').array(),
+  TaxCode: text('').array()
+})
