@@ -28,8 +28,8 @@ export function createQueryResult(
   if (success) {
     // Set the query result to indicate success and provide a success message and detail.
     QueryResult.result = 'Success';
-    QueryResult.message = 'Accounts found successfully.';
-    QueryResult.detail = 'The account objects were found successfully.';
+    QueryResult.message = 'Objects found successfully.';
+    QueryResult.detail = 'The objects were found successfully.';
   } else {
     // Otherwise, set the query result to indicate failure and provide a error message and detail.
     QueryResult.result = 'Error';
