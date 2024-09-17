@@ -63,7 +63,7 @@ export const ClassificationToTransactionsRelationship = relations(
 
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
-  name: text('name').unique().notNull(),
+  taxCode: text('taxCode').unique().notNull(),
   count: integer('count').notNull(),
 })
 
