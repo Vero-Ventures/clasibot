@@ -89,3 +89,17 @@ export const TransactionsToClassifications = pgTable(
   })
 );
 
+export const TransactionsToTaxCodes = pgTable(
+  'TransactionsToTaxCodes',
+  {
+    transactionId: integer('transaction_id')
+      .notNull()
+      .references(() => Transaction.id),
+    taxCodeId: integer('tax_code_id')
+      .notNull()
+      .references(() => TaxCode.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
+  })
+);
