@@ -170,14 +170,12 @@ export async function findTaxCodebyId(id: string): Promise<string> {
 // Get specific tax codes by matching the names of found tax codes against the passed array of tax code names.
 // Only returns found matches, does not indicate if no match was found for one or more names in the passed string array.
 // Returns an empty array if no matches are found.
-export async function findTaxCodesbyNames(names: string[]): Promise<string> {
+export async function findTaxCodesByNames(names: string[]): Promise<string> {
   // Get all tax codes and make an array to store ones with matching names.
   const allTaxCodes = JSON.parse(await getTaxCodes());
   const matchingTaxCodes = [];
 
-
-
-  // Check if index 0, the query result value is a success.
+  // Check if index 0 (the query result value) is a success.
   // If it is not, return the error result instead.
   if (allTaxCodes[0].result !== 'Success') {
     return JSON.stringify(allTaxCodes[0]);
