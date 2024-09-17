@@ -124,3 +124,25 @@ export const unclassifiedUserTransaction = pgTable(
       .references(() => TaxCode.id),
   }
 );
+
+// For transactions where both of the classifications were assigned real values.
+// If a related classification or taxCode is deleted from the DB, so are all related rows in this table.
+export const classifiedUserTransaction = pgTable(
+  'unclassifiedUserTransaction',
+  {
+    id: uuid('id').primaryKey().defaultRandom().notNull(),
+    userId: uuid('user_id')
+      .unique()
+      .notNull()
+      .references(() => User.id, { onDelete: 'cascade' }),
+    qboID: text('qboID').notNull(),
+    classificationId: serial('')
+      .array()
+      .notNull()
+      .references(() => Classification.id),
+    taxCodeId: serial('')
+      .array()
+      .notNull()
+      .references(() => TaxCode.id),
+  }
+);
