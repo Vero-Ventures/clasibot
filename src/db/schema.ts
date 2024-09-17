@@ -61,6 +61,7 @@ export const ClassificationToTransactionsRelationship = relations(
   })
 );
 
+// Tax code referes to the name of the related tax code as defined in QuickBooks.
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('taxCode').unique().notNull(),
@@ -104,7 +105,8 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-
+// For transactions where one or both of the classifications could not be completed.
+// If a related classification or taxCode is deleted from the DB, so are all related rows in this table.
 export const unclassifiedUserTransaction = pgTable(
   'unclassifiedUserTransaction',
   {
