@@ -16,6 +16,7 @@ export const User = pgTable('User', {
   lastName: text('last_name'),
   email: text('email').unique(),
   industry: text('industry'),
+  companyNames: text('companyNames').array(),
   subscriptionId: uuid('subscription_id').unique(),
 });
 
@@ -40,6 +41,13 @@ export const TransactionToClassificationsRelationship = relations(
   })
 );
 
+export const TransactionToTaxCodesRelationship = relations(
+  Transaction,
+  ({ many }) => ({
+    taxCodes: many(TaxCode),
+  })
+);
+
 export const Classification = pgTable('Classification', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
@@ -48,6 +56,19 @@ export const Classification = pgTable('Classification', {
 
 export const ClassificationToTransactionsRelationship = relations(
   Classification,
+  ({ many }) => ({
+    transactions: many(Transaction),
+  })
+);
+
+export const TaxCode = pgTable('TaxCode', {
+  id: serial('id').primaryKey(),
+  name: text('name').unique().notNull(),
+  count: integer('count').notNull(),
+})
+
+export const TaxCodesToTransactionsRelationship = relations(
+  TaxCode,
   ({ many }) => ({
     transactions: many(Transaction),
   })
@@ -67,3 +88,4 @@ export const TransactionsToClassifications = pgTable(
     pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
   })
 );
+
