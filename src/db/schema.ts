@@ -48,6 +48,30 @@ export const TransactionToTaxCodesRelationship = relations(
   })
 );
 
+// For transaction classifications to be saved for later review by the user.
+export const UserTransaction = pgTable('userTransaction', {
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  userId: uuid('user_id')
+    .unique()
+    .notNull()
+    .references(() => User.id, { onDelete: 'cascade' }),
+  qboID: text('qboID').notNull(),
+});
+
+export const UserTransactionToClassificationsRelationship = relations(
+  UserTransaction,
+  ({ many }) => ({
+    classifications: many(Classification),
+  })
+);
+
+export const UserTransactionToTaxCodesRelationship = relations(
+  UserTransaction,
+  ({ many }) => ({
+    taxCodes: many(TaxCode),
+  })
+);
+
 export const Classification = pgTable('Classification', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
@@ -58,6 +82,13 @@ export const ClassificationToTransactionsRelationship = relations(
   Classification,
   ({ many }) => ({
     transactions: many(Transaction),
+  })
+);
+
+export const ClassificationToUserTransactionsRelationship = relations(
+  Classification,
+  ({ many }) => ({
+    transactions: many(UserTransaction),
   })
 );
 
@@ -72,6 +103,13 @@ export const TaxCodesToTransactionsRelationship = relations(
   TaxCode,
   ({ many }) => ({
     transactions: many(Transaction),
+  })
+);
+
+export const TaxCodesToUserTransactionsRelationship = relations(
+  TaxCode,
+  ({ many }) => ({
+    transactions: many(UserTransaction),
   })
 );
 
@@ -103,46 +141,4 @@ export const TransactionsToTaxCodes = pgTable(
   (t) => ({
     pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
   })
-);
-
-// For transactions where one or both of the classifications could not be completed.
-// If a related classification or taxCode is deleted from the DB, so are all related rows in this table.
-export const unclassifiedUserTransaction = pgTable(
-  'unclassifiedUserTransaction',
-  {
-    id: uuid('id').primaryKey().defaultRandom().notNull(),
-    userId: uuid('user_id')
-      .unique()
-      .notNull()
-      .references(() => User.id, { onDelete: 'cascade' }),
-    qboID: text('qboID').notNull(),
-    category: text('category')
-      .array()
-      .references(() => Classification.category),
-    taxCodeId: text('taxCode')
-      .array()
-      .references(() => TaxCode.taxCode),
-  }
-);
-
-// For transactions where both of the classifications were assigned real values.
-// If a related classification or taxCode is deleted from the DB, so are all related rows in this table.
-export const classifiedUserTransaction = pgTable(
-  'classifiedUserTransaction',
-  {
-    id: uuid('id').primaryKey().defaultRandom().notNull(),
-    userId: uuid('user_id')
-      .unique()
-      .notNull()
-      .references(() => User.id, { onDelete: 'cascade' }),
-    qboID: text('qboID').notNull(),
-    category: text('category')
-      .array()
-      .notNull()
-      .references(() => Classification.category),
-    taxCode: text('taxCode')
-      .array()
-      .notNull()
-      .references(() => TaxCode.taxCode),
-  }
 );
