@@ -1,0 +1,523 @@
+{
+  "id": "94fc7cd2-3f53-40c5-81a7-aff900816502",
+  "prevId": "edf5a81d-b234-48f2-b0f3-49046c8f81e2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Classification": {
+      "name": "Classification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Classification_category_unique": {
+          "name": "Classification_category_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "category"
+          ]
+        }
+      }
+    },
+    "public.Subscription": {
+      "name": "Subscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Subscription_user_id_User_id_fk": {
+          "name": "Subscription_user_id_User_id_fk",
+          "tableFrom": "Subscription",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Subscription_user_id_unique": {
+          "name": "Subscription_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        "Subscription_stripe_id_unique": {
+          "name": "Subscription_stripe_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_id"
+          ]
+        }
+      }
+    },
+    "public.TaxCode": {
+      "name": "TaxCode",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "taxCode": {
+          "name": "taxCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaxCode_taxCode_unique": {
+          "name": "TaxCode_taxCode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "taxCode"
+          ]
+        }
+      }
+    },
+    "public.Transaction": {
+      "name": "Transaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "transaction_name": {
+          "name": "transaction_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Transaction_transaction_name_unique": {
+          "name": "Transaction_transaction_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "transaction_name"
+          ]
+        }
+      }
+    },
+    "public.TransactionsToClassifications": {
+      "name": "TransactionsToClassifications",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classification_id": {
+          "name": "classification_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TransactionsToClassifications_transaction_id_Transaction_id_fk": {
+          "name": "TransactionsToClassifications_transaction_id_Transaction_id_fk",
+          "tableFrom": "TransactionsToClassifications",
+          "tableTo": "Transaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TransactionsToClassifications_classification_id_Classification_id_fk": {
+          "name": "TransactionsToClassifications_classification_id_Classification_id_fk",
+          "tableFrom": "TransactionsToClassifications",
+          "tableTo": "Classification",
+          "columnsFrom": [
+            "classification_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "TransactionsToClassifications_transaction_id_classification_id_pk": {
+          "name": "TransactionsToClassifications_transaction_id_classification_id_pk",
+          "columns": [
+            "transaction_id",
+            "classification_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.TransactionsToTaxCodes": {
+      "name": "TransactionsToTaxCodes",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_code_id": {
+          "name": "tax_code_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TransactionsToTaxCodes_transaction_id_Transaction_id_fk": {
+          "name": "TransactionsToTaxCodes_transaction_id_Transaction_id_fk",
+          "tableFrom": "TransactionsToTaxCodes",
+          "tableTo": "Transaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TransactionsToTaxCodes_tax_code_id_TaxCode_id_fk": {
+          "name": "TransactionsToTaxCodes_tax_code_id_TaxCode_id_fk",
+          "tableFrom": "TransactionsToTaxCodes",
+          "tableTo": "TaxCode",
+          "columnsFrom": [
+            "tax_code_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "TransactionsToTaxCodes_transaction_id_tax_code_id_pk": {
+          "name": "TransactionsToTaxCodes_transaction_id_tax_code_id_pk",
+          "columns": [
+            "transaction_id",
+            "tax_code_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.User": {
+      "name": "User",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "industry": {
+          "name": "industry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "companyNames": {
+          "name": "companyNames",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subscription_id": {
+          "name": "subscription_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "User_email_unique": {
+          "name": "User_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "User_subscription_id_unique": {
+          "name": "User_subscription_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "subscription_id"
+          ]
+        }
+      }
+    },
+    "public.userTransaction": {
+      "name": "userTransaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "qboID": {
+          "name": "qboID",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "userTransaction_user_id_User_id_fk": {
+          "name": "userTransaction_user_id_User_id_fk",
+          "tableFrom": "userTransaction",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "userTransaction_user_id_unique": {
+          "name": "userTransaction_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      }
+    },
+    "public.UserTransactionsToClassifications": {
+      "name": "UserTransactionsToClassifications",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classification_id": {
+          "name": "classification_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserTransactionsToClassifications_transaction_id_userTransaction_id_fk": {
+          "name": "UserTransactionsToClassifications_transaction_id_userTransaction_id_fk",
+          "tableFrom": "UserTransactionsToClassifications",
+          "tableTo": "userTransaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserTransactionsToClassifications_classification_id_Classification_id_fk": {
+          "name": "UserTransactionsToClassifications_classification_id_Classification_id_fk",
+          "tableFrom": "UserTransactionsToClassifications",
+          "tableTo": "Classification",
+          "columnsFrom": [
+            "classification_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "UserTransactionsToClassifications_transaction_id_classification_id_pk": {
+          "name": "UserTransactionsToClassifications_transaction_id_classification_id_pk",
+          "columns": [
+            "transaction_id",
+            "classification_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.UserTransactionsToTaxCodes": {
+      "name": "UserTransactionsToTaxCodes",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_code_id": {
+          "name": "tax_code_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserTransactionsToTaxCodes_transaction_id_userTransaction_id_fk": {
+          "name": "UserTransactionsToTaxCodes_transaction_id_userTransaction_id_fk",
+          "tableFrom": "UserTransactionsToTaxCodes",
+          "tableTo": "userTransaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserTransactionsToTaxCodes_tax_code_id_TaxCode_id_fk": {
+          "name": "UserTransactionsToTaxCodes_tax_code_id_TaxCode_id_fk",
+          "tableFrom": "UserTransactionsToTaxCodes",
+          "tableTo": "TaxCode",
+          "columnsFrom": [
+            "tax_code_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "UserTransactionsToTaxCodes_transaction_id_tax_code_id_pk": {
+          "name": "UserTransactionsToTaxCodes_transaction_id_tax_code_id_pk",
+          "columns": [
+            "transaction_id",
+            "tax_code_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
