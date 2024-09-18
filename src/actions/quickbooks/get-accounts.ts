@@ -2,13 +2,29 @@
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
 import type { Account } from '@/types/Account';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 
 // Get all accounts from the QuickBooks API.
 export async function getAccounts(): Promise<string> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
+
+    // Define success and error trackers for query response creation.
     let success = true;
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
     // Define a type for the response object to allow for type checking.
     type AccountResponse = {
@@ -33,10 +49,11 @@ export async function getAccounts(): Promise<string> {
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
         { Classification: 'Expense', limit: 1000 },
-        (err: Error, data: AccountResponse) => {
+        (err: ErrorResponse, data: AccountResponse) => {
           // If there is an error, check if it has a 'Fault' property.
           if (err && checkFaultProperty(err)) {
             success = false;
+            error = err;
           }
           resolve(data);
         }
@@ -46,8 +63,8 @@ export async function getAccounts(): Promise<string> {
     const results = response.QueryResponse.Account;
     const formattedAccounts = [];
 
-    // Create a formatted query result object based on the query results.
-    const queryResult = createQueryResult(success, response);
+    // Create a formatted query result object based on the query results and append it to the array.
+    const queryResult = createQueryResult(success, error);
     formattedAccounts.push(queryResult);
 
     // Ignore any inactive accounts and add the rest to the formatted results.

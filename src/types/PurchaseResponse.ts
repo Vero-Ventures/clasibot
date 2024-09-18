@@ -6,11 +6,14 @@ export type PurchaseResponse = {
   Id: string;
   // SyncToken: Integer as a string.
   SyncToken: string;
-  // The type of payment used for the purchase.
-  // PaymentType: 'Check' | 'Cash Expense' | 'Credit Card Expense'.
-  PaymentType: string;
   // TxnDate: Date as a string in the format 'YYYY-MM-DD'.
   TxnDate: string;
+  // The type of payment used for the purchase.
+  // PaymentType: 'Check' | 'Cash' | 'Credit Card'.
+  PaymentType: string;
+  // Credit: Only valid on credit card transactions, represents a refund when true.
+  // Only care about false credit values for expense transactions.
+  Credit: boolean;
   // Total positive OR negative decimal value of the purchase.
   // Positive vs Negative depends the type of account the purchase is associated with.
   // Happens as a result of how accounting for different account types is done.
@@ -19,17 +22,22 @@ export type PurchaseResponse = {
   //    value: Id of the account the pruchase was made by. (integer as a string).
   //    name: Name of the account the pruchase was made by.
   AccountRef: { value: string; name: string };
-  // AccountRef: Reference to the vendor the purchase was made from.
+  // AccountRef: Reference to the vendor the purchase was made from, may be missing if no payee is connected to the purchase.
   //    value: Id of the account for the vendor. (integer as a string).
   //    name: Name of the account for the vendor.
-  EntityRef: { value: string; name: string };
+  EntityRef: { value: string; name: string; type: string };
   // An array of objects representing the lines of the purchase.
-  // Key Line (AccountBasedExpenseLineDetail) may be not present.
+  // Exists for compiste purchases that combine multiple transactions, with all transactions containing at least one value.
+  // Key detail type (AccountBasedExpenseLineDetail) may be not present, other types do not matter.
   Line: [
     {
       // DetailType: Defines the content of the line element.
       // Only matters if it is 'AccountBasedExpenseLineDetail'.
       DetailType: string;
+      // Description: A description of that part of a compisite purchase.
+      Description: string;
+      // Amount: Represents amount for that part of the compisite purchase.
+      Amount: number;
       // AccountBasedExpenseLineDetail: Details of the account used for the purchase.
       AccountBasedExpenseLineDetail: {
         // AccountRef: Reference to the account used for the purchase.
@@ -37,6 +45,10 @@ export type PurchaseResponse = {
         //    value: Id of the account connected to the purchase (integer as a string).
         //    name: Name of the account.
         AccountRef: { value: string; name: string };
+        // TaxCodeRef: Defines the tax code for that transaction inside a dictionary.
+        //    value: the defined name of the tax code.
+        //    name: an optional identifing name for the tax code.
+        TaxCodeRef: { value: string; name: string };
       };
     },
   ];

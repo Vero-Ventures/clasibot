@@ -88,7 +88,12 @@ export default function ReviewPage({
             (category) => category.name === categoryName
           )?.id;
 
-          if (!accountID || !purchaseObj) {
+          // Check if either object is missing or if an error was encountered calling the purchase object.
+          if (
+            !accountID ||
+            !purchaseObj ||
+            purchaseObj.Error[0].Message === 'Error'
+          ) {
             throw new Error('Error saving purchase');
           } else {
             // Iterate through line data of raw purchase object.

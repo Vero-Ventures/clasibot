@@ -1,6 +1,8 @@
 'use server';
+
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Transaction } from '@/types/Transaction';
 
 // Get all transactions from the QuickBooks API.
@@ -13,7 +15,21 @@ export async function getTransactions(
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
 
+    // Define success and error trackers for query response creation.
     let success = true;
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
     // Define a type for the response object to allow for type checking.
     type PreferenceResponse = {
@@ -24,7 +40,7 @@ export async function getTransactions(
 
     // Query user preferences to get the multi-currency preference for the user.
     const preferences: PreferenceResponse = await new Promise((resolve) => {
-      qbo.getPreferences((err: Error, data: PreferenceResponse) => {
+      qbo.getPreferences((err: ErrorResponse, data: PreferenceResponse) => {
         if (err && checkFaultProperty(err)) {
           // If there was an error getting the preferences:
           // Resolve with a PreferenceResponse with the multi-currency preference to false.
@@ -94,10 +110,11 @@ export async function getTransactions(
     const response: TransactionResponse = await new Promise((resolve) => {
       qbo.reportTransactionList(
         parameters,
-        (err: Error, data: TransactionResponse) => {
+        (err: ErrorResponse, data: TransactionResponse) => {
           // If there is an error, check if it has a 'Fault' property
           if (err && checkFaultProperty(err)) {
             success = false;
+            error = err;
           }
           resolve(data);
         }
@@ -109,8 +126,8 @@ export async function getTransactions(
 
     const formattedTransactions = [];
 
-    // Create a formatted query result object based on the query results.
-    const QueryResult = createQueryResult(success, response);
+    // Create a formatted query result object based on the query results and append it to the array.
+    const QueryResult = createQueryResult(success, error);
     formattedTransactions.push(QueryResult);
 
     // Define valid expense transaction types.

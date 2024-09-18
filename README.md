@@ -577,15 +577,13 @@ How to get the project running on a new machine.
 
 2. Open a terminal in your IDE.
 
-3. Run `cd ./frontend/` to navigate to the frontend folder that contains the majority of Clasibot's files.
+3. Run `bun i` to install the packages used by the app.
 
-4. Run `npm i` to install the packages used by the app.
+4. Run `bun dev` to launch the app on a localhost port.
 
-5. Run `npm run dev` to launch the app on a localhost port.
+5. Open the local host port _(Default: 3000)_ to check that the app is running.
 
-6. Open the local host port _(Default: 3000)_ to check that the app is running.
-
-7. If the app is running and the landing page is displayed, the project setup is complete.
+6. If the app is running and the landing page is displayed, the project setup is complete.
 
 ## **App Development Info**
 

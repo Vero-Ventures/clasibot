@@ -96,3 +96,68 @@ export async function getCompanyName(): Promise<string> {
     return 'Error: Name not found';
   }
 }
+
+// Get the company location from the QBO API, return the country and the sub-location for Canadian companies.
+// To check for tax classification compatable locations, check for a country value of 'CA'.
+export async function getCompanyLocation(): Promise<string> {
+  try {
+    // Create the QuickBooks API object.
+    const qbo = await createQBObject();
+
+    // Create a type for the response object to allow for type checking.
+    type CompanyInfoResponse = {
+      QueryResponse: {
+        CompanyInfo: [
+          { CompanyAddr: { Country: string; CountrySubDivisionCode: string } },
+        ];
+      };
+    };
+
+    // Search for a company info object related to the user.
+    const response: CompanyInfoResponse = await new Promise((resolve) => {
+      qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
+        // If there is an error, check if it has a 'Fault' property
+        if (err && checkFaultProperty(err)) {
+          // Then resolve the function with a response with values formatted to indicate failure.
+          resolve({
+            QueryResponse: {
+              CompanyInfo: [
+                { CompanyAddr: { Country: '', CountrySubDivisionCode: '' } },
+              ],
+            },
+          });
+        }
+        resolve(data);
+      });
+    });
+
+    // Countries should be defined by either a 3 letter '3166-1 alpha-3' code or by the full name.
+    // Example: Either 'CAN' or 'Canada'
+    // NOTE: Presently it is defined as CA for Canada so exact range of possible values is unclear.
+    const companyCountry =
+      response.QueryResponse.CompanyInfo[0].CompanyAddr.Country;
+    // Exact list of sub divisions is unclear as it lacks definition in the documentation,
+    // Currenly assume that canada subdivisions match standardized 2 letter abbreviations used in the taxes enum.
+    const companySubLocation =
+      response.QueryResponse.CompanyInfo[0].CompanyAddr.CountrySubDivisionCode;
+
+    // Check if the company is Canadian
+    if (
+      companyCountry === 'CA' ||
+      companyCountry === 'Canada' ||
+      companyCountry == 'CAN'
+    ) {
+      // Return company location with standardized country name.
+      return JSON.stringify({ Country: 'CA', Location: companySubLocation });
+    } else {
+      return JSON.stringify({
+        Country: companyCountry,
+        Location: companySubLocation,
+      });
+    }
+  } catch (error) {
+    // Log the error and return an empty string to the caller if the call fails.
+    console.error('Error finding company location:', error);
+    return JSON.stringify({ Country: '', Location: '' });
+  }
+}

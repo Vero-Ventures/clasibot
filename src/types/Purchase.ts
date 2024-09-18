@@ -1,5 +1,7 @@
 /**
  * Defines a formatted version of a purchase returned from the API.
+ *
+ * !!! THIS IS UNUSED IN THE CURRENT ITERATION, CHECK PURCHASE RESPONSE TYPE.
  */
 export type Purchase = {
   result_info: {
