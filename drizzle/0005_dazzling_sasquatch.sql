@@ -1,0 +1,2 @@
+ALTER TABLE "UserTransactionsToClassifications" ALTER COLUMN "transaction_id" SET DATA TYPE uuid;--> statement-breakpoint
+ALTER TABLE "UserTransactionsToTaxCodes" ALTER COLUMN "transaction_id" SET DATA TYPE uuid;

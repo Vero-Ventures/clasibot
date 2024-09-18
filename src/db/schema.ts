@@ -146,7 +146,7 @@ export const TransactionsToTaxCodes = pgTable(
 export const UserTransactionsToClassifications = pgTable(
   'UserTransactionsToClassifications',
   {
-    transactionId: integer('transaction_id')
+    transactionId: uuid('transaction_id')
       .notNull()
       .references(() => UserTransaction.id),
     classificationId: integer('classification_id')
@@ -161,7 +161,7 @@ export const UserTransactionsToClassifications = pgTable(
 export const UserTransactionsToTaxCodes = pgTable(
   'UserTransactionsToTaxCodes',
   {
-    transactionId: integer('transaction_id')
+    transactionId: uuid('transaction_id')
       .notNull()
       .references(() => UserTransaction.id),
     taxCodeId: integer('tax_code_id')

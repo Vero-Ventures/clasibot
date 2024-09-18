@@ -29,6 +29,20 @@
       "when": 1724087646370,
       "tag": "0003_lonely_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1726685185983,
+      "tag": "0004_simple_pete_wisdom",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1726685290758,
+      "tag": "0005_dazzling_sasquatch",
+      "breakpoints": true
     }
   ]
 }
