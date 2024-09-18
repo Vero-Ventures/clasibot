@@ -118,10 +118,10 @@ export const unclassifiedUserTransaction = pgTable(
     qboID: text('qboID').notNull(),
     category: text('category')
       .array()
-      .references(() => Classification.id),
+      .references(() => Classification.category),
     taxCodeId: text('taxCode')
       .array()
-      .references(() => TaxCode.id),
+      .references(() => TaxCode.taxCode),
   }
 );
 
@@ -139,10 +139,10 @@ export const classifiedUserTransaction = pgTable(
     category: text('category')
       .array()
       .notNull()
-      .references(() => Classification.id),
+      .references(() => Classification.category),
     taxCode: text('taxCode')
       .array()
       .notNull()
-      .references(() => TaxCode.id),
+      .references(() => TaxCode.taxCode),
   }
 );
