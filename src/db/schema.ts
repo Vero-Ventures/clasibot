@@ -116,10 +116,10 @@ export const unclassifiedUserTransaction = pgTable(
       .notNull()
       .references(() => User.id, { onDelete: 'cascade' }),
     qboID: text('qboID').notNull(),
-    classificationId: serial('classificationId')
+    category: text('category')
       .array()
       .references(() => Classification.id),
-    taxCodeId: serial('taxCodeId')
+    taxCodeId: text('taxCode')
       .array()
       .references(() => TaxCode.id),
   }
@@ -136,11 +136,11 @@ export const classifiedUserTransaction = pgTable(
       .notNull()
       .references(() => User.id, { onDelete: 'cascade' }),
     qboID: text('qboID').notNull(),
-    classificationId: serial('classificationId')
+    category: text('category')
       .array()
       .notNull()
       .references(() => Classification.id),
-    taxCodeId: serial('taxCodeId')
+    taxCode: text('taxCode')
       .array()
       .notNull()
       .references(() => TaxCode.id),
