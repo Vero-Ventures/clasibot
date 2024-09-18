@@ -19,13 +19,13 @@ CREATE TABLE IF NOT EXISTS "userTransaction" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "UserTransactionsToClassifications" (
-	"transaction_id" integer NOT NULL,
+	"transaction_id" uuid NOT NULL,
 	"classification_id" integer NOT NULL,
 	CONSTRAINT "UserTransactionsToClassifications_transaction_id_classification_id_pk" PRIMARY KEY("transaction_id","classification_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "UserTransactionsToTaxCodes" (
-	"transaction_id" integer NOT NULL,
+	"transaction_id" uuid NOT NULL,
 	"tax_code_id" integer NOT NULL,
 	CONSTRAINT "UserTransactionsToTaxCodes_transaction_id_tax_code_id_pk" PRIMARY KEY("transaction_id","tax_code_id")
 );

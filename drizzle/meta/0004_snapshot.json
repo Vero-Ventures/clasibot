@@ -1,5 +1,5 @@
 {
-  "id": "5ee05cdf-dc3e-4c58-a211-83a13f16a404",
+  "id": "94fc7cd2-3f53-40c5-81a7-aff900816502",
   "prevId": "edf5a81d-b234-48f2-b0f3-49046c8f81e2",
   "version": "7",
   "dialect": "postgresql",
@@ -403,7 +403,7 @@
       "columns": {
         "transaction_id": {
           "name": "transaction_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -460,7 +460,7 @@
       "columns": {
         "transaction_id": {
           "name": "transaction_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
