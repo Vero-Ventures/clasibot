@@ -116,10 +116,10 @@ export const unclassifiedUserTransaction = pgTable(
       .notNull()
       .references(() => User.id, { onDelete: 'cascade' }),
     qboID: text('qboID').notNull(),
-    classificationId: serial('')
+    classificationId: serial('classificationId')
       .array()
       .references(() => Classification.id),
-    taxCodeId: serial('')
+    taxCodeId: serial('taxCodeId')
       .array()
       .references(() => TaxCode.id),
   }
@@ -128,7 +128,7 @@ export const unclassifiedUserTransaction = pgTable(
 // For transactions where both of the classifications were assigned real values.
 // If a related classification or taxCode is deleted from the DB, so are all related rows in this table.
 export const classifiedUserTransaction = pgTable(
-  'unclassifiedUserTransaction',
+  'classifiedUserTransaction',
   {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     userId: uuid('user_id')
@@ -136,11 +136,11 @@ export const classifiedUserTransaction = pgTable(
       .notNull()
       .references(() => User.id, { onDelete: 'cascade' }),
     qboID: text('qboID').notNull(),
-    classificationId: serial('')
+    classificationId: serial('classificationId')
       .array()
       .notNull()
       .references(() => Classification.id),
-    taxCodeId: serial('')
+    taxCodeId: serial('taxCodeId')
       .array()
       .notNull()
       .references(() => TaxCode.id),
