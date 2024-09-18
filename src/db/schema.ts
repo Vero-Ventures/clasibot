@@ -142,3 +142,33 @@ export const TransactionsToTaxCodes = pgTable(
     pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
   })
 );
+
+export const UserTransactionsToClassifications = pgTable(
+  'UserTransactionsToClassifications',
+  {
+    transactionId: integer('transaction_id')
+      .notNull()
+      .references(() => UserTransaction.id),
+    classificationId: integer('classification_id')
+      .notNull()
+      .references(() => Classification.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
+  })
+);
+
+export const UserTransactionsToTaxCodes = pgTable(
+  'UserTransactionsToTaxCodes',
+  {
+    transactionId: integer('transaction_id')
+      .notNull()
+      .references(() => UserTransaction.id),
+    taxCodeId: integer('tax_code_id')
+      .notNull()
+      .references(() => TaxCode.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
+  })
+);
