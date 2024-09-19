@@ -86,6 +86,7 @@
   },
   "trustedDependencies": [
     "@sentry/cli",
-    "analytics"
+    "analytics",
+    "esbuild"
   ]
 }
