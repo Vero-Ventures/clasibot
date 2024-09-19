@@ -132,8 +132,25 @@ export function SelectionTable({
     table.getColumn('account')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
+  const handleClick = (event: React.MouseEvent) => {
+    if (!finished_loading || !found_transactions) {
+      event.stopPropagation();
+    }
+  };
+
+  useEffect(() => {
+    console.log(found_transactions)
+    console.log(finished_loading)
+  }, [found_transactions, finished_loading])
+
   return (
-    <div className="w-full">
+    <div
+      className="w-full"
+      onClick={handleClick}
+      style={{
+        pointerEvents:
+          !finished_loading || !found_transactions ? 'none' : 'auto',
+      }}>
       {/* Container for the top row of filters: name and date. */}
       <div
         id="TopFiltersContainer"
