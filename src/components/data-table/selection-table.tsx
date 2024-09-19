@@ -152,8 +152,8 @@ export function SelectionTable({
       found_transactions &&
       table.getRowModel().rows?.length !== 0
     ) {
-      if (process.env.APP_CONFIG == 'developer') {
-        // Developer Only: Wait to allow table to properly load and prevent freezing on local hosting.
+      if (process.env.APP_CONFIG == 'development') {
+        // Development: Wait to allow table to properly load and prevent freezing on local hosting.
         const timeout = setTimeout(() => {
           setTableReady(true);
         }, 1000);
