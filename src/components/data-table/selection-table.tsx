@@ -152,14 +152,15 @@ export function SelectionTable({
       found_transactions &&
       table.getRowModel().rows?.length !== 0
     ) {
-      if (process.env.APP_CONFIG == 'development') {
+      if (process.env.APP_CONFIG !== 'production') {
         // Development: Wait to allow table to properly load and prevent freezing on local hosting.
         const timeout = setTimeout(() => {
           setTableReady(true);
-        }, 1000);
+        }, 1500);
         // Cleanup function to clear the timeout.
         return () => clearTimeout(timeout);
       } else {
+        console.log(process.env.APP_CONFIG)
         // Production: Set table ready state to true.
         setTableReady(true);
       }
