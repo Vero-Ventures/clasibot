@@ -36,7 +36,7 @@ export function ConfidenceBar({
         <HoverCardContent>{hoverText}</HoverCardContent>
         <div className="relative h-8 w-36 -translate-y-0.5 pb-2">
           <HoverCardTrigger asChild>
-            <div className="border-3 mx-2 flex w-fit rounded-lg border-blue-300 hover:mb-12">
+            <div className="mx-2 flex w-fit rounded-lg border-3 border-blue-300 hover:mb-12">
               <div className={segmentOneFormatting}></div>
               <div className={segmentTwoFormatting}></div>
               <div className={segmentThreeFormatting}></div>

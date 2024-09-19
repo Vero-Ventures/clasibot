@@ -160,7 +160,7 @@ export function SelectionTable({
         // Cleanup function to clear the timeout.
         return () => clearTimeout(timeout);
       } else {
-        console.log(process.env.APP_CONFIG)
+        console.log(process.env.APP_CONFIG);
         // Production: Set table ready state to true.
         setTableReady(true);
       }
