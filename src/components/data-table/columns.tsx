@@ -253,9 +253,9 @@ export const reviewColumns = (
       row: Row<Transaction> | Row<CategorizedTransaction>;
     }) => {
       // Define the inital confidence value as well as the value for each classification method.
-      const LLMClassified = 33;
-      const DatabaseClassified = 66;
-      const FuseClassified = 100;
+      const LLMClassified = 1;
+      const DatabaseClassified = 2;
+      const FuseClassified = 3;
       let confidenceValue = 0;
 
       const categories: ClassifiedCategory[] = row.getValue('categories');

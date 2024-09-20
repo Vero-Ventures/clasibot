@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { classifyTransactions } from '@/actions/classify';
+import { updateIndustry } from '@/actions/update-industry';
 import { getTransactions } from '@/actions/quickbooks/get-transactions';
 import { findIndustry, getCompanyName } from '@/actions/quickbooks/user-info';
 import { checkSubscription } from '@/actions/stripe';
@@ -53,24 +54,19 @@ export default function HomePage() {
   const { toast } = useToast();
 
   // Define a function to update the users industry in the database.
-  const updateIndustry = async () => {
+  const callUpdateIndustry = async () => {
     const industry = await findIndustry();
     const session = await getSession();
     const email = session?.user?.email;
 
+    // If an email is found, call the update industry action.
+    // Catches any errors and logs them to the console.
     if (email) {
-      // If an email is found, send a POST request to the update-industry endpoint.
-      // Update the industry with the industry and email in the request body.
       try {
-        const response = await fetch('/api/update-industry', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ industry, email }),
-        });
+        const result = await updateIndustry(industry, email);
+        // Set the industry updating to be completed and throw an error if the action failed.
         setFinishedLoadingIndustry(true);
-        if (!response.ok) {
+        if (result === 'Error') {
           throw new Error('Failed to update industry');
         }
       } catch (error) {
@@ -96,7 +92,7 @@ export default function HomePage() {
   useEffect(() => {
     // Check the user subscription, update the industry and call the company name.
     checkUserSubscription();
-    updateIndustry();
+    callUpdateIndustry();
     callCompanyName();
   }, []);
 

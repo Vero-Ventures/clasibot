@@ -194,7 +194,7 @@ export function ReviewTable({
                 <TableRow
                   key={row.id}
                   // Updates the row's background color depending on the selected state of the row.
-                  className={`${row.getIsSelected() ? 'bg-blue-100' : ''} hover:bg-blue-100`}
+                  className={`relative ${row.getIsSelected() ? 'bg-blue-100' : ''} hover:bg-blue-100`}
                   onClick={() => row.toggleSelected(!row.getIsSelected())}
                   style={{ cursor: 'pointer' }}>
                   {/* Iterate over the column values (cells) inside the current row. */}
@@ -214,7 +214,7 @@ export function ReviewTable({
               <TableRow id="EmptyTable">
                 <TableCell
                   colSpan={reviewColumns.length}
-                  className="pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
+                  className="relative pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
                   No results found.
                 </TableCell>
               </TableRow>

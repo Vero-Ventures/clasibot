@@ -33,6 +33,10 @@ const config = {
       spacing: {
         120: '460px',
       },
+      // Add custom border width sizing.
+      borderWidth: {
+        '3': '3px', // Custom border width of 3px
+      },
       // Custom padding sizes based on percentages of container.
       padding: {
         p20: '20%',

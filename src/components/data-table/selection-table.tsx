@@ -132,8 +132,48 @@ export function SelectionTable({
     table.getColumn('account')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
+  const handleClick = (event: React.MouseEvent) => {
+    if (
+      !finished_loading ||
+      !found_transactions ||
+      table.getRowModel().rows?.length == 0
+    ) {
+      event.stopPropagation();
+    }
+  };
+
+  // Create state to track if all loading is finished to allow users to interact with selection table.
+  const [tableReady, setTableReady] = useState(false);
+
+  // Track loading elements and set table ready based on their values.
+  useEffect(() => {
+    if (
+      finished_loading &&
+      found_transactions &&
+      table.getRowModel().rows?.length !== 0
+    ) {
+      if (process.env.APP_CONFIG !== 'production') {
+        // Development: Wait to allow table to properly load and prevent freezing on local hosting.
+        const timeout = setTimeout(() => {
+          setTableReady(true);
+        }, 1500);
+        // Cleanup function to clear the timeout.
+        return () => clearTimeout(timeout);
+      } else {
+        console.log(process.env.APP_CONFIG);
+        // Production: Set table ready state to true.
+        setTableReady(true);
+      }
+    }
+  }, [found_transactions, finished_loading, table]);
+
   return (
-    <div className="w-full">
+    <div
+      className="w-full"
+      onClick={handleClick}
+      style={{
+        pointerEvents: tableReady ? 'auto' : 'none',
+      }}>
       {/* Container for the top row of filters: name and date. */}
       <div
         id="TopFiltersContainer"
@@ -274,7 +314,7 @@ export function SelectionTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length &&
+            {table.getRowModel().rows?.length != 0 &&
             finished_loading &&
             found_transactions ? (
               // Iterate through the rows of the table to create the table body.
