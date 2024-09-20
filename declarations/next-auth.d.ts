@@ -1,6 +1,3 @@
-import NextAuth from 'next-auth';
-import { JWT } from 'next-auth/jwt';
-
 // Declare the modules needed for the NextAuth functions.
 // Defines the interfaces for the objects inside those modules.
 
