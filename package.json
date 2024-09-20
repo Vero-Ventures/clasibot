@@ -29,6 +29,7 @@
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/instrumentation": "^5.19.1",
     "@sentry/nextjs": "^8.28.0",
+    "@sentry/wizard": "^3.30.0",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/react-table": "^8.20.5",
     "@types/mdx": "^2.0.13",
