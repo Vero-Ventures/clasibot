@@ -1,18 +1,23 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { classifyTransactions } from '@/actions/classify';
-import { updateIndustry } from '@/actions/update-industry';
 import { getTransactions } from '@/actions/quickbooks/get-transactions';
-import { findIndustry, getCompanyName } from '@/actions/quickbooks/user-info';
+import { getCompanyName } from '@/actions/quickbooks/user-info';
 import { checkSubscription } from '@/actions/stripe';
 import { filterOutUncategorized } from '@/utils/filter-transactions';
-import { getSession } from 'next-auth/react';
 import ReviewPage from '@/components/home/review-page';
 import SelectionPage from '@/components/home/selection-page';
 import { UnpaidAlert } from '@/components/unpaid-alert';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
+
+/**
+ * NOTE: Temporarily Removed to Prevent Issues with New Database.
+ */
+// import { updateIndustry } from '@/actions/update-industry'
+// import { findIndustry } from '@/actions/quickbooks/user-info';
+// import { getSession } from 'next-auth/react';
 
 export default function HomePage() {
   // Create states to track and set the important values.
@@ -32,7 +37,7 @@ export default function HomePage() {
   const [modal, setModal] = useState(false);
 
   // Define states to prevent showing the table until the page is loaded.
-  const [finishedLoadingIndustry, setFinishedLoadingIndustry] = useState(false);
+  const [finishedLoadingIndustry, _setFinishedLoadingIndustry] = useState(true);
   const [finishedLoadingSubscription, setFinishedLoadingSubscription] =
     useState(false);
 
@@ -53,29 +58,29 @@ export default function HomePage() {
   // Define the toast function using the useToast hook.
   const { toast } = useToast();
 
-  // Define a function to update the users industry in the database.
-  const callUpdateIndustry = async () => {
-    const industry = await findIndustry();
-    const session = await getSession();
-    const email = session?.user?.email;
+  // // Define a function to update the users industry in the database.
+  // const callUpdateIndustry = async () => {
+  //   const industry = await findIndustry();
+  //   const session = await getSession();
+  //   const email = session?.user?.email;
 
-    // If an email is found, call the update industry action.
-    // Catches any errors and logs them to the console.
-    if (email) {
-      try {
-        const result = await updateIndustry(industry, email);
-        // Set the industry updating to be completed and throw an error if the action failed.
-        setFinishedLoadingIndustry(true);
-        if (result === 'Error') {
-          throw new Error('Failed to update industry');
-        }
-      } catch (error) {
-        console.error('Error updating industry:', error);
-      }
-    } else {
-      console.error('No user email found in session');
-    }
-  };
+  //   // If an email is found, call the update industry action.
+  //   // Catches any errors and logs them to the console.
+  //   if (email) {
+  //     try {
+  //       const result = await updateIndustry(industry, email);
+  //       // Set the industry updating to be completed and throw an error if the action failed.
+  //       setFinishedLoadingIndustry(true);
+  //       if (result === 'Error') {
+  //         throw new Error('Failed to update industry');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error updating industry:', error);
+  //     }
+  //   } else {
+  //     console.error('No user email found in session');
+  //   }
+  // };
 
   // Define a function to check for valid user subsciptions.
   const checkUserSubscription = async () => {
@@ -92,7 +97,10 @@ export default function HomePage() {
   useEffect(() => {
     // Check the user subscription, update the industry and call the company name.
     checkUserSubscription();
-    callUpdateIndustry();
+    /**
+     * NOTE: Temporarily Removed to Prevent Issues with New Database.
+     */
+    // callUpdateIndustry();
     callCompanyName();
   }, []);
 
