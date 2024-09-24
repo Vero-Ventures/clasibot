@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "Company" (
 ALTER TABLE "userTransaction" DROP CONSTRAINT "userTransaction_user_id_unique";--> statement-breakpoint
 ALTER TABLE "userTransaction" DROP CONSTRAINT "userTransaction_user_id_User_id_fk";
 --> statement-breakpoint
-ALTER TABLE "userTransaction" ADD COLUMN "company_id" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "userTransaction" ADD COLUMN "company_id" uuid NOT NULL;--> statement-breakpoint
 ALTER TABLE "userTransaction" ADD COLUMN "name" text NOT NULL;--> statement-breakpoint
 ALTER TABLE "userTransaction" ADD COLUMN "date" text NOT NULL;--> statement-breakpoint
 ALTER TABLE "userTransaction" ADD COLUMN "account" text NOT NULL;--> statement-breakpoint

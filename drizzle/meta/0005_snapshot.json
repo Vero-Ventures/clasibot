@@ -1,5 +1,5 @@
 {
-  "id": "d9af95d0-180c-455b-a271-da20d39cfebe",
+  "id": "1391111d-ca32-453c-ae67-f0e2b4113aa3",
   "prevId": "94fc7cd2-3f53-40c5-81a7-aff900816502",
   "version": "7",
   "dialect": "postgresql",
@@ -408,7 +408,7 @@
         },
         "company_id": {
           "name": "company_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },

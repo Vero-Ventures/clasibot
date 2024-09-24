@@ -65,7 +65,7 @@ export const TransactionToTaxCodesRelationship = relations(
 export const UserTransaction = pgTable('userTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   qboID: text('qboID').notNull(),
-  companyId: text('company_id')
+  companyId: uuid('company_id')
     .notNull()
     .references(() => Company.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
