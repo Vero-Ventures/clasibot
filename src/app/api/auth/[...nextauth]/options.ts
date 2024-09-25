@@ -145,7 +145,6 @@ export const options: NextAuthOptions = {
                 email,
                 firstName,
                 lastName,
-                industry: '',
                 subscriptionId: null,
               })
               .returning();

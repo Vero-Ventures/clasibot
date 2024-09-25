@@ -2,11 +2,12 @@
 
 import {
   pgTable,
+  primaryKey,
+  uuid,
   text,
   integer,
   serial,
-  primaryKey,
-  uuid,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -15,10 +16,12 @@ export const User = pgTable('User', {
   firstName: text('first_name'),
   lastName: text('last_name'),
   email: text('email').unique(),
-  industry: text('industry'),
-  companyNames: text('companyNames').array(),
   subscriptionId: uuid('subscription_id').unique(),
 });
+
+export const UserToCompanyRelations = relations(User, ({ many }) => ({
+  companies: many(Company),
+}));
 
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
@@ -27,6 +30,16 @@ export const Subscription = pgTable('Subscription', {
     .notNull()
     .references(() => User.id, { onDelete: 'cascade' }),
   stripeId: text('stripe_id').unique(),
+});
+
+export const Company = pgTable('Company', {
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => User.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  industry: text('industry'),
+  connected: boolean('connected').notNull(),
 });
 
 export const Transaction = pgTable('Transaction', {
@@ -51,11 +64,15 @@ export const TransactionToTaxCodesRelationship = relations(
 // For transaction classifications to be saved for later review by the user.
 export const UserTransaction = pgTable('userTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  userId: uuid('user_id')
-    .unique()
-    .notNull()
-    .references(() => User.id, { onDelete: 'cascade' }),
   qboID: text('qboID').notNull(),
+  companyId: uuid('company_id')
+    .notNull()
+    .references(() => Company.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  date: text('date').notNull(),
+  account: text('account').notNull(),
+  amount: text('amount').notNull(),
+  approved: boolean('approved').notNull(),
 });
 
 export const UserTransactionToClassificationsRelationship = relations(
