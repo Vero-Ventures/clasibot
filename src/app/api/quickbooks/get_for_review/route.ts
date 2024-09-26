@@ -4,5 +4,5 @@
 import { getForReview } from '@/actions/quickbooks/get-for-review';
 
 export async function GET() {
-  return await getForReview('145');
+  return Response.json(await getForReview('145'));
 }

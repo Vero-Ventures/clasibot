@@ -42,14 +42,14 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
       result: 'success',
       message:
         'Request made to Query API endpoint was returned a valid response',
-      detail: formattedResponse,
+      detail: JSON.parse(formattedResponse),
     };
   } catch (error) {
     // Define a default error detail.
-    let errorDetail = 'An unexpected error occured.'
+    let errorDetail = 'An unexpected error occured.';
     // Check if error is of type Error and update the detail if it is.
     if (error instanceof Error) {
-        errorDetail = error.message
+      errorDetail = error.message;
     }
     // If there is an error calling the API, get the response error and return it in a result object with an error result.
     return {
@@ -74,7 +74,6 @@ function readForReviewTransaction(responseData: {
 }): string {
   const transactions = [];
   for (const transactionItem of responseData.items) {
-    console.log(transactionItem);
     // Only record expense (spending) transactions.
     if (transactionItem.amount < 0) {
       const newTransaction: FormattedForReviewTransaction = {
