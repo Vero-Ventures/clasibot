@@ -1,6 +1,9 @@
 'use server';
 
-import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
+import type {
+  ForReviewTransaction,
+  FormattedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
 export async function getForReview(accountId: string): Promise<QueryResult> {
@@ -36,13 +39,15 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
     }
 
     // Get the response data, format it, and return it to the caller in a result object with a success result.
-    const responseData = await response.json();
-    const formattedResponse = readForReviewTransaction(responseData);
+    const responseData: {
+      items: [ForReviewTransaction];
+    } = await response.json();
+    const formattedResponse = readForReviewTransaction(responseData.items);
     return {
       result: 'success',
       message:
         'Request made to Query API endpoint was returned a valid response',
-      detail: JSON.parse(formattedResponse),
+      detail: JSON.stringify(formattedResponse),
     };
   } catch (error) {
     // Define a default error detail.
@@ -61,19 +66,11 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
 }
 
 // Take the "for review" transaction data and return the relevant data in a formatted and typed object.
-function readForReviewTransaction(responseData: {
-  items: [
-    {
-      id: string;
-      description: string;
-      olbTxnDate: string;
-      qboAccountId: string;
-      amount: number;
-    },
-  ];
-}): string {
+function readForReviewTransaction(
+  responseData: ForReviewTransaction[]
+): (FormattedForReviewTransaction | ForReviewTransaction)[][] {
   const transactions = [];
-  for (const transactionItem of responseData.items) {
+  for (const transactionItem of responseData) {
     // Only record expense (spending) transactions.
     if (transactionItem.amount < 0) {
       const newTransaction: FormattedForReviewTransaction = {
@@ -82,8 +79,8 @@ function readForReviewTransaction(responseData: {
         account: transactionItem.qboAccountId,
         amount: transactionItem.amount,
       };
-      transactions.push(newTransaction);
+      transactions.push([newTransaction, transactionItem]);
     }
   }
-  return JSON.stringify(transactions);
+  return transactions;
 }
