@@ -12,7 +12,7 @@ export async function GET() {
   const updatedTransaction = JSON.parse((await getForReview('144')).detail);
 
   const result = await addForReview(updatedTransaction[1][1], '129', '3');
-  if (result.result === 'Success') {
+  if (result.result === 'Success' && result.detail) {
     return Response.json(JSON.parse(result.detail));
   } else {
     return Response.json(result);
