@@ -4,7 +4,7 @@
 import { getForReview } from '@/actions/quickbooks/get-for-review';
 
 export async function GET() {
-  const result = await getForReview('145');
+  const result = await getForReview('144');
   if (result.result === 'Success') {
     return Response.json(JSON.parse(result.detail));
   } else {
