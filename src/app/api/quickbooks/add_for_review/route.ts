@@ -26,6 +26,6 @@ export async function GET() {
       return Response.json(result);
     }
   } else {
-    return Response.json(updatedTransaction)
+    return Response.json(updatedTransaction);
   }
 }
