@@ -4,51 +4,17 @@
 
 export type ForReviewTransaction = {
   id: string;
-  origDescription: string;
-  olbTxnDate: string;
+  olbTxnId: string,
   qboAccountId: string;
-  acceptType: string;
-  creditCardPayment: boolean;
-  transfer: boolean;
-  amount: number
-  openBalance: number
-  olbTxnId: string;
   description: string;
-  addAsQboTxn: {
-    nameTypeId: number;
-    createName: boolean;
-    createAccount: boolean;
+  origDescription: string;
+  amount: number
+  olbTxnDate: string;
+  acceptType: string;
+   addAsQboTxn: {
     txnTypeId: string;
     txnFdmName: string;
-    currencyType: {
-      isoCode: string;
-      displayName: string;
-      symbol: string;
-    };
-    details: [{ categoryId: string }];
   };
-  suggestionConfidence: string;
-  linkedTxns: [];
-  mapOfAccounts: null;
-  categorySource: string;
-  payeeSource: string;
-  categoryAlternativeIds: [string];
-  addMatchType: string;
-  matchTransactionsMap: null;
-  originalCategoryId: string;
-  categoryConfidenceScore: number
-  userDeleted: boolean;
-  olbAccountId: number
-  olbSessionId: number
-  catMerchantId: number
-  merchantName: string;
-  complexTransactionScore: number
-  lowContext: boolean;
-  isHighConfidenceAdd: boolean;
-  scheduleCId: string;
-  complexTransaction: boolean;
-  fitxnId: string;
-  fdptransactionId: string;
 };
 
 export type FormattedForReviewTransaction = {
@@ -64,63 +30,32 @@ export type FormattedForReviewTransaction = {
 
 // Defines the full object needed to classify a for review transaction through the API call.
 export type ForReviewTransactionUpdateObject = {
-  nextTxnInfo: {
-    accountId: string;
-    nextTransactionIndex: number;
-    reviewState: string;
-    sort: string;
-  };
   txnList: {
     olbTxns: [
       {
         id: string;
+        qboAccountId: string;
         description: string;
-        linkedTxns: [];
         origDescription: string;
         amount: number;
-        addMatchType: string;
-        categoryConfidenceScore: number;
-        categorySource: string;
-        payeeSource: string;
-        fdptransactionId: string;
-        fitxnId: string;
-        mapOfAccounts: null;
-        olbTxnId: string;
-        openBalance: string;
-        originalCategoryId: string;
-        suggestionConfidence: string;
-        trackingInfo: {
-          initialCategoryId: string;
-          initialPayeeId: string;
-          weChangedCatForUser: boolean;
-          userChangedCat: boolean;
-          userOverrodeChangedCat: boolean;
-          userChangedName: boolean;
-          isCatChanged: boolean;
-        };
         olbTxnDate: string;
+        acceptType: string;
         addAsQboTxn: {
           details: [
             {
               categoryId: string;
-              billable: boolean;
-              amount: string;
               taxCodeId: string;
-              taxApplicableOn: string;
             },
           ];
-          attachments: [];
-          nameId: string;
           txnDate: string;
           txnTypeId: string;
         };
-        attachmentIds: [];
-        docs: [];
-        creditCardPayment: boolean;
-        qboAccountId: string;
-        acceptType: string;
-        transfer: boolean;
       },
     ];
+  };
+  nextTxnInfo: {
+    accountId: string;
+    nextTransactionIndex: number;
+    reviewState: string;
   };
 };
