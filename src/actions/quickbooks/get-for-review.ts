@@ -20,7 +20,7 @@ export async function getForReview(accountId: string) {
       method: 'GET',
       headers: {
         cookie:
-          'qbo.tkt=V1-11-B0atmppjt4lf5fnt15laho; qbo.agentid=9411821713535995; qbo.parentid=9341452698223021; qbo.authid=9341453042273832; SameSite=None',
+          `qbo.tkt=V1-11-B0atmppjt4lf5fnt15laho; qbo.agentid=9411821713535995; qbo.parentid=9341452698223021; qbo.authid=9341453042273832; SameSite=None`,
       },
     });
 
@@ -35,7 +35,7 @@ export async function getForReview(accountId: string) {
       });
     }
 
-    // Get the response data, format it  and return it to the caller in a result object with a success result.
+    // Get the response data, format it, and return it to the caller in a result object with a success result.
     const responseData = await response.json();
     const formattedResponse = readForReviewTransaction(responseData);
     return Response.json({
@@ -54,7 +54,7 @@ export async function getForReview(accountId: string) {
   }
 }
 
-// Take for review query response data and split out the relevant data from it.
+// Take the "for review" transaction data and return the relevant data in a formatted and typed object.
 function readForReviewTransaction(responseData: {
   items: [
     {
@@ -68,14 +68,17 @@ function readForReviewTransaction(responseData: {
 }): FormattedForReviewTransaction[] {
   const transactions = [];
   for (const transactionItem of responseData.items) {
-    const newTransaction: FormattedForReviewTransaction = {
-      transaction_ID: transactionItem.id,
-      name: transactionItem.description,
-      date: transactionItem.olbTxnDate.split('T')[0],
-      account: transactionItem.qboAccountId,
-      amount: transactionItem.amount,
-    };
-    transactions.push(newTransaction);
+    // Only record expense (spending) transactions.
+    if (transactionItem.amount < 0) {
+      const newTransaction: FormattedForReviewTransaction = {
+        transaction_ID: transactionItem.id,
+        name: transactionItem.description,
+        date: transactionItem.olbTxnDate.split('T')[0],
+        account: transactionItem.qboAccountId,
+        amount: transactionItem.amount,
+      };
+      transactions.push(newTransaction);
+    }
   }
   return transactions;
 }

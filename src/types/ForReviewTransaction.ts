@@ -1,5 +1,5 @@
 /**
- * Defines a formatted version of a for review transaction returned from the API.
+ * Defines a formatted version of a "for review" transaction returned from the API.
  */
 export type FormattedForReviewTransaction = {
   // transaction_ID: String comprised of an integer followed by :ofx.
