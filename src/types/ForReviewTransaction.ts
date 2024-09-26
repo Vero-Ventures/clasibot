@@ -4,14 +4,14 @@
 
 export type ForReviewTransaction = {
   id: string;
-  olbTxnId: string,
+  olbTxnId: string;
   qboAccountId: string;
   description: string;
   origDescription: string;
-  amount: number
+  amount: number;
   olbTxnDate: string;
   acceptType: string;
-   addAsQboTxn: {
+  addAsQboTxn: {
     txnTypeId: string;
     txnFdmName: string;
   };

@@ -8,6 +8,6 @@ export async function GET() {
   if (result.result === 'Success') {
     return Response.json(JSON.parse(result.detail));
   } else {
-    return Response.json(result)
+    return Response.json(result);
   }
 }
