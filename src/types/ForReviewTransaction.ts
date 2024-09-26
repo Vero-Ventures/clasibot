@@ -52,8 +52,6 @@ export type ForReviewTransaction = {
 };
 
 export type FormattedForReviewTransaction = {
-  // transaction_ID: String comprised of an integer followed by :ofx.
-  transaction_ID: string;
   // Name related to the transaction (e.g. the payee).
   name: string;
   // date: Date as a string in the format 'YYYY-MM-DD'.
