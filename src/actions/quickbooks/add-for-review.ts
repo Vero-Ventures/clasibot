@@ -32,7 +32,8 @@ export async function addForReview(
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        cookie: `qbo.tkt=V1-11-B0atmppjt4lf5fnt15laho; qbo.agentid=9411821713535995; qbo.parentid=9341452698223021; qbo.authid=9341453042273832; SameSite=None`,
+        'Content-Type': 'application/json',
+        cookie: `qbo.tkt=V1-200-B0ozs2q11xg1c0n3xhkkf7; qbo.agentid=9411821713535995; qbo.parentid=9341452698223021; qbo.authid=9341453042273832; SameSite=None`,
       },
       body: JSON.stringify(body),
     });
