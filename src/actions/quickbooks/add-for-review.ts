@@ -98,6 +98,9 @@ function createForReviewUpdateObject(
                 taxCodeId: taxCodeId,
               },
             ],
+            nameId: responseData.addAsQboTxn.nameId
+              ? responseData.addAsQboTxn.nameId
+              : null,
             txnDate: responseData.olbTxnDate,
             txnTypeId: responseData.addAsQboTxn.txnTypeId,
           },
