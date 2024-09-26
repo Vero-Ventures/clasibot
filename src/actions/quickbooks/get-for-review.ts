@@ -44,7 +44,7 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
     } = await response.json();
     const formattedResponse = readForReviewTransaction(responseData.items);
     return {
-      result: 'success',
+      result: 'Success',
       message:
         'Request made to Query API endpoint was returned a valid response',
       detail: JSON.stringify(formattedResponse),
