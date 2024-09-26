@@ -42,7 +42,7 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
     const responseData: {
       items: [ForReviewTransaction];
     } = await response.json();
-    const formattedResponse = readForReviewTransaction(responseData.items);
+    const formattedResponse = formatForReviewTransaction(responseData.items);
     return {
       result: 'Success',
       message:
@@ -66,7 +66,7 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
 }
 
 // Take the "for review" transaction data and return the relevant data in a formatted and typed object.
-function readForReviewTransaction(
+function formatForReviewTransaction(
   responseData: ForReviewTransaction[]
 ): (FormattedForReviewTransaction | ForReviewTransaction)[][] {
   const transactions = [];
