@@ -25,5 +25,7 @@ export async function GET() {
     } else {
       return Response.json(result);
     }
+  } else {
+    return Response.json(updatedTransaction)
   }
 }
