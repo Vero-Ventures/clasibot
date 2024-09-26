@@ -14,6 +14,7 @@ export type ForReviewTransaction = {
   addAsQboTxn: {
     txnTypeId: string;
     txnFdmName: string;
+    nameId: string | null;
   };
 };
 
@@ -47,6 +48,7 @@ export type ForReviewTransactionUpdateObject = {
               taxCodeId: string;
             },
           ];
+          nameId: string | null;
           txnDate: string;
           txnTypeId: string;
         };
