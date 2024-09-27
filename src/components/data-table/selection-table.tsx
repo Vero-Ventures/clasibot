@@ -55,7 +55,10 @@ export function SelectionTable({
   found_transactions: boolean;
   finished_loading: boolean;
   isClassifying: boolean;
-  handleClassify: (selectedRows: Record<number, boolean>, transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]) => void;
+  handleClassify: (
+    selectedRows: Record<number, boolean>,
+    transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]
+  ) => void;
 }>) {
   // Create states to track and set the important values.
   // Column to sort by, column filtering rules, Columns to display, selected Rows, and accounts to display Rows from.
