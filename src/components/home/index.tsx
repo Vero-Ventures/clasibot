@@ -16,7 +16,7 @@ import type { ClassifiedCategory } from '@/types/Category';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   FormattedForReviewTransaction,
-  CategorizedFormattedForReviewTransaction,
+  CategorizedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 
 export default function HomePage() {
@@ -24,7 +24,7 @@ export default function HomePage() {
   // Catagorized transactions, catagorization results, if classification is currently in progress, -
   // - if the user is subscribed, and the company name.
   const [categorizedTransactions, setCategorizedTransactions] = useState<
-    CategorizedFormattedForReviewTransaction[]
+    CategorizedForReviewTransaction[]
   >([]);
   const [categorizationResults, setCategorizationResults] = useState<
     Record<string, ClassifiedCategory[]>
@@ -92,8 +92,7 @@ export default function HomePage() {
     selectedRows: FormattedForReviewTransaction[],
     result: Record<string, ClassifiedCategory[]>
   ) => {
-    const newCategorizedTransactions: CategorizedFormattedForReviewTransaction[] =
-      [];
+    const newCategorizedTransactions: CategorizedForReviewTransaction[] = [];
 
     // Iterate through the selected rows and add the categorized transactions to the array.
     for (const transaction of selectedRows) {

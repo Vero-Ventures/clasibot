@@ -2,7 +2,7 @@
 
 import type {
   ForReviewTransaction,
-  ForReviewTransactionUpdateObject,
+  UpdatedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
@@ -79,9 +79,9 @@ function createForReviewUpdateObject(
   responseData: ForReviewTransaction,
   classificationId: string,
   taxCodeId: string
-): ForReviewTransactionUpdateObject {
+): UpdatedForReviewTransaction {
   // Create and return the new update object using the passed QBO entity ID's and the For Review Transaction object values.
-  const newUpdateObject: ForReviewTransactionUpdateObject = {
+  const newUpdateObject: UpdatedForReviewTransaction = {
     txnList: {
       olbTxns: [
         {

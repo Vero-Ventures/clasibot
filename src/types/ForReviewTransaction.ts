@@ -1,7 +1,7 @@
 /**
  * Defines a formatted version of a "for review" transaction returned from the API.
  */
-import type { ClassifiedCategory } from "./Category";
+import type { ClassifiedCategory } from './Category';
 
 export type ForReviewTransaction = {
   id: string;
@@ -32,7 +32,7 @@ export type FormattedForReviewTransaction = {
   amount: number;
 };
 
-export type CategorizedFormattedForReviewTransaction = {
+export type CategorizedForReviewTransaction = {
   // ID for the "For Review" transaction.
   transaction_ID: string;
   // Name related to the transaction (e.g. the payee).
@@ -44,11 +44,11 @@ export type CategorizedFormattedForReviewTransaction = {
   // Total negative decimal value of the purchase.
   amount: number;
   // An array of possible categories for the transaction to be classified as.
-  categories: ClassifiedCategory[]
+  categories: ClassifiedCategory[];
 };
 
 // Defines the full object needed to classify a for review transaction through the API call.
-export type ForReviewTransactionUpdateObject = {
+export type UpdatedForReviewTransaction = {
   txnList: {
     olbTxns: [
       {
