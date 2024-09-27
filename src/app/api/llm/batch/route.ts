@@ -1,7 +1,7 @@
 import { batchQueryLLM } from '@/actions/llm-prediction/llm';
 import type { CategorizedResult } from '@/types/Category';
 import type { CompanyInfo } from '@/types/CompanyInfo';
-import { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
+import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
 
 export async function POST(req: Request) {
   try {
