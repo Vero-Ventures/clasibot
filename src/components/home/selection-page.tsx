@@ -5,8 +5,8 @@ import { SelectionTable } from '@/components/data-table/selection-table';
 import type { Account } from '@/types/Account';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
-  FormattedForReviewTransaction,
   ForReviewTransaction,
+  FormattedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 
@@ -79,7 +79,8 @@ export default function SelectionPage({
       <h1
         id="PageAndCompanyName"
         className="m-auto mb-4 text-center text-3xl font-bold">
-        My Transactions - <span className="text-blue-900">{company_info.name}</span>
+        My Transactions -{' '}
+        <span className="text-blue-900">{company_info.name}</span>
       </h1>
       <SelectionTable
         transactions={forReviewTransactions}
