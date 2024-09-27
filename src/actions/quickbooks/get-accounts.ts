@@ -59,7 +59,15 @@ export async function getAccounts(accountType: string): Promise<string> {
       classification = [
         {
           field: 'AccountSubType',
-          value: ['CreditCard', 'Checking', 'MoneyMarket', 'RentsHeldInTrust', 'Savings', 'TrustAccounts', 'CashOnHand'],
+          value: [
+            'CreditCard',
+            'Checking',
+            'MoneyMarket',
+            'RentsHeldInTrust',
+            'Savings',
+            'TrustAccounts',
+            'CashOnHand',
+          ],
           operator: 'IN',
           limit: 1000,
         },

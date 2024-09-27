@@ -102,10 +102,10 @@ export function SelectionTable({
   }, [account_names]);
 
   // Extract the formatted transactions from the combined arrays.
-  const formattedTransactions = []
+  const formattedTransactions = [];
   for (const transaction of transactions) {
     // Asser that the transaction type is formmated. Needed due to data coming from multi-typed array.
-    formattedTransactions.push(transaction[0] as FormattedForReviewTransaction)
+    formattedTransactions.push(transaction[0] as FormattedForReviewTransaction);
   }
 
   // Creates the react table using passed data, helper functions, and state elements.
