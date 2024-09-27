@@ -165,13 +165,12 @@ export async function getTransactions(
           // Reads the values from the specified columns in the current row of the results.
           // Explicitly define the types due to values from the API being either a string or number.
           const newFormattedTransaction: Transaction = {
-            date: String(transaction.ColData[dateRow].value),
-            transaction_type: String(transaction.ColData[transactionRow].value),
             transaction_ID: String(transaction.ColData[transactionRow].id),
             name: String(transaction.ColData[nameRow].value),
+            date: String(transaction.ColData[dateRow].value),
             account: String(transaction.ColData[accountRow].value),
-            category: String(transaction.ColData[categoryRow].value),
             amount: Number(transaction.ColData[amountRow].value),
+            category: String(transaction.ColData[categoryRow].value),
           };
           formattedTransactions.push(newFormattedTransaction);
         }
