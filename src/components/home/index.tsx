@@ -105,7 +105,6 @@ export default function HomePage() {
         amount: transaction.amount,
         // Get the categories from the result object using its ID. Gets an empty array if no match is found.
         categories: result[transaction.transaction_ID] || [],
-
       });
     }
     return newCategorizedTransactions;
