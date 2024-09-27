@@ -2,22 +2,23 @@
 import { useState, useEffect } from 'react';
 import { classifyTransactions } from '@/actions/classify';
 import { getTransactions } from '@/actions/quickbooks/get-transactions';
-import { getCompanyName } from '@/actions/quickbooks/user-info';
+import {
+  getCompanyName,
+  getCompanyIndustry,
+  getCompanyLocation,
+} from '@/actions/quickbooks/user-info';
 import { checkSubscription } from '@/actions/stripe';
-import { filterOutUncategorized } from '@/utils/filter-transactions';
+import { UnpaidAlert } from '@/components/unpaid-alert';
 import ReviewPage from '@/components/home/review-page';
 import SelectionPage from '@/components/home/selection-page';
-import { UnpaidAlert } from '@/components/unpaid-alert';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
+import type { CompanyInfo } from '@/types/CompanyInfo';
+import type {
+  ForReviewTransaction,
+  FormattedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
-
-/**
- * NOTE: Temporarily Removed to Prevent Issues with New Database.
- */
-// import { updateIndustry } from '@/actions/update-industry'
-// import { findIndustry } from '@/actions/quickbooks/user-info';
-// import { getSession } from 'next-auth/react';
 
 export default function HomePage() {
   // Create states to track and set the important values.
@@ -31,7 +32,11 @@ export default function HomePage() {
   >({});
   const [isClassifying, setIsClassifying] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState('');
-  const [companyName, setCompanyName] = useState('');
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
+    name: '',
+    industry: '',
+    location: { Country: '', Location: '' },
+  });
 
   // Define a state to track if the modal is open.
   const [modal, setModal] = useState(false);
@@ -49,38 +54,21 @@ export default function HomePage() {
     }
   }, []);
 
-  // Gets the company name and update the related state asynchronously.
-  const callCompanyName = async () => {
+  // Gets the important company info and stores it as one object.
+  // *** NOTE: Presently does not update industry, update in future. ***
+  const getCompanyInfo = async () => {
     const userCompanyName = await getCompanyName();
-    setCompanyName(userCompanyName);
+    const userCompanyIndustry = await getCompanyIndustry();
+    const userCompanyLocation = await getCompanyLocation();
+    setCompanyInfo({
+      name: userCompanyName,
+      industry: userCompanyIndustry,
+      location: JSON.parse(userCompanyLocation),
+    });
   };
 
   // Define the toast function using the useToast hook.
   const { toast } = useToast();
-
-  // // Define a function to update the users industry in the database.
-  // const callUpdateIndustry = async () => {
-  //   const industry = await findIndustry();
-  //   const session = await getSession();
-  //   const email = session?.user?.email;
-
-  //   // If an email is found, call the update industry action.
-  //   // Catches any errors and logs them to the console.
-  //   if (email) {
-  //     try {
-  //       const result = await updateIndustry(industry, email);
-  //       // Set the industry updating to be completed and throw an error if the action failed.
-  //       setFinishedLoadingIndustry(true);
-  //       if (result === 'Error') {
-  //         throw new Error('Failed to update industry');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error updating industry:', error);
-  //     }
-  //   } else {
-  //     console.error('No user email found in session');
-  //   }
-  // };
 
   // Define a function to check for valid user subsciptions.
   const checkUserSubscription = async () => {
@@ -95,13 +83,9 @@ export default function HomePage() {
 
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
-    // Check the user subscription, update the industry and call the company name.
+    // Check the user subscription and get the company info.
     checkUserSubscription();
-    /**
-     * NOTE: Temporarily Removed to Prevent Issues with New Database.
-     */
-    // callUpdateIndustry();
-    callCompanyName();
+    getCompanyInfo();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
@@ -114,21 +98,23 @@ export default function HomePage() {
     // Iterate through the selected rows and add the categorized transactions to the array.
     for (const transaction of selectedRows) {
       newCategorizedTransactions.push({
-        date: transaction.date,
-        transaction_type: transaction.transaction_type,
         transaction_ID: transaction.transaction_ID,
         name: transaction.name,
+        date: transaction.date,
         account: transaction.account,
+        amount: transaction.amount,
         // Get the categories from the result object using its ID. Gets an empty array if no match is found.
         categories: result[transaction.transaction_ID] || [],
-        amount: transaction.amount,
+
       });
     }
     return newCategorizedTransactions;
   };
 
   // Handle classifing selected transactions from a list of transactions.
-  async function handleClassify(selectedRows: Transaction[]) {
+  async function handleClassify(
+    selectedRows: (FormattedForReviewTransaction | ForReviewTransaction)[][]
+  ) {
     const subscriptionStatus = await checkSubscription();
 
     if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
@@ -165,10 +151,7 @@ export default function HomePage() {
 
     // Classify the transactions that are not uncategorized.
     const result: Record<string, ClassifiedCategory[]> | { error: string } =
-      await classifyTransactions(
-        filterOutUncategorized(pastTransactionsResult),
-        selectedRows
-      );
+      await classifyTransactions(pastTransactionsResult, selectedRows);
 
     if ('error' in result) {
       console.error('Error classifying transactions:', result.error);
@@ -196,14 +179,14 @@ export default function HomePage() {
         <ReviewPage
           categorizedTransactions={categorizedTransactions}
           categorizationResults={categorizationResults}
-          company_name={companyName}
+          company_info={companyInfo}
         />
       ) : (
         // Otherwise display the selection page.
         <SelectionPage
           handleClassify={handleClassify}
           isClassifying={isClassifying}
-          company_name={companyName}
+          company_info={companyInfo}
           finished_loading={
             finishedLoadingIndustry && finishedLoadingSubscription
           }

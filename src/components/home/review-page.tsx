@@ -1,23 +1,24 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { findPurchase, updatePurchase } from '@/actions/quickbooks/purchases';
-import type { Account } from '@/types/Account';
-import type { ClassifiedCategory } from '@/types/Category';
-import type { Transaction, CategorizedTransaction } from '@/types/Transaction';
-import { Button } from '@/components/ui/button';
-import { ReviewTable } from '@/components/data-table/review-table';
 import { addTransactions } from '@/actions/transaction-database';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
+import { findPurchase, updatePurchase } from '@/actions/quickbooks/purchases';
+import { Button } from '@/components/ui/button';
+import { ReviewTable } from '@/components/data-table/review-table';
+import type { Account } from '@/types/Account';
+import type { ClassifiedCategory } from '@/types/Category';
+import type { CompanyInfo } from '@/types/CompanyInfo';
+import type { Transaction, CategorizedTransaction } from '@/types/Transaction';
 
 // Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
   categorizedTransactions,
   categorizationResults,
-  company_name,
+  company_info,
 }: Readonly<{
   categorizedTransactions: CategorizedTransaction[];
   categorizationResults: Record<string, ClassifiedCategory[]>;
-  company_name: string;
+  company_info: CompanyInfo;
 }>) {
   // Create states to track and set the important values.
   // Selected categories for each transaction, the saving status, and the modal status, an error message, and account names.
@@ -115,7 +116,6 @@ export default function ReviewPage({
               amount: transaction.amount,
               date: transaction.date,
               account: transaction.account,
-              transaction_type: transaction.transaction_type,
               transaction_ID: transactionID,
             };
 
@@ -172,7 +172,7 @@ export default function ReviewPage({
         id="PageAndCompanyName"
         className="m-auto mb-4 text-center text-3xl font-bold">
         Classification Results -{' '}
-        <span className="text-blue-900">{company_name}</span>
+        <span className="text-blue-900">{company_info.name}</span>
       </h1>
       {/* Populate the review table with the categorized transactions. */}
       <ReviewTable
