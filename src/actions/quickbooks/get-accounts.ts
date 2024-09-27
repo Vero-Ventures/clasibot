@@ -107,7 +107,6 @@ export async function getAccounts(accountType: string): Promise<string> {
           name: account.Name,
           active: account.Active,
           classification: account.Classification,
-          account_type: account.AccountType,
           account_sub_type: account.AccountSubType,
         };
         formattedAccounts.push(newFormattedAccount);
