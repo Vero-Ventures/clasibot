@@ -7,9 +7,10 @@ export async function POST(req: Request) {
   try {
     // Get the body from the request.
     const body = await req.json();
-    const transactions: FormattedForReviewTransaction[] = body.transactions || [];
+    const transactions: FormattedForReviewTransaction[] =
+      body.transactions || [];
     const categories = body.categories;
-    const companyInfo: CompanyInfo = body.companyInfo
+    const companyInfo: CompanyInfo = body.companyInfo;
 
     // Query the LLM model with the provided transactions and categories.
     const results: CategorizedResult[] = await batchQueryLLM(

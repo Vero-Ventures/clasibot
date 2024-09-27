@@ -3,7 +3,6 @@
  * Used in transaction matching and creating a DB of possible classifications.
  */
 
-
 export type Transaction = {
   // Name related to the transaction (e.g. the payee).
   name: string;
