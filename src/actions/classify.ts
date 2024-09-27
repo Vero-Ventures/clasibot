@@ -24,10 +24,7 @@ import type { Transaction } from '@/types/Transaction';
 // Takes a list of categorized transactions and a list of uncategorized transactions.
 export async function classifyTransactions(
   categorizedTransactions: Transaction[],
-  uncategorizedTransactions: (
-    | FormattedForReviewTransaction
-    | ForReviewTransaction
-  )[][],
+  uncategorizedTransactions: FormattedForReviewTransaction[],
   companyInfo: CompanyInfo
 ): Promise<Record<string, ClassifiedCategory[]> | { error: string }> {
   // Call the add transactions action with the categorized transactions.
@@ -85,10 +82,7 @@ export async function classifyTransactions(
 // Helper method to classify transactions using the fuzzy or exact match by Fuse.
 // Takes a list of uncategorized transactions, categorized transactions, valid categories, results records, and no matches array.
 async function classifyWithFuse(
-  uncategorizedTransactions: (
-    | FormattedForReviewTransaction
-    | ForReviewTransaction
-  )[][],
+  uncategorizedTransactions:FormattedForReviewTransaction[],
   categorizedTransactions: Transaction[],
   validCategories: Category[],
   results: Record<string, ClassifiedCategory[]>,
@@ -99,11 +93,8 @@ async function classifyWithFuse(
 
   for (const uncategorizedTransaction of uncategorizedTransactions) {
     try {
-      // Define the formatted uncategorized transaction.
-      const formattedTransaction =
-        uncategorizedTransaction[0] as FormattedForReviewTransaction;
       // Search for the uncategorized transaction's name in the list of cataloged transactions.
-      const matches = fuse.search(formattedTransaction.name);
+      const matches = fuse.search(uncategorizedTransaction.name);
 
       // Create a set of possible categories from the matches found.
       const possibleCategoriesSet = new Set(
@@ -139,16 +130,16 @@ async function classifyWithFuse(
       if (possibleValidCategories.length === 0) {
         // If no possible valid categories are found, search for possible categories in the database.
         const topCategories = await getTopCategoriesForTransaction(
-          formattedTransaction.name,
+          uncategorizedTransaction.name,
           validCategories
         );
 
         // If no possible categories are found in the database, add the transaction to the noMatches array.
         if (topCategories.length === 0) {
-          noMatches.push(formattedTransaction);
+          noMatches.push(uncategorizedTransaction);
         } else {
           // Add the transaction and possible categories to the results, and record it was classified by database.
-          results[formattedTransaction.transaction_ID] = topCategories.map(
+          results[uncategorizedTransaction.transaction_ID] = topCategories.map(
             (category) => ({
               ...category,
               classifiedBy: 'Database',
@@ -160,7 +151,7 @@ async function classifyWithFuse(
         const classificationsMapArray = orderClassificationsByAmount(
           possibleValidCategories,
           matches,
-          formattedTransaction
+          uncategorizedTransaction
         );
 
         // Create array for ordered predicted classifications and extract just the classification values.
@@ -178,7 +169,7 @@ async function classifyWithFuse(
         }
 
         // Add the ordered list of classified categories with lower index meaning a better matche.
-        results[formattedTransaction.transaction_ID] = orderedClassifications;
+        results[uncategorizedTransaction.transaction_ID] = orderedClassifications;
       }
     } catch (error) {
       // Catch any errors and log them to the console.

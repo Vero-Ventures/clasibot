@@ -90,13 +90,14 @@ export default function HomePage() {
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
   const createCategorizedTransactions = (
-    selectedRows: Transaction[],
+    selectedRows: FormattedForReviewTransaction[],
     result: Record<string, ClassifiedCategory[]>
   ) => {
     const newCategorizedTransactions: CategorizedTransaction[] = [];
 
     // Iterate through the selected rows and add the categorized transactions to the array.
     for (const transaction of selectedRows) {
+      // Define the formatted transaction from the dual "For Review" transaction array.
       newCategorizedTransactions.push({
         transaction_ID: transaction.transaction_ID,
         name: transaction.name,
@@ -111,9 +112,7 @@ export default function HomePage() {
   };
 
   // Handle classifing selected transactions from a list of transactions.
-  async function handleClassify(
-    selectedRows: (FormattedForReviewTransaction | ForReviewTransaction)[][]
-  ) {
+  async function handleClassify(selectedRows: FormattedForReviewTransaction[]) {
     const subscriptionStatus = await checkSubscription();
 
     if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
@@ -150,7 +149,11 @@ export default function HomePage() {
 
     // Classify the transactions that are not uncategorized.
     const result: Record<string, ClassifiedCategory[]> | { error: string } =
-      await classifyTransactions(pastTransactionsResult, selectedRows);
+      await classifyTransactions(
+        pastTransactionsResult,
+        selectedRows,
+        companyInfo
+      );
 
     if ('error' in result) {
       console.error('Error classifying transactions:', result.error);
