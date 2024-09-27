@@ -13,7 +13,11 @@ const provider = process.env.AI_PROVIDER;
 
 // Define the base prompt to use for the model.
 const basePrompt =
-  'Using only provided list of categories, What type of business expense would a transaction from "$NAME" be? Categories: $CATEGORIES';
+  'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? Categories: $CATEGORIES';
+
+// Define a version of the base prompt to use if industry is not present.
+const noIndustyPrompt =
+  'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? Categories: $CATEGORIES';
 
 // Define the system instructions for the model to use.
 const SystemInstructions = `
@@ -122,7 +126,7 @@ export async function queryLLM(
 export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
   categories: Category[],
-  _companyInfo: CompanyInfo
+  companyInfo: CompanyInfo
 ) {
   // Define the resultScore threshold for the Knowledge Graph API.
   const threshold = 10;
@@ -133,8 +137,17 @@ export async function batchQueryLLM(
   // Generate a list of contexts for each transaction using the transaction name and the list of valid categories.
   const contextPromises = transactions.map(
     async (transaction: FormattedForReviewTransaction) => {
-      const prompt = basePrompt
+      // Define the prompt as having no industry, then check if industry is valid.
+      let prompt = noIndustyPrompt;
+      if (companyInfo.industry !== 'None' && companyInfo.industry !== 'Error') {
+        // Set prompt to use base prompt that includes industry and set the industry value.
+        prompt = basePrompt;
+        prompt.replace('$INDUSTRY', companyInfo.industry);
+      }
+      // Replace the values present in both prompt types.
+      prompt
         .replace('$NAME', transaction.name)
+        .replace('$AMOUNT', Math.abs(transaction.amount).toString())
         .replace('$CATEGORIES', validCategoriesNames.join(', '));
 
       // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
