@@ -56,7 +56,10 @@ export function ReviewTable({
   selectedCategories: Record<string, string>;
   account_names: string[];
   handleCategoryChange: (transaction_ID: string, category: string) => void;
-  handleSave: (selectedRows: CategorizedForReviewTransaction[]) => void;
+  handleSave: (
+    selectedRows: Record<number, boolean>,
+    transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
+  ) => void;
   isSaving: boolean;
 }>) {
   // Create states to track and set the important values.
