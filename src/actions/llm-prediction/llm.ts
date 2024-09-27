@@ -5,8 +5,8 @@ import { openai } from '@ai-sdk/openai';
 import { fetchCustomSearch } from './custom-search';
 import { fetchKnowledgeGraph } from './knowledge-graph';
 import type { Category, CategorizedResult } from '@/types/Category';
-import { CompanyInfo } from '@/types/CompanyInfo';
-import { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
+import type { CompanyInfo } from '@/types/CompanyInfo';
+import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
 
 // Define the AI provider and model to use.
 const provider = process.env.AI_PROVIDER;
@@ -122,7 +122,7 @@ export async function queryLLM(
 export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
   categories: Category[],
-  companyInfo: CompanyInfo
+  _companyInfo: CompanyInfo
 ) {
   // Define the resultScore threshold for the Knowledge Graph API.
   const threshold = 10;

@@ -14,11 +14,8 @@ import type {
   ClassifiedCategory,
   CategorizedResult,
 } from '@/types/Category';
-import { CompanyInfo } from '@/types/CompanyInfo';
-import type {
-  ForReviewTransaction,
-  FormattedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+import type { CompanyInfo } from '@/types/CompanyInfo';
+import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
 
 // Takes a list of categorized transactions and a list of uncategorized transactions.
@@ -82,7 +79,7 @@ export async function classifyTransactions(
 // Helper method to classify transactions using the fuzzy or exact match by Fuse.
 // Takes a list of uncategorized transactions, categorized transactions, valid categories, results records, and no matches array.
 async function classifyWithFuse(
-  uncategorizedTransactions:FormattedForReviewTransaction[],
+  uncategorizedTransactions: FormattedForReviewTransaction[],
   categorizedTransactions: Transaction[],
   validCategories: Category[],
   results: Record<string, ClassifiedCategory[]>,
@@ -169,7 +166,8 @@ async function classifyWithFuse(
         }
 
         // Add the ordered list of classified categories with lower index meaning a better matche.
-        results[uncategorizedTransaction.transaction_ID] = orderedClassifications;
+        results[uncategorizedTransaction.transaction_ID] =
+          orderedClassifications;
       }
     } catch (error) {
       // Catch any errors and log them to the console.

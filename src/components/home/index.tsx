@@ -14,11 +14,8 @@ import SelectionPage from '@/components/home/selection-page';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CompanyInfo } from '@/types/CompanyInfo';
-import type {
-  ForReviewTransaction,
-  FormattedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
+import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
+import type { CategorizedTransaction } from '@/types/Transaction';
 
 export default function HomePage() {
   // Create states to track and set the important values.
