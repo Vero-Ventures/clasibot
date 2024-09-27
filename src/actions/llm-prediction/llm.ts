@@ -5,7 +5,8 @@ import { openai } from '@ai-sdk/openai';
 import { fetchCustomSearch } from './custom-search';
 import { fetchKnowledgeGraph } from './knowledge-graph';
 import type { Category, CategorizedResult } from '@/types/Category';
-import type { Transaction } from '@/types/Transaction';
+import { CompanyInfo } from '@/types/CompanyInfo';
+import { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
 
 // Define the AI provider and model to use.
 const provider = process.env.AI_PROVIDER;
@@ -119,8 +120,9 @@ export async function queryLLM(
 }
 
 export async function batchQueryLLM(
-  transactions: Transaction[],
-  categories: Category[]
+  transactions: FormattedForReviewTransaction[],
+  categories: Category[],
+  companyInfo: CompanyInfo
 ) {
   // Define the resultScore threshold for the Knowledge Graph API.
   const threshold = 10;
@@ -129,36 +131,38 @@ export async function batchQueryLLM(
   const validCategoriesNames = categories.map((category) => category.name);
 
   // Generate a list of contexts for each transaction using the transaction name and the list of valid categories.
-  const contextPromises = transactions.map(async (transaction: Transaction) => {
-    const prompt = basePrompt
-      .replace('$NAME', transaction.name)
-      .replace('$CATEGORIES', validCategoriesNames.join(', '));
+  const contextPromises = transactions.map(
+    async (transaction: FormattedForReviewTransaction) => {
+      const prompt = basePrompt
+        .replace('$NAME', transaction.name)
+        .replace('$CATEGORIES', validCategoriesNames.join(', '));
 
-    // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
-    const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
+      // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
+      const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
 
-    // Filter descriptions to those with a resultScore above the threshold
-    const descriptions = kgResults.filter(
-      (result) => result.resultScore > threshold
-    );
+      // Filter descriptions to those with a resultScore above the threshold
+      const descriptions = kgResults.filter(
+        (result) => result.resultScore > threshold
+      );
 
-    // Define a description variable and check that the descriptions exist.
-    let description;
-    if (descriptions.length > 0) {
-      // Use the first detailed description if it exists.
-      description = descriptions[0].detailedDescription;
-    } else {
-      // Otherwise, use a default description.
-      description = 'No description available';
+      // Define a description variable and check that the descriptions exist.
+      let description;
+      if (descriptions.length > 0) {
+        // Use the first detailed description if it exists.
+        description = descriptions[0].detailedDescription;
+      } else {
+        // Otherwise, use a default description.
+        description = 'No description available';
+      }
+
+      // Return the transaction ID, prompt, and context.
+      return {
+        prompt,
+        transaction_ID: transaction.transaction_ID,
+        context: description,
+      };
     }
-
-    // Return the transaction ID, prompt, and context.
-    return {
-      prompt,
-      transaction_ID: transaction.transaction_ID,
-      context: description,
-    };
-  });
+  );
 
   // Wait for all contexts to be generated using the above method.
   const contexts = await Promise.all(contextPromises);

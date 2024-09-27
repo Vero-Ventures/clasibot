@@ -14,6 +14,7 @@ import type {
   ClassifiedCategory,
   CategorizedResult,
 } from '@/types/Category';
+import { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
   FormattedForReviewTransaction,
@@ -26,7 +27,8 @@ export async function classifyTransactions(
   uncategorizedTransactions: (
     | FormattedForReviewTransaction
     | ForReviewTransaction
-  )[][]
+  )[][],
+  companyInfo: CompanyInfo
 ): Promise<Record<string, ClassifiedCategory[]> | { error: string }> {
   // Call the add transactions action with the categorized transactions.
   addTransactions(categorizedTransactions);
@@ -63,7 +65,12 @@ export async function classifyTransactions(
     // If there are transactions present in the noMatches array, send them to the LLM API.
     // This categorizes transactions that failed the first two categorization methods.
     if (noMatches.length > 0) {
-      await classifyWithLLM(noMatches, validLLMCategories, results);
+      await classifyWithLLM(
+        noMatches,
+        validLLMCategories,
+        results,
+        companyInfo
+      );
     }
 
     // Return the results array.
@@ -234,14 +241,19 @@ function orderClassificationsByAmount(
 
 // Helper method to classify transactions using the LLM API.
 async function classifyWithLLM(
-  noMatches: Transaction[],
+  noMatches: FormattedForReviewTransaction[],
   validCategories: Category[],
-  results: Record<string, ClassifiedCategory[]>
+  results: Record<string, ClassifiedCategory[]>,
+  companyInfo: CompanyInfo
 ): Promise<void> {
   let llmApiResponse;
   try {
     // Call the LLM API with the array of matchless transactions and the list of valid categories.
-    llmApiResponse = await sendToLLMApi(noMatches, validCategories);
+    llmApiResponse = await sendToLLMApi(
+      noMatches,
+      validCategories,
+      companyInfo
+    );
     // If a response is received, iterate over the response.
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
@@ -300,7 +312,8 @@ function createFuseInstance(
 
 // Calls the batchQueryLLM action then returns a promised array of categorized results.
 const sendToLLMApi = async (
-  uncategorizedTransactions: Transaction[],
-  validCategories: Category[]
+  uncategorizedTransactions: FormattedForReviewTransaction[],
+  validCategories: Category[],
+  companyInfo: CompanyInfo
 ): Promise<CategorizedResult[]> =>
-  batchQueryLLM(uncategorizedTransactions, validCategories);
+  batchQueryLLM(uncategorizedTransactions, validCategories, companyInfo);
