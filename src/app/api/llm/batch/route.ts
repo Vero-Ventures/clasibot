@@ -1,18 +1,21 @@
 import { batchQueryLLM } from '@/actions/llm-prediction/llm';
-import type { Transaction } from '@/types/Transaction';
 import type { CategorizedResult } from '@/types/Category';
+import type { CompanyInfo } from '@/types/CompanyInfo';
+import { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
 
 export async function POST(req: Request) {
   try {
     // Get the body from the request.
     const body = await req.json();
-    const transactions: Transaction[] = body.transactions || [];
+    const transactions: FormattedForReviewTransaction[] = body.transactions || [];
     const categories = body.categories;
+    const companyInfo: CompanyInfo = body.companyInfo
 
     // Query the LLM model with the provided transactions and categories.
     const results: CategorizedResult[] = await batchQueryLLM(
       transactions,
-      categories
+      categories,
+      companyInfo
     );
 
     // Return the results as a JSON object and a success status of 200.

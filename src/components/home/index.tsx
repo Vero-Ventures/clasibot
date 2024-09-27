@@ -14,15 +14,17 @@ import SelectionPage from '@/components/home/selection-page';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CompanyInfo } from '@/types/CompanyInfo';
-import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
-import type { CategorizedTransaction } from '@/types/Transaction';
+import type {
+  FormattedForReviewTransaction,
+  CategorizedFormattedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 
 export default function HomePage() {
   // Create states to track and set the important values.
   // Catagorized transactions, catagorization results, if classification is currently in progress, -
   // - if the user is subscribed, and the company name.
   const [categorizedTransactions, setCategorizedTransactions] = useState<
-    CategorizedTransaction[]
+    CategorizedFormattedForReviewTransaction[]
   >([]);
   const [categorizationResults, setCategorizationResults] = useState<
     Record<string, ClassifiedCategory[]>
@@ -90,7 +92,8 @@ export default function HomePage() {
     selectedRows: FormattedForReviewTransaction[],
     result: Record<string, ClassifiedCategory[]>
   ) => {
-    const newCategorizedTransactions: CategorizedTransaction[] = [];
+    const newCategorizedTransactions: CategorizedFormattedForReviewTransaction[] =
+      [];
 
     // Iterate through the selected rows and add the categorized transactions to the array.
     for (const transaction of selectedRows) {

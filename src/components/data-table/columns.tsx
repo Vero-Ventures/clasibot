@@ -4,15 +4,17 @@ import { Button } from '../ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfidenceBar } from '@/components/confidence-bar';
 import type { Category, ClassifiedCategory } from '@/types/Category';
-import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
-import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
+import type {
+  FormattedForReviewTransaction,
+  CategorizedFormattedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 import { format, parseISO } from 'date-fns';
 
 // Define button format for a sortable header
 const sortableHeader = (
   column:
     | Column<FormattedForReviewTransaction>
-    | Column<CategorizedTransaction>,
+    | Column<CategorizedFormattedForReviewTransaction>,
   title: string
 ) => {
   return (
@@ -36,7 +38,7 @@ const commonColumns = [
     }: {
       table:
         | Table<FormattedForReviewTransaction>
-        | Table<CategorizedTransaction>;
+        | Table<CategorizedFormattedForReviewTransaction>;
     }) => (
       // Row contains a checkbox to select all or individual rows.
       <Checkbox
@@ -53,7 +55,9 @@ const commonColumns = [
     cell: ({
       row,
     }: {
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>;
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>;
     }) => (
       // Checkbox for an individual row.
       <Checkbox
@@ -77,13 +81,15 @@ const commonColumns = [
     }: {
       column:
         | Column<FormattedForReviewTransaction>
-        | Column<CategorizedTransaction>;
+        | Column<CategorizedFormattedForReviewTransaction>;
     }) => sortableHeader(column, 'Date'),
     // The column is considered sortable, using the date as the title.
     cell: ({
       row,
     }: {
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>;
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>;
     }) => {
       // Convert the date value from the row to a Month-Day-Year format.
       const formattedDate = format(
@@ -94,7 +100,9 @@ const commonColumns = [
     },
     // Define a filter function for date column
     filterFn: (
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>,
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>,
       _: string,
       filterValue: string
     ) => {
@@ -127,12 +135,14 @@ const commonColumns = [
     }: {
       column:
         | Column<FormattedForReviewTransaction>
-        | Column<CategorizedTransaction>;
+        | Column<CategorizedFormattedForReviewTransaction>;
     }) => sortableHeader(column, 'Payee'),
     cell: ({
       row,
     }: {
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>;
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>;
     }) => row.getValue('name'),
   },
 
@@ -143,12 +153,16 @@ const commonColumns = [
     cell: ({
       row,
     }: {
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>;
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>;
     }) => row.getValue('account'),
     // Filter function takes the rows value and an array of account names (filterValue).
     // Column ID is needed to match the expected function signature for filter function to work.
     filterFn: (
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>,
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>,
       columnId: string,
       filterValue: string
     ) => {
@@ -171,12 +185,14 @@ const commonColumns = [
     }: {
       column:
         | Column<FormattedForReviewTransaction>
-        | Column<CategorizedTransaction>;
+        | Column<CategorizedFormattedForReviewTransaction>;
     }) => sortableHeader(column, 'Amount'),
     cell: ({
       row,
     }: {
-      row: Row<FormattedForReviewTransaction> | Row<CategorizedTransaction>;
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<CategorizedFormattedForReviewTransaction>;
     }) => {
       // Convert the string amount value from the row to a float.
       const amount = parseFloat(row.getValue('amount'));
@@ -205,7 +221,7 @@ export const selectionColumns: ColumnDef<FormattedForReviewTransaction>[] = [
 export const reviewColumns = (
   selectedCategories: Record<string, string>,
   handleCategoryChange: (transaction_ID: string, category: string) => void
-): ColumnDef<CategorizedTransaction>[] => [
+): ColumnDef<CategorizedFormattedForReviewTransaction>[] => [
   // Define the order of the columns. Start with the select, date, type, payee, and account columns.
   commonColumns[0],
   commonColumns[1],
@@ -220,7 +236,7 @@ export const reviewColumns = (
     cell: ({
       row,
     }: {
-      row: Row<Transaction> | Row<CategorizedTransaction>;
+      row: Row<CategorizedFormattedForReviewTransaction>;
     }) => {
       const categories: Category[] = row.getValue('categories');
       return categories.length > 0 ? (
@@ -254,7 +270,7 @@ export const reviewColumns = (
     cell: ({
       row,
     }: {
-      row: Row<Transaction> | Row<CategorizedTransaction>;
+      row: Row<CategorizedFormattedForReviewTransaction>;
     }) => {
       // Define the inital confidence value as well as the value for each classification method.
       const LLMClassified = 1;
