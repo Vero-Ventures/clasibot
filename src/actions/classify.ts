@@ -1,5 +1,5 @@
 'use server';
-import Fuse, { FuseResult } from 'fuse.js';
+import Fuse from 'fuse.js';
 import { batchQueryLLM } from '@/actions/llm-prediction/llm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { checkSubscription } from '@/actions/stripe';
@@ -7,6 +7,7 @@ import {
   addTransactions,
   getTopCategoriesForTransaction,
 } from '@/actions/transaction-database';
+import type { FuseResult } from 'fuse.js';
 import type { Account } from '@/types/Account';
 import type {
   Category,
