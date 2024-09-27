@@ -74,6 +74,7 @@ function formatForReviewTransaction(
     // Only record expense (spending) transactions.
     if (transactionItem.amount < 0) {
       const newTransaction: FormattedForReviewTransaction = {
+        transaction_ID: transactionItem.id,
         name: transactionItem.description,
         date: transactionItem.olbTxnDate.split('T')[0],
         account: transactionItem.qboAccountId,

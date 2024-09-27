@@ -19,6 +19,8 @@ export type ForReviewTransaction = {
 };
 
 export type FormattedForReviewTransaction = {
+  // ID for the "For Review" transaction.
+  transaction_ID: string;
   // Name related to the transaction (e.g. the payee).
   name: string;
   // date: Date as a string in the format 'YYYY-MM-DD'.
