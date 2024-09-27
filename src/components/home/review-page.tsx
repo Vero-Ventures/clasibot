@@ -81,13 +81,13 @@ export default function ReviewPage({
     });
   }
 
-  async function handleSaving(
+  async function handleSave(
     selectedRows: Record<number, boolean>,
     transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
   ) {}
 
   // Saves the selected categories using the selected rows.
-  async function handleSave(selectedRows: CategorizedForReviewTransaction[]) {
+  async function handleSaveOld(selectedRows: CategorizedForReviewTransaction[]) {
     // Set the saving status to true.
     setIsSaving(true);
     try {
