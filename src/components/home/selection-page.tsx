@@ -17,7 +17,7 @@ export default function SelectionPage({
   company_info,
   finished_loading,
 }: Readonly<{
-  handleClassify: (selectedRows: FormattedForReviewTransaction[]) => void;
+  handleClassify: (selectedRows: Record<number, boolean>, transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]) => void;
   isClassifying: boolean;
   company_info: CompanyInfo;
   finished_loading: boolean;

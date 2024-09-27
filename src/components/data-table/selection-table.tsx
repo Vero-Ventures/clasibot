@@ -55,7 +55,7 @@ export function SelectionTable({
   found_transactions: boolean;
   finished_loading: boolean;
   isClassifying: boolean;
-  handleClassify: (selectedRows: FormattedForReviewTransaction[]) => void;
+  handleClassify: (selectedRows: Record<number, boolean>, transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]) => void;
 }>) {
   // Create states to track and set the important values.
   // Column to sort by, column filtering rules, Columns to display, selected Rows, and accounts to display Rows from.
@@ -403,11 +403,7 @@ export function SelectionTable({
             id="ClassifyButton"
             onClick={() =>
               // Calls the handleClassify function with the currently selected rows.
-              handleClassify(
-                table
-                  .getFilteredSelectedRowModel()
-                  .rows.map((row) => row.original)
-              )
+              handleClassify(rowSelection, transactions)
             }
             // Disable the button if the table is currently classifying or no rows are selected.
             disabled={

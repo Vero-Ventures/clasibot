@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
+  ForReviewTransaction,
   FormattedForReviewTransaction,
   CategorizedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
@@ -24,7 +25,7 @@ export default function HomePage() {
   // Catagorized transactions, catagorization results, if classification is currently in progress, -
   // - if the user is subscribed, and the company name.
   const [categorizedTransactions, setCategorizedTransactions] = useState<
-    CategorizedForReviewTransaction[]
+    (CategorizedForReviewTransaction | ForReviewTransaction)[][]
   >([]);
   const [categorizationResults, setCategorizationResults] = useState<
     Record<string, ClassifiedCategory[]>
@@ -89,30 +90,52 @@ export default function HomePage() {
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
   const createCategorizedTransactions = (
-    selectedRows: FormattedForReviewTransaction[],
+    selectedRows: (FormattedForReviewTransaction | ForReviewTransaction)[][],
     result: Record<string, ClassifiedCategory[]>
   ) => {
-    const newCategorizedTransactions: CategorizedForReviewTransaction[] = [];
+    const newCategorizedTransactions: (
+      | CategorizedForReviewTransaction
+      | ForReviewTransaction
+    )[][] = [];
 
     // Iterate through the selected rows and add the categorized transactions to the array.
     for (const transaction of selectedRows) {
+      // Define the formatted value of the array.
+      const formattedTransaction =
+        transaction[0] as FormattedForReviewTransaction;
+      const fullTransaction = transaction[1] as ForReviewTransaction;
       // Define the formatted transaction from the dual "For Review" transaction array.
-      newCategorizedTransactions.push({
-        transaction_ID: transaction.transaction_ID,
-        name: transaction.name,
-        date: transaction.date,
-        account: transaction.account,
-        amount: transaction.amount,
-        // Get the categories from the result object using its ID. Gets an empty array if no match is found.
-        categories: result[transaction.transaction_ID] || [],
-      });
+      newCategorizedTransactions.push([
+        {
+          transaction_ID: formattedTransaction.transaction_ID,
+          name: formattedTransaction.name,
+          date: formattedTransaction.date,
+          account: formattedTransaction.account,
+          amount: formattedTransaction.amount,
+          // Get the categories from the result object using its ID. Gets an empty array if no match is found.
+          categories: result[formattedTransaction.transaction_ID] || [],
+        },
+        fullTransaction,
+      ]);
     }
     return newCategorizedTransactions;
   };
 
   // Handle classifing selected transactions from a list of transactions.
-  async function handleClassify(selectedRows: FormattedForReviewTransaction[]) {
+  async function handleClassify(
+    selectedRows: Record<number, boolean>,
+    transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]
+  ) {
     const subscriptionStatus = await checkSubscription();
+
+    // Create array to store selected transactions.
+    const selectedTransactions = [];
+    for (const [row, selected] of Object.entries(selectedRows)) {
+      // Push selected transactions to the array.
+      if (selected) {
+        selectedTransactions.push(transactions[Number(row)]);
+      }
+    }
 
     if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
       // Set the subscription status to false and show a toast message.
@@ -146,11 +169,16 @@ export default function HomePage() {
     const pastTransactions = await getTransactions(startDate, endDate);
     const pastTransactionsResult = JSON.parse(pastTransactions).slice(1);
 
+    // Get formatted values for classification.
+    const formattedRows = selectedTransactions.map(
+      (subArray) => subArray[0] as FormattedForReviewTransaction
+    );
+
     // Classify the transactions that are not uncategorized.
     const result: Record<string, ClassifiedCategory[]> | { error: string } =
       await classifyTransactions(
         pastTransactionsResult,
-        selectedRows,
+        formattedRows,
         companyInfo
       );
 
@@ -162,7 +190,7 @@ export default function HomePage() {
     // Set the categorization results and catagorized transactions using the result object.
     setCategorizationResults(result);
     setCategorizedTransactions(
-      createCategorizedTransactions(selectedRows, result)
+      createCategorizedTransactions(selectedTransactions, result)
     );
 
     // Set the 'is classifying' status to false.
