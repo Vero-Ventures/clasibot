@@ -30,7 +30,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { reviewColumns } from './columns';
-import type { CategorizedTransaction } from '@/types/Transaction';
+import type {
+  ForReviewTransaction,
+  CategorizedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 
 /**
  * Function Values:
@@ -46,11 +49,14 @@ export function ReviewTable({
   handleSave,
   isSaving,
 }: Readonly<{
-  categorizedTransactions: CategorizedTransaction[];
+  categorizedTransactions: (
+    | ForReviewTransaction
+    | CategorizedForReviewTransaction
+  )[][];
   selectedCategories: Record<string, string>;
   account_names: string[];
   handleCategoryChange: (transaction_ID: string, category: string) => void;
-  handleSave: (selectedRows: CategorizedTransaction[]) => void;
+  handleSave: (selectedRows: CategorizedForReviewTransaction[]) => void;
   isSaving: boolean;
 }>) {
   // Create states to track and set the important values.
@@ -78,10 +84,19 @@ export function ReviewTable({
     setSelectedAccounts(account_names);
   }, [account_names]);
 
+  // Extract the formatted transactions from the combined arrays.
+  const formattedTransactions = [];
+  for (const transaction of categorizedTransactions) {
+    // Asser that the transaction type is formmated. Needed due to data coming from multi-typed array.
+    formattedTransactions.push(
+      transaction[0] as CategorizedForReviewTransaction
+    );
+  }
+
   // Creates the react table using passed data, helper functions, and state elements.
   const table = useReactTable({
     // Pass the transactions as data, as well as a list of columns and the category change function.
-    data: categorizedTransactions,
+    data: formattedTransactions,
     columns: reviewColumns(selectedCategories, handleCategoryChange),
     // Pass the set state functions to table actions.
     onColumnFiltersChange: setColumnFilters,
@@ -266,11 +281,7 @@ export function ReviewTable({
             id="SaveButton"
             onClick={() =>
               // Calls the handleSave function with the currently selected rows.
-              handleSave(
-                table
-                  .getFilteredSelectedRowModel()
-                  .rows.map((row) => row.original)
-              )
+              handleSave(rowSelection, categorizedTransactions)
             }
             // Disable the button if the table is currently saving or no rows are selected.
             disabled={

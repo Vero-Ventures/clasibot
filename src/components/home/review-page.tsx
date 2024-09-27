@@ -8,7 +8,12 @@ import { ReviewTable } from '@/components/data-table/review-table';
 import type { Account } from '@/types/Account';
 import type { ClassifiedCategory } from '@/types/Category';
 import type { CompanyInfo } from '@/types/CompanyInfo';
-import type { Transaction, CategorizedTransaction } from '@/types/Transaction';
+import type {
+  ForReviewTransaction,
+  CategorizedForReviewTransaction,
+  UpdatedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
+import type { Transaction } from '@/types/Transaction';
 
 // Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
@@ -16,7 +21,10 @@ export default function ReviewPage({
   categorizationResults,
   company_info,
 }: Readonly<{
-  categorizedTransactions: CategorizedTransaction[];
+  categorizedTransactions: (
+    | ForReviewTransaction
+    | CategorizedForReviewTransaction
+  )[][];
   categorizationResults: Record<string, ClassifiedCategory[]>;
   company_info: CompanyInfo;
 }>) {
@@ -36,12 +44,15 @@ export default function ReviewPage({
     const initializeCategories = async () => {
       const initialCategories: Record<string, string> = {};
       categorizedTransactions.forEach((transaction) => {
+        const formattedTransaction =
+          transaction[0] as CategorizedForReviewTransaction;
         // Look for the first category in the categorization results.
         const firstCategory =
-          categorizationResults[transaction.transaction_ID]?.[0]?.name;
+          categorizationResults[formattedTransaction.transaction_ID]?.[0]?.name;
         // If a category is found, add it to the initial categories record.
         if (firstCategory) {
-          initialCategories[transaction.transaction_ID] = firstCategory;
+          initialCategories[formattedTransaction.transaction_ID] =
+            firstCategory;
         }
       });
       // Update the selected categories state with the initial categories.
@@ -51,7 +62,9 @@ export default function ReviewPage({
     // Create a set to track account names without duplicates, then add all account names to the set.
     const accountNames = new Set<string>();
     for (const transaction of categorizedTransactions) {
-      accountNames.add(transaction.account);
+      const formattedTransaction =
+        transaction[0] as CategorizedForReviewTransaction;
+      accountNames.add(formattedTransaction.account);
     }
 
     // Update the accounts state with a list of unique account names.
@@ -68,13 +81,18 @@ export default function ReviewPage({
     });
   }
 
+  async function handleSaving(
+    selectedRows: Record<number, boolean>,
+    transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
+  ) {}
+
   // Saves the selected categories using the selected rows.
-  async function handleSave(selectedRows: CategorizedTransaction[]) {
+  async function handleSave(selectedRows: CategorizedForReviewTransaction[]) {
     // Set the saving status to true.
     setIsSaving(true);
     try {
       // Create an array to store the new transactions.
-      const newTransactions: Transaction[] = [];
+      const newTransactions: UpdatedForReviewTransaction[] = [];
       // Update each selected row with the selected category.
       await Promise.all(
         selectedRows.map(async (transaction) => {
