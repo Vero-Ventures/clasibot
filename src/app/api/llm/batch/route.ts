@@ -1,6 +1,6 @@
 import { batchQueryLLM } from '@/actions/llm-prediction/llm';
 import type { Transaction } from '@/types/Transaction';
-import type { CategorizedResult } from '@/types/CategorizedResult';
+import type { CategorizedResult } from '@/types/Category';
 
 export async function POST(req: Request) {
   try {

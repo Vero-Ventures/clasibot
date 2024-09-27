@@ -4,8 +4,7 @@ import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
 import { fetchCustomSearch } from './custom-search';
 import { fetchKnowledgeGraph } from './knowledge-graph';
-import type { Category } from '@/types/Category';
-import type { CategorizedResult } from '@/types/CategorizedResult';
+import type { Category, CategorizedResult } from '@/types/Category';
 import type { Transaction } from '@/types/Transaction';
 
 // Define the AI provider and model to use.

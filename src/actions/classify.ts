@@ -8,8 +8,7 @@ import {
   getTopCategoriesForTransaction,
 } from '@/actions/transaction-database';
 import type { Account } from '@/types/Account';
-import type { Category, ClassifiedCategory } from '@/types/Category';
-import type { CategorizedResult } from '@/types/CategorizedResult';
+import type { Category, ClassifiedCategory, CategorizedResult } from '@/types/Category';
 import type { Transaction } from '@/types/Transaction';
 
 // Takes a list of categorized transactions and a list of uncategorized transactions.
