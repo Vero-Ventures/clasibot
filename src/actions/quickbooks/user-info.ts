@@ -2,8 +2,44 @@
 import { createQBObject } from '@/actions/qb-client';
 import { checkFaultProperty } from './helpers';
 
+// Get the company name from the QuickBooks API.
+export async function getCompanyName(): Promise<string> {
+  try {
+    // Create the QuickBooks API object.
+    const qbo = await createQBObject();
+
+    // Create a type for the response object to allow for type checking.
+    type CompanyInfoResponse = {
+      QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
+    };
+
+    // Search for a company info object related to the user.
+    const response: CompanyInfoResponse = await new Promise((resolve) => {
+      qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
+        // If there is an error, check if it has a 'Fault' property
+        if (err && checkFaultProperty(err)) {
+          // Then resolve the function with a response with values formatted to indicate failure.
+          resolve({
+            QueryResponse: {
+              CompanyInfo: [{ CompanyName: 'Error: Name not found' }],
+            },
+          });
+        }
+        resolve(data);
+      });
+    });
+
+    // Return the name value from the company info.
+    return response.QueryResponse.CompanyInfo[0].CompanyName;
+  } catch (error) {
+    // Log the error and return an error string to the caller if the call fails.
+    console.error('Error finding company name:', error);
+    return 'Error: Name not found';
+  }
+}
+
 // Find a the company info object and return the industry.
-export async function findIndustry(): Promise<string> {
+export async function getCompanyIndustry(): Promise<string> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
@@ -58,42 +94,6 @@ export async function findIndustry(): Promise<string> {
     // Log the error and return the industry type as 'Error'.
     console.error('Error finding industry:', error);
     return 'Error';
-  }
-}
-
-// Get the company name from the QuickBooks API.
-export async function getCompanyName(): Promise<string> {
-  try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
-
-    // Create a type for the response object to allow for type checking.
-    type CompanyInfoResponse = {
-      QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
-    };
-
-    // Search for a company info object related to the user.
-    const response: CompanyInfoResponse = await new Promise((resolve) => {
-      qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
-        // If there is an error, check if it has a 'Fault' property
-        if (err && checkFaultProperty(err)) {
-          // Then resolve the function with a response with values formatted to indicate failure.
-          resolve({
-            QueryResponse: {
-              CompanyInfo: [{ CompanyName: 'Error: Name not found' }],
-            },
-          });
-        }
-        resolve(data);
-      });
-    });
-
-    // Return the name value from the company info.
-    return response.QueryResponse.CompanyInfo[0].CompanyName;
-  } catch (error) {
-    // Log the error and return an error string to the caller if the call fails.
-    console.error('Error finding company name:', error);
-    return 'Error: Name not found';
   }
 }
 

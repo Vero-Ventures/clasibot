@@ -2,36 +2,41 @@
 import { useState, useEffect } from 'react';
 import { classifyTransactions } from '@/actions/classify';
 import { getTransactions } from '@/actions/quickbooks/get-transactions';
-import { getCompanyName } from '@/actions/quickbooks/user-info';
+import {
+  getCompanyName,
+  getCompanyIndustry,
+  getCompanyLocation,
+} from '@/actions/quickbooks/user-info';
 import { checkSubscription } from '@/actions/stripe';
-import { filterOutUncategorized } from '@/utils/filter-transactions';
+import { UnpaidAlert } from '@/components/unpaid-alert';
 import ReviewPage from '@/components/home/review-page';
 import SelectionPage from '@/components/home/selection-page';
-import { UnpaidAlert } from '@/components/unpaid-alert';
 import { useToast } from '@/components/ui/toasts/use-toast';
 import type { ClassifiedCategory } from '@/types/Category';
-import type { CategorizedTransaction, Transaction } from '@/types/Transaction';
-
-/**
- * NOTE: Temporarily Removed to Prevent Issues with New Database.
- */
-// import { updateIndustry } from '@/actions/update-industry'
-// import { findIndustry } from '@/actions/quickbooks/user-info';
-// import { getSession } from 'next-auth/react';
+import type { CompanyInfo } from '@/types/CompanyInfo';
+import type {
+  ForReviewTransaction,
+  FormattedForReviewTransaction,
+  CategorizedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 
 export default function HomePage() {
   // Create states to track and set the important values.
   // Catagorized transactions, catagorization results, if classification is currently in progress, -
   // - if the user is subscribed, and the company name.
   const [categorizedTransactions, setCategorizedTransactions] = useState<
-    CategorizedTransaction[]
+    (CategorizedForReviewTransaction | ForReviewTransaction)[][]
   >([]);
   const [categorizationResults, setCategorizationResults] = useState<
     Record<string, ClassifiedCategory[]>
   >({});
   const [isClassifying, setIsClassifying] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState('');
-  const [companyName, setCompanyName] = useState('');
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
+    name: '',
+    industry: '',
+    location: { Country: '', Location: '' },
+  });
 
   // Define a state to track if the modal is open.
   const [modal, setModal] = useState(false);
@@ -49,38 +54,21 @@ export default function HomePage() {
     }
   }, []);
 
-  // Gets the company name and update the related state asynchronously.
-  const callCompanyName = async () => {
+  // Gets the important company info and stores it as one object.
+  // *** NOTE: Presently does not update industry, update in future. ***
+  const getCompanyInfo = async () => {
     const userCompanyName = await getCompanyName();
-    setCompanyName(userCompanyName);
+    const userCompanyIndustry = await getCompanyIndustry();
+    const userCompanyLocation = await getCompanyLocation();
+    setCompanyInfo({
+      name: userCompanyName,
+      industry: userCompanyIndustry,
+      location: JSON.parse(userCompanyLocation),
+    });
   };
 
   // Define the toast function using the useToast hook.
   const { toast } = useToast();
-
-  // // Define a function to update the users industry in the database.
-  // const callUpdateIndustry = async () => {
-  //   const industry = await findIndustry();
-  //   const session = await getSession();
-  //   const email = session?.user?.email;
-
-  //   // If an email is found, call the update industry action.
-  //   // Catches any errors and logs them to the console.
-  //   if (email) {
-  //     try {
-  //       const result = await updateIndustry(industry, email);
-  //       // Set the industry updating to be completed and throw an error if the action failed.
-  //       setFinishedLoadingIndustry(true);
-  //       if (result === 'Error') {
-  //         throw new Error('Failed to update industry');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error updating industry:', error);
-  //     }
-  //   } else {
-  //     console.error('No user email found in session');
-  //   }
-  // };
 
   // Define a function to check for valid user subsciptions.
   const checkUserSubscription = async () => {
@@ -95,41 +83,59 @@ export default function HomePage() {
 
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
-    // Check the user subscription, update the industry and call the company name.
+    // Check the user subscription and get the company info.
     checkUserSubscription();
-    /**
-     * NOTE: Temporarily Removed to Prevent Issues with New Database.
-     */
-    // callUpdateIndustry();
-    callCompanyName();
+    getCompanyInfo();
   }, []);
 
   // Create a list of catagorized transactions using a list of transactions and a result object.
   const createCategorizedTransactions = (
-    selectedRows: Transaction[],
+    selectedRows: (FormattedForReviewTransaction | ForReviewTransaction)[][],
     result: Record<string, ClassifiedCategory[]>
   ) => {
-    const newCategorizedTransactions: CategorizedTransaction[] = [];
+    const newCategorizedTransactions: (
+      | CategorizedForReviewTransaction
+      | ForReviewTransaction
+    )[][] = [];
 
     // Iterate through the selected rows and add the categorized transactions to the array.
     for (const transaction of selectedRows) {
-      newCategorizedTransactions.push({
-        date: transaction.date,
-        transaction_type: transaction.transaction_type,
-        transaction_ID: transaction.transaction_ID,
-        name: transaction.name,
-        account: transaction.account,
-        // Get the categories from the result object using its ID. Gets an empty array if no match is found.
-        categories: result[transaction.transaction_ID] || [],
-        amount: transaction.amount,
-      });
+      // Define the formatted value of the array.
+      const formattedTransaction =
+        transaction[0] as FormattedForReviewTransaction;
+      const fullTransaction = transaction[1] as ForReviewTransaction;
+      // Define the formatted transaction from the dual "For Review" transaction array.
+      newCategorizedTransactions.push([
+        {
+          transaction_ID: formattedTransaction.transaction_ID,
+          name: formattedTransaction.name,
+          date: formattedTransaction.date,
+          account: formattedTransaction.account,
+          amount: formattedTransaction.amount,
+          // Get the categories from the result object using its ID. Gets an empty array if no match is found.
+          categories: result[formattedTransaction.transaction_ID] || [],
+        },
+        fullTransaction,
+      ]);
     }
     return newCategorizedTransactions;
   };
 
   // Handle classifing selected transactions from a list of transactions.
-  async function handleClassify(selectedRows: Transaction[]) {
+  async function handleClassify(
+    selectedRows: Record<number, boolean>,
+    transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]
+  ) {
     const subscriptionStatus = await checkSubscription();
+
+    // Create array to store selected transactions.
+    const selectedTransactions = [];
+    for (const [row, selected] of Object.entries(selectedRows)) {
+      // Push selected transactions to the array.
+      if (selected) {
+        selectedTransactions.push(transactions[Number(row)]);
+      }
+    }
 
     if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
       // Set the subscription status to false and show a toast message.
@@ -163,11 +169,17 @@ export default function HomePage() {
     const pastTransactions = await getTransactions(startDate, endDate);
     const pastTransactionsResult = JSON.parse(pastTransactions).slice(1);
 
+    // Get formatted values for classification.
+    const formattedRows = selectedTransactions.map(
+      (subArray) => subArray[0] as FormattedForReviewTransaction
+    );
+
     // Classify the transactions that are not uncategorized.
     const result: Record<string, ClassifiedCategory[]> | { error: string } =
       await classifyTransactions(
-        filterOutUncategorized(pastTransactionsResult),
-        selectedRows
+        pastTransactionsResult,
+        formattedRows,
+        companyInfo
       );
 
     if ('error' in result) {
@@ -178,7 +190,7 @@ export default function HomePage() {
     // Set the categorization results and catagorized transactions using the result object.
     setCategorizationResults(result);
     setCategorizedTransactions(
-      createCategorizedTransactions(selectedRows, result)
+      createCategorizedTransactions(selectedTransactions, result)
     );
 
     // Set the 'is classifying' status to false.
@@ -196,14 +208,14 @@ export default function HomePage() {
         <ReviewPage
           categorizedTransactions={categorizedTransactions}
           categorizationResults={categorizationResults}
-          company_name={companyName}
+          company_info={companyInfo}
         />
       ) : (
         // Otherwise display the selection page.
         <SelectionPage
           handleClassify={handleClassify}
           isClassifying={isClassifying}
-          company_name={companyName}
+          company_info={companyInfo}
           finished_loading={
             finishedLoadingIndustry && finishedLoadingSubscription
           }

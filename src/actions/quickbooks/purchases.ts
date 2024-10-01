@@ -3,8 +3,7 @@
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
 import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { Purchase } from '@/types/Purchase';
-import type { PurchaseResponse } from '@/types/PurchaseResponse';
+import type { Purchase, PurchaseResponse } from '@/types/Purchase';
 
 // Find a specific purchase object by its ID.
 export async function findPurchase(id: string): Promise<PurchaseResponse> {

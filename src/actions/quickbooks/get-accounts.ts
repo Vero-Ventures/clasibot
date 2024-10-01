@@ -5,7 +5,9 @@ import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 
 // Get all accounts from the QuickBooks API.
-export async function getAccounts(): Promise<string> {
+// Use 'Transaction' to fetch accounts that contain 'For Review' Transactions.
+// Use 'Expense' to get accounts for transaction classification.
+export async function getAccounts(accountType: string): Promise<string> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
@@ -44,11 +46,41 @@ export async function getAccounts(): Promise<string> {
       }[];
     };
 
-    // Get the expense accounts, searching by their classification (Expense).
+    // Define classificaion as expense by default.
+    let classification = [
+      {
+        field: 'Classification',
+        value: ['Expense'],
+        operator: '=',
+        limit: 1000,
+      },
+    ];
+    if (accountType === 'Transaction') {
+      classification = [
+        {
+          field: 'AccountSubType',
+          value: [
+            'CreditCard',
+            'Checking',
+            'MoneyMarket',
+            'RentsHeldInTrust',
+            'Savings',
+            'TrustAccounts',
+            'CashOnHand',
+          ],
+          operator: 'IN',
+          limit: 1000,
+        },
+      ];
+    }
+
+    console.log(classification);
+
+    // Get the expense accounts, searching by their classification (Expense or accounts related to transactions).
     // ***Variable*** Returns a limit of 1000 accounts.
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
-        { Classification: 'Expense', limit: 1000 },
+        classification,
         (err: ErrorResponse, data: AccountResponse) => {
           // If there is an error, check if it has a 'Fault' property.
           if (err && checkFaultProperty(err)) {
@@ -75,7 +107,6 @@ export async function getAccounts(): Promise<string> {
           name: account.Name,
           active: account.Active,
           classification: account.Classification,
-          account_type: account.AccountType,
           account_sub_type: account.AccountSubType,
         };
         formattedAccounts.push(newFormattedAccount);

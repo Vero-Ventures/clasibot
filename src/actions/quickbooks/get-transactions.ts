@@ -75,14 +75,7 @@ export async function getTransactions(
       start_date: startDate,
       end_date: endDate,
       limit: 1000,
-      columns: [
-        'account_name',
-        'name',
-        'other_account',
-        'tx_date',
-        'txn_type',
-        'memo',
-      ],
+      columns: ['txn_type', 'name', 'account_name', 'other_account'],
     };
 
     // Check if the user has multi-currency enabled and add the appropriate amount column to the parameters.
@@ -145,33 +138,26 @@ export async function getTransactions(
         if (transaction.Summary) {
           break;
         }
-        const dateRow = 0;
-        const transactionRow = 1;
-        const nameRow = 2;
-        // const memoRow = 3;
-        const accountRow = 4;
-        const categoryRow = 5;
-        const amountRow = 6;
+        // Define the rows of the important returned values.
+        const nameRow = 1;
+        const accountRow = 2;
+        const categoryRow = 3;
+        const amountRow = 4;
 
         // Skip no-name transactions, transactions without an account, and transactions without an amount.
         if (
-          purchaseTransactions.includes(
-            String(transaction.ColData[transactionRow].value)
-          ) &&
-          transaction.ColData[dateRow].value !== '' &&
-          transaction.ColData[amountRow].value !== '' &&
+          purchaseTransactions.includes(String(transaction.ColData[0].value)) &&
+          transaction.ColData[nameRow].value !== '' &&
+          transaction.ColData[accountRow].value !== '' &&
+          transaction.ColData[categoryRow].value !== '' &&
           transaction.ColData[nameRow].value !== ''
         ) {
           // Reads the values from the specified columns in the current row of the results.
           // Explicitly define the types due to values from the API being either a string or number.
           const newFormattedTransaction: Transaction = {
-            date: String(transaction.ColData[dateRow].value),
-            transaction_type: String(transaction.ColData[transactionRow].value),
-            transaction_ID: String(transaction.ColData[transactionRow].id),
             name: String(transaction.ColData[nameRow].value),
-            account: String(transaction.ColData[accountRow].value),
-            category: String(transaction.ColData[categoryRow].value),
             amount: Number(transaction.ColData[amountRow].value),
+            category: String(transaction.ColData[categoryRow].value),
           };
           formattedTransactions.push(newFormattedTransaction);
         }

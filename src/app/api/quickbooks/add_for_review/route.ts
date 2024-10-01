@@ -6,10 +6,6 @@ import { addForReview } from '@/actions/quickbooks/add-for-review';
 // import type { ForReviewTransaction } from '@/types/ForReviewTransaction';
 
 export async function GET() {
-  // updatedTransaction: ForReviewTransaction,
-  // classificationId: string,
-  // taxCodeId: string
-
   // Get the for review transactions from a specific account for testing.
   const updatedTransaction = await getForReview('144');
 

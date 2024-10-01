@@ -46,7 +46,7 @@ export async function addTransactions(
       const classifications = await db.select().from(Classification);
 
       // Get the list of user accounts and parse them to a list of Account objects.
-      const accounts = await getAccounts();
+      const accounts = await getAccounts('Expense');
       const parsedAccounts: Account[] = JSON.parse(accounts);
 
       // Create a dictionary that connects account names to their detail type (base QBO expense category).

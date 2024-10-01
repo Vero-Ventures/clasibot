@@ -35,7 +35,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ChevronDown } from 'lucide-react';
-import type { Transaction } from '@/types/Transaction';
+import type {
+  ForReviewTransaction,
+  FormattedForReviewTransaction,
+} from '@/types/ForReviewTransaction';
 
 // Function Values: list of transactions, list of account names, and a value to indicate classification is in progress.
 // Function Callbacks: A function to handle classifing the transactions.
@@ -47,12 +50,15 @@ export function SelectionTable({
   isClassifying,
   handleClassify,
 }: Readonly<{
-  transactions: Transaction[];
+  transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][];
   account_names: string[];
   found_transactions: boolean;
   finished_loading: boolean;
   isClassifying: boolean;
-  handleClassify: (selectedRows: Transaction[]) => void;
+  handleClassify: (
+    selectedRows: Record<number, boolean>,
+    transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][]
+  ) => void;
 }>) {
   // Create states to track and set the important values.
   // Column to sort by, column filtering rules, Columns to display, selected Rows, and accounts to display Rows from.
@@ -98,10 +104,17 @@ export function SelectionTable({
     setSelectedAccounts(account_names);
   }, [account_names]);
 
+  // Extract the formatted transactions from the combined arrays.
+  const formattedTransactions = [];
+  for (const transaction of transactions) {
+    // Asser that the transaction type is formmated. Needed due to data coming from multi-typed array.
+    formattedTransactions.push(transaction[0] as FormattedForReviewTransaction);
+  }
+
   // Creates the react table using passed data, helper functions, and state elements.
   const table = useReactTable({
     // Pass the list of transactions for the rows and the list of columns to display.
-    data: transactions,
+    data: formattedTransactions,
     columns: selectionColumns,
     // Pass the set state functions to table actions.
     onColumnFiltersChange: setColumnFilters,
@@ -260,10 +273,6 @@ export function SelectionTable({
               .map((column) => {
                 // Get the name using the column ID.
                 let field = column.id;
-                // Rename transaction_type to Type.
-                if (column.id === 'transaction_type') {
-                  field = 'Type';
-                }
                 // Rename name column to Payee.
                 if (column.id === 'name') {
                   field = 'Payee';
@@ -397,11 +406,7 @@ export function SelectionTable({
             id="ClassifyButton"
             onClick={() =>
               // Calls the handleClassify function with the currently selected rows.
-              handleClassify(
-                table
-                  .getFilteredSelectedRowModel()
-                  .rows.map((row) => row.original)
-              )
+              handleClassify(rowSelection, transactions)
             }
             // Disable the button if the table is currently classifying or no rows are selected.
             disabled={
