@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { addTransactions } from '@/actions/transaction-database';
+import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { findPurchase, updatePurchase } from '@/actions/quickbooks/purchases';
 import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
 import type { Account } from '@/types/Account';
@@ -11,7 +11,6 @@ import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
   CategorizedForReviewTransaction,
-  UpdatedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
 
@@ -22,8 +21,8 @@ export default function ReviewPage({
   company_info,
 }: Readonly<{
   categorizedTransactions: (
-    | ForReviewTransaction
     | CategorizedForReviewTransaction
+    | ForReviewTransaction
   )[][];
   categorizationResults: Record<string, ClassifiedCategory[]>;
   company_info: CompanyInfo;
@@ -85,95 +84,80 @@ export default function ReviewPage({
   async function handleSave(
     selectedRows: Record<number, boolean>,
     transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
-  ) {}
-
-  async function handleSaveOld(
-    selectedRows: CategorizedForReviewTransaction[]
   ) {
     // Set the saving status to true.
     setIsSaving(true);
     try {
-      // Create an array to store the new transactions.
-      const newTransactions: UpdatedForReviewTransaction[] = [];
-      // Update each selected row with the selected category.
-      await Promise.all(
-        selectedRows.map(async (transaction) => {
-          const transactionID = transaction.transaction_ID;
-          // Find the matching the purchase object from QuickBooks.
-          const purchaseObj = await findPurchase(transactionID);
-          // Get the id of the selected category.
-          const categoryName = selectedCategories[transactionID];
+      // Define an array for transactions to be saved to the database at the end for future classification use.
+      const newTransactions: Transaction[] = [];
+      // Call the list of expense accounts to get account ID's from using account names.
+      const accounts = JSON.parse(await getAccounts('Expense'));
+      // Get the selected rows in an iterable format [key: selectedRowIndex, value: true]
+      // The key is the index of the row and the value is always true for selected rows.
+      const selectedRowIndices = Object.entries(selectedRows);
 
-          // Find the transaction category with the matching name and get its ID.
-          const accountID = transaction.categories.find(
-            (category) => category.name === categoryName
+      // Iterate through the selected rows, using only values where selected = true.
+      selectedRowIndices.forEach(async ([index, selected]) => {
+        if (selected) {
+          // Get the row index as a number, as well as the catagoried and raw "for review" transaction objects.
+          const numericalIndex = Number(index);
+          const categorizedTransaction = transactions[
+            numericalIndex
+          ][0] as CategorizedForReviewTransaction;
+          const rawTransaction = transactions[
+            numericalIndex
+          ][1] as ForReviewTransaction;
+          // Get the ID of the transaction and use that to get its selected category.
+          const transactionID = categorizedTransaction.transaction_ID;
+          const selectedCategory = selectedCategories[transactionID];
+          // Get the ID related to the selected category for the transaction.
+          const accountID = categorizedTransaction.categories.find(
+            (category) => category.name === selectedCategory
           )?.id;
 
-          // Check if either object is missing or if an error was encountered calling the purchase object.
-          if (
-            !accountID ||
-            !purchaseObj ||
-            purchaseObj.Error[0].Message === 'Error'
-          ) {
+          // Throw an error if the ID for that transaction cannot be found.
+          // Occurs if the selected category is not present in catagorized transaction.
+          if (!accountID) {
             throw new Error('Error saving purchase');
           } else {
-            // Iterate through line data of raw purchase object.
-            for (const line of purchaseObj.Line) {
-              // The location of the account reference is in the AccountBasedExpenseLineDetail field.
-              if (line.DetailType === 'AccountBasedExpenseLineDetail') {
-                // If it is present, update the account ID value to connect it to the related account.
-                line.AccountBasedExpenseLineDetail.AccountRef.value = accountID;
-                line.AccountBasedExpenseLineDetail.AccountRef.name =
-                  categoryName;
-                // Once the account ID is updated, break the loop.
-                break;
-              }
-            }
-            // Create regular transaction using the transaction and the name of the selected category.
-            const newTransaction: Transaction = {
-              name: transaction.name,
-              category: categoryName,
-              amount: transaction.amount,
-              date: transaction.date,
-              account: transaction.account,
-              transaction_ID: transactionID,
+            // Create a new transaction object to be saved based on the selected category and catagoried transaction.
+            const newDatabaseTransaction: Transaction = {
+              name: categorizedTransaction.name,
+              amount: categorizedTransaction.amount,
+              category: selectedCategory,
             };
 
-            // Get accounts to check against if the category is classified by LLM.
-            const accounts = JSON.parse(await getAccounts());
+            // Find what method was used to classify the transaction.
+            const classificationMethod = categorizedTransaction.categories.find(
+              (category) => category.name === selectedCategory
+            )?.classifiedBy;
 
-            // Find the classification method of the selected category.
-            for (const category of transaction.categories) {
-              if (category.name === categoryName) {
-                // Before storing LLM classified categories, switch from the account name to account_sub_type.
-                if (category.classifiedBy === 'LLM') {
-                  // Find the account with the matching name.
-                  const account = accounts.find(
-                    (account: Account) => account.name === transaction.account
-                  );
-                  // If the account is found, update the category name to the account_sub_type.
-                  if (account) {
-                    newTransaction.category = account.account_sub_type;
-                  }
-                }
+            // If the transaction was classified by LLM, it will be using the full account name.
+            if (classificationMethod === 'LLM') {
+              // Find the acount related to that categorization.
+              const account = accounts.find(
+                (account: Account) =>
+                  account.name === newDatabaseTransaction.category
+              );
+              // If the related account exists, update the category name to use the account sub-type instead.
+              // Prevents possibility of saving user inputted account names to the database.
+              if (account) {
+                newDatabaseTransaction.category = account.account_sub_type;
               }
             }
 
-            // Push the new transaction to the new transactions array.
-            newTransactions.push(newTransaction);
+            // Push the new transaction with savable info to array of transactions to be saved to the database.
+            newTransactions.push(newDatabaseTransaction);
 
-            // Update the purchase in QuickBooks using the updated purchase object.
-            const result = await updatePurchase(purchaseObj);
-            // If the result of the purchase update is empty, throw an error.
-            if (result === '{}') {
-              throw new Error('Error saving purchase');
-            }
+            // Pass the raw transaction and account ID to add the users "for review" transaction with the updated classification.
+            // Passes the raw transaction object as it is needed for update object creation.
+            // *** NOTE: need to add tax code integration in the future. ***
+            await addForReview(rawTransaction, accountID, 'taxCode');
           }
-        })
-      );
-      // Add the new transactions to the database.
+        }
+      });
+      // Add all the newly created savable transactions to the database and set no error message to appear.
       await addTransactions(newTransactions);
-      // If no errors are thrown, set the error message to null.
       setErrorMsg(null);
     } catch (error) {
       // Catch any errors, log them, and set the error message.
