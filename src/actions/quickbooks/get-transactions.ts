@@ -12,6 +12,8 @@ export async function getTransactions(
   endDate = ''
 ): Promise<string> {
   try {
+    // Add tax classification to process.
+
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
 
