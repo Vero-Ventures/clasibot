@@ -156,7 +156,6 @@ export async function getTransactions(
           // Explicitly define the types due to values from the API being either a string or number.
           const newFormattedTransaction: Transaction = {
             name: String(transaction.ColData[nameRow].value),
-            account: String(transaction.ColData[accountRow].value),
             amount: Number(transaction.ColData[amountRow].value),
             category: String(transaction.ColData[categoryRow].value),
           };

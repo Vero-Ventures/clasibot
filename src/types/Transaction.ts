@@ -6,9 +6,6 @@
 export type Transaction = {
   // Name related to the transaction (e.g. the payee).
   name: string;
-  // The account that made the payment for the transaction.
-  // Bank accounts, credit cards, etc.
-  account: string;
   // Total positive OR negative decimal value of the purchase.
   // Positive vs Negative depends the type of account the purchase is associated with.
   amount: number;
