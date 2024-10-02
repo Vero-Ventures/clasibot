@@ -26,22 +26,15 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1724087646370,
-      "tag": "0003_lonely_rocket_racer",
+      "when": 1727907694332,
+      "tag": "0003_giant_blue_blade",
       "breakpoints": true
     },
     {
       "idx": 4,
       "version": "7",
-      "when": 1726685434580,
-      "tag": "0004_kind_zarek",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1727210749510,
-      "tag": "0005_hot_mephisto",
+      "when": 1727907865155,
+      "tag": "0004_fuzzy_zarek",
       "breakpoints": true
     }
   ]
