@@ -33,13 +33,14 @@ export const Subscription = pgTable('Subscription', {
 });
 
 export const Company = pgTable('Company', {
-  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  id: uuid('id').notNull().primaryKey(),
+  realmId: text('realm_id').notNull().unique(),
   userId: uuid('user_id')
     .notNull()
     .references(() => User.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   industry: text('industry'),
-  connected: boolean('connected').notNull(),
+  bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
 });
 
 export const Transaction = pgTable('Transaction', {
@@ -61,29 +62,31 @@ export const TransactionToTaxCodesRelationship = relations(
   })
 );
 
-// For transaction classifications to be saved for later review by the user.
-export const UserTransaction = pgTable('userTransaction', {
+export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  qboID: text('qboID').notNull(),
-  companyId: uuid('company_id')
+  companyId: text('company_id')
     .notNull()
-    .references(() => Company.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
+    .references(() => Company.realmId, { onDelete: 'cascade' }),
+  transactionId: text('transaction_id').notNull(),
+  accountId: text('account_id').notNull(),
+  description: text('description'),
+  origDescription: text('orig_description'),
+  amount: integer('amount').notNull(),
   date: text('date').notNull(),
-  account: text('account').notNull(),
-  amount: text('amount').notNull(),
+  payeeNameId: text('payee_name_id'),
+  transactionTypeId: text('transaction_type_id').notNull(),
   approved: boolean('approved').notNull(),
 });
 
-export const UserTransactionToClassificationsRelationship = relations(
-  UserTransaction,
+export const ForReviewTransactionToClassificationsRelationship = relations(
+  ForReviewTransaction,
   ({ many }) => ({
     classifications: many(Classification),
   })
 );
 
-export const UserTransactionToTaxCodesRelationship = relations(
-  UserTransaction,
+export const ForReviewTransactionToTaxCodesRelationship = relations(
+  ForReviewTransaction,
   ({ many }) => ({
     taxCodes: many(TaxCode),
   })
@@ -102,14 +105,13 @@ export const ClassificationToTransactionsRelationship = relations(
   })
 );
 
-export const ClassificationToUserTransactionsRelationship = relations(
+export const ClassificationToForReviewTransactionsRelationship = relations(
   Classification,
   ({ many }) => ({
-    transactions: many(UserTransaction),
+    transactions: many(ForReviewTransaction),
   })
 );
 
-// Tax code referes to the name of the related tax code as defined in QuickBooks.
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('taxCode').unique().notNull(),
@@ -123,10 +125,10 @@ export const TaxCodesToTransactionsRelationship = relations(
   })
 );
 
-export const TaxCodesToUserTransactionsRelationship = relations(
+export const TaxCodesToForReviewTransactionsRelationship = relations(
   TaxCode,
   ({ many }) => ({
-    transactions: many(UserTransaction),
+    transactions: many(ForReviewTransaction),
   })
 );
 
@@ -160,12 +162,12 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-export const UserTransactionsToClassifications = pgTable(
-  'UserTransactionsToClassifications',
+export const ForReviewTransactionToClassifications = pgTable(
+  'ForReviewTransactionsToClassifications',
   {
     transactionId: uuid('transaction_id')
       .notNull()
-      .references(() => UserTransaction.id),
+      .references(() => ForReviewTransaction.id),
     classificationId: integer('classification_id')
       .notNull()
       .references(() => Classification.id),
@@ -175,12 +177,12 @@ export const UserTransactionsToClassifications = pgTable(
   })
 );
 
-export const UserTransactionsToTaxCodes = pgTable(
-  'UserTransactionsToTaxCodes',
+export const ForReviewTransactionToTaxCodes = pgTable(
+  'ForReviewTransactionsToTaxCodes',
   {
     transactionId: uuid('transaction_id')
       .notNull()
-      .references(() => UserTransaction.id),
+      .references(() => ForReviewTransaction.id),
     taxCodeId: integer('tax_code_id')
       .notNull()
       .references(() => TaxCode.id),

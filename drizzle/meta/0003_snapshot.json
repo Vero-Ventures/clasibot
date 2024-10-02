@@ -1,5 +1,5 @@
 {
-  "id": "edf5a81d-b234-48f2-b0f3-49046c8f81e2",
+  "id": "8c204538-fc43-4296-b545-8d9559838750",
   "prevId": "f519aaa0-5106-4984-ba88-f1bf336c3fe1",
   "version": "7",
   "dialect": "postgresql",
@@ -36,6 +36,74 @@
           "nullsNotDistinct": false,
           "columns": [
             "category"
+          ]
+        }
+      }
+    },
+    "public.Company": {
+      "name": "Company",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "realm_id": {
+          "name": "realm_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "industry": {
+          "name": "industry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bookkeeper_connected": {
+          "name": "bookkeeper_connected",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Company_user_id_User_id_fk": {
+          "name": "Company_user_id_User_id_fk",
+          "tableFrom": "Company",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Company_realm_id_unique": {
+          "name": "Company_realm_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "realm_id"
           ]
         }
       }
@@ -94,6 +162,42 @@
           "nullsNotDistinct": false,
           "columns": [
             "stripe_id"
+          ]
+        }
+      }
+    },
+    "public.TaxCode": {
+      "name": "TaxCode",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "taxCode": {
+          "name": "taxCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaxCode_taxCode_unique": {
+          "name": "TaxCode_taxCode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "taxCode"
           ]
         }
       }
@@ -185,6 +289,63 @@
       },
       "uniqueConstraints": {}
     },
+    "public.TransactionsToTaxCodes": {
+      "name": "TransactionsToTaxCodes",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_code_id": {
+          "name": "tax_code_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TransactionsToTaxCodes_transaction_id_Transaction_id_fk": {
+          "name": "TransactionsToTaxCodes_transaction_id_Transaction_id_fk",
+          "tableFrom": "TransactionsToTaxCodes",
+          "tableTo": "Transaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TransactionsToTaxCodes_tax_code_id_TaxCode_id_fk": {
+          "name": "TransactionsToTaxCodes_tax_code_id_TaxCode_id_fk",
+          "tableFrom": "TransactionsToTaxCodes",
+          "tableTo": "TaxCode",
+          "columnsFrom": [
+            "tax_code_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "TransactionsToTaxCodes_transaction_id_tax_code_id_pk": {
+          "name": "TransactionsToTaxCodes_transaction_id_tax_code_id_pk",
+          "columns": [
+            "transaction_id",
+            "tax_code_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "public.User": {
       "name": "User",
       "schema": "",
@@ -210,12 +371,6 @@
         },
         "email": {
           "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "industry": {
-          "name": "industry",
           "type": "text",
           "primaryKey": false,
           "notNull": false
