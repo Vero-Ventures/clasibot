@@ -3,6 +3,8 @@
  * Also defines a classified category that includes the method of classification.
  */
 export type Category = {
+  //type: Either 'category' or 'tax code'
+  type: string;
   // id: Whole number as a string.
   id: string;
   // The name of the category.
@@ -10,6 +12,8 @@ export type Category = {
 };
 
 export type ClassifiedCategory = {
+   //type: Either 'category' or 'tax code'
+   type: string;
   // id: Whole number as a string.
   id: string;
   // The name of the category.
