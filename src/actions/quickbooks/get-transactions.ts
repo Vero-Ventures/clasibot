@@ -5,6 +5,8 @@ import { checkFaultProperty, createQueryResult } from './helpers';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Transaction } from '@/types/Transaction';
 import { findFormattedPurchase } from './purchases';
+import { getTaxCodes } from './taxes';
+import type { TaxCode } from '@/types/TaxCode';
 
 // Get all transactions from the QuickBooks API.
 // Can take a start date and end date as optional parameters.
@@ -161,7 +163,8 @@ export async function getTransactions(
             String(transaction.ColData[idRow].id)
           );
 
-          console.log(transactionPurchase);
+          // Get the tax codes for the user to get the tax code name from the ID's.
+          const userTaxCodes = JSON.parse(await getTaxCodes());
 
           // Reads the values from the specified columns in the current row of the results.
           // Explicitly define the types due to values from the API being either a string or number.
@@ -169,12 +172,23 @@ export async function getTransactions(
             name: String(transaction.ColData[nameRow].value),
             amount: Number(transaction.ColData[amountRow].value),
             category: String(transaction.ColData[categoryRow].value),
-            taxCodeId: '',
+            taxCodeName: '',
           };
 
-          // If the tax code was present in the related purchase, update the tax code value.
-          if (transactionPurchase.id) {
-            newFormattedTransaction.taxCodeId = transactionPurchase.taxCodeId;
+          // If a tax code was present in the related purchase and the tax code fetch succeded, update the tax code value.
+          if (
+            transactionPurchase.id &&
+            userTaxCodes.QueryResponse.result === 'Success'
+          ) {
+            // Iterate through user tax codes to find the matching ID.
+            for (const taxCode of userTaxCodes.QueryResponse.slice(
+              1
+            ) as TaxCode[]) {
+              if (taxCode.Id == transactionPurchase.taxCodeId) {
+                // record the name of the tax code with the matching ID.
+                newFormattedTransaction.taxCodeName = taxCode.Name;
+              }
+            }
           }
 
           formattedTransactions.push(newFormattedTransaction);
