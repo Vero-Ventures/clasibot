@@ -1,6 +1,6 @@
 {
-  "id": "8c204538-fc43-4296-b545-8d9559838750",
-  "prevId": "f519aaa0-5106-4984-ba88-f1bf336c3fe1",
+  "id": "6d7627b3-7299-4120-99d3-a2a594e74b2c",
+  "prevId": "8c204538-fc43-4296-b545-8d9559838750",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -107,6 +107,211 @@
           ]
         }
       }
+    },
+    "public.ForReviewTransaction": {
+      "name": "ForReviewTransaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "orig_description": {
+          "name": "orig_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payee_name_id": {
+          "name": "payee_name_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_type_id": {
+          "name": "transaction_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "approved": {
+          "name": "approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ForReviewTransaction_company_id_Company_realm_id_fk": {
+          "name": "ForReviewTransaction_company_id_Company_realm_id_fk",
+          "tableFrom": "ForReviewTransaction",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "realm_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ForReviewTransactionsToClassifications": {
+      "name": "ForReviewTransactionsToClassifications",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classification_id": {
+          "name": "classification_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ForReviewTransactionsToClassifications_transaction_id_ForReviewTransaction_id_fk": {
+          "name": "ForReviewTransactionsToClassifications_transaction_id_ForReviewTransaction_id_fk",
+          "tableFrom": "ForReviewTransactionsToClassifications",
+          "tableTo": "ForReviewTransaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ForReviewTransactionsToClassifications_classification_id_Classification_id_fk": {
+          "name": "ForReviewTransactionsToClassifications_classification_id_Classification_id_fk",
+          "tableFrom": "ForReviewTransactionsToClassifications",
+          "tableTo": "Classification",
+          "columnsFrom": [
+            "classification_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ForReviewTransactionsToClassifications_transaction_id_classification_id_pk": {
+          "name": "ForReviewTransactionsToClassifications_transaction_id_classification_id_pk",
+          "columns": [
+            "transaction_id",
+            "classification_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.ForReviewTransactionsToTaxCodes": {
+      "name": "ForReviewTransactionsToTaxCodes",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_code_id": {
+          "name": "tax_code_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ForReviewTransactionsToTaxCodes_transaction_id_ForReviewTransaction_id_fk": {
+          "name": "ForReviewTransactionsToTaxCodes_transaction_id_ForReviewTransaction_id_fk",
+          "tableFrom": "ForReviewTransactionsToTaxCodes",
+          "tableTo": "ForReviewTransaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ForReviewTransactionsToTaxCodes_tax_code_id_TaxCode_id_fk": {
+          "name": "ForReviewTransactionsToTaxCodes_tax_code_id_TaxCode_id_fk",
+          "tableFrom": "ForReviewTransactionsToTaxCodes",
+          "tableTo": "TaxCode",
+          "columnsFrom": [
+            "tax_code_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ForReviewTransactionsToTaxCodes_transaction_id_tax_code_id_pk": {
+          "name": "ForReviewTransactionsToTaxCodes_transaction_id_tax_code_id_pk",
+          "columns": [
+            "transaction_id",
+            "tax_code_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
     },
     "public.Subscription": {
       "name": "Subscription",
