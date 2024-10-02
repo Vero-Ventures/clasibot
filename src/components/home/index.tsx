@@ -19,6 +19,7 @@ import type {
   FormattedForReviewTransaction,
   CategorizedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
+import { Locations } from '@/enums/taxes';
 
 export default function HomePage() {
   // Create states to track and set the important values.
@@ -35,7 +36,7 @@ export default function HomePage() {
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
     name: '',
     industry: '',
-    location: { Country: '', Location: '' },
+    location: { Country: '', Location: null },
   });
 
   // Define a state to track if the modal is open.
@@ -59,12 +60,30 @@ export default function HomePage() {
   const getCompanyInfo = async () => {
     const userCompanyName = await getCompanyName();
     const userCompanyIndustry = await getCompanyIndustry();
-    const userCompanyLocation = await getCompanyLocation();
-    setCompanyInfo({
-      name: userCompanyName,
-      industry: userCompanyIndustry,
-      location: JSON.parse(userCompanyLocation),
-    });
+    const userCompanyLocation = JSON.parse(await getCompanyLocation());
+    // Check if the sub-location is a valid Canada location.
+    if (
+      Object.values(Locations).includes(
+        userCompanyLocation.Location as Locations
+      )
+    ) {
+      // If the sub location is a valid canada location, save it to the company info.
+      setCompanyInfo({
+        name: userCompanyName,
+        industry: userCompanyIndustry,
+        location: userCompanyLocation,
+      });
+    } else {
+      // Otherwise save the company info with the location:Location value set to null.
+      setCompanyInfo({
+        name: userCompanyName,
+        industry: userCompanyIndustry,
+        location: {
+          Country: userCompanyLocation.Location,
+          Location: null,
+        },
+      });
+    }
   };
 
   // Define the toast function using the useToast hook.
