@@ -4,6 +4,7 @@ import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Transaction } from '@/types/Transaction';
+import { findFormattedPurchase } from './purchases';
 
 // Get all transactions from the QuickBooks API.
 // Can take a start date and end date as optional parameters.
@@ -141,6 +142,7 @@ export async function getTransactions(
           break;
         }
         // Define the rows of the important returned values.
+        const idRow = 0;
         const nameRow = 1;
         const accountRow = 2;
         const categoryRow = 3;
@@ -154,13 +156,27 @@ export async function getTransactions(
           transaction.ColData[categoryRow].value !== '' &&
           transaction.ColData[nameRow].value !== ''
         ) {
+          // Find the purchase related to the transaction to get its tax rate.
+          const transactionPurchase = await findFormattedPurchase(
+            String(transaction.ColData[idRow].id)
+          );
+
+          console.log(transactionPurchase);
+
           // Reads the values from the specified columns in the current row of the results.
           // Explicitly define the types due to values from the API being either a string or number.
           const newFormattedTransaction: Transaction = {
             name: String(transaction.ColData[nameRow].value),
             amount: Number(transaction.ColData[amountRow].value),
             category: String(transaction.ColData[categoryRow].value),
+            taxCodeId: '',
           };
+
+          // If the tax code was present in the related purchase, update the tax code value.
+          if (transactionPurchase.id) {
+            newFormattedTransaction.taxCodeId = transactionPurchase.taxCodeId;
+          }
+
           formattedTransactions.push(newFormattedTransaction);
         }
       }

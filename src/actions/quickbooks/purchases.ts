@@ -55,7 +55,7 @@ export async function findPurchase(id: string): Promise<PurchaseResponse> {
 }
 
 // Find a specific purchase object by its ID and return a formatted result.
-export async function getFormattedPurchase(id: string): Promise<Purchase> {
+export async function findFormattedPurchase(id: string): Promise<Purchase> {
   // Create the QuickBooks API object.
   const qbo = await createQBObject();
 
@@ -94,31 +94,17 @@ export async function getFormattedPurchase(id: string): Promise<Purchase> {
   const formattedResult: Purchase = {
     result_info: queryResult,
     id: '',
-    purchase_type: '',
-    date: '',
-    total: 0,
-    primary_account: '',
-    purchase_name: '',
-    purchase_category: '',
+    taxCodeId: '',
   };
 
   if (success) {
     formattedResult.id = response.Id;
-    formattedResult.purchase_type = response.PaymentType;
-    formattedResult.date = response.TxnDate;
-    formattedResult.total = response.TotalAmt;
-    formattedResult.primary_account = response.AccountRef.name;
-    formattedResult.purchase_name = response.EntityRef.name;
-
-    // Initially the purchase category is set to None, as it is not always present in the results.
-    formattedResult.purchase_category = 'None';
-
-    // Iterate through the line field for the purchase category.
+    // Iterate through the line field for the tax code ID.
     for (const line of response.Line) {
-      // If the purchase category is present, it is found in the AccountBasedExpenseLineDetail field.
+      // If the tax code is present, it is found in the AccountBasedExpenseLineDetail field.
       if (line.DetailType === 'AccountBasedExpenseLineDetail') {
-        formattedResult.purchase_category =
-          line.AccountBasedExpenseLineDetail.AccountRef.value;
+        formattedResult.taxCodeId =
+          line.AccountBasedExpenseLineDetail.TaxCodeRef.value;
         // Once the category is found, break the loop to prevent further iterations.
         break;
       }
