@@ -3,6 +3,7 @@ import Fuse from 'fuse.js';
 import { batchQueryLLM } from '@/actions/llm-prediction/llm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { checkSubscription } from '@/actions/stripe';
+import { getTaxCodes, getTaxCodesByLocation } from './quickbooks/taxes';
 import {
   addTransactions,
   getTopCategoriesForTransaction,
@@ -17,6 +18,7 @@ import type {
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
+import { TaxCode } from '@/types/TaxCode';
 
 // Takes a list of categorized transactions and a list of uncategorized transactions.
 export async function classifyTransactions(
@@ -41,16 +43,23 @@ export async function classifyTransactions(
     const validDBCategories: Category[] = await fetchValidCategories(true);
     const validLLMCategories: Category[] = await fetchValidCategories(false);
 
-    // Create an dictionary that ties strings to a list of categories.
-    const results: Record<string, ClassifiedCategory[]> = {};
+    // Get valid categories from QuickBooks using helper method.
+    const [classifyTaxCode, taxCodes] = await fetchValidTaxCodes(companyInfo)
 
-    // Create an array for transactions with no matches.
-    const noMatches: FormattedForReviewTransaction[] = [];
+    // Create dictionaries that ties strings (transaction Id's) to a list of categories and a list of tax codes.
+    const categoryResults: Record<string, ClassifiedCategory[]> = {};
+    const taxCodeResults: Record<string, ClassifiedCategory[]> = {};
+
+    // Create an array for transactions with no category matches and a list for transactions with no tax code matches.
+    const noCategoryMatches: FormattedForReviewTransaction[] = [];
+    const noTaxCodeMatches: FormattedForReviewTransaction[] = [];
 
     // Preform the first two levels of classification with Fuse and the database.
-    await classifyWithFuse(
+    await classifyCategoriesWithFuse(
       uncategorizedTransactions,
       categorizedTransactions,
+      classifyTaxCode,
+      taxCodes,
       validDBCategories,
       results,
       noMatches
@@ -62,6 +71,8 @@ export async function classifyTransactions(
       await classifyWithLLM(
         noMatches,
         validLLMCategories,
+        classifyTaxCode,
+        taxCodes,
         results,
         companyInfo
       );
@@ -76,11 +87,80 @@ export async function classifyTransactions(
   }
 }
 
+// Helper method to fetch valid categories from QuickBooks that returns a promised array of Categories.
+async function fetchValidCategories(
+  filterToBase: boolean
+): Promise<Category[]> {
+  // Define a list of valid categories using the get_accounts QuickBooks action.
+  // Accounts are the QuickBooks name for both bank accounts and transaction categories.
+  const validCategoriesResponse = JSON.parse(await getAccounts('Expense'));
+  // Return the valid categories as an array of category objects.
+  // Removes the first value that indicates success or returns error codes.
+  if (filterToBase) {
+    // Filter to base category is needed to match with the database.
+    // User info is not stored so only the base category is stored.
+    return validCategoriesResponse
+      .slice(1)
+      .map((category: Account): Category => {
+        return {
+          type: 'classification',
+          id: category.id,
+          name: category.account_sub_type,
+        };
+      });
+  } else {
+    // LLM data is not saved so it can use the full category name.
+    return validCategoriesResponse
+      .slice(1)
+      .map((category: Account): Category => {
+        return { type: 'classification', id: category.id, name: category.name };
+      });
+  }
+}
+
+// Helper method to fetch tax codes from QuickBooks to filter the tax codes present in the classified transaction to valid tax codes.
+async function fetchValidTaxCodes(companyInfo: CompanyInfo): Promise<[boolean, TaxCode[]]> {
+  // Define variable to determine if tax code classification is done on the transactions.
+  let classifyTaxCode = false;
+  // Define an array to store info on tax codes that can be used in classification.
+  const taxCodes: TaxCode[] = [];
+
+  // Check if tax code classification is possible by locational check on company info.
+  if (companyInfo.location.Country === 'CA' && companyInfo.location.Location) {
+    // Set tax codes to be found, then find the users tax codes and get the list of valid tax codes.
+    classifyTaxCode = true;
+    const userTaxCodes = JSON.parse(await getTaxCodes());
+    const validTaxCodes = await getTaxCodesByLocation(
+      companyInfo.location.Location
+    );
+
+    // Define the array of tax codes seperate from the query response value and define its type.
+    const userTaxCodeArray = userTaxCodes.QueryResponse.slice(1) as TaxCode[];
+
+    // Check that there are values for valid tax code names and the query response from the user tax codes was a success.
+    if (
+      validTaxCodes.length !== 0 &&
+      userTaxCodes.QueryResponse[0].result != 'Success'
+    ) {
+      // Iterate through user tax codes to record valid tax code info.
+      for (const taxCode of userTaxCodeArray) {
+        if (validTaxCodes.includes(taxCode.Name)) {
+          // If the tax code name is one of the valid tax codes, push it to the array of tax codes.
+          taxCodes.push(taxCode);
+        }
+      }
+    }
+  }
+  return [classifyTaxCode, taxCodes]
+}
+
 // Helper method to classify transactions using the fuzzy or exact match by Fuse.
 // Takes a list of uncategorized transactions, categorized transactions, valid categories, results records, and no matches array.
 async function classifyWithFuse(
   uncategorizedTransactions: FormattedForReviewTransaction[],
   categorizedTransactions: Transaction[],
+  classifyTaxCode: boolean,
+  taxCodes: TaxCode[],
   validCategories: Category[],
   results: Record<string, ClassifiedCategory[]>,
   noMatches: FormattedForReviewTransaction[]
@@ -101,8 +181,14 @@ async function classifyWithFuse(
       );
       const possibleCategories = Array.from(possibleCategoriesSet);
 
+      // Create a set of the possible tax codes from the matches found.
+      const possibleTaxCodesSet = new Set(
+        matches.map((match) => match.item.taxCodeName)
+      );
+
       // Get the list of possible categories from the users account.
       const accounts = JSON.parse(await getAccounts('Expense'));
+      // Create a list to track both the possible categories and tax codes.
       const possibleValidCategories: ClassifiedCategory[] = [];
 
       // Iterate over the accounts to see if its name is present in the list of possible categories.
@@ -110,6 +196,7 @@ async function classifyWithFuse(
         if (possibleCategories.includes(account.name)) {
           // Add the matching category to the results array and record it was classified by matching.
           const newCategory = {
+            type: 'category',
             id: account.id,
             name: account.name,
             classifiedBy: 'Matching',
@@ -124,6 +211,7 @@ async function classifyWithFuse(
           }
         }
       }
+
       if (possibleValidCategories.length === 0) {
         // If no possible valid categories are found, search for possible categories in the database.
         const topCategories = await getTopCategoriesForTransaction(
@@ -181,6 +269,17 @@ async function classifyWithFuse(
   }
 }
 
+function createFuseInstance(
+  categorizedTransactions: Transaction[]
+): Fuse<Transaction> {
+  // Create and return a fuse object with a set of defined parameters.
+  return new Fuse(categorizedTransactions, {
+    includeScore: true,
+    threshold: 0.3,
+    keys: ['name'],
+  });
+}
+
 // Averages total for matching transactions by their classifications.
 // Returns an array of categories and their difference ordered by closest value to real transaction amount.
 function orderClassificationsByAmount(
@@ -232,6 +331,8 @@ function orderClassificationsByAmount(
 async function classifyWithLLM(
   noMatches: FormattedForReviewTransaction[],
   validCategories: Category[],
+  classifyTaxCode: boolean,
+  taxCodes: TaxCode[],
   results: Record<string, ClassifiedCategory[]>,
   companyInfo: CompanyInfo
 ): Promise<void> {
@@ -259,44 +360,6 @@ async function classifyWithLLM(
     // Catch any errors and log them to the console.
     console.error('Error from LLM API usage: ', error);
   }
-}
-
-// Helper method to fetch valid categories from QuickBooks that returns a promised array of Categories.
-async function fetchValidCategories(
-  filterToBase: boolean
-): Promise<Category[]> {
-  // Define a list of valid categories using the get_accounts QuickBooks action.
-  // Accounts are the QuickBooks name for both bank accounts and transaction categories.
-  const validCategoriesResponse = JSON.parse(await getAccounts('Expense'));
-  // Return the valid categories as an array of category objects.
-  // Removes the first value that indicates success or returns error codes.
-  if (filterToBase) {
-    // Filter to base category is needed to match with the database.
-    // User info is not stored so only the base category is stored.
-    return validCategoriesResponse
-      .slice(1)
-      .map((category: Account): Category => {
-        return { id: category.id, name: category.account_sub_type };
-      });
-  } else {
-    // LLM data is not saved so it can use the full category name.
-    return validCategoriesResponse
-      .slice(1)
-      .map((category: Account): Category => {
-        return { id: category.id, name: category.name };
-      });
-  }
-}
-
-function createFuseInstance(
-  categorizedTransactions: Transaction[]
-): Fuse<Transaction> {
-  // Create and return a fuse object with a set of defined parameters.
-  return new Fuse(categorizedTransactions, {
-    includeScore: true,
-    threshold: 0.3,
-    keys: ['name'],
-  });
 }
 
 // Calls the batchQueryLLM action then returns a promised array of categorized results.
