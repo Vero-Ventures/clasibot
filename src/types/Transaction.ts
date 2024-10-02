@@ -12,5 +12,5 @@ export type Transaction = {
   // The category that the transaction is associated with.
   category: string;
   // The tax code ID and name extracted from the related purchase.
-  taxCodeId: string;
+  taxCodeName: string;
 };
