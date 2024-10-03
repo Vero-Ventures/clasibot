@@ -4,7 +4,6 @@ import Link from 'next/link';
 import clsx from 'clsx';
 
 export default function AddSBKInstructions() {
-
   // Represents which set of instructions is displayed.
   const [isBusiness, setIsBusiness] = useState(true);
 
@@ -106,11 +105,9 @@ export default function AddSBKInstructions() {
       <h1 className="text-lg md:text-xl">
         Please click below after all steps have been completed!
       </h1>
-      <Button>
-        <Link id="HomePageLink" href="/home">
-          Continue
-        </Link>
-      </Button>
+      <Link id="HomePageLink" href="/home">
+        <Button>Continue</Button>
+      </Link>
     </div>
   );
 }
