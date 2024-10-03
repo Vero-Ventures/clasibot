@@ -148,16 +148,17 @@ export default function HomePage() {
         const fullTransaction = transaction[1] as ForReviewTransaction;
 
         // Define values for the category and tax code predictions as nulls to be overwritten if present in results.
-        let categoryClassification = null
+        let categoryClassification = null;
         let taxCodeClassification = null;
 
         // Check the results to see if the predictions are valid.
-        const transactionClassifications = nonNullResult[formattedTransaction.transaction_ID];
+        const transactionClassifications =
+          nonNullResult[formattedTransaction.transaction_ID];
 
         // If the results for the transaction are present, update the classification values.
         if (transactionClassifications) {
-          categoryClassification = transactionClassifications.category
-          taxCodeClassification = transactionClassifications.taxCode
+          categoryClassification = transactionClassifications.category;
+          taxCodeClassification = transactionClassifications.taxCode;
         }
 
         // Define the formatted transaction from the dual "For Review" transaction array.
