@@ -4,6 +4,8 @@ import Link from 'next/link';
 import clsx from 'clsx';
 
 export default function AddSBKInstructions() {
+
+  // Represents which set of instructions is displayed.
   const [isBusiness, setIsBusiness] = useState(true);
 
   return (
@@ -40,6 +42,7 @@ export default function AddSBKInstructions() {
           Accountant
         </Button>
       </div>
+      {/* Conditionally display the selected set of instructions. */}
       {isBusiness ? (
         <div>
           <ol id="addSBKBusinessList" className="m-0 list-decimal pl-5 text-lg">
