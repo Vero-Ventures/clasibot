@@ -241,9 +241,7 @@ async function classifyCategoriesWithFuse(
 
       // Create a set of possible categories from the matches found.
       const possibleCategoriesSet = new Set(
-        // Filter the name to just the last value after splitting by ':'.
-        // Account names such as Job Expenses:Job Materials:Saplings will return Saplings.
-        matches.map((match) => match.item.category.split(':').pop())
+        matches.map((match) => match.item.category)
       );
       const possibleCategories = Array.from(possibleCategoriesSet);
 
@@ -471,7 +469,7 @@ function orderClassificationsByAmount(
   if (type === 'category') {
     // Iterate through the matches and check if they have a valid category.
     matches.map((match) => {
-      const matchCategory = match.item.category.split(':').pop()!;
+      const matchCategory = match.item.category;
       // Check if the match category matches at least one name in the list of possible valid categories.
       if (
         possibleValidElements.some(
