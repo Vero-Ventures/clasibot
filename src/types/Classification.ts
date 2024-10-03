@@ -30,7 +30,7 @@ export type ClassifiedResult = {
   // transaction_ID: Whole number as a string.
   transaction_ID: string;
   // A list of possible categories the transaction could be classified as.
-  possibleCategories: Classification[];
+  possibleClassifications: Classification[];
   // The method of classification:
   // 'Matching', 'Database', or 'LLM'
   classifiedBy: string;
