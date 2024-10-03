@@ -61,7 +61,7 @@ export type PurchaseResponse = {
       // AccountBasedExpenseLineDetail: Details of the account used for the purchase.
       AccountBasedExpenseLineDetail: {
         // AccountRef: Reference to the account used for the purchase.
-        // Account related to the purchase defines the pruchase classification
+        // Account related to the purchase defines the pruchase category
         //    value: Id of the account connected to the purchase (integer as a string).
         //    name: Name of the account.
         AccountRef: { value: string; name: string };

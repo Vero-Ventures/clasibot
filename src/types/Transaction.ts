@@ -1,6 +1,6 @@
 /**
  * Defines a formatted version of a transaction returned from the API.
- * Used in transaction matching and creating a DB of possible classifications.
+ * Used in transaction matching and creating a DB of possible categories.
  */
 
 export type Transaction = {

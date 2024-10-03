@@ -8,7 +8,7 @@ import type { QueryResult } from '@/types/QueryResult';
 
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
-  classificationId: string,
+  categoryId: string,
   taxCodeId: string
 ): Promise<QueryResult> {
   try {
@@ -19,7 +19,7 @@ export async function addForReview(
     // Convert the passed ForReviewTransaction to a useable update object for the QBO API.
     const body = createForReviewUpdateObject(
       forReviewTransaction,
-      classificationId,
+      categoryId,
       taxCodeId
     );
 
@@ -73,11 +73,11 @@ export async function addForReview(
   }
 }
 
-// Takes the "for review" transaction data as well as the ID's for the classification account and tax code.
+// Takes the "for review" transaction data as well as the ID's for the cateory account and tax code.
 // Returns the relevant data for a "for review" transaction update as a formatted and typed object.
 function createForReviewUpdateObject(
   responseData: ForReviewTransaction,
-  classificationId: string,
+  categoryId: string,
   taxCodeId: string
 ): UpdatedForReviewTransaction {
   // Create and return the new update object using the passed QBO entity ID's and the For Review Transaction object values.
@@ -95,7 +95,7 @@ function createForReviewUpdateObject(
           addAsQboTxn: {
             details: [
               {
-                categoryId: classificationId,
+                categoryId: categoryId,
                 taxCodeId: taxCodeId,
               },
             ],

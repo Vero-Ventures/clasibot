@@ -6,7 +6,7 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 
 // Get all accounts from the QuickBooks API.
 // Use 'Transaction' to fetch accounts that contain 'For Review' Transactions.
-// Use 'Expense' to get accounts for transaction classification.
+// Use 'Expense' to get accounts for transaction categorization.
 export async function getAccounts(accountType: string): Promise<string> {
   try {
     // Create the QuickBooks API object.
@@ -73,8 +73,6 @@ export async function getAccounts(accountType: string): Promise<string> {
         },
       ];
     }
-
-    console.log(classification);
 
     // Get the expense accounts, searching by their classification (Expense or accounts related to transactions).
     // ***Variable*** Returns a limit of 1000 accounts.

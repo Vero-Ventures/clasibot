@@ -41,23 +41,23 @@ export async function addTransactions(
         transactionID = existingTransaction[0].id;
       }
 
-      // Create an array of all classifications in the database.
-      const classifications = await db.select().from(Category);
+      // Create an array of all categories in the database.
+      const categories = await db.select().from(Category);
 
-      // Check through array of classifications to see if the transactions category already exists.
-      const existingCategory = classifications.find(
-        (classification) => classification.category === transaction.category
+      // Check through array of categories to see if the transactions category already exists.
+      const existingCategory = categories.find(
+        (category) => category.category === transaction.category
       );
 
       // Create an array of all tax codes in the database.
       const taxCodes = await db.select().from(TaxCode);
 
-      // Check through array of classifications to see if the transactions category already exists.
+      // Check through array of categories to see if the transactions category already exists.
       const existingTaxCode = taxCodes.find(
         (taxCode) => taxCode.taxCode === transaction.taxCodeName
       );
 
-      // Call method to handle creating or updating the classification for the transaction.
+      // Call method to handle creating or updating the categories for the transaction.
       handleCategoryIncrement(existingCategory, transaction, transactionID);
 
       // Call method to handle creating or updating the tax code for the transaction.
@@ -81,28 +81,28 @@ async function handleCategoryIncrement(
   transaction: Transaction,
   transactionID: number
 ) {
-  // Create or update the classification for the transaction.
+  // Create or update the categorization for the transaction.
   if (existingCategory) {
-    // Get the transaction to classificaion relations for the transaction.
-    const transactionClassifications = await db
+    // Get the transaction to categorization relations for the transaction.
+    const transactionCategories = await db
       .select()
       .from(TransactionsToCategories)
       .where(eq(TransactionsToCategories.transactionId, transactionID));
 
-    // Check the relationship table to see if the transaction is already linked to the classification.
-    const existingRelationship = transactionClassifications.find(
+    // Check the relationship table to see if the transaction is already linked to the category.
+    const existingRelationship = transactionCategories.find(
       (relationship) => relationship.categoryId === existingCategory.id
     );
 
     if (!existingRelationship) {
-      // If there is no relationship, Create a new one between the transaction and classification.
+      // If there is no relationship, Create a new one between the transaction and category.
       await db.insert(TransactionsToCategories).values({
         transactionId: transactionID,
         categoryId: existingCategory.id,
       });
     }
 
-    // Update the count for the number of times the classification has been used.
+    // Update the count for the number of times the category has been used.
     await db
       .update(Category)
       .set({
@@ -110,7 +110,7 @@ async function handleCategoryIncrement(
       })
       .where(eq(Category.id, existingCategory.id));
   } else {
-    // If the category doesn't exist, create a new classification with a count of 1.
+    // If the category doesn't exist, create a new category with a count of 1.
     const newCategory = await db
       .insert(Category)
       .values({
@@ -119,7 +119,7 @@ async function handleCategoryIncrement(
       })
       .returning();
 
-    // Create a relationship between the transaction and new classification.
+    // Create a relationship between the transaction and new category.
     await db.insert(TransactionsToCategories).values({
       transactionId: transactionID,
       categoryId: newCategory[0].id,
@@ -127,6 +127,7 @@ async function handleCategoryIncrement(
   }
 }
 
+// Based on if an existing tax code exists, either increments that tax code or makes a new tax code with count 1.
 async function handleTaxCodeIncrement(
   existingTaxCode:
     | {
@@ -139,7 +140,7 @@ async function handleTaxCodeIncrement(
   transactionID: number
 ) {
   if (existingTaxCode) {
-    // Get the transaction to classificaion relations for the transaction.
+    // Get the transaction to tax code relations for the transaction.
     const transactionsToTaxCodes = await db
       .select()
       .from(TransactionsToTaxCodes)

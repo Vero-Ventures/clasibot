@@ -1,7 +1,7 @@
 /**
  * Defines a formatted version of a "for review" transaction returned from the API.
  */
-import type { ClassifiedCategory } from './Classification';
+import type { ClassifiedElement } from './Classification';
 
 export type ForReviewTransaction = {
   id: string;
@@ -44,7 +44,7 @@ export type CategorizedForReviewTransaction = {
   // Total negative decimal value of the purchase.
   amount: number;
   // An array of possible categories for the transaction to be classified as.
-  categories: ClassifiedCategory[];
+  categories: ClassifiedElement[];
 };
 
 // Defines the full object needed to classify a for review transaction through the API call.

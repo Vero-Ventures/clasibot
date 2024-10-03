@@ -21,21 +21,21 @@ export async function getTopCategoriesForTransaction(
       .from(Transaction)
       .where(eq(Transaction.transactionName, name));
 
-    // Get the transaction to classificaion relations for the transaction.
-    const transactionClassifications = await db
+    // Get the transaction to category relations for the transaction.
+    const transactionCategories = await db
       .select()
       .from(TransactionsToCategories)
       .where(eq(TransactionsToCategories.transactionId, transaction[0].id));
 
-    // Create an array to store the classifications for the transaction.
+    // Create an array to store the categories for the transaction.
     const categories: {
       id: number;
       category: string;
       count: number;
     }[] = [];
 
-    // Get the classification for each relationship and add it to the classifications array.
-    for (const relationship of transactionClassifications) {
+    // Get the categories for each relationship and add it to the categories array.
+    for (const relationship of transactionCategories) {
       const category = await db
         .select()
         .from(Category)
@@ -44,7 +44,7 @@ export async function getTopCategoriesForTransaction(
       categories.push(category[0]);
     }
 
-    // If there are no classifications, return an empty array
+    // If there are no categories, return an empty array
     if (categories.length === 0) {
       return [];
     }
@@ -58,22 +58,22 @@ export async function getTopCategoriesForTransaction(
       {}
     );
 
-    // Filter out any classifications without a valid category by checking against the dictionary.
-    const filteredClassifications = categories.filter((category) =>
+    // Filter out any categories without a valid category by checking against the dictionary.
+    const filteredCategories = categories.filter((category) =>
       Object.hasOwn(validCategoryMap, category.category)
     );
 
-    // Sort the classifications by count in descending order.
-    // Most common classifications will be sorted to the front.
-    filteredClassifications.sort((a, b) => b.count - a.count);
+    // Sort the categories by count in descending order.
+    // Most common categories will be sorted to the front.
+    filteredCategories.sort((a, b) => b.count - a.count);
 
     const maxCount = 3;
-    // Take the first 3 classifications and return them.
-    const topClassifications = filteredClassifications.slice(0, maxCount);
+    // Take the first 3 categories and return them.
+    const topCategories = filteredCategories.slice(0, maxCount);
 
-    return topClassifications.map((classification) => ({
-      id: validCategoryMap[classification.category],
-      name: classification.category,
+    return topCategories.map((category) => ({
+      id: validCategoryMap[category.category],
+      name: category.category,
     }));
   } catch (error) {
     // Catch any errors, log them, and return an empty array.
@@ -93,7 +93,7 @@ export async function getTopTaxCodesForTransaction(
       .from(Transaction)
       .where(eq(Transaction.transactionName, name));
 
-    // Get the transaction to classificaion relations for the transaction.
+    // Get the transaction to tax codes relations for the transaction.
     const transactionTaxCodes = await db
       .select()
       .from(TransactionsToTaxCodes)
@@ -106,7 +106,7 @@ export async function getTopTaxCodesForTransaction(
       count: number;
     }[] = [];
 
-    // Get the tax code for each relationship by its ID and add it to the classifications array.
+    // Get the tax code for each relationship by its ID and add it to the tax codes array.
     for (const relationship of transactionTaxCodes) {
       const taxCode = await db
         .select()
@@ -130,7 +130,7 @@ export async function getTopTaxCodesForTransaction(
       {}
     );
 
-    // Filter out any classifications without a valid category by checking against the dictionary.
+    // Filter out any tax codes without a valid name by checking against the dictionary.
     const filtedTaxCodes = taxCodes.filter((taxCode) =>
       Object.hasOwn(validTaxCodeMap, taxCode.taxCode)
     );
@@ -140,7 +140,7 @@ export async function getTopTaxCodesForTransaction(
     filtedTaxCodes.sort((a, b) => b.count - a.count);
 
     const maxCount = 3;
-    // Take the first 3 classifications and return them.
+    // Take the first 3 tax codes and return them.
     const topTaxCodes = filtedTaxCodes.slice(0, maxCount);
 
     return topTaxCodes.map((taxCode) => ({
