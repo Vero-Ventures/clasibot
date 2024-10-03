@@ -44,7 +44,9 @@ export type CategorizedForReviewTransaction = {
   // Total negative decimal value of the purchase.
   amount: number;
   // An array of possible categories for the transaction to be classified as.
-  categories: ClassifiedElement[];
+  categories: ClassifiedElement[] | null;
+  // An array of possible tax codes for the transaction to be classified as.
+  taxCodes: ClassifiedElement[] | null;
 };
 
 // Defines the full object needed to classify a for review transaction through the API call.
