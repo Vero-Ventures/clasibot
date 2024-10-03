@@ -12,8 +12,8 @@ export type Classification = {
 };
 
 export type ClassifiedElement = {
-   //type: Either 'category' or 'tax code'
-   type: string;
+  //type: Either 'category' or 'tax code'
+  type: string;
   // id: Whole number as a string.
   id: string;
   // The name of the category.

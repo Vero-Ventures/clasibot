@@ -6,7 +6,7 @@ import {
   TransactionsToClassifications,
   Classification as DatabaseClassification,
   TaxCode,
-  TransactionsToTaxCodes
+  TransactionsToTaxCodes,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -84,7 +84,6 @@ export async function getTopCategoriesForTransaction(
   }
 }
 
-
 export async function getTopTaxCodesForTransaction(
   name: string,
   validTaxCodes: Classification[]
@@ -100,9 +99,7 @@ export async function getTopTaxCodesForTransaction(
     const transactionTaxCodes = await db
       .select()
       .from(TransactionsToTaxCodes)
-      .where(
-        eq(TransactionsToTaxCodes.transactionId, transaction[0].id)
-      );
+      .where(eq(TransactionsToTaxCodes.transactionId, transaction[0].id));
 
     // Create an array to store the tax codes for the transaction.
     const taxCodes: {
