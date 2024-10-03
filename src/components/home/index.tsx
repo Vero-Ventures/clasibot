@@ -131,26 +131,50 @@ export default function HomePage() {
       | CategorizedForReviewTransaction
       | ForReviewTransaction
     )[][] = [];
+    if (result) {
+      // Iterate through the selected rows and add the categorized transactions to the array.
+      for (const transaction of selectedRows) {
+        // Define a value for the result asserting it is not null (confirmed by above check.)
+        const nonNullResult = result as Record<
+          string,
+          {
+            category: ClassifiedElement[] | null;
+            taxCode: ClassifiedElement[] | null;
+          }
+        >;
+        // Define the formatted value of the array.
+        const formattedTransaction =
+          transaction[0] as FormattedForReviewTransaction;
+        const fullTransaction = transaction[1] as ForReviewTransaction;
 
-    // Iterate through the selected rows and add the categorized transactions to the array.
-    for (const transaction of selectedRows) {
-      // Define the formatted value of the array.
-      const formattedTransaction =
-        transaction[0] as FormattedForReviewTransaction;
-      const fullTransaction = transaction[1] as ForReviewTransaction;
-      // Define the formatted transaction from the dual "For Review" transaction array.
-      newCategorizedTransactions.push([
-        {
-          transaction_ID: formattedTransaction.transaction_ID,
-          name: formattedTransaction.name,
-          date: formattedTransaction.date,
-          account: formattedTransaction.account,
-          amount: formattedTransaction.amount,
-          // Get the categories from the result object using its ID. Gets an empty array if no match is found.
-          categories: result[formattedTransaction.transaction_ID] || [],
-        },
-        fullTransaction,
-      ]);
+        // Define values for the category and tax code predictions as nulls to be overwritten if present in results.
+        let categoryClassification = null
+        let taxCodeClassification = null;
+
+        // Check the results to see if the predictions are valid.
+        const transactionClassifications = nonNullResult[formattedTransaction.transaction_ID];
+
+        // If the results for the transaction are present, update the classification values.
+        if (transactionClassifications) {
+          categoryClassification = transactionClassifications.category
+          taxCodeClassification = transactionClassifications.taxCode
+        }
+
+        // Define the formatted transaction from the dual "For Review" transaction array.
+        newCategorizedTransactions.push([
+          {
+            transaction_ID: formattedTransaction.transaction_ID,
+            name: formattedTransaction.name,
+            date: formattedTransaction.date,
+            account: formattedTransaction.account,
+            amount: formattedTransaction.amount,
+            // Get the categories from the result object using its ID. Gets an empty array if no match is found.
+            categories: categoryClassification,
+            taxCodes: taxCodeClassification,
+          },
+          fullTransaction,
+        ]);
+      }
     }
     return newCategorizedTransactions;
   };
