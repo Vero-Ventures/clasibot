@@ -191,7 +191,6 @@ export async function getTransactions(
                 }
               }
             }
-
             formattedTransactions.push(newFormattedTransaction);
           }
         }

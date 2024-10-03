@@ -5,55 +5,6 @@ import { checkFaultProperty, createQueryResult } from './helpers';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Purchase, PurchaseResponse } from '@/types/Purchase';
 
-// Find a specific purchase object by its ID.
-export async function findPurchase(id: string): Promise<PurchaseResponse> {
-  try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
-
-    // Search by ID for a specific purchase object.
-    const response: PurchaseResponse = await new Promise((resolve) => {
-      qbo.getPurchase(id, (err: Error, data: PurchaseResponse) => {
-        if (err && checkFaultProperty(err)) {
-          // If there was an error getting the purchase (with a fault property), throw an error.
-          throw new Error('Error finding purchase');
-        }
-        resolve(data);
-      });
-    });
-
-    // Filter to only purchase response values before returning.
-    return filterToPurchaseResponse(response);
-  } catch (error) {
-    console.error(error);
-    // Return an empty purchase response that indicates an error.
-    // Query result is not used to keep purchases in format needed for purchase updates.
-    const errorResonse: PurchaseResponse = {
-      Id: '',
-      SyncToken: '',
-      TxnDate: '',
-      PaymentType: '',
-      Credit: false,
-      TotalAmt: 0,
-      AccountRef: { value: '', name: '' },
-      EntityRef: { value: '', name: '', type: '' },
-      Line: [
-        {
-          DetailType: '',
-          Description: '',
-          Amount: 0,
-          AccountBasedExpenseLineDetail: {
-            AccountRef: { value: '', name: '' },
-            TaxCodeRef: { value: '', name: '' },
-          },
-        },
-      ],
-      Error: [{ Message: 'Error', Detail: 'Error finding purchase' }],
-    };
-    return errorResonse;
-  }
-}
-
 // Find a specific purchase object by its ID and return a formatted result.
 export async function findFormattedPurchase(id: string): Promise<Purchase> {
   // Create the QuickBooks API object.
@@ -115,10 +66,26 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
 }
 
 // Gets purchases and returns them as an array of purchase response objects.
-export async function getPurchases(): Promise<PurchaseResponse[]> {
+export async function getPurchases(): Promise<Purchase[]> {
   try {
     // Create the QuickBooks API object.
     const qbo = await createQBObject();
+
+    // Define success and error trackers for query response creation.
+    let success = true;
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
     // Define a type for the wrapper of the purchase response objects in the findPurchases response.
     type PurchasesResponseArray = {
@@ -138,26 +105,35 @@ export async function getPurchases(): Promise<PurchaseResponse[]> {
       }
     );
 
+    // Create a formatted result object based on the query results.
+    const queryResult = createQueryResult(success, error);
+
     // Create an array to store the purchase responses.
     // Query result is not used to keep purchases in format needed for purchase updates.
-    const purchases: PurchaseResponse[] = [];
+    const purchases: Purchase[] = [];
 
     // Iterate through the response to add the individal purchases to the purchases array.
     // Preforms checks to remove irrelevant purchases and format missing data for optional values.
     for (const purchase of response.QueryResponse.Purchase) {
-      // If the transaction has no related payee, entity ref will be missing.
-      if (purchase.EntityRef === undefined) {
-        purchase.EntityRef = { value: 'MISSING', name: 'N/A', type: 'N/A' };
-      }
+      const formattedResult: Purchase = {
+        result_info: queryResult,
+        id: '',
+        taxCodeId: '',
+      };
 
-      // Skip transactions with item based detail types as they do not relate to expense transactions.
-      // Also skip transactions where credit is true as they represent refunds and again unrelated.
-      if (
-        purchase.Credit !== true &&
-        purchase.Line[0].DetailType !== 'ItemBasedExpenseLineDetail'
-      ) {
-        purchases.push(filterToPurchaseResponse(purchase));
+      formattedResult.id = purchase.Id;
+      // Iterate through the line field for the tax code ID.
+      for (const line of purchase.Line) {
+        // If the tax code is present, it is found in the AccountBasedExpenseLineDetail field.
+        if (line.DetailType === 'AccountBasedExpenseLineDetail') {
+          formattedResult.taxCodeId =
+            line.AccountBasedExpenseLineDetail.TaxCodeRef.value;
+          // Once the category is found, break the loop to prevent further iterations.
+          break;
+        }
       }
+      // Return the formatted results as a JSON string.
+      purchases.push(formattedResult);
     }
 
     // Return the relevant values from the purchases using the array of purchase response objects.
@@ -165,110 +141,32 @@ export async function getPurchases(): Promise<PurchaseResponse[]> {
   } catch (error) {
     console.error(error);
     // Return an empty purchase response inside and array to indicate an error.
-    const errorResonse: PurchaseResponse[] = [
-      {
-        Id: '',
-        SyncToken: '',
-        TxnDate: '',
-        PaymentType: '',
-        Credit: false,
-        TotalAmt: 0,
-        AccountRef: { value: '', name: '' },
-        EntityRef: { value: '', name: '', type: '' },
-        Line: [
-          {
-            DetailType: '',
-            Description: '',
-            Amount: 0,
-            AccountBasedExpenseLineDetail: {
-              AccountRef: { value: '', name: '' },
-              TaxCodeRef: { value: '', name: '' },
-            },
+    if (error instanceof Error) {
+      return [
+        {
+          result_info: {
+            result: 'Error',
+            message: 'Failed to fetch purchases',
+            detail: error.message,
           },
-        ],
-        Error: [{ Message: 'Error', Detail: 'Error finding purchase' }],
-      },
-    ];
-    return errorResonse;
-  }
-}
-
-// Takes a raw purchase response from the API and creates a new purchase response object with only the needed values.
-// Returned values from the API (even defined as purchase response) will include all values returned by the API.
-// This function takes a raw result and uses its values to create a new object with only the desired values
-function filterToPurchaseResponse(rawApiPurchase: PurchaseResponse) {
-  console.log(rawApiPurchase);
-  // Define a purchase response object using only the relevant values from a returned purchase response.
-  const formattedPurchaseResponse: PurchaseResponse = {
-    Id: rawApiPurchase.Id,
-    SyncToken: rawApiPurchase.SyncToken,
-    TxnDate: rawApiPurchase.TxnDate,
-    PaymentType: rawApiPurchase.PaymentType,
-    Credit: rawApiPurchase.Credit,
-    TotalAmt: rawApiPurchase.TotalAmt,
-    AccountRef: {
-      value: rawApiPurchase.AccountRef.value,
-      name: rawApiPurchase.AccountRef.name,
-    },
-    EntityRef: {
-      value: rawApiPurchase.EntityRef.value,
-      name: rawApiPurchase.EntityRef.name,
-      type: rawApiPurchase.EntityRef.type,
-    },
-    Line: [
-      {
-        DetailType: rawApiPurchase.Line[0].DetailType,
-        Description: rawApiPurchase.Line[0].Description,
-        Amount: rawApiPurchase.Line[0].Amount,
-        AccountBasedExpenseLineDetail: {
-          AccountRef: {
-            value:
-              rawApiPurchase.Line[0].AccountBasedExpenseLineDetail.AccountRef
-                .value,
-            name: rawApiPurchase.Line[0].AccountBasedExpenseLineDetail
-              .AccountRef.name,
-          },
-          TaxCodeRef: {
-            value:
-              rawApiPurchase.Line[0].AccountBasedExpenseLineDetail.TaxCodeRef
-                .value,
-            name: rawApiPurchase.Line[0].AccountBasedExpenseLineDetail
-              .TaxCodeRef.name,
-          },
+          id: '',
+          taxCodeId: '',
         },
-      },
-    ],
-    Error: [{ Message: '', Detail: '' }],
-  };
-
-  // If the purchase had more than one line, iterate through them and append them to the formatted purchase line value.
-  if (rawApiPurchase.Line.length > 1) {
-    for (let line = 1; line < rawApiPurchase.Line.length; line++) {
-      formattedPurchaseResponse.Line.push({
-        DetailType: rawApiPurchase.Line[line].DetailType,
-        Description: rawApiPurchase.Line[line].Description,
-        Amount: rawApiPurchase.Line[line].Amount,
-        AccountBasedExpenseLineDetail: {
-          AccountRef: {
-            value:
-              rawApiPurchase.Line[line].AccountBasedExpenseLineDetail.AccountRef
-                .value,
-            name: rawApiPurchase.Line[line].AccountBasedExpenseLineDetail
-              .AccountRef.name,
+      ];
+    } else {
+      return [
+        {
+          result_info: {
+            result: 'Error',
+            message: 'Failed to fetch purchases',
+            detail: '',
           },
-          TaxCodeRef: {
-            value:
-              rawApiPurchase.Line[line].AccountBasedExpenseLineDetail.TaxCodeRef
-                .value,
-            name: rawApiPurchase.Line[line].AccountBasedExpenseLineDetail
-              .TaxCodeRef.name,
-          },
+          id: '',
+          taxCodeId: '',
         },
-      });
+      ];
     }
   }
-
-  return formattedPurchaseResponse;
 }
 
 // Update a specific purchase object passed to the function.
