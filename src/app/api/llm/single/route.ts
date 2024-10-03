@@ -4,10 +4,10 @@ export async function POST(req: Request) {
   // Get the body from the request.
   const body = await req.json();
   // Parse the query and context from the body.
-  const { query, context } = body;
+  const { query, context, systemInstructions } = body;
   try {
     // Query the LLM model with the provided fields.
-    const response = await queryLLM(query, context);
+    const response = await queryLLM(query, context, systemInstructions);
     // Return the response as a JSON object and a success status of 200.
     return Response.json(response, { status: 200 });
   } catch (error) {
