@@ -48,10 +48,10 @@ export const Transaction = pgTable('Transaction', {
   transactionName: text('transaction_name').unique().notNull(),
 });
 
-export const TransactionToClassificationsRelationship = relations(
+export const TransactionToCategoriesRelationship = relations(
   Transaction,
   ({ many }) => ({
-    classifications: many(Classification),
+    categories: many(Category),
   })
 );
 
@@ -78,10 +78,10 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   approved: boolean('approved').notNull(),
 });
 
-export const ForReviewTransactionToClassificationsRelationship = relations(
+export const ForReviewTransactionToCategoriesRelationship = relations(
   ForReviewTransaction,
   ({ many }) => ({
-    classifications: many(Classification),
+    categories: many(Category),
   })
 );
 
@@ -92,21 +92,21 @@ export const ForReviewTransactionToTaxCodesRelationship = relations(
   })
 );
 
-export const Classification = pgTable('Classification', {
+export const Category = pgTable('Category', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
   count: integer('count').notNull(),
 });
 
-export const ClassificationToTransactionsRelationship = relations(
-  Classification,
+export const CategoryToTransactionsRelationship = relations(
+  Category,
   ({ many }) => ({
     transactions: many(Transaction),
   })
 );
 
-export const ClassificationToForReviewTransactionsRelationship = relations(
-  Classification,
+export const CategoryToForReviewTransactionsRelationship = relations(
+  Category,
   ({ many }) => ({
     transactions: many(ForReviewTransaction),
   })
@@ -132,18 +132,18 @@ export const TaxCodesToForReviewTransactionsRelationship = relations(
   })
 );
 
-export const TransactionsToClassifications = pgTable(
-  'TransactionsToClassifications',
+export const TransactionsToCategories = pgTable(
+  'TransactionsToCategories',
   {
     transactionId: integer('transaction_id')
       .notNull()
       .references(() => Transaction.id),
-    classificationId: integer('classification_id')
+    categoryId: integer('category_id')
       .notNull()
-      .references(() => Classification.id),
+      .references(() => Category.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
+    pk: primaryKey({ columns: [t.transactionId, t.categoryId] }),
   })
 );
 
@@ -162,18 +162,18 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-export const ForReviewTransactionToClassifications = pgTable(
-  'ForReviewTransactionsToClassifications',
+export const ForReviewTransactionToCategories = pgTable(
+  'ForReviewTransactionsToCategories',
   {
     transactionId: uuid('transaction_id')
       .notNull()
       .references(() => ForReviewTransaction.id),
-    classificationId: integer('classification_id')
+    categoryId: integer('category_id')
       .notNull()
-      .references(() => Classification.id),
+      .references(() => Category.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
+    pk: primaryKey({ columns: [t.transactionId, t.categoryId] }),
   })
 );
 
