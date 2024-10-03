@@ -2,11 +2,13 @@
 
 import { createQBObject } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
-import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { Transaction } from '@/types/Transaction';
+import { getAccounts } from './get-accounts';
 import { findFormattedPurchase } from './purchases';
 import { getTaxCodes } from './taxes';
+import type { Account } from '@/types/Account';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
+import type { Transaction } from '@/types/Transaction';
 
 // Get all transactions from the QuickBooks API.
 // Can take a start date and end date as optional parameters.
@@ -128,14 +130,6 @@ export async function getTransactions(
     const QueryResult = createQueryResult(success, error);
     formattedTransactions.push(QueryResult);
 
-    // Define valid expense transaction types.
-    const purchaseTransactions = [
-      'Check',
-      'Cash Expense',
-      'Credit Card Expense',
-      'Expense',
-    ];
-
     // If no rows were returned, skip formatting the transactions and return the result field.
     if (results !== undefined) {
       for (const transaction of results) {
@@ -149,49 +143,59 @@ export async function getTransactions(
         const accountRow = 2;
         const categoryRow = 3;
         const amountRow = 4;
-
         // Skip no-name transactions, transactions without an account, and transactions without an amount.
         if (
-          purchaseTransactions.includes(String(transaction.ColData[0].value)) &&
           transaction.ColData[nameRow].value !== '' &&
           transaction.ColData[accountRow].value !== '' &&
           transaction.ColData[categoryRow].value !== '' &&
-          transaction.ColData[nameRow].value !== ''
+          transaction.ColData[nameRow].value !== '' &&
+          Number(transaction.ColData[amountRow].value) < 0
         ) {
-          // Find the purchase related to the transaction to get its tax rate.
-          const transactionPurchase = await findFormattedPurchase(
-            String(transaction.ColData[idRow].id)
-          );
+          // Check that the transaction is realted to an expense account.
+          // Call expense accounts to check against classification.
+          const accounts = await getAccounts('Expense');
+          const parsedAccounts: Account[] = JSON.parse(accounts);
 
-          // Get the tax codes for the user to get the tax code name from the ID's.
-          const userTaxCodes = JSON.parse(await getTaxCodes());
-
-          // Reads the values from the specified columns in the current row of the results.
-          // Explicitly define the types due to values from the API being either a string or number.
-          const newFormattedTransaction: Transaction = {
-            name: String(transaction.ColData[nameRow].value),
-            amount: Number(transaction.ColData[amountRow].value),
-            category: String(transaction.ColData[categoryRow].value),
-            taxCodeName: '',
-          };
-
-          // If a tax code was present in the related purchase and the tax code fetch succeded, update the tax code value.
+          // Check if an expense account with the same name exists and only continue if it does.
           if (
-            transactionPurchase.id &&
-            userTaxCodes.QueryResponse.result === 'Success'
+            parsedAccounts.some(
+              (account) =>
+                account.name === transaction.ColData[categoryRow].value
+            )
           ) {
-            // Iterate through user tax codes to find the matching ID.
-            for (const taxCode of userTaxCodes.QueryResponse.slice(
-              1
-            ) as TaxCode[]) {
-              if (taxCode.Id == transactionPurchase.taxCodeId) {
-                // record the name of the tax code with the matching ID.
-                newFormattedTransaction.taxCodeName = taxCode.Name;
+            // Find the purchase related to the transaction to get its tax rate.
+            const transactionPurchase = await findFormattedPurchase(
+              String(transaction.ColData[idRow].id)
+            );
+
+            // Get the tax codes for the user to get the tax code name from the ID's.
+            const userTaxCodes = JSON.parse(await getTaxCodes());
+
+            // Reads the values from the specified columns in the current row of the results.
+            // Explicitly define the types due to values from the API being either a string or number.
+            const newFormattedTransaction: Transaction = {
+              name: String(transaction.ColData[nameRow].value),
+              amount: Number(transaction.ColData[amountRow].value),
+              category: String(transaction.ColData[categoryRow].value),
+              taxCodeName: '',
+            };
+
+            // If a tax code was present in the related purchase and the tax code fetch succeded, update the tax code value.
+            if (
+              transactionPurchase.id &&
+              userTaxCodes[0].result === 'Success'
+            ) {
+              // Iterate through user tax codes to find the matching ID.
+              for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {
+                if (taxCode.Id == transactionPurchase.taxCodeId) {
+                  // record the name of the tax code with the matching ID.
+                  newFormattedTransaction.taxCodeName = taxCode.Name;
+                }
               }
             }
-          }
 
-          formattedTransactions.push(newFormattedTransaction);
+            formattedTransactions.push(newFormattedTransaction);
+          }
         }
       }
     }

@@ -51,7 +51,7 @@ export async function getAccounts(accountType: string): Promise<string> {
       {
         field: 'Classification',
         value: ['Expense'],
-        operator: '=',
+        operator: 'IN',
         limit: 1000,
       },
     ];
