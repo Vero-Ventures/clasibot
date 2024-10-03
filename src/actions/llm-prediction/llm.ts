@@ -217,7 +217,11 @@ export async function batchQueryCategoriesLLM(
   const results: ClassifiedResult[] = [];
   for (const { transaction_ID, prompt, context } of contexts) {
     // Query the Language Model for a response using the prompt and context.
-    const response = await queryLLM(prompt, context, CategorySystemInstructions);
+    const response = await queryLLM(
+      prompt,
+      context,
+      CategorySystemInstructions
+    );
     let possibleCategories: Classification[] = [];
 
     if (response) {
