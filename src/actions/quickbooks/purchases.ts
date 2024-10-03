@@ -93,17 +93,16 @@ export async function getPurchases(): Promise<Purchase[]> {
     };
 
     // Get all purchase objects.
-    const response: PurchasesResponseArray = await new Promise(
-      (resolve, reject) => {
-        qbo.findPurchases((err: Error, data: PurchasesResponseArray) => {
-          if (err && checkFaultProperty(err)) {
-            // If there was an error getting the purchase (with a fault property), throw an error.
-            reject(err);
-          }
-          resolve(data);
-        });
-      }
-    );
+    const response: PurchasesResponseArray = await new Promise((resolve) => {
+      qbo.findPurchases((err: ErrorResponse, data: PurchasesResponseArray) => {
+        if (err && checkFaultProperty(err)) {
+          // If there was an error getting the purchase (with a fault property), throw an error.
+          error = err;
+          success = false;
+        }
+        resolve(data);
+      });
+    });
 
     // Create a formatted result object based on the query results.
     const queryResult = createQueryResult(success, error);
