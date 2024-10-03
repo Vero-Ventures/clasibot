@@ -3,8 +3,8 @@ import type { Classification } from '@/types/Classification';
 import { db } from '@/db/index';
 import {
   Transaction,
-  TransactionsToClassifications,
-  Classification as DatabaseClassification,
+  TransactionsToCategories,
+  Category,
   TaxCode,
   TransactionsToTaxCodes,
 } from '@/db/schema';
@@ -24,13 +24,13 @@ export async function getTopCategoriesForTransaction(
     // Get the transaction to classificaion relations for the transaction.
     const transactionClassifications = await db
       .select()
-      .from(TransactionsToClassifications)
+      .from(TransactionsToCategories)
       .where(
-        eq(TransactionsToClassifications.transactionId, transaction[0].id)
+        eq(TransactionsToCategories.transactionId, transaction[0].id)
       );
 
     // Create an array to store the classifications for the transaction.
-    const classifications: {
+    const categories: {
       id: number;
       category: string;
       count: number;
@@ -38,16 +38,16 @@ export async function getTopCategoriesForTransaction(
 
     // Get the classification for each relationship and add it to the classifications array.
     for (const relationship of transactionClassifications) {
-      const classification = await db
+      const category = await db
         .select()
-        .from(DatabaseClassification)
-        .where(eq(DatabaseClassification.id, relationship.classificationId));
+        .from(Category)
+        .where(eq(Category.id, relationship.categoryId));
 
-      classifications.push(classification[0]);
+        categories.push(category[0]);
     }
 
     // If there are no classifications, return an empty array
-    if (classifications.length === 0) {
+    if (categories.length === 0) {
       return [];
     }
 
@@ -61,8 +61,8 @@ export async function getTopCategoriesForTransaction(
     );
 
     // Filter out any classifications without a valid category by checking against the dictionary.
-    const filteredClassifications = classifications.filter((classification) =>
-      Object.hasOwn(validCategoryMap, classification.category)
+    const filteredClassifications = categories.filter((category) =>
+      Object.hasOwn(validCategoryMap, category.category)
     );
 
     // Sort the classifications by count in descending order.

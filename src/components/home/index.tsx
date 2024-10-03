@@ -12,7 +12,7 @@ import { UnpaidAlert } from '@/components/unpaid-alert';
 import ReviewPage from '@/components/home/review-page';
 import SelectionPage from '@/components/home/selection-page';
 import { useToast } from '@/components/ui/toasts/use-toast';
-import type { ClassifiedCategory } from '@/types/Category';
+import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
@@ -29,7 +29,14 @@ export default function HomePage() {
     (CategorizedForReviewTransaction | ForReviewTransaction)[][]
   >([]);
   const [categorizationResults, setCategorizationResults] = useState<
-    Record<string, ClassifiedCategory[]>
+    | Record<
+        string,
+        {
+          category: ClassifiedElement[] | null;
+          taxCode: ClassifiedElement[] | null;
+        }
+      >
+    | { error: string }
   >({});
   const [isClassifying, setIsClassifying] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState('');
@@ -110,7 +117,15 @@ export default function HomePage() {
   // Create a list of catagorized transactions using a list of transactions and a result object.
   const createCategorizedTransactions = (
     selectedRows: (FormattedForReviewTransaction | ForReviewTransaction)[][],
-    result: Record<string, ClassifiedCategory[]>
+    result:
+      | Record<
+          string,
+          {
+            category: ClassifiedElement[] | null;
+            taxCode: ClassifiedElement[] | null;
+          }
+        >
+      | { error: string }
   ) => {
     const newCategorizedTransactions: (
       | CategorizedForReviewTransaction
@@ -194,12 +209,19 @@ export default function HomePage() {
     );
 
     // Classify the transactions that are not uncategorized.
-    const result: Record<string, ClassifiedCategory[]> | { error: string } =
-      await classifyTransactions(
-        pastTransactionsResult,
-        formattedRows,
-        companyInfo
-      );
+    const result:
+      | Record<
+          string,
+          {
+            category: ClassifiedElement[] | null;
+            taxCode: ClassifiedElement[] | null;
+          }
+        >
+      | { error: string } = await classifyTransactions(
+      pastTransactionsResult,
+      formattedRows,
+      companyInfo
+    );
 
     if ('error' in result) {
       console.error('Error classifying transactions:', result.error);

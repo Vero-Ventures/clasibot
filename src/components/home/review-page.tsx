@@ -6,7 +6,7 @@ import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
 import type { Account } from '@/types/Account';
-import type { ClassifiedCategory } from '@/types/Category';
+import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
@@ -24,7 +24,15 @@ export default function ReviewPage({
     | CategorizedForReviewTransaction
     | ForReviewTransaction
   )[][];
-  categorizationResults: Record<string, ClassifiedCategory[]>;
+  categorizationResults:
+    | Record<
+        string,
+        {
+          category: ClassifiedElement[] | null;
+          taxCode: ClassifiedElement[] | null;
+        }
+      >
+    | { error: string };
   company_info: CompanyInfo;
 }>) {
   // Create states to track and set the important values.
