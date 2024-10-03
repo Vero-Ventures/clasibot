@@ -3,7 +3,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfidenceBar } from '@/components/confidence-bar';
-import type { Category, ClassifiedCategory } from '@/types/Category';
+import type { Classification, ClassifiedElement } from '@/types/Classification';
 import type {
   FormattedForReviewTransaction,
   CategorizedForReviewTransaction,
@@ -234,7 +234,7 @@ export const reviewColumns = (
     accessorKey: 'categories',
     header: 'Categories',
     cell: ({ row }: { row: Row<CategorizedForReviewTransaction> }) => {
-      const categories: Category[] = row.getValue('categories');
+      const categories: Classification[] = row.getValue('categories');
       return categories.length > 0 ? (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"
@@ -270,7 +270,7 @@ export const reviewColumns = (
       const FuseClassified = 3;
       let confidenceValue = 0;
 
-      const categories: ClassifiedCategory[] = row.getValue('categories');
+      const categories: ClassifiedElement[] = row.getValue('categories');
 
       // Determine the highest confidence value present from how the categories were determined.
       if (categories.length > 0) {

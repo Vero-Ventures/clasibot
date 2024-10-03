@@ -2,7 +2,7 @@
  * Defines the basic elements of a category.
  * Also defines a classified category that includes the method of classification.
  */
-export type Category = {
+export type Classification = {
   //type: Either 'category' or 'tax code'
   type: string;
   // id: Whole number as a string.
@@ -11,7 +11,7 @@ export type Category = {
   name: string;
 };
 
-export type ClassifiedCategory = {
+export type ClassifiedElement = {
    //type: Either 'category' or 'tax code'
    type: string;
   // id: Whole number as a string.
@@ -26,11 +26,11 @@ export type ClassifiedCategory = {
 /**
  * Defines the format of the categorized result object.
  */
-export type CategorizedResult = {
+export type ClassifiedResult = {
   // transaction_ID: Whole number as a string.
   transaction_ID: string;
   // A list of possible categories the transaction could be classified as.
-  possibleCategories: Category[];
+  possibleCategories: Classification[];
   // The method of classification:
   // 'Matching', 'Database', or 'LLM'
   classifiedBy: string;

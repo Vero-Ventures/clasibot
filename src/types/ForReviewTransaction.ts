@@ -1,7 +1,7 @@
 /**
  * Defines a formatted version of a "for review" transaction returned from the API.
  */
-import type { ClassifiedCategory } from './Category';
+import type { ClassifiedCategory } from './Classification';
 
 export type ForReviewTransaction = {
   id: string;
