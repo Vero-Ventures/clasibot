@@ -25,9 +25,7 @@ export async function getTopCategoriesForTransaction(
     const transactionClassifications = await db
       .select()
       .from(TransactionsToCategories)
-      .where(
-        eq(TransactionsToCategories.transactionId, transaction[0].id)
-      );
+      .where(eq(TransactionsToCategories.transactionId, transaction[0].id));
 
     // Create an array to store the classifications for the transaction.
     const categories: {
@@ -43,7 +41,7 @@ export async function getTopCategoriesForTransaction(
         .from(Category)
         .where(eq(Category.id, relationship.categoryId));
 
-        categories.push(category[0]);
+      categories.push(category[0]);
     }
 
     // If there are no classifications, return an empty array
