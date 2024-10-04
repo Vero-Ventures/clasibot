@@ -28,6 +28,8 @@ export type FormattedForReviewTransaction = {
   date: string;
   // The account that the for review transaction was pulled from.
   account: string;
+  // The name of the account used in frontend filering.
+  accountName: string;
   // Total negative decimal value of the purchase.
   amount: number;
 };
@@ -41,6 +43,8 @@ export type CategorizedForReviewTransaction = {
   date: string;
   // The account that the for review transaction was pulled from.
   account: string;
+  // The name of the account used in frontend filering.
+  accountName: string;
   // Total negative decimal value of the purchase.
   amount: number;
   // An array of possible categories for the transaction to be classified as.
