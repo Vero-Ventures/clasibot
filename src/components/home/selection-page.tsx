@@ -2,13 +2,13 @@
 import { useEffect, useState } from 'react';
 import { getForReview } from '@/actions/quickbooks/get-for-review';
 import { SelectionTable } from '@/components/data-table/selection-table';
-import type { Account } from '@/types/Account';
+// import type { Account } from '@/types/Account';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
   FormattedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
+// import { getAccounts } from '@/actions/quickbooks/get-accounts';
 
 // Selection page takes a function to handle classification, a boolean to check if classifying, and the company name.
 export default function SelectionPage({
@@ -41,9 +41,9 @@ export default function SelectionPage({
     const fetchTransactions = async () => {
       try {
         // Get all the accounts assosiated with transactions.
-        const transactionAccounts: Account[] = JSON.parse(
-          await getAccounts('Transaction')
-        );
+        // const transactionAccounts: Account[] = JSON.parse(
+        //   await getAccounts('Transaction')
+        // );
 
         const testTransactionAccounts = [{ id: '144', name: 'BMO Chq - 4940' }];
 
@@ -84,8 +84,6 @@ export default function SelectionPage({
             accountNames.add(accountName);
           }
         }
-
-        console.log(accountNames);
 
         // Set the found transactions to the resulting array of "For Review" transactions and set the transactions to found.
         setForReviewTransactions(forReviewTransactions);
