@@ -40,12 +40,15 @@ import type {
   FormattedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 
+import type { CompanyInfo } from '@/types/CompanyInfo';
+
 // Function Values: list of transactions, list of account names, and a value to indicate classification is in progress.
 // Function Callbacks: A function to handle classifing the transactions.
 export function SelectionTable({
   transactions,
   account_names,
   found_transactions,
+  company_info,
   finished_loading,
   isClassifying,
   handleClassify,
@@ -53,6 +56,7 @@ export function SelectionTable({
   transactions: (FormattedForReviewTransaction | ForReviewTransaction)[][];
   account_names: string[];
   found_transactions: boolean;
+  company_info: CompanyInfo;
   finished_loading: boolean;
   isClassifying: boolean;
   handleClassify: (
@@ -163,6 +167,8 @@ export function SelectionTable({
     if (
       finished_loading &&
       found_transactions &&
+      company_info.name != '' &&
+      account_names.length != 0 &&
       table.getRowModel().rows?.length !== 0
     ) {
       if (process.env.APP_CONFIG !== 'production') {
@@ -173,12 +179,17 @@ export function SelectionTable({
         // Cleanup function to clear the timeout.
         return () => clearTimeout(timeout);
       } else {
-        console.log(process.env.APP_CONFIG);
         // Production: Set table ready state to true.
         setTableReady(true);
       }
     }
-  }, [found_transactions, finished_loading, table]);
+  }, [
+    finished_loading,
+    found_transactions,
+    company_info,
+    account_names,
+    table,
+  ]);
 
   return (
     <div

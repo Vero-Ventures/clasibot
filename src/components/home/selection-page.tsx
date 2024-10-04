@@ -71,7 +71,9 @@ export default function SelectionPage({
         // Iterate through the transactions to get, updated, and record the name of the account for the for review transactions.
         for (let index = 0; index < forReviewTransactions.length; index++) {
           // Define the typing of the transaction at the current index
-          const currentTransaction = forReviewTransactions[index][0] as FormattedForReviewTransaction
+          const currentTransaction = forReviewTransactions[
+            index
+          ][0] as FormattedForReviewTransaction;
           // Find the account assosiated with the ID defined in the transaction
           const accountName = testTransactionAccounts.find(
             (account) => account.id === currentTransaction.account
@@ -79,7 +81,7 @@ export default function SelectionPage({
           if (accountName) {
             // Update the account name of the current transaction and write it back to the for review transactions array.
             currentTransaction.accountName = accountName;
-            forReviewTransactions[index][0] = currentTransaction
+            forReviewTransactions[index][0] = currentTransaction;
             // If an account name was found, add it to the account names array.
             accountNames.add(accountName);
           }
@@ -111,6 +113,7 @@ export default function SelectionPage({
         transactions={forReviewTransactions}
         account_names={accounts}
         found_transactions={foundForReviewTransactions}
+        company_info={company_info}
         finished_loading={finished_loading}
         isClassifying={isClassifying}
         handleClassify={handleClassify}

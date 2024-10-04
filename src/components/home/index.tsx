@@ -50,7 +50,8 @@ export default function HomePage() {
   const [modal, setModal] = useState(false);
 
   // Define states to prevent showing the table until the page is loaded.
-  const [finishedLoadingIndustry, _setFinishedLoadingIndustry] = useState(true);
+  const [finishedLoadingCompanyInfo, setFinishedLoadingCompanyInfo] =
+    useState(true);
   const [finishedLoadingSubscription, setFinishedLoadingSubscription] =
     useState(false);
 
@@ -91,6 +92,7 @@ export default function HomePage() {
         },
       });
     }
+    setFinishedLoadingCompanyInfo(true);
   };
 
   // Define the toast function using the useToast hook.
@@ -284,7 +286,7 @@ export default function HomePage() {
           isClassifying={isClassifying}
           company_info={companyInfo}
           finished_loading={
-            finishedLoadingIndustry && finishedLoadingSubscription
+            finishedLoadingCompanyInfo && finishedLoadingSubscription
           }
         />
       )}
