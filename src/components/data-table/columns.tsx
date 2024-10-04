@@ -220,7 +220,8 @@ export const selectionColumns: ColumnDef<FormattedForReviewTransaction>[] = [
 // Define the columns for the review table.
 export const reviewColumns = (
   selectedCategories: Record<string, string>,
-  handleCategoryChange: (transaction_ID: string, category: string) => void
+  handleCategoryChange: (transaction_ID: string, category: string) => void,
+  handleTaxCodeChange: (transaction_ID: string, taxCode: string) => void,
 ): ColumnDef<CategorizedForReviewTransaction>[] => [
   // Define the order of the columns. Start with the select, date, type, payee, and account columns.
   commonColumns[0],
@@ -243,6 +244,36 @@ export const reviewColumns = (
           // Allows the correct category to be recorded when the transactions are saved.
           onChange={(e) => {
             handleCategoryChange(row.original.transaction_ID, e.target.value);
+          }}
+          value={selectedCategories[row.original.transaction_ID]}>
+          {/* Map the categories associated with the transaction to a dropdown */}
+          {categories.map((category) => (
+            <option key={category.name} value={category.name}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      ) : (
+        // If no categories are found, display a message indicating none were found.
+        <span className="text-red-500">No Categories Found</span>
+      );
+    },
+  },
+
+  // Define the Categories column.
+  {
+    accessorKey: 'taxCodes',
+    header: 'Tax Codes',
+    cell: ({ row }: { row: Row<CategorizedForReviewTransaction> }) => {
+      const categories: Classification[] = row.getValue('taxCodes');
+      return categories.length > 0 ? (
+        <select
+          className="rounded-lg border border-gray-700 px-2 py-1"
+          onClick={(e) => e.stopPropagation()}
+          // Use a callback function (handleCategoryChange) when selected category for a row changes.
+          // Allows the correct category to be recorded when the transactions are saved.
+          onChange={(e) => {
+            handleTaxCodeChange(row.original.transaction_ID, e.target.value);
           }}
           value={selectedCategories[row.original.transaction_ID]}>
           {/* Map the categories associated with the transaction to a dropdown */}

@@ -40,6 +40,9 @@ export default function ReviewPage({
   const [selectedCategories, setSelectedCategories] = useState<
     Record<string, string>
   >({});
+  const [selectedTaxCodes, setSelectedTaxCodes] = useState<
+    Record<string, string>
+  >({});
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -47,23 +50,45 @@ export default function ReviewPage({
 
   // Updates the categorizations for each transaction when categorized transactions or categorization results change.
   useEffect(() => {
-    // Initialize the selected categories for each transaction.
-    const initializeCategories = async () => {
+    // Initialize the selected classifications for each transaction.
+    const initializeClassifications = async () => {
       const initialCategories: Record<string, string> = {};
+      const initialTaxCodes: Record<string, string> = {};
       categorizedTransactions.forEach((transaction) => {
         const formattedTransaction =
           transaction[0] as CategorizedForReviewTransaction;
-        // Look for the first category in the categorization results.
-        const firstCategory =
-          categorizationResults[formattedTransaction.transaction_ID]?.[0]?.name;
-        // If a category is found, add it to the initial categories record.
-        if (firstCategory) {
-          initialCategories[formattedTransaction.transaction_ID] =
-            firstCategory;
+        // Check that the categorization did not return an error.
+        if (!categorizationResults.error) {
+          // Assert the type of the non-error categorizations.
+          const categorizations = categorizationResults as Record<
+            string,
+            {
+              category: ClassifiedElement[] | null;
+              taxCode: ClassifiedElement[] | null;
+            }
+          >;
+          // Look for the first category and tax code in the categorization results.
+          const firstCategory =
+            categorizations[formattedTransaction.transaction_ID].category;
+          const firstTaxCode =
+            categorizations[formattedTransaction.transaction_ID].taxCode;
+
+          // If a category is found, add it to the initial categories record.
+          if (firstCategory) {
+            initialCategories[formattedTransaction.transaction_ID] =
+              firstCategory[0].name;
+          }
+
+          // If a taxCode is found, add it to the initial categories record.
+          if (firstTaxCode) {
+            initialTaxCodes[formattedTransaction.transaction_ID] =
+              firstTaxCode[0].name;
+          }
         }
       });
-      // Update the selected categories state with the initial categories.
+      // Update the selected categories and tax codes state with the initial categories.
       setSelectedCategories(initialCategories);
+      setSelectedTaxCodes(initialTaxCodes);
     };
 
     // Create a set to track account names without duplicates, then add all account names to the set.
@@ -77,7 +102,7 @@ export default function ReviewPage({
     // Update the accounts state with a list of unique account names.
     setAccounts(Array.from(accountNames));
 
-    initializeCategories();
+    initializeClassifications();
   }, [categorizedTransactions, categorizationResults]);
 
   // Update the selected categories state using a transaction ID and the new category.
@@ -85,6 +110,14 @@ export default function ReviewPage({
     setSelectedCategories({
       ...selectedCategories,
       [transactionID]: category,
+    });
+  }
+
+  // Update the selected tax code state using a transaction ID and the new tax code.
+  function handleTaxCodeChange(transactionID: string, taxCode: string) {
+    setSelectedTaxCodes({
+      ...selectedTaxCodes,
+      [transactionID]: taxCode,
     });
   }
 
@@ -118,14 +151,29 @@ export default function ReviewPage({
           // Get the ID of the transaction and use that to get its selected category.
           const transactionID = categorizedTransaction.transaction_ID;
           const selectedCategory = selectedCategories[transactionID];
-          // Get the ID related to the selected category for the transaction.
-          const accountID = categorizedTransaction.categories.find(
-            (category) => category.name === selectedCategory
-          )?.id;
+          const selectedTaxCode = selectedTaxCodes[transactionID];
+
+          // Defile inital null values for the classification category and tax code.
+          let category = null;
+          let taxCode = null;
+
+          if (categorizedTransaction.categories) {
+            // Get the classified element related to the selected category for the transaction.
+            category = categorizedTransaction.categories.find(
+              (category) => category.name === selectedCategory
+            ) as ClassifiedElement;
+          }
+
+          if (categorizedTransaction.taxCodes) {
+            // Get the classified element related to the selected category for the transaction.
+            taxCode = categorizedTransaction.taxCodes.find(
+              (taxCode) => taxCode.name === selectedTaxCode
+            ) as ClassifiedElement;
+          }
 
           // Throw an error if the ID for that transaction cannot be found.
           // Occurs if the selected category is not present in catagorized transaction.
-          if (!accountID) {
+          if (!category || !taxCode) {
             throw new Error('Error saving purchase');
           } else {
             // Create a new transaction object to be saved based on the selected category and catagoried transaction.
@@ -133,19 +181,17 @@ export default function ReviewPage({
               name: categorizedTransaction.name,
               amount: categorizedTransaction.amount,
               category: selectedCategory,
+              taxCodeName: selectedTaxCode,
             };
 
             // Find what method was used to classify the transaction.
-            const classificationMethod = categorizedTransaction.categories.find(
-              (category) => category.name === selectedCategory
-            )?.classifiedBy;
+            const categoryClassificationMethod = category.classifiedBy;
 
             // If the transaction was classified by LLM, it will be using the full account name.
-            if (classificationMethod === 'LLM') {
+            if (categoryClassificationMethod === 'LLM') {
               // Find the acount related to that categorization.
               const account = accounts.find(
-                (account: Account) =>
-                  account.name === newDatabaseTransaction.category
+                (account: Account) => account.name === category.name
               );
               // If the related account exists, update the category name to use the account sub-type instead.
               // Prevents possibility of saving user inputted account names to the database.
@@ -157,10 +203,9 @@ export default function ReviewPage({
             // Push the new transaction with savable info to array of transactions to be saved to the database.
             newTransactions.push(newDatabaseTransaction);
 
-            // Pass the raw transaction and account ID to add the users "for review" transaction with the updated classification.
+            // Pass the raw transaction, account ID, and tax code ID to add the users "for review" transaction with the updated classification.
             // Passes the raw transaction object as it is needed for update object creation.
-            // *** NOTE: need to add tax code integration in the future. ***
-            await addForReview(rawTransaction, accountID, 'taxCode');
+            await addForReview(rawTransaction, category.id, taxCode.id);
           }
         }
       });
@@ -192,6 +237,7 @@ export default function ReviewPage({
         selectedCategories={selectedCategories}
         account_names={accounts}
         handleCategoryChange={handleCategoryChange}
+        handleTaxCodeChange={handleTaxCodeChange}
         handleSave={handleSave}
         isSaving={isSaving}
       />

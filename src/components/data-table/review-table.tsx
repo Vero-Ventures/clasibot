@@ -46,6 +46,7 @@ export function ReviewTable({
   selectedCategories,
   account_names,
   handleCategoryChange,
+  handleTaxCodeChange,
   handleSave,
   isSaving,
 }: Readonly<{
@@ -56,6 +57,7 @@ export function ReviewTable({
   selectedCategories: Record<string, string>;
   account_names: string[];
   handleCategoryChange: (transaction_ID: string, category: string) => void;
+  handleTaxCodeChange: (transaction_ID: string, taxCode: string) => void;
   handleSave: (
     selectedRows: Record<number, boolean>,
     transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
@@ -100,7 +102,7 @@ export function ReviewTable({
   const table = useReactTable({
     // Pass the transactions as data, as well as a list of columns and the category change function.
     data: formattedTransactions,
-    columns: reviewColumns(selectedCategories, handleCategoryChange),
+    columns: reviewColumns(selectedCategories, handleCategoryChange, handleTaxCodeChange),
     // Pass the set state functions to table actions.
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
