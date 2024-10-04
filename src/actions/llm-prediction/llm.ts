@@ -222,7 +222,7 @@ export async function batchQueryCategoriesLLM(
       context,
       CategorySystemInstructions
     );
-    let possibleCategories: Classification[] = [];
+    let possibleClassifications: Classification[] = [];
 
     if (response) {
       const responseText = response.toLowerCase();
@@ -233,7 +233,7 @@ export async function batchQueryCategoriesLLM(
       );
 
       // Map the possible valid categories to the actual categories.
-      possibleCategories = possibleValidCategories.map(
+      possibleClassifications = possibleValidCategories.map(
         (categoryName) =>
           classifications.find(
             (classification) => classification.name === categoryName
@@ -245,7 +245,7 @@ export async function batchQueryCategoriesLLM(
     // Also record it was classified by the LLM.
     results.push({
       transaction_ID,
-      possibleCategories,
+      possibleClassifications,
       classifiedBy: 'LLM API',
     });
   }
@@ -344,7 +344,7 @@ export async function batchQueryTaxCodesLLM(
   for (const { transaction_ID, prompt, context } of contexts) {
     // Query the Language Model for a response using the prompt and context.
     const response = await queryLLM(prompt, context, TaxCodeSystemInstructions);
-    let possibleCategories: Classification[] = [];
+    let possibleClassifications: Classification[] = [];
 
     if (response) {
       const responseText = response.toLowerCase();
@@ -355,7 +355,7 @@ export async function batchQueryTaxCodesLLM(
       );
 
       // Map the possible valid categories to the actual categories.
-      possibleCategories = possibleValidCategories.map(
+      possibleClassifications = possibleValidCategories.map(
         (categoryName) =>
           classifications.find(
             (classification) => classification.name === categoryName
@@ -367,7 +367,7 @@ export async function batchQueryTaxCodesLLM(
     // Also record it was classified by the LLM.
     results.push({
       transaction_ID,
-      possibleCategories,
+      possibleClassifications,
       classifiedBy: 'LLM API',
     });
   }
