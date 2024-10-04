@@ -139,10 +139,10 @@ export function SelectionTable({
   useEffect(() => {
     // If no accounts are selected, set the account filter value to false to show all results.
     if (selectedAccounts.length === 0) {
-      table.getColumn('account')?.setFilterValue(() => false);
+      table.getColumn('accountName')?.setFilterValue(() => false);
     }
     // Otherwise update the filter function with the new array of account names.
-    table.getColumn('account')?.setFilterValue(selectedAccounts);
+    table.getColumn('accountName')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
   const handleClick = (event: React.MouseEvent) => {

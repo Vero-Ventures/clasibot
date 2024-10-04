@@ -44,9 +44,17 @@ export default function SelectionPage({
         const transactionAccounts: Account[] = JSON.parse(
           await getAccounts('Transaction')
         );
+
+        const testTransactionAccounts = [{ id: '144', name: 'BMO Chq - 4940' }];
+
+        //
+
         // Iterate through the account ID's to fetch all their assosiated "For Review" transactions.
-        const forReviewTransactions = [];
-        for (const transactionAccount of transactionAccounts) {
+        const forReviewTransactions: (
+          | FormattedForReviewTransaction
+          | ForReviewTransaction
+        )[][] = [];
+        for (const transactionAccount of testTransactionAccounts) {
           const newForReviewTransactions = await getForReview(
             transactionAccount.id
           );
@@ -56,16 +64,32 @@ export default function SelectionPage({
             );
           }
         }
-        // Set the found transactions to the resulting array of "For Review" transactions and set the transactions to found.
-        setForReviewTransactions(forReviewTransactions);
-        setForReviewFoundTransactions(true);
 
         // Create a set to track account names without duplicates and add all the account names to the set.
         const accountNames = new Set<string>();
-        for (const transaction of forReviewTransactions) {
-          // Look in the first index of the sub array to get account from formatted version.
-          accountNames.add(transaction[0].account);
+
+        // Iterate through the transactions to get, updated, and record the name of the account for the for review transactions.
+        for (let index = 0; index < forReviewTransactions.length; index++) {
+          // Define the typing of the transaction at the current index
+          const currentTransaction = forReviewTransactions[index][0] as FormattedForReviewTransaction
+          // Find the account assosiated with the ID defined in the transaction
+          const accountName = testTransactionAccounts.find(
+            (account) => account.id === currentTransaction.account
+          )?.name;
+          if (accountName) {
+            // Update the account name of the current transaction and write it back to the for review transactions array.
+            currentTransaction.accountName = accountName;
+            forReviewTransactions[index][0] = currentTransaction
+            // If an account name was found, add it to the account names array.
+            accountNames.add(accountName);
+          }
         }
+
+        console.log(accountNames);
+
+        // Set the found transactions to the resulting array of "For Review" transactions and set the transactions to found.
+        setForReviewTransactions(forReviewTransactions);
+        setForReviewFoundTransactions(true);
         // Update the accounts state with a list of unique account names.
         setAccounts(Array.from(accountNames));
       } catch (error) {

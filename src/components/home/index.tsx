@@ -168,6 +168,7 @@ export default function HomePage() {
             name: formattedTransaction.name,
             date: formattedTransaction.date,
             account: formattedTransaction.account,
+            accountName: formattedTransaction.accountName,
             amount: formattedTransaction.amount,
             // Get the categories from the result object using its ID. Gets an empty array if no match is found.
             categories: categoryClassification,
