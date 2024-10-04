@@ -23,7 +23,7 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=V1-123-B0t7c8rwn4xsiv26hd58vt; qbo.agentid=9411822219333687; qbo.parentid=9341452698223021; qbo.authid=9341453224204030; SameSite=None`,
+        cookie: `qbo.tkt=V1-182-B0hap1xhnqdols6sii3d33; qbo.agentid=9411822219333687; qbo.parentid=9341452698223021; qbo.authid=9341453224204030; SameSite=None`,
       },
     });
 
