@@ -23,7 +23,7 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=V1-11-B0atmppjt4lf5fnt15laho; qbo.agentid=9411821713535995; qbo.parentid=9341452698223021; qbo.authid=9341453042273832; SameSite=None`,
+        cookie: `qbo.tkt=V1-123-B0t7c8rwn4xsiv26hd58vt; qbo.agentid=9411822219333687; qbo.parentid=9341452698223021; qbo.authid=9341453224204030; SameSite=None`,
       },
     });
 
@@ -37,6 +37,7 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
         detail: JSON.stringify(errorText),
       };
     }
+    
 
     // Get the response data, format it, and return it to the caller in a result object with a success result.
     const responseData: {
@@ -78,6 +79,7 @@ function formatForReviewTransaction(
         name: transactionItem.description,
         date: transactionItem.olbTxnDate.split('T')[0],
         account: transactionItem.qboAccountId,
+        accountName: '',
         amount: transactionItem.amount,
       };
       transactions.push([newTransaction, transactionItem]);
