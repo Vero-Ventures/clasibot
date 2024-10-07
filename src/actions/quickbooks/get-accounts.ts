@@ -1,16 +1,27 @@
 'use server';
-import { createQBObject } from '../qb-client';
+import { createQBObject, createQBObjectWithSession } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
+import type { Session } from 'next-auth/core/types';
 
 // Get all accounts from the QuickBooks API.
 // Use 'Transaction' to fetch accounts that contain 'For Review' Transactions.
 // Use 'Expense' to get accounts for transaction categorization.
-export async function getAccounts(accountType: string): Promise<string> {
+export async function getAccounts(
+  accountType: string,
+  session: Session | null = null
+): Promise<string> {
   try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
+    // Define the variable used to make the qbo calls.
+    let qbo;
+    // Check if a session was passed to use to define the qbo object.
+    // Then define the qbo object based on the sessions presence.
+    if (session) {
+      qbo = await createQBObjectWithSession;
+    } else {
+      qbo = await createQBObject();
+    }
 
     // Define success and error trackers for query response creation.
     let success = true;
