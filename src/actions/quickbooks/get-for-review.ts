@@ -6,24 +6,22 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-export async function getForReview(accountId: string): Promise<QueryResult> {
+export async function getForReview(
+  accountId: string,
+  companyId: string,
+  fetchToken: string
+): Promise<QueryResult> {
   try {
     // Define the parameters for the call and the full endpoint to use.
-    // This will need to be run for each bank account / credit card assosiated with a user.
-    // Each account has a different account ID and should be passed to this action when it is called.
+    // Defined using the current account ID to fetch transactions for and the ID of the overall company.
     const parameters = `accountId=${accountId}&sort=-txnDate&reviewState=PENDING&ignoreMatching=false`;
-    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/9341452698223021/olb/ng/getTransactions?${parameters}`;
-
-    // This is currently setup to use my actual QBO account linked to the yaniv's testing production company.
-    // Will need to be updated with ENV's for the agentID and authID in the future.
-    // Some method to pull ticket during login proccess will also be needed
-    //    Presently it is found by logging in and sraping network traffic with mitmproxy to get it from a response header from one of QuickBooks calls.
+    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${companyId}/olb/ng/getTransactions?${parameters}`;
 
     // Call the query endpoint while passing the defined header cookies.
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=V1-182-B0hap1xhnqdols6sii3d33; qbo.agentid=9411822219333687; qbo.parentid=9341452698223021; qbo.authid=9341453224204030; SameSite=None`,
+        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${process.env.BACKEND_AUTH_ID}; SameSite=None`,
       },
     });
 
@@ -37,7 +35,6 @@ export async function getForReview(accountId: string): Promise<QueryResult> {
         detail: JSON.stringify(errorText),
       };
     }
-    
 
     // Get the response data, format it, and return it to the caller in a result object with a success result.
     const responseData: {
