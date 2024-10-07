@@ -533,12 +533,11 @@ async function classifyCategoriesWithLLM(
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
         // Record the current LLM result to the results and note it was classified by LLM API .
-        results[llmResult.transaction_ID] = llmResult.possibleClassifications.map(
-          (category) => ({
+        results[llmResult.transaction_ID] =
+          llmResult.possibleClassifications.map((category) => ({
             ...category,
             classifiedBy: 'LLM API',
-          })
-        );
+          }));
       }
     }
   } catch (error) {
@@ -569,12 +568,11 @@ async function classifyTaxCodesWithLLM(
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
         // Record the current LLM result to the results and note it was classified by LLM API .
-        results[llmResult.transaction_ID] = llmResult.possibleClassifications.map(
-          (category) => ({
+        results[llmResult.transaction_ID] =
+          llmResult.possibleClassifications.map((category) => ({
             ...category,
             classifiedBy: 'LLM API',
-          })
-        );
+          }));
       }
     }
   } catch (error) {

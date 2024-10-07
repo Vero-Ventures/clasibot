@@ -169,6 +169,7 @@ export async function getPurchases(): Promise<Purchase[]> {
 }
 
 // Update a specific purchase object passed to the function.
+// Unused function kept for possible re-implementation.
 export async function updatePurchase(
   purchase: PurchaseResponse
 ): Promise<string> {
@@ -177,7 +178,6 @@ export async function updatePurchase(
     const qbo = await createQBObject();
 
     // Define the relevant purchase information needed to call the update function.
-    // ** Present configuration only works with the PurchaseResponse type. **
     const purchaseInfo = {
       Id: purchase.Id,
       SyncToken: purchase.SyncToken,

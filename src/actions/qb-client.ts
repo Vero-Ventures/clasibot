@@ -52,7 +52,6 @@ export async function createQBObject() {
 
 // Create a QuickBooks client object.
 export async function createQBObjectWithSession(session: Session) {
-
   // Record the server session values.
   const oauthToken = session?.accessToken;
   const realmId = session?.realmId;

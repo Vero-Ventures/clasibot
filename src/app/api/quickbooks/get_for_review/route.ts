@@ -1,10 +1,10 @@
 /**
- * Defines a test API route for making sql request to the QuickBooks API 'query' endpoint.
+ * Defines a test API route for getting a users 'for review' transactions using QuickBooks API.
  */
 import { getForReview } from '@/actions/quickbooks/get-for-review';
 
 export async function GET() {
-  const result = await getForReview('144');
+  const result = await getForReview('', '', '');
   if (result.result === 'Success') {
     return Response.json(JSON.parse(result.detail));
   } else {

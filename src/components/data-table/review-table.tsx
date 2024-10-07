@@ -102,7 +102,11 @@ export function ReviewTable({
   const table = useReactTable({
     // Pass the transactions as data, as well as a list of columns and the category change function.
     data: formattedTransactions,
-    columns: reviewColumns(selectedCategories, handleCategoryChange, handleTaxCodeChange),
+    columns: reviewColumns(
+      selectedCategories,
+      handleCategoryChange,
+      handleTaxCodeChange
+    ),
     // Pass the set state functions to table actions.
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
