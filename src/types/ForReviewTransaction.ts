@@ -34,7 +34,7 @@ export type FormattedForReviewTransaction = {
   amount: number;
 };
 
-export type CategorizedForReviewTransaction = {
+export type ClassifiedForReviewTransaction = {
   // ID for the "For Review" transaction.
   transaction_ID: string;
   // Name related to the transaction (e.g. the payee).
