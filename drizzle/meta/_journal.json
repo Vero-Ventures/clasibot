@@ -43,6 +43,13 @@
       "when": 1727987683966,
       "tag": "0005_white_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1728336465346,
+      "tag": "0006_wild_pretty_boy",
+      "breakpoints": true
     }
   ]
 }
