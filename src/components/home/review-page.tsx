@@ -10,7 +10,7 @@ import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
-  CategorizedForReviewTransaction,
+  ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
 
@@ -21,7 +21,7 @@ export default function ReviewPage({
   company_info,
 }: Readonly<{
   categorizedTransactions: (
-    | CategorizedForReviewTransaction
+    | ClassifiedForReviewTransaction
     | ForReviewTransaction
   )[][];
   categorizationResults:
@@ -56,7 +56,7 @@ export default function ReviewPage({
       const initialTaxCodes: Record<string, string> = {};
       categorizedTransactions.forEach((transaction) => {
         const formattedTransaction =
-          transaction[0] as CategorizedForReviewTransaction;
+          transaction[0] as ClassifiedForReviewTransaction;
         // Check that the categorization did not return an error.
         if (!categorizationResults.error) {
           // Assert the type of the non-error categorizations.
@@ -95,7 +95,7 @@ export default function ReviewPage({
     const accountNames = new Set<string>();
     for (const transaction of categorizedTransactions) {
       const formattedTransaction =
-        transaction[0] as CategorizedForReviewTransaction;
+        transaction[0] as ClassifiedForReviewTransaction;
       accountNames.add(formattedTransaction.account);
     }
 
@@ -124,7 +124,7 @@ export default function ReviewPage({
   // Saves the selected categories using the selected rows.
   async function handleSave(
     selectedRows: Record<number, boolean>,
-    transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
+    transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) {
     // Set the saving status to true.
     setIsSaving(true);
@@ -144,7 +144,7 @@ export default function ReviewPage({
           const numericalIndex = Number(index);
           const categorizedTransaction = transactions[
             numericalIndex
-          ][0] as CategorizedForReviewTransaction;
+          ][0] as ClassifiedForReviewTransaction;
           const rawTransaction = transactions[
             numericalIndex
           ][1] as ForReviewTransaction;
@@ -205,7 +205,7 @@ export default function ReviewPage({
 
             // Pass the raw transaction, account ID, and tax code ID to add the users "for review" transaction with the updated classification.
             // Passes the raw transaction object as it is needed for update object creation.
-            await addForReview(rawTransaction, category.id, taxCode.id);
+            await addForReview(rawTransaction, category.id, taxCode.id, '', '');
           }
         }
       });

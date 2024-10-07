@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { classifyTransactions } from '@/actions/classify';
-import { getTransactions } from '@/actions/quickbooks/get-transactions';
+import { getPastTransactions } from '@/actions/quickbooks/get-transactions';
 import {
   getCompanyName,
   getCompanyIndustry,
@@ -17,7 +17,7 @@ import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
   FormattedForReviewTransaction,
-  CategorizedForReviewTransaction,
+  ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import { Locations } from '@/enums/taxes';
 
@@ -26,7 +26,7 @@ export default function HomePage() {
   // Catagorized transactions, catagorization results, if classification is currently in progress, -
   // - if the user is subscribed, and the company name.
   const [categorizedTransactions, setCategorizedTransactions] = useState<
-    (CategorizedForReviewTransaction | ForReviewTransaction)[][]
+    (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   >([]);
   const [categorizationResults, setCategorizationResults] = useState<
     | Record<
@@ -130,7 +130,7 @@ export default function HomePage() {
       | { error: string }
   ) => {
     const newCategorizedTransactions: (
-      | CategorizedForReviewTransaction
+      | ClassifiedForReviewTransaction
       | ForReviewTransaction
     )[][] = [];
     if (result) {
@@ -228,7 +228,7 @@ export default function HomePage() {
     const endDate = fiveYearsAgo.toISOString().split('T')[0];
 
     // Get the past transactions from QuickBooks for checking matches.
-    const pastTransactions = await getTransactions(startDate, endDate);
+    const pastTransactions = await getPastTransactions(startDate, endDate);
     const pastTransactionsResult = JSON.parse(pastTransactions).slice(1);
 
     // Get formatted values for classification.

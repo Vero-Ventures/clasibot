@@ -32,7 +32,7 @@ import {
 import { reviewColumns } from './columns';
 import type {
   ForReviewTransaction,
-  CategorizedForReviewTransaction,
+  ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 
 /**
@@ -52,7 +52,7 @@ export function ReviewTable({
 }: Readonly<{
   categorizedTransactions: (
     | ForReviewTransaction
-    | CategorizedForReviewTransaction
+    | ClassifiedForReviewTransaction
   )[][];
   selectedCategories: Record<string, string>;
   account_names: string[];
@@ -60,7 +60,7 @@ export function ReviewTable({
   handleTaxCodeChange: (transaction_ID: string, taxCode: string) => void;
   handleSave: (
     selectedRows: Record<number, boolean>,
-    transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
+    transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) => void;
   isSaving: boolean;
 }>) {
@@ -94,7 +94,7 @@ export function ReviewTable({
   for (const transaction of categorizedTransactions) {
     // Asser that the transaction type is formmated. Needed due to data coming from multi-typed array.
     formattedTransactions.push(
-      transaction[0] as CategorizedForReviewTransaction
+      transaction[0] as ClassifiedForReviewTransaction
     );
   }
 
