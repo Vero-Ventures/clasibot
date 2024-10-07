@@ -10,9 +10,9 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
 
-// Get all transactions from the QuickBooks API.
+// Get all past classified transactions from the QuickBooks API.
 // Can take a start date and end date as optional parameters.
-export async function getTransactions(
+export async function getPastTransactions(
   startDate = '',
   endDate = ''
 ): Promise<string> {
