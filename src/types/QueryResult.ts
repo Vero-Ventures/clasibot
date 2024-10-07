@@ -3,7 +3,7 @@
  * Standardizes information about the result of API calls and conveys the relevant error information
  */
 export type QueryResult = {
-  // result: 'Success' | 'Failure'.
+  // 'Success' | 'Failure'.
   result: string;
   /// A message that indicates the result of the transaction.
   // Primarily for error results, statically set to on success.

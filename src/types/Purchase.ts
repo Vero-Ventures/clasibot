@@ -3,7 +3,7 @@
  */
 export type Purchase = {
   result_info: {
-    // result: 'Success' | 'Error';
+    // 'Success' | 'Error';
     result: string;
     // A message that indicates the result of the transaction.
     // Primarily for error results.
@@ -12,7 +12,7 @@ export type Purchase = {
     // Primarily for error results.
     detail: string;
   };
-  // id: Integer as a string.
+  //  Integer as a string.
   id: string;
   // The tax code of the transaction related to the purchase.
   taxCodeId: string;
@@ -22,9 +22,9 @@ export type Purchase = {
  * Defines the data returned by the API when calling get_purchase.
  */
 export type PurchaseResponse = {
-  // Id: Integer as a string.
+  // Integer as a string.
   Id: string;
-  // SyncToken: Integer as a string.
+  // Integer as a string used for purchase updating.
   SyncToken: string;
   // The type of payment used for the purchase.
   // PaymentType: 'Check' | 'Cash' | 'Credit Card'.
@@ -51,7 +51,7 @@ export type PurchaseResponse = {
       };
     },
   ];
-  // Error: Potential error returned by the API.
+  // Potential error returned by the API.
   // Message: Error message.
   // Detail: Error details.
   Error: { Message: string; Detail: string }[];
