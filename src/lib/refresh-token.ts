@@ -11,11 +11,11 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
 
   // Variables are set based on the environment (production or development).
   if (process.env.APP_CONFIG === 'production') {
-    useID = process.env.PROD_CLIENT_ID;
-    useSecret = process.env.PROD_CLIENT_SECRET;
+    useID = process.env.FRONTEND_PROD_CLIENT_ID;
+    useSecret = process.env.FRONTEND_PROD_CLIENT_SECRET;
   } else {
-    useID = process.env.DEV_CLIENT_ID;
-    useSecret = process.env.DEV_CLIENT_SECRET;
+    useID = process.env.FRONTEND_DEV_CLIENT_ID;
+    useSecret = process.env.FRONTEND_DEV_CLIENT_SECRET;
   }
 
   const authorizationHeader = `Basic ${Buffer.from(
