@@ -8,7 +8,7 @@ import {
   getCompanyLocation,
   getCompanyName,
 } from '../quickbooks/user-info';
-import { addForReviewTransaction } from '../transaction-database/add-review-transactions';
+import { addForReviewTransaction } from '../db-review-transactions/add-review-transactions';
 import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';

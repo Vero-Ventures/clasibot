@@ -10,7 +10,7 @@ import { getTaxCodes, getTaxCodesByLocation } from './quickbooks/taxes';
 import {
   addTransactions,
   getTopCategoriesForTransaction,
-} from '@/actions/transaction-database';
+} from '@/actions/db-transactions';
 import type { FuseResult } from 'fuse.js';
 import type { Account } from '@/types/Account';
 import type {
