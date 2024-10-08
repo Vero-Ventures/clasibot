@@ -16,7 +16,6 @@ export type ForReviewTransaction = {
   acceptType: string;
   addAsQboTxn: {
     txnTypeId: string;
-    txnFdmName: string;
     nameId: string | null;
   };
 };
