@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { addTransactions } from '@/actions/db-transactions';
-import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-transactions';
+import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { ReviewTable } from '@/components/data-table/review-table';
@@ -14,7 +14,7 @@ import type {
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
-import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-transactions';
+import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
 
 export default function ReviewPage({
   company_info,
@@ -134,8 +134,6 @@ export default function ReviewPage({
       // Get the selected rows in an iterable format [key: selectedRowIndex, value: true]
       // The key is the index of the row and the value is always true for selected rows.
       const selectedRowIndices = Object.entries(selectedRows);
-      // Create an array to track the approved transactions to be removed from the database.
-      const savedTransactions: ForReviewTransaction[] = [];
 
       // Iterate through the selected rows, using only values where selected = true.
       selectedRowIndices.forEach(async ([index, selected]) => {
@@ -202,18 +200,20 @@ export default function ReviewPage({
 
             // Push the new transaction with savable info to array of transactions to be saved to the database.
             newTransactions.push(newDatabaseTransaction);
-            // Push the raw transaction into the array of transactions to be removed after saving.
-            savedTransactions.push(rawTransaction);
 
-            // Call the method to login to backend as synthetic bookkeeper and
+            // Call the method to login to backend as synthetic bookkeeper and add the classified transaction to the users account/
             await addForReview(rawTransaction, category.id, taxCode.id, '', '');
+            // Remove the related for review transaction and its connectionss from the database.
+            const result = await removeForReviewTransactions(rawTransaction);
+            // If the removal of transactions result is not successful, throw the detail as an error.
+            if (result.result !== 'Success') {
+              throw result.detail;
+            }
           }
         }
       });
       // Add all the newly created savable transactions to the database and set no error message to appear.
       await addTransactions(newTransactions);
-      // Remove all of the related for review transactions from the database.
-      await removeForReviewTransactions(savedTransactions);
       await setErrorMsg(null);
     } catch (error) {
       // Catch any errors, log them, and set the error message.
