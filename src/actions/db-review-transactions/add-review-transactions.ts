@@ -15,7 +15,7 @@ import type {
 import type { QueryResult } from '@/types/QueryResult';
 import { eq } from 'drizzle-orm';
 
-export async function addForReviewTransaction(
+export async function addForReviewTransactions(
   transactions: (ForReviewTransaction | ClassifiedForReviewTransaction)[][],
   companyId: string
 ): Promise<QueryResult> {

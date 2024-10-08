@@ -1,10 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { addTransactions } from '@/actions/transaction-database';
+import { addTransactions } from '@/actions/db-transactions';
+import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-transactions';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
+import { Button } from '@/components/ui/button';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
@@ -13,40 +14,44 @@ import type {
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
+import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-transactions';
 
-// Takes a list of categorized transactions, a record with the categorization results, and the company name.
 export default function ReviewPage({
-  categorizedTransactions,
-  categorizationResults,
   company_info,
+  found_company_info,
 }: Readonly<{
-  categorizedTransactions: (
-    | ClassifiedForReviewTransaction
-    | ForReviewTransaction
-  )[][];
-  categorizationResults:
-    | Record<
-        string,
-        {
-          category: ClassifiedElement[] | null;
-          taxCode: ClassifiedElement[] | null;
-        }
-      >
-    | { error: string };
   company_info: CompanyInfo;
+  found_company_info: boolean;
 }>) {
-  // Create states to track and set the important values.
-  // Selected categories for each transaction, the saving status, and the modal status, an error message, and account names.
+  // Create states to track and set the important values for classification.
   const [selectedCategories, setSelectedCategories] = useState<
     Record<string, string>
   >({});
   const [selectedTaxCodes, setSelectedTaxCodes] = useState<
     Record<string, string>
   >({});
+
+  // Set states to track the transactions fetched to display to the user.
+  const [loadedTransactions, setLoadedTransactions] = useState<
+    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
+  >([]);
+
+  // Create a state to track the accounts present in the transactions for filtering purposes.
+  const [accounts, setAccounts] = useState<string[]>([]);
+
+  // Create states to track values related to the state of the page.
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [accounts, setAccounts] = useState<string[]>([]);
+
+  // Updates the categorizations for each transaction when categorized transactions or categorization results change.
+  useEffect(() => {
+    // Load the transactions from the database.
+    const loadForReviewTransactions = async () => {
+      setLoadedTransactions(await getDatabaseTransactions());
+    };
+    loadForReviewTransactions();
+  }, [found_company_info]);
 
   // Updates the categorizations for each transaction when categorized transactions or categorization results change.
   useEffect(() => {
@@ -54,36 +59,28 @@ export default function ReviewPage({
     const initializeClassifications = async () => {
       const initialCategories: Record<string, string> = {};
       const initialTaxCodes: Record<string, string> = {};
-      categorizedTransactions.forEach((transaction) => {
-        const formattedTransaction =
+      loadedTransactions.forEach((transaction) => {
+        // Assert the formatted transaction and extract its classifications.
+        const classifiedTransaction =
           transaction[0] as ClassifiedForReviewTransaction;
-        // Check that the categorization did not return an error.
-        if (!categorizationResults.error) {
-          // Assert the type of the non-error categorizations.
-          const categorizations = categorizationResults as Record<
-            string,
-            {
-              category: ClassifiedElement[] | null;
-              taxCode: ClassifiedElement[] | null;
-            }
-          >;
-          // Look for the first category and tax code in the categorization results.
-          const firstCategory =
-            categorizations[formattedTransaction.transaction_ID].category;
-          const firstTaxCode =
-            categorizations[formattedTransaction.transaction_ID].taxCode;
+        // Assert the type of the non-error categorizations.
+        const classifications: {
+          categories: ClassifiedElement[] | null;
+          taxCodes: ClassifiedElement[] | null;
+        } = {
+          categories: classifiedTransaction.categories,
+          taxCodes: classifiedTransaction.taxCodes,
+        };
 
-          // If a category is found, add it to the initial categories record.
-          if (firstCategory) {
-            initialCategories[formattedTransaction.transaction_ID] =
-              firstCategory[0].name;
-          }
+        // Check if each classification is present and set them to the first value if they are.
+        if (classifications.categories) {
+          initialCategories[classifiedTransaction.transaction_ID] =
+            classifications.categories[0].name;
+        }
 
-          // If a taxCode is found, add it to the initial categories record.
-          if (firstTaxCode) {
-            initialTaxCodes[formattedTransaction.transaction_ID] =
-              firstTaxCode[0].name;
-          }
+        if (classifications.taxCodes) {
+          initialTaxCodes[classifiedTransaction.transaction_ID] =
+            classifications.taxCodes[0].name;
         }
       });
       // Update the selected categories and tax codes state with the initial categories.
@@ -93,7 +90,7 @@ export default function ReviewPage({
 
     // Create a set to track account names without duplicates, then add all account names to the set.
     const accountNames = new Set<string>();
-    for (const transaction of categorizedTransactions) {
+    for (const transaction of loadedTransactions) {
       const formattedTransaction =
         transaction[0] as ClassifiedForReviewTransaction;
       accountNames.add(formattedTransaction.account);
@@ -102,8 +99,9 @@ export default function ReviewPage({
     // Update the accounts state with a list of unique account names.
     setAccounts(Array.from(accountNames));
 
+    // Call method to initalize the classifications of the transactions.
     initializeClassifications();
-  }, [categorizedTransactions, categorizationResults]);
+  }, [loadedTransactions]);
 
   // Update the selected categories state using a transaction ID and the new category.
   function handleCategoryChange(transactionID: string, category: string) {
@@ -136,6 +134,8 @@ export default function ReviewPage({
       // Get the selected rows in an iterable format [key: selectedRowIndex, value: true]
       // The key is the index of the row and the value is always true for selected rows.
       const selectedRowIndices = Object.entries(selectedRows);
+      // Create an array to track the approved transactions to be removed from the database.
+      const savedTransactions: ForReviewTransaction[] = [];
 
       // Iterate through the selected rows, using only values where selected = true.
       selectedRowIndices.forEach(async ([index, selected]) => {
@@ -148,12 +148,12 @@ export default function ReviewPage({
           const rawTransaction = transactions[
             numericalIndex
           ][1] as ForReviewTransaction;
-          // Get the ID of the transaction and use that to get its selected category.
+          // Get the ID of the transaction and use that to get its selected classifications.
           const transactionID = categorizedTransaction.transaction_ID;
           const selectedCategory = selectedCategories[transactionID];
           const selectedTaxCode = selectedTaxCodes[transactionID];
 
-          // Defile inital null values for the classification category and tax code.
+          // Define inital null values for the classification category and tax code.
           let category = null;
           let taxCode = null;
 
@@ -202,16 +202,19 @@ export default function ReviewPage({
 
             // Push the new transaction with savable info to array of transactions to be saved to the database.
             newTransactions.push(newDatabaseTransaction);
+            // Push the raw transaction into the array of transactions to be removed after saving.
+            savedTransactions.push(rawTransaction);
 
-            // Pass the raw transaction, account ID, and tax code ID to add the users "for review" transaction with the updated classification.
-            // Passes the raw transaction object as it is needed for update object creation.
+            // Call the method to login to backend as synthetic bookkeeper and
             await addForReview(rawTransaction, category.id, taxCode.id, '', '');
           }
         }
       });
       // Add all the newly created savable transactions to the database and set no error message to appear.
       await addTransactions(newTransactions);
-      setErrorMsg(null);
+      // Remove all of the related for review transactions from the database.
+      await removeForReviewTransactions(savedTransactions);
+      await setErrorMsg(null);
     } catch (error) {
       // Catch any errors, log them, and set the error message.
       console.error('Error saving categories:', error);
@@ -228,12 +231,12 @@ export default function ReviewPage({
       <h1
         id="PageAndCompanyName"
         className="m-auto mb-4 text-center text-3xl font-bold">
-        Classification Results -{' '}
+        Classified Transactions -{' '}
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
       {/* Populate the review table with the categorized transactions. */}
       <ReviewTable
-        categorizedTransactions={categorizedTransactions}
+        categorizedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}
         account_names={accounts}
         handleCategoryChange={handleCategoryChange}
