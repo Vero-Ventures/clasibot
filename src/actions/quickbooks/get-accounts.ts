@@ -18,7 +18,7 @@ export async function getAccounts(
     // Check if a session was passed to use to define the qbo object.
     // Then define the qbo object based on the sessions presence.
     if (session) {
-      qbo = await createQBObjectWithSession;
+      qbo = await createQBObjectWithSession(session);
     } else {
       qbo = await createQBObject();
     }
