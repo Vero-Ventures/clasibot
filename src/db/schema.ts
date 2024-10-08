@@ -76,6 +76,8 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   acceptType: text('accept_type').notNull(),
   payeeNameId: text('payee_name_id'),
   transactionTypeId: text('transaction_type_id').notNull(),
+  topCategoryClassification: text('top_classification').notNull(),
+  topTaxCodeClassification: text('top_classification').notNull(),
   approved: boolean('approved').notNull(),
 });
 
