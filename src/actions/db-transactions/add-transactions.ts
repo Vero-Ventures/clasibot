@@ -65,6 +65,7 @@ export async function addTransactions(
     } catch (error) {
       // Catch and log any errors that occur during the transaction addition process.
       console.error('Error adding transaction:', error);
+      throw error;
     }
   }
 }
