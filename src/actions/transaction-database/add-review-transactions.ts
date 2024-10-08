@@ -25,6 +25,10 @@ export async function addForReviewTransaction(
       const classifiedTransaction =
         transaction[0] as ClassifiedForReviewTransaction;
 
+      const [categoryConfidence, taxCodeConfidence] = findConfidenceLevels(
+        classifiedTransaction
+      );
+
       // Define the type of the raw for review transaction with key data for later QBO updates.
       const rawTransaction = transaction[0] as ForReviewTransaction;
 
@@ -56,6 +60,8 @@ export async function addForReviewTransaction(
           acceptType: rawTransaction.acceptType,
           payeeNameId: rawTransaction.addAsQboTxn.nameId,
           transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
+          topCategoryClassification: categoryConfidence,
+          topTaxCodeClassification: taxCodeConfidence,
           approved: false,
         };
 
@@ -121,6 +127,26 @@ export async function addForReviewTransaction(
       };
     }
   }
+}
+
+// Finds the confidence level of each classification for a transaction.
+function findConfidenceLevels(
+  classifiedTransaction: ClassifiedForReviewTransaction
+): [string, string] {
+  // Define a value to track the most confident classification method for each type.
+  let categoryConfidence = 'None';
+  let taxCodeConfidence = 'None';
+
+  // If categories are present for the classified transaction, first recorded value will have highest confidence level.
+  if (classifiedTransaction.categories) {
+    categoryConfidence = classifiedTransaction.categories[0].classifiedBy;
+  }
+
+  // If tax codes are present for the classified transaction, first recorded value will have highest confidence level.
+  if (classifiedTransaction.taxCodes) {
+    taxCodeConfidence = classifiedTransaction.taxCodes[0].classifiedBy;
+  }
+  return [categoryConfidence, taxCodeConfidence];
 }
 
 async function handleCategoryConnections(
