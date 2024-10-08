@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';;
+import { useState, useEffect } from 'react';
 import {
   getCompanyName,
   getCompanyIndustry,
@@ -53,7 +53,6 @@ export default function HomePage() {
     setFinishedLoadingCompanyInfo(true);
   };
 
-
   // Use the useEffect hook to call the setup methods on page load.
   useEffect(() => {
     // Get the users the company info.
@@ -63,7 +62,10 @@ export default function HomePage() {
   // Return the base homepage content and determine which table should be displayed.
   return (
     <div id="TableContainer" className="container mx-auto px-4 py-8">
-      <ReviewPage company_info={companyInfo} found_company_info={finishedLoadingCompanyInfo} />
+      <ReviewPage
+        company_info={companyInfo}
+        found_company_info={finishedLoadingCompanyInfo}
+      />
     </div>
   );
 }
