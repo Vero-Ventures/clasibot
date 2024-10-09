@@ -62,7 +62,6 @@ export async function addForReviewTransactions(
           transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
           topCategoryClassification: categoryConfidence,
           topTaxCodeClassification: taxCodeConfidence,
-          approved: false,
         };
 
         // Create the new transaction in the database using the defined values.
