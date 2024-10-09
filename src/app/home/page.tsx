@@ -12,7 +12,16 @@ const functionToCheckIfSBKExists = () => {
   });
 };
 
+// const functionToCheckIfCompanyExists = () => {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve(true);
+//     }, 1000);
+//   });
+// }
+
 export default async function Page() {
+  // const companyExists = await functionToCheckIfCompanyExists();
   // Get user subscription and check their status.
   const subscriptionStatus = await checkSubscription();
   const companyHasSBK = await functionToCheckIfSBKExists();
