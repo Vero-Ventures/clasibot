@@ -154,8 +154,6 @@ export const options: NextAuthOptions = {
                 firstName,
                 lastName,
                 subscriptionId: null,
-                isAccountingFirm: false,
-                realmId: null
               })
               .returning();
 

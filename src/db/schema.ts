@@ -18,8 +18,6 @@ export const User = pgTable('User', {
   lastName: text('last_name'),
   email: text('email').unique(),
   subscriptionId: uuid('subscription_id').unique(),
-  isAccountingFirm: boolean('is_accounting_firm').notNull(),
-  realmId: text('realm_id').unique(),
 });
 
 export const UserToCompanyRelations = relations(User, ({ many }) => ({
