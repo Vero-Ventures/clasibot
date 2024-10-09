@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
@@ -10,7 +12,7 @@ export default function AddSBKInstructions() {
   return (
     <div
       id="addSBKInstructions"
-      className="container flex flex-col items-center justify-center space-y-5">
+      className="container my-4 flex flex-col items-center justify-center space-y-5">
       <h1 className="text-2xl md:text-3xl">
         Add Clasibot to your Quick Books Organization now!
       </h1>
