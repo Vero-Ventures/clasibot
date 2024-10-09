@@ -18,6 +18,8 @@ export const User = pgTable('User', {
   lastName: text('last_name'),
   email: text('email').unique(),
   subscriptionId: uuid('subscription_id').unique(),
+  isAccountingFirm: boolean('is_accounting_firm').notNull(),
+  realmId: text('realm_id').unique(),
 });
 
 export const UserToCompanyRelations = relations(User, ({ many }) => ({
@@ -197,5 +199,5 @@ export const ForReviewTransactionToTaxCodes = pgTable(
 
 export const NextReviewTimestamp = pgTable('NextReviewTimestamp', {
   id: serial('id').primaryKey(),
-  date: timestamp('date', {withTimezone: true}).notNull(),
+  date: timestamp('date', { withTimezone: true }).notNull(),
 });

@@ -30,12 +30,12 @@ export function auth(
 // Define the client ID, secret, and wellknow URL for QuickBooks based on the environment.
 const useID =
   process.env.APP_CONFIG === 'production'
-    ? process.env.FRONTEND_PROD_CLIENT_ID
-    : process.env.FRONTEND_DEV_CLIENT_ID;
+    ? process.env.PROD_CLIENT_ID
+    : process.env.DEV_CLIENT_ID;
 const useSecret =
   process.env.APP_CONFIG === 'production'
-    ? process.env.FRONTEND_PROD_CLIENT_SECRET
-    : process.env.FRONTEND_DEV_CLIENT_SECRET;
+    ? process.env.PROD_CLIENT_SECRET
+    : process.env.DEV_CLIENT_SECRET;
 const wellknowURL =
   process.env.APP_CONFIG === 'production'
     ? 'https://developer.api.intuit.com/.well-known/openid_configuration'
@@ -154,6 +154,8 @@ export const options: NextAuthOptions = {
                 firstName,
                 lastName,
                 subscriptionId: null,
+                isAccountingFirm: false,
+                realmId: null
               })
               .returning();
 
