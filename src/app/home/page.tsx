@@ -20,6 +20,7 @@ const functionToCheckIfSBKExists = () => {
 //   });
 // }
 
+
 export default async function Page() {
   // const companyExists = await functionToCheckIfCompanyExists();
   // Get user subscription and check their status.
