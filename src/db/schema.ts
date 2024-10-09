@@ -34,7 +34,7 @@ export const Subscription = pgTable('Subscription', {
 });
 
 export const Company = pgTable('Company', {
-  id: uuid('id').notNull().primaryKey(),
+  id: uuid('id').notNull().primaryKey().defaultRandom(),
   realmId: text('realm_id').notNull().unique(),
   userId: uuid('user_id')
     .notNull()
