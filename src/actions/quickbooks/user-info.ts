@@ -161,3 +161,65 @@ export async function getCompanyLocation(): Promise<string> {
     return JSON.stringify({ Country: '', Location: '' });
   }
 }
+
+// Checks if a user is an accountant type profile.
+export async function getIsAccounant(): Promise<boolean> {
+  try {
+    // Create the QuickBooks API object.
+    const qbo = await createQBObject();
+
+    // Create a type for the response object to allow for type checking.
+    type CompanyInfoResponse = {
+      QueryResponse: {
+        CompanyInfo: [
+          {
+            NameValue: [
+              {
+                Name: string;
+                Value: string;
+              },
+            ];
+          },
+        ];
+      };
+    };
+
+    // Search for a company info object related to the user.
+    const response: CompanyInfoResponse = await new Promise((resolve) => {
+      qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
+        // If there is an error, check if it has a 'Fault' property
+        if (err && checkFaultProperty(err)) {
+          // Then resolve the function with a response with values formatted to indicate failure.
+          resolve({
+            QueryResponse: {
+              CompanyInfo: [{ NameValue: [{ Name: '', Value: '' }] }],
+            },
+          });
+        }
+        resolve(data);
+      });
+    });
+
+    // Get the array of dictionary values containing company info
+    const companyInfoArray = response.QueryResponse.CompanyInfo[0].NameValue;
+
+    // Check through the array of dictionaries to check the accounting firm status.
+    for (const item of companyInfoArray) {
+      // If the accountant feature is found, return it to the caller.
+      if (item.Name === 'AccountantFeature') {
+        if (item.Value === 'True') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    // If match is not found, return false.
+    return false;
+  } catch (error) {
+    // Log the error and return an empty string to the caller if the call fails.
+    console.error('Error checking if company is an accounting firm.', error);
+    return false;
+  }
+}
