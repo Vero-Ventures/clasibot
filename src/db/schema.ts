@@ -8,6 +8,7 @@ import {
   integer,
   serial,
   boolean,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -78,7 +79,6 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   transactionTypeId: text('transaction_type_id').notNull(),
   topCategoryClassification: text('top_classification').notNull(),
   topTaxCodeClassification: text('top_classification').notNull(),
-  approved: boolean('approved').notNull(),
 });
 
 export const ForReviewTransactionToCategoriesRelationship = relations(
@@ -194,3 +194,8 @@ export const ForReviewTransactionToTaxCodes = pgTable(
     pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
   })
 );
+
+export const NextReviewTimestamp = pgTable('NextReviewTimestamp', {
+  id: serial('id').primaryKey(),
+  date: timestamp('date', {withTimezone: true}).notNull(),
+});
