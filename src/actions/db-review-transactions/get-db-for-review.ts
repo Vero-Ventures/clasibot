@@ -93,18 +93,19 @@ type databaseForReviewTransaction = {
   date: string;
   id: string;
   description: string;
+  origDescription: string;
+  acceptType: string;
   companyId: string;
   transactionId: string;
   accountId: string;
-  origDescription: string;
   amount: number;
-  acceptType: string;
   payeeNameId: string | null;
   transactionTypeId: string;
   topCategoryClassification: string;
   topTaxCodeClassification: string;
-  approved: boolean;
 };
+
+
 
 async function getTransactionCategories(
   forReviewTransaction: databaseForReviewTransaction
