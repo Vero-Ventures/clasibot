@@ -1,4 +1,5 @@
 'use server';
+import { setNextReviewTimestamp } from './next-review-timestamp';
 import { classifyTransactions } from '../classify';
 import { getAccounts } from '../quickbooks/get-accounts';
 import { getForReview } from '../quickbooks/get-for-review';
@@ -97,6 +98,9 @@ export async function classifyCompany(
         forReviewTransactions,
         validClassificationResults
       );
+
+    // Update the timer for the next automatic review.
+    setNextReviewTimestamp();
 
     // Save the classified transactions to the database.
     // Return a Query Result created by the database adding method.
