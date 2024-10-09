@@ -1,5 +1,6 @@
 import { db } from '@/db/index';
-import { Subscription, User } from '@/db/schema';
+import { Company, Subscription, User } from '@/db/schema';
+import createDatabaseCompany from '@/actions/user-company/create-company';
 import { refreshToken } from '@/lib/refresh-token';
 import NextAuth, { getServerSession } from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
@@ -121,6 +122,13 @@ export const options: NextAuthOptions = {
       try {
         const email = user.email;
         const [firstName, lastName] = user.name?.split(' ') ?? [];
+        
+        // Check if the realm ID could be found and throw an error if it could not.
+        if (!cookies().get('realmId')?.value) {
+          throw 'Company ID could not be found for company creation.';
+        }
+        // Only reach this point if cookie is present so assert it is not-null.
+        const companyID = cookies().get('realmId')!.value;
 
         // Check if the user email is available.
         if (!email) {
@@ -149,6 +157,14 @@ export const options: NextAuthOptions = {
               })
               .returning();
 
+            // Create a company object for the current company the user is logged in as.
+            const companyData = await createDatabaseCompany(
+              newUser[0].id,
+              companyID
+            );
+
+            await db.insert(Company).values(JSON.parse(companyData));
+
             // Create a new blank subscription in the database, and a user that contains the subscription.
             const newSubscription = await db
               .insert(Subscription)
@@ -171,6 +187,23 @@ export const options: NextAuthOptions = {
             console.error('Error creating new user in db:', createError);
             // Return false to indicate that the new user could not be created and the sign in failed.
             return false;
+          }
+        } else {
+          // If the user already exists, get the companies for the user.
+          const companies = await db
+            .select()
+            .from(Company)
+            .where(eq(Company.userId, userData[0].id));
+
+          // Use the realm ID of the current company to check if it is not in the list of returned companies.
+          if (!companies.some((company) => company.realmId === companyID)) {
+            // If the company is not present, add it to the database.
+            const companyData = await createDatabaseCompany(
+              userData[0].id,
+              companyID
+            );
+
+            await db.insert(Company).values(JSON.parse(companyData));
           }
         }
       } catch (error) {
