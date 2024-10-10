@@ -105,8 +105,6 @@ type databaseForReviewTransaction = {
   topTaxCodeClassification: string;
 };
 
-
-
 async function getTransactionCategories(
   forReviewTransaction: databaseForReviewTransaction
 ) {

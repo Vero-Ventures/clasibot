@@ -122,7 +122,7 @@ export const options: NextAuthOptions = {
       try {
         const email = user.email;
         const [firstName, lastName] = user.name?.split(' ') ?? [];
-        
+
         // Check if the realm ID could be found and throw an error if it could not.
         if (!cookies().get('realmId')?.value) {
           throw 'Company ID could not be found for company creation.';
