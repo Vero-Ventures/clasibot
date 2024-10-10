@@ -11,7 +11,8 @@ export async function addForReview(
   categoryId: string,
   taxCodeId: string,
   companyId: string,
-  fetchToken: string
+  fetchToken: string,
+  authId: string
 ): Promise<QueryResult> {
   try {
     // Define the account ID for the call and the full endpoint to use.
@@ -34,7 +35,7 @@ export async function addForReview(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${process.env.BACKEND_AUTH_ID}; SameSite=None`,
+        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${authId}; SameSite=None`,
       },
       body: JSON.stringify(body),
     });

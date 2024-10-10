@@ -24,6 +24,7 @@ import type { Transaction } from '@/types/Transaction';
 
 export async function classifyCompany(
   fetchToken: string,
+  authId: string,
   session: Session
 ): Promise<QueryResult> {
   // Define the realmId (company ID) from the passed session.
@@ -34,7 +35,8 @@ export async function classifyCompany(
   const forReviewResult = await getForReviewTransactions(
     session,
     companyId,
-    fetchToken
+    fetchToken,
+    authId
   );
 
   // Check if the for review transaction call encountered an error.
@@ -114,7 +116,8 @@ export async function classifyCompany(
 async function getForReviewTransactions(
   session: Session,
   companyId: string,
-  fetchToken: string
+  fetchToken: string,
+  authId: string
 ): Promise<
   (ForReviewTransaction | FormattedForReviewTransaction)[][] | QueryResult
 > {
@@ -131,7 +134,12 @@ async function getForReviewTransactions(
   // Iterate through the user accounts.
   for (const account of userAccounts) {
     // Get any 'for review' transactions for the current account.
-    const result = await getForReview(account.id, companyId, fetchToken);
+    const result = await getForReview(
+      account.id,
+      companyId,
+      fetchToken,
+      authId
+    );
     // If the fetch was successful, append the resulting array to array of found transactions.
     if (result.result === 'Success') {
       // Parse and define the result details and concatenate them onto the current array of transactions.

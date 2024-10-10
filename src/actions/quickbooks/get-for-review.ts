@@ -9,7 +9,8 @@ import type { QueryResult } from '@/types/QueryResult';
 export async function getForReview(
   accountId: string,
   companyId: string,
-  fetchToken: string
+  fetchToken: string,
+  authId: string
 ): Promise<QueryResult> {
   try {
     // Define the parameters for the call and the full endpoint to use.
@@ -21,7 +22,7 @@ export async function getForReview(
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${process.env.BACKEND_AUTH_ID}; SameSite=None`,
+        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${authId}; SameSite=None`,
       },
     });
 
