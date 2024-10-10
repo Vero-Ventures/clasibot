@@ -43,7 +43,7 @@ export const Company = pgTable('Company', {
   name: text('name').notNull(),
   industry: text('industry'),
   bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
-  classificationFailed: boolean('classification_failed')
+  classificationFailed: boolean('classification_failed'),
 });
 
 export const Transaction = pgTable('Transaction', {
