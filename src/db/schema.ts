@@ -39,10 +39,11 @@ export const Company = pgTable('Company', {
   userId: uuid('user_id')
     .notNull()
     .references(() => User.id, { onDelete: 'cascade' }),
+  firmName: text('firm_name'),
   name: text('name').notNull(),
   industry: text('industry'),
   bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
-  firmName: text('firm_name'),
+  classificationFailed: boolean('classification_failed')
 });
 
 export const Transaction = pgTable('Transaction', {

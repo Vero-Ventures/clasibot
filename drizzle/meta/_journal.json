@@ -99,6 +99,13 @@
       "when": 1728587535202,
       "tag": "0013_chubby_mad_thinker",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1728592682584,
+      "tag": "0014_opposite_gambit",
+      "breakpoints": true
     }
   ]
 }
