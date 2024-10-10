@@ -1,0 +1,14 @@
+{
+    "Name": "InvokeLambdaOnEmail",
+    "Enabled": true,
+    "Recipients": ["do_not_reply@intuit.com"],
+    "Actions": [
+        {
+            "LambdaAction": {
+                "FunctionArn": "<insert-lambda-arn>",
+                "InvocationType": "Event"
+            }
+        }
+    ],
+    "ScanEnabled": true
+}
