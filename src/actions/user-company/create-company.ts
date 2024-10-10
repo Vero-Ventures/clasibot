@@ -1,6 +1,5 @@
 'use server';
 
-
 export default async function createDatabaseCompany(
   userId: string,
   realmId: string
@@ -12,6 +11,7 @@ export default async function createDatabaseCompany(
     name: 'unset',
     industry: '',
     bookkeeperConnected: false,
+    firmName: null,
   };
 
   // Stringify and return the database company object.
