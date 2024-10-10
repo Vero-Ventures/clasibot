@@ -1,9 +1,6 @@
-
-import { checkSubscription } from '@/actions/stripe';
 import PricingTable from '@/components/site-elements/pricing-table';
 
 export default async function SubscriptionPurchase() {
-  const subscriptionStatus = await checkSubscription();
 
   let publicKey = '';
   if (process.env.APP_CONFIG === 'production') {
@@ -25,8 +22,6 @@ export default async function SubscriptionPurchase() {
         <PricingTable publicKey={publicKey} tableID={tableID} />
       </div>
       <div className="h-full w-[55%]">
-        {'error' in subscriptionStatus ||
-          (!subscriptionStatus.valid && (
             <div className="flex flex-col space-y-4">
               <h2
                 id="ResultTitle"
@@ -44,7 +39,6 @@ export default async function SubscriptionPurchase() {
                 subscription.
               </p>
             </div>
-          ))}
       </div>
     </div>
   );

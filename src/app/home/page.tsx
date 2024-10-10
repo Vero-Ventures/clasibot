@@ -1,6 +1,7 @@
 import { checkSubscription } from '@/actions/stripe';
 import SBKConfirmationModal from '@/components/halt-elements/sbk-confirmation-modal';
 import SubscriptionPurchase from '@/components/halt-elements/subscription-purchase';
+import HomePage from '@/components/home';
 
 const functionToCheckIfSBKExists = (): Promise<boolean> => {
   return new Promise((resolve) => {
@@ -20,9 +21,10 @@ export default async function Page() {
   if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
     // If the user status is invalid or there is an error, go to the subscription purchase.
     return <SubscriptionPurchase />;
+  } else if (!companyHasSBK) {
+    return <SBKConfirmationModal companyHasSBK={companyHasSBK}/>;
   } else {
     // Otherwise, show the home page.
-    return <SBKConfirmationModal companyHasSBK={companyHasSBK}/>;
-
+    return <HomePage />;
   }
  }
