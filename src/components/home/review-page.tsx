@@ -15,6 +15,7 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
+import { signOut } from 'next-auth/react';
 
 export default function ReviewPage({
   company_info,
@@ -202,7 +203,14 @@ export default function ReviewPage({
             newTransactions.push(newDatabaseTransaction);
 
             // Call the method to login to backend as synthetic bookkeeper and add the classified transaction to the users account/
-            await addForReview(rawTransaction, category.id, taxCode.id, '', '');
+            await addForReview(
+              rawTransaction,
+              category.id,
+              taxCode.id,
+              '',
+              '',
+              ''
+            );
             // Remove the related for review transaction and its connectionss from the database.
             const result = await removeForReviewTransactions(rawTransaction);
             // If the removal of transactions result is not successful, throw the detail as an error.
@@ -278,15 +286,23 @@ export default function ReviewPage({
             </>
           )}
 
-          <div id="ReturnButtonContainer" className="flex justify-center">
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
             <Button
               id="ReturnButton"
-              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
               onClick={() => {
                 const url = window.location.origin + window.location.pathname;
                 window.location.href = url;
               }}>
-              Return to Transactions
+              <span className="whitespace-normal">
+                Review Additional Transactions
+              </span>
+            </Button>
+            <Button
+              id="SignOutButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => signOut({ callbackUrl: '/' })}>
+              Finish Review Session
             </Button>
           </div>
         </div>
