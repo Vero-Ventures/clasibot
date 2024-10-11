@@ -49,6 +49,8 @@ export default function ReviewPage({
   // Create states to track values related to the state of a manual review.
   const [isReviewing, setIsReviewing] = useState(false);
   const [manualReviewState, setManualReviewState] = useState<string>('');
+  const [openFinisedReviewModal, setOpenFinishedReviewModal] =
+    useState<boolean>(false);
 
   // Make function to pass to update the manual review state.
   function updateManualReviewState(newState: string) {
@@ -71,8 +73,9 @@ export default function ReviewPage({
       setManualReviewState('Manual Review Complete.');
       // Update the state to indicate review is not longer in progress.
       setIsReviewing(false);
+      setOpenFinishedReviewModal(true)
     };
-    
+
     // Start the manual review by calling the async function.
     startManualReview();
   }
@@ -338,6 +341,32 @@ export default function ReviewPage({
               className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
               onClick={() => signOut({ callbackUrl: '/' })}>
               Finish Review Session
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinisedReviewModal ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ResultTitle"
+              className="mb-4 text-center text-2xl font-bold text-green-500">
+              Success
+            </h2>
+            <p
+              id="ResultMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              Your transactions have been reviewed.
+            </p>
+          </>
+
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CloseButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => setOpenFinishedReviewModal(false)}>
+              Continue
             </Button>
           </div>
         </div>
