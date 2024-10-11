@@ -265,5 +265,5 @@ export async function manualReview(
 ) {
   // Preform the manual review for the current user company.
   // Update the manual review to indicate the process has started.
-  setManualReviewState('Loading Transactions ...')
+  setManualReviewState('Loading Transactions ...');
 }

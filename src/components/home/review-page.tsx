@@ -73,7 +73,7 @@ export default function ReviewPage({
       setManualReviewState('Manual Review Complete.');
       // Update the state to indicate review is not longer in progress.
       setIsReviewing(false);
-      setOpenFinishedReviewModal(true)
+      setOpenFinishedReviewModal(true);
     };
 
     // Start the manual review by calling the async function.
