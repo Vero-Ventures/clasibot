@@ -34,6 +34,7 @@ import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
+import { DatePicker } from '../inputs/date-picker';
 
 /**
  * Function Values:
@@ -70,6 +71,25 @@ export function ReviewTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
+
+  // Define the default start and end date (two years ago & today).
+  const currentDate = new Date();
+  const twoYearsAgo = new Date();
+  twoYearsAgo.setFullYear(currentDate.getFullYear() - 2);
+
+  // Create state to track and set the start and end dates for the date filter.
+  const [startDate, setStartDate] = useState<Date | null>(twoYearsAgo);
+  const [endDate, setEndDate] = useState<Date | null>(currentDate);
+
+  function changeStartDate(date: Date | null) {
+    table.getColumn('date')?.setFilterValue(`${date} to ${endDate}`);
+    setStartDate(date);
+  }
+
+  function changeEndDate(date: Date | null) {
+    table.getColumn('date')?.setFilterValue(`${startDate} to ${date}`);
+    setEndDate(date);
+  }
 
   // Function to update the account selection state.
   const updateAccountSelection = (account: string) => {
@@ -136,55 +156,114 @@ export function ReviewTable({
 
   return (
     <div className="w-full">
-      {/* Container for the table filtering options. */}
-      <div id="FiltersContainer" className="md:align-start md:w-3/4 lg:w-5/6">
-        <div className="flex justify-center px-2 py-4 mb:px-4 popout:px-6 md:justify-start lg:px-10">
-          {/* Create an input to take text and filter to transactions with matching names. */}
-          <Input
-            id="NameFilterInput"
-            placeholder="Filter by name..."
-            // Set the input value to the name filter from the table (or an empty string)..
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            // When the input value changes, update the name filter value with the new value.
-            onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
-            className="mr-2 w-2/3 max-w-xs popout:mr-4 popout:w-1/2 md:mr-6 md:w-2/3"
-          />
-          {/* Create a dropdown menu to select accounts to filter by. */}
-          <div
-            id="AccountFilter"
-            className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
-            <DropdownMenu>
-              {/* Define a button to trigger the dropdown menu. */}
-              <DropdownMenuTrigger asChild>
-                <Button
-                  id="AccountsDropdownButton"
-                  variant="outline"
-                  className="w-full bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
-                  {/* Chevron down acts a down arrow icon */}
-                  Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              {/* Define the content of the dropdown menu. */}
-              <DropdownMenuContent align="center">
-                {/* For each account, create a checkbox item in the dropdown menu. */}
-                {account_names.map((account) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={account}
-                      className="capitalize focus:bg-blue-300"
-                      checked={selectedAccounts.includes(account)}
-                      onCheckedChange={() => updateAccountSelection(account)}>
-                      {account}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+      <div
+        id="TopFiltersContainer"
+        className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
+        {/* Create an input to take text and filter to transactions with matching names. */}
+        <Input
+          id="NameFilterInput"
+          placeholder="Filter by name..."
+          // Set the input value to the name filter from the table (or an empty string)..
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          // When the input value changes, update the name filter value with the new value.
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="mr-2 w-2/3 max-w-xs popout:mr-4 popout:w-1/2 md:mr-6 md:w-2/3"
+        />
+        {/* Create a date picker to fetch transactions by date range. */}
+        <div
+          id="DateSelectionContainer"
+          className="mx-auto flex w-11/12 items-center md:w-5/6">
+          <div className="mt-2 grid w-full grid-cols-2 gap-x-6 px-2 mb:gap-x-12 sm:gap-x-16 md:mt-0 md:gap-x-6">
+            {/* Start and End Date pickers. */}
+            <DatePicker date={startDate} setDate={changeStartDate} />
+            <DatePicker date={endDate} setDate={changeEndDate} />
           </div>
         </div>
       </div>
+
+      {/* Container for bottom row of filters: accounts and columns. */}
+      <div
+        id="BottomFiltersContainer"
+        className="mx-auto mt-8 grid grid-cols-2 gap-x-4 px-4 popout:gap-x-6 md:gap-x-12 md:px-6 lg:gap-x-20 lg:px-8 xl:gap-x-24 xl:px-10">
+        {/* Create a dropdown menu to select accounts to filter by. */}
+        <div
+          id="AccountFilter"
+          className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
+          <DropdownMenu>
+            {/* Define a button to trigger the dropdown menu. */}
+            <DropdownMenuTrigger asChild>
+              <Button
+                id="AccountsDropdownButton"
+                variant="outline"
+                className="w-full bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
+                {/* Chevron down acts a down arrow icon */}
+                Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            {/* Define the content of the dropdown menu. */}
+            <DropdownMenuContent align="center">
+              {/* For each account, create a checkbox item in the dropdown menu. */}
+              {account_names.map((account) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={account}
+                    className="capitalize focus:bg-blue-300"
+                    checked={selectedAccounts.includes(account)}
+                    onCheckedChange={() => updateAccountSelection(account)}>
+                    {account}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Define a dropdown menu to select which columns are displayed. */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            {/* Define a button to trigger the dropdown menu. */}
+            <Button
+              id="ColumnFilterButton"
+              variant="outline"
+              className="bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
+              {/* Chevron down acts a down arrow icon */}
+              Columns <ChevronDown className="ml-2 mt-1 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          {/* Define the content of the dropdown menu. */}
+          <DropdownMenuContent align="center">
+            {/* Gets the columns and filters out the ones that cannot be hidden. */}
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                // Get the name using the column ID.
+                let field = column.id;
+                // Rename name column to Payee.
+                if (column.id === 'name') {
+                  field = 'Payee';
+                }
+                return (
+                  // Create a checkbox item for each column that can be hidden.
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize focus:bg-blue-300"
+                    // Checked status is determined by the associated column's visibility.
+                    checked={column.getIsVisible()}
+                    // On change, toggle the visibility of the associated column.
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }>
+                    {field}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {/* Container for the table. */}
       <div
         id="TableContainer"
