@@ -50,6 +50,9 @@ export function ReviewTable({
   handleTaxCodeChange,
   handleSave,
   isSaving,
+  handleManualReview,
+  manualReviewState,
+  isReviewing,
 }: Readonly<{
   categorizedTransactions: (
     | ForReviewTransaction
@@ -64,6 +67,9 @@ export function ReviewTable({
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) => void;
   isSaving: boolean;
+  handleManualReview: () => void;
+  manualReviewState: string;
+  isReviewing: boolean;
 }>) {
   // Create states to track and set the important values.
   // Column to sort by, Column filtering rules, selected Rows, and accounts to display Rows from.
@@ -144,6 +150,10 @@ export function ReviewTable({
     },
   });
 
+  useEffect(() => {}, [isReviewing]);
+
+  useEffect(() => {}, [manualReviewState]);
+
   // Update the account filter in the table when the selected accounts change.
   useEffect(() => {
     // If no accounts are selected, set the account filter value to false to show all results.
@@ -156,6 +166,15 @@ export function ReviewTable({
 
   return (
     <div className="w-full">
+      <div className="mx-auto w-fit">
+        <Button
+          id="TestManualReview"
+          className="h-12 w-40 self-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+          onClick={() => handleManualReview()}>
+          Test Manual Review
+        </Button>
+      </div>
+
       <div
         id="TopFiltersContainer"
         className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">

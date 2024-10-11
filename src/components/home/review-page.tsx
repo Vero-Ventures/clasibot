@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { manualReview } from '@/actions/backend-classification/classify-company';
 import { addTransactions } from '@/actions/db-transactions';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
@@ -44,6 +45,37 @@ export default function ReviewPage({
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Create states to track values related to the state of a manual review.
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [manualReviewState, setManualReviewState] = useState<string>('');
+
+  // Make function to pass to update the manual review state.
+  function updateManualReviewState(newState: string) {
+    setManualReviewState(newState);
+  }
+
+  function handleManualReview() {
+    // Define the review process as started and update the review state.
+    setManualReviewState('Starting Review ...');
+    setIsReviewing(true);
+
+    const startManualReview = async () => {
+      // Make call to backend for review function with the related states.
+      manualReview(updateManualReviewState);
+      // Update the state to indicate the review is finished and begin loading the newly reviewed transactions.
+      setManualReviewState('Finished Review, Loading Transactions ...');
+      // Load the transactions from the database after the manual review.
+      setLoadedTransactions(await getDatabaseTransactions());
+      // Update manual review state with a finished message.
+      setManualReviewState('Manual Review Complete.');
+      // Update the state to indicate review is not longer in progress.
+      setIsReviewing(false);
+    };
+    
+    // Start the manual review by calling the async function.
+    startManualReview();
+  }
 
   // Updates the categorizations for each transaction when categorized transactions or categorization results change.
   useEffect(() => {
@@ -251,6 +283,9 @@ export default function ReviewPage({
         handleTaxCodeChange={handleTaxCodeChange}
         handleSave={handleSave}
         isSaving={isSaving}
+        handleManualReview={handleManualReview}
+        manualReviewState={manualReviewState}
+        isReviewing={isReviewing}
       />
       {/* Only display result modal after an attempt to save sets 'modal open' state to true. */}
       <div
