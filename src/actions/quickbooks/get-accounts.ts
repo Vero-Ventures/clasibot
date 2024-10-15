@@ -1,6 +1,6 @@
 'use server';
 import { createQBObject, createQBObjectWithSession } from '../qb-client';
-import { checkFaultProperty, createQueryResult } from './helpers';
+import { checkFaultProperty, createQueryResult } from './query-helpers';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Session } from 'next-auth/core/types';

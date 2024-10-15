@@ -1,7 +1,7 @@
 'use server';
-import { setNextReviewTimestamp } from '@/actions/backend-functions/next-review-timestamp';
+import { setNextReviewTimestamp } from '@/actions/backend-functions/database-functions/next-review-timestamp';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { getForReview } from '@/actions/quickbooks/get-for-review';
+import { getForReview } from '@/actions/backend-functions/get-for-review';
 import { getPastTransactions } from '@/actions/quickbooks/get-transactions';
 import {
   getCompanyIndustry,
@@ -9,7 +9,7 @@ import {
   getCompanyName,
 } from '@/actions/quickbooks/user-info';
 import { classifyTransactions } from './classify';
-import { addForReviewTransactions } from '../add-db-for-review';
+import { addForReviewTransactions } from '../database-functions/add-db-for-review';
 import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';

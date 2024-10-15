@@ -49,7 +49,7 @@ export default function ReviewPage({
   // Create states to track values related to the state of a manual review.
   const [isReviewing, setIsReviewing] = useState(false);
   const [manualReviewState, setManualReviewState] = useState<string>('');
-  const [openFinisedReviewModal, setOpenFinishedReviewModal] =
+  const [openFinishedReviewModal, setOpenFinishedReviewModal] =
     useState<boolean>(false);
 
   // Make function to pass to update the manual review state.
@@ -352,7 +352,7 @@ export default function ReviewPage({
                 window.location.href = url;
               }}>
               <span className="whitespace-normal">
-                Review Additional Transactions
+                {errorMsg ? 'Retry Transaction Selection' : 'Review Additional Transactions'}
               </span>
             </Button>
             <Button
@@ -365,7 +365,7 @@ export default function ReviewPage({
         </div>
       </div>
       <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinisedReviewModal ? '' : 'hidden'}`}>
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedReviewModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
           <>
             <h2

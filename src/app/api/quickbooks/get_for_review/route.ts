@@ -1,7 +1,7 @@
 /**
  * Defines a test API route for getting a users 'for review' transactions using QuickBooks API.
  */
-import { getForReview } from '@/actions/quickbooks/get-for-review';
+import { getForReview } from '@/actions/backend-functions/get-for-review';
 
 export async function GET() {
   const result = await getForReview('', '', '');

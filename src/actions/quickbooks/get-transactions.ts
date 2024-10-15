@@ -1,7 +1,7 @@
 'use server';
 
 import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
-import { checkFaultProperty, createQueryResult } from './helpers';
+import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { getAccounts } from './get-accounts';
 import { findFormattedPurchase } from './purchases';
 import { getTaxCodes } from './taxes';

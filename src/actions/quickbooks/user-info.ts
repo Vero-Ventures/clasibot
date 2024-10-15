@@ -1,5 +1,5 @@
 'use server';
-import { checkFaultProperty } from './helpers';
+import { checkFaultProperty } from './query-helpers';
 import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import type { Session } from 'next-auth/core/types';
 

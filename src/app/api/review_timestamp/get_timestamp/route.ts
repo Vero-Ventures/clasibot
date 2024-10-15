@@ -1,4 +1,4 @@
-import { getNextReviewTimestamp } from '@/actions/backend-functions/next-review-timestamp';
+import { getNextReviewTimestamp } from '@/actions/backend-functions/database-functions/next-review-timestamp';
 
 export async function GET() {
   const response = await getNextReviewTimestamp();
