@@ -11,70 +11,96 @@ export async function findFormattedPurchase(
   id: string,
   session: Session | null = null
 ): Promise<Purchase> {
-  // Define the variable used to make the qbo calls.
-  let qbo;
+  try {
+    // Define the variable used to make the qbo calls.
+    let qbo;
 
-  // Check if a session was passed to use to define the qbo object.
-  // Then define the qbo object based on the session presence.
-  if (session) {
-    qbo = await createQBObjectWithSession(session);
-  } else {
-    qbo = await createQBObject();
-  }
+    // Check if a session was passed to use to define the qbo object.
+    // Then define the qbo object based on the session presence.
+    if (session) {
+      qbo = await createQBObjectWithSession(session);
+    } else {
+      qbo = await createQBObject();
+    }
 
-  // Define success and error trackers for query response creation.
-  let success = true;
-  let error: ErrorResponse = {
-    Fault: {
-      Error: [
-        {
-          Message: '',
-          Detail: '',
-          code: '',
-          element: '',
-        },
-      ],
-      type: '',
-    },
-  };
+    // Define success and error trackers for query response creation.
+    let success = true;
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
-  // Search by ID for a specific purchase object.
-  const response: PurchaseResponse = await new Promise((resolve) => {
-    qbo.getPurchase(id, (err: ErrorResponse, data: PurchaseResponse) => {
-      // If there is an error, check if it has a 'Fault' property
-      if (err && checkFaultProperty(err)) {
-        success = false;
-        error = err;
-      }
-      resolve(data);
+    // Search by ID for a specific purchase object.
+    const response: PurchaseResponse = await new Promise((resolve) => {
+      qbo.getPurchase(id, (err: ErrorResponse, data: PurchaseResponse) => {
+        // If there is an error, check if it has a 'Fault' property
+        if (err && checkFaultProperty(err)) {
+          success = false;
+          error = err;
+        }
+        resolve(data);
+      });
     });
-  });
 
-  // Create a formatted result object based on the query results.
-  const queryResult = createQueryResult(success, error);
+    // Create a formatted result object based on the query results.
+    const queryResult = createQueryResult(success, error);
 
-  // Create a formatted result object with all fields set to null.
-  const formattedResult: Purchase = {
-    result_info: queryResult,
-    id: '',
-    taxCodeId: '',
-  };
+    // Create a formatted result object with all fields set to null.
+    const formattedResult: Purchase = {
+      result_info: queryResult,
+      id: '',
+      taxCodeId: '',
+    };
 
-  if (success) {
-    formattedResult.id = response.Id;
-    // Iterate through the line field for the tax code ID.
-    for (const line of response.Line) {
-      // If the tax code is present, it is found in the AccountBasedExpenseLineDetail field.
-      if (line.DetailType === 'AccountBasedExpenseLineDetail') {
-        formattedResult.taxCodeId =
-          line.AccountBasedExpenseLineDetail.TaxCodeRef.value;
-        // Once the category is found, break the loop to prevent further iterations.
-        break;
+    if (success) {
+      formattedResult.id = response.Id;
+      // Iterate through the line field for the tax code ID.
+      for (const line of response.Line) {
+        // If the tax code is present, it is found in the AccountBasedExpenseLineDetail field.
+        if (line.DetailType === 'AccountBasedExpenseLineDetail') {
+          formattedResult.taxCodeId =
+            line.AccountBasedExpenseLineDetail.TaxCodeRef.value;
+          // Once the category is found, break the loop to prevent further iterations.
+          break;
+        }
       }
     }
+    // Return the formatted results as a JSON string.
+    return formattedResult;
+  } catch (error) {
+    // Return a query result formatted error message.
+    // Include a detail string if error message is present.
+    if (error instanceof Error) {
+      return {
+        result_info: {
+          result: 'error',
+          message: 'Unexpected error occured while fetching accounts.',
+          detail: error.message,
+        },
+        id: '',
+        taxCodeId: '',
+      };
+    } else {
+      return {
+        result_info: {
+          result: 'error',
+          message: 'Unexpected error occured while fetching accounts.',
+          detail: 'N/A',
+        },
+        id: '',
+        taxCodeId: '',
+      };
+    }
   }
-  // Return the formatted results as a JSON string.
-  return formattedResult;
 }
 
 // Gets purchases and returns them as an array of purchase response objects.

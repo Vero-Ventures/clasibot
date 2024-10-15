@@ -41,8 +41,14 @@ export async function classifyTransactions(
     >
   | { error: string }
 > {
-  // Call the add transactions action with the categorized transactions.
-  addTransactions(categorizedTransactions);
+  try {
+    // Call the add transactions action with the categorized transactions.
+    addTransactions(categorizedTransactions);
+  } catch (error) {
+    // Log any errors to the console, then return an error message.
+    console.error('Error saving existing classified user transactions:', error);
+    return { error: 'Error saving existing classified user transactions.' };
+  }
 
   // Check the subscription status.
   const subscriptionStatus = await checkSubscriptionByCompany(realmId);
@@ -164,43 +170,56 @@ async function fetchValidCategories(
   filterToBase: boolean,
   session: Session
 ): Promise<Classification[]> {
-  // Define a list of valid categories using the get_accounts QuickBooks action.
-  const validCategoriesResult = JSON.parse(
-    await getAccounts('Expense', session)
-  );
-
-  if (validCategoriesResult[0].result === 'Error') {
-    // Log an error for failure catching.
-    console.error(
-      validCategoriesResult[0].message +
-        ', Detail: ' +
-        validCategoriesResult[0].detail
+  try {
+    // Define a list of valid categories using the get_accounts QuickBooks action.
+    const validCategoriesResult = JSON.parse(
+      await getAccounts('Expense', session)
     );
-    // If the fetch resulted in an error, return an empty array of classifications.
-    return [];
-  }
 
-  // Return the valid categories as an array of category objects.
-  // Removes the first value that indicates success or returns error codes.
-  if (filterToBase) {
-    // Filtering to the base category is needed to match with the database values.
-    // User info is not stored for saftey so the database uses only the base category value.
-    return validCategoriesResult
-      .slice(1)
-      .map((category: Account): Classification => {
-        return {
-          type: 'classification',
-          id: category.id,
-          name: category.account_sub_type,
-        };
-      });
-  } else {
-    // LLM data is not saved so it can use the full category name.
-    return validCategoriesResult
-      .slice(1)
-      .map((category: Account): Classification => {
-        return { type: 'classification', id: category.id, name: category.name };
-      });
+    if (validCategoriesResult[0].result === 'Error') {
+      // Log an error for failure catching.
+      console.error(
+        validCategoriesResult[0].message +
+          ', Detail: ' +
+          validCategoriesResult[0].detail
+      );
+      // If the fetch resulted in an error, return an empty array of classifications.
+      return [];
+    }
+
+    // Return the valid categories as an array of category objects.
+    // Removes the first value that indicates success or returns error codes.
+    if (filterToBase) {
+      // Filtering to the base category is needed to match with the database values.
+      // User info is not stored for saftey so the database uses only the base category value.
+      return validCategoriesResult
+        .slice(1)
+        .map((category: Account): Classification => {
+          return {
+            type: 'classification',
+            id: category.id,
+            name: category.account_sub_type,
+          };
+        });
+    } else {
+      // LLM data is not saved so it can use the full category name.
+      return validCategoriesResult
+        .slice(1)
+        .map((category: Account): Classification => {
+          return {
+            type: 'classification',
+            id: category.id,
+            name: category.name,
+          };
+        });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error: ' + error.message);
+    } else {
+      console.error('Unexpected Error.');
+    }
+    return [];
   }
 }
 
@@ -209,42 +228,54 @@ async function fetchValidTaxCodes(
   companyInfo: CompanyInfo,
   session: Session
 ): Promise<[boolean, Classification[]]> {
-  // Define variable to determine if tax code classification is done on the transactions.
-  let classifyTaxCode = false;
-  // Define an array to store info on tax codes that can be used in classification.
-  const taxCodes: Classification[] = [];
+  try {
+    // Define variable to determine if tax code classification is done on the transactions.
+    let classifyTaxCode = false;
+    // Define an array to store info on tax codes that can be used in classification.
+    const taxCodes: Classification[] = [];
 
-  // Check if tax code classification is possible by locational check on company info.
-  if (companyInfo.location.Country === 'CA' && companyInfo.location.Location) {
-    // Set tax codes to be found, then find the users tax codes and get the list of valid tax codes.
-    classifyTaxCode = true;
-    const userTaxCodes = JSON.parse(await getTaxCodes(session));
-    const validTaxCodes = await getTaxCodesByLocation(
-      companyInfo.location.Location
-    );
-
-    // Define the array of tax codes seperate from the query response value and define its type.
-    const userTaxCodeArray = userTaxCodes.QueryResponse.slice(1) as TaxCode[];
-
-    // Check that there are values for valid tax code names and the query response from the user tax codes was a success.
+    // Check if tax code classification is possible by locational check on company info.
     if (
-      validTaxCodes.length !== 0 &&
-      userTaxCodes.QueryResponse[0].result != 'Success'
+      companyInfo.location.Country === 'CA' &&
+      companyInfo.location.Location
     ) {
-      // Iterate through user tax codes to record valid tax code info.
-      for (const taxCode of userTaxCodeArray) {
-        if (validTaxCodes.includes(taxCode.Name)) {
-          // If the tax code name is one of the valid tax codes, push it to the array of tax codes.
-          taxCodes.push({
-            type: 'tax code',
-            name: taxCode.Name,
-            id: taxCode.Id,
-          });
+      // Set tax codes to be found, then find the users tax codes and get the list of valid tax codes.
+      classifyTaxCode = true;
+      const userTaxCodes = JSON.parse(await getTaxCodes(session));
+      const validTaxCodes = await getTaxCodesByLocation(
+        companyInfo.location.Location
+      );
+
+      // Define the array of tax codes seperate from the query response value and define its type.
+      const userTaxCodeArray = userTaxCodes.QueryResponse.slice(1) as TaxCode[];
+
+      // Check that there are values for valid tax code names and the query response from the user tax codes was a success.
+      if (
+        validTaxCodes.length !== 0 &&
+        userTaxCodes.QueryResponse[0].result != 'Success'
+      ) {
+        // Iterate through user tax codes to record valid tax code info.
+        for (const taxCode of userTaxCodeArray) {
+          if (validTaxCodes.includes(taxCode.Name)) {
+            // If the tax code name is one of the valid tax codes, push it to the array of tax codes.
+            taxCodes.push({
+              type: 'tax code',
+              name: taxCode.Name,
+              id: taxCode.Id,
+            });
+          }
         }
       }
     }
+    return [classifyTaxCode, taxCodes];
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error: ' + error.message);
+    } else {
+      console.error('Unexpected Error.');
+    }
+    return [false, []];
   }
-  return [classifyTaxCode, taxCodes];
 }
 
 // Helper method to classify transactions using the fuzzy or exact match by Fuse.
@@ -256,107 +287,110 @@ async function classifyCategoriesWithFuse(
   results: Record<string, ClassifiedElement[]>,
   noMatches: FormattedForReviewTransaction[]
 ): Promise<void> {
-  // Use a helper method to create a new Fuse instance with the categorized transactions.
-  const fuse = createFuseInstance(categorizedTransactions);
+  try {
+    // Use a helper method to create a new Fuse instance with the categorized transactions.
+    const fuse = createFuseInstance(categorizedTransactions);
 
-  for (const uncategorizedTransaction of uncategorizedTransactions) {
-    try {
-      // Search for the uncategorized transaction's name in the list of cataloged transactions.
-      const matches = fuse.search(uncategorizedTransaction.name);
+    for (const uncategorizedTransaction of uncategorizedTransactions) {
+      try {
+        // Search for the uncategorized transaction's name in the list of cataloged transactions.
+        const matches = fuse.search(uncategorizedTransaction.name);
 
-      // Create a set of possible categories from the matches found.
-      const possibleCategoriesSet = new Set(
-        matches.map((match) => match.item.category)
-      );
-
-      // Filter the list of possible categories to an array against the list of valid categories.
-      const possibleCategories = Array.from(possibleCategoriesSet).filter(
-        (category) =>
-          validCategories.some((validCat) => validCat.name === category)
-      );
-
-      // Create a list to track the possible categories.
-      const possibleValidCategories: ClassifiedElement[] = [];
-
-      // Iterate though the valid categoires to find the ones in the filtered set of matches.
-      // Use the found valid categories to create the needed classified element objects and store them in an array.
-      for (const category of validCategories) {
-        if (possibleCategories.includes(category.name)) {
-          // Add the matching category to the results array and record it was classified by matching.
-          const newCategory = {
-            type: 'category',
-            id: category.id,
-            name: category.name,
-            classifiedBy: 'Matching',
-          };
-
-          // Add the category if it is not already in the possible valid categories.
-          if (
-            !possibleValidCategories.find(
-              (category) => category.name === newCategory.name
-            )
-          ) {
-            possibleValidCategories.push(newCategory);
-          }
-        }
-      }
-
-      if (possibleValidCategories.length === 0) {
-        // If no possible valid categories are found, search for possible categories in the database.
-        const topCategories = await getTopCategoriesForTransaction(
-          uncategorizedTransaction.name,
-          validCategories
+        // Create a set of possible categories from the matches found.
+        const possibleCategoriesSet = new Set(
+          matches.map((match) => match.item.category)
         );
 
-        // If no possible categories are found in the database, add the transaction to the noMatches array.
-        if (topCategories.length === 0) {
-          noMatches.push(uncategorizedTransaction);
-        } else {
-          // Add the transaction and possible categories to the results, and record it was classified by database.
-          results[uncategorizedTransaction.transaction_ID] = topCategories.map(
-            (category) => ({
-              ...category,
+        // Filter the list of possible categories to an array against the list of valid categories.
+        const possibleCategories = Array.from(possibleCategoriesSet).filter(
+          (category) =>
+            validCategories.some((validCat) => validCat.name === category)
+        );
+
+        // Create a list to track the possible categories.
+        const possibleValidCategories: ClassifiedElement[] = [];
+
+        // Iterate though the valid categoires to find the ones in the filtered set of matches.
+        // Use the found valid categories to create the needed classified element objects and store them in an array.
+        for (const category of validCategories) {
+          if (possibleCategories.includes(category.name)) {
+            // Add the matching category to the results array and record it was classified by matching.
+            const newCategory = {
               type: 'category',
-              classifiedBy: 'Database',
-            })
-          );
-        }
-      } else {
-        // If matches were found, order them by closest average amount.
-        const classificationsMapArray = orderClassificationsByAmount(
-          possibleValidCategories,
-          matches,
-          uncategorizedTransaction,
-          'category'
-        );
+              id: category.id,
+              name: category.name,
+              classifiedBy: 'Matching',
+            };
 
-        // Create array for ordered predicted classifications and extract just the classification values.
-        const orderedClassifications = [];
-        for (let index = 0; index < classificationsMapArray.length; index++) {
-          // Get the category name for that index and look for the matching classification object.
-          const categoryName = classificationsMapArray[index].element;
-          const matchingCategory = possibleValidCategories.find(
-            (category) => category.name === categoryName
-          );
-          // If a matching classification was found, push it into the ordered array of classifications.
-          if (matchingCategory) {
-            orderedClassifications.push(matchingCategory);
+            // Add the category if it is not already in the possible valid categories.
+            if (
+              !possibleValidCategories.find(
+                (category) => category.name === newCategory.name
+              )
+            ) {
+              possibleValidCategories.push(newCategory);
+            }
           }
         }
 
-        // Add the ordered list of classified categories with lower index meaning a better matche.
-        results[uncategorizedTransaction.transaction_ID] =
-          orderedClassifications;
+        if (possibleValidCategories.length === 0) {
+          // If no possible valid categories are found, search for possible categories in the database.
+          const topCategories = await getTopCategoriesForTransaction(
+            uncategorizedTransaction.name,
+            validCategories
+          );
+
+          // If no possible categories are found in the database, add the transaction to the noMatches array.
+          if (topCategories.length === 0) {
+            noMatches.push(uncategorizedTransaction);
+          } else {
+            // Add the transaction and possible categories to the results, and record it was classified by database.
+            results[uncategorizedTransaction.transaction_ID] =
+              topCategories.map((category) => ({
+                ...category,
+                type: 'category',
+                classifiedBy: 'Database',
+              }));
+          }
+        } else {
+          // If matches were found, order them by closest average amount.
+          const classificationsMapArray = orderClassificationsByAmount(
+            possibleValidCategories,
+            matches,
+            uncategorizedTransaction,
+            'category'
+          );
+
+          // Create array for ordered predicted classifications and extract just the classification values.
+          const orderedClassifications = [];
+          for (let index = 0; index < classificationsMapArray.length; index++) {
+            // Get the category name for that index and look for the matching classification object.
+            const categoryName = classificationsMapArray[index].element;
+            const matchingCategory = possibleValidCategories.find(
+              (category) => category.name === categoryName
+            );
+            // If a matching classification was found, push it into the ordered array of classifications.
+            if (matchingCategory) {
+              orderedClassifications.push(matchingCategory);
+            }
+          }
+
+          // Add the ordered list of classified categories with lower index meaning a better matche.
+          results[uncategorizedTransaction.transaction_ID] =
+            orderedClassifications;
+        }
+      } catch (error) {
+        // Catch any errors and log them to the console.
+        console.error(
+          'Error mapping uncategorized transaction:',
+          uncategorizedTransaction,
+          error,
+          'moving on...'
+        );
       }
-    } catch (error) {
-      // Catch any errors and log them to the console.
-      console.error(
-        'Error mapping uncategorized transaction:',
-        uncategorizedTransaction,
-        error,
-        'moving on...'
-      );
     }
+  } catch {
+    console.error('Error loading fuse on transactions.');
   }
 }
 
@@ -369,100 +403,104 @@ async function classifyTaxCodesWithFuse(
   results: Record<string, ClassifiedElement[] | null>,
   noMatches: FormattedForReviewTransaction[]
 ): Promise<void> {
-  // Use a helper method to create a new Fuse instance with the categorized transactions.
-  const fuse = createFuseInstance(categorizedTransactions);
+  try {
+    // Use a helper method to create a new Fuse instance with the categorized transactions.
+    const fuse = createFuseInstance(categorizedTransactions);
 
-  for (const uncategorizedTransaction of uncategorizedTransactions) {
-    try {
-      // Search for the uncategorized transaction's name in the list of cataloged transactions.
-      const matches = fuse.search(uncategorizedTransaction.name);
+    for (const uncategorizedTransaction of uncategorizedTransactions) {
+      try {
+        // Search for the uncategorized transaction's name in the list of cataloged transactions.
+        const matches = fuse.search(uncategorizedTransaction.name);
 
-      // Create a set of valid categories from the matches found.
-      const validTaxCodesSet = new Set<string>();
+        // Create a set of valid categories from the matches found.
+        const validTaxCodesSet = new Set<string>();
 
-      // Create a list to track the possible categories.
-      const validMatchedtaxCodes: ClassifiedElement[] = [];
+        // Create a list to track the possible categories.
+        const validMatchedtaxCodes: ClassifiedElement[] = [];
 
-      // Iterate through the matches to add the tax codes to the valid matched tax codes.
-      for (const match of matches) {
-        const taxCodeName = match.item.taxCodeName;
-        // Check if the set of tax codes already contains that tax code.
-        if (!validTaxCodesSet.has(taxCodeName)) {
-          // Check if the tax code is in the list of valid tax codes.
-          for (const taxCode of validTaxCodes) {
-            if (taxCode.name === taxCodeName) {
-              // Create a classified element for the tax code and push it to the valid matched tax code array.
-              validMatchedtaxCodes.push({
-                //type: Either 'category' or 'tax code'
-                type: 'tax code',
-                id: taxCode.id,
-                name: match.item.taxCodeName,
-                classifiedBy: 'Matching',
-              });
-              // Add the name to indicate not to add the tax code again.
-              validTaxCodesSet.add(taxCodeName);
+        // Iterate through the matches to add the tax codes to the valid matched tax codes.
+        for (const match of matches) {
+          const taxCodeName = match.item.taxCodeName;
+          // Check if the set of tax codes already contains that tax code.
+          if (!validTaxCodesSet.has(taxCodeName)) {
+            // Check if the tax code is in the list of valid tax codes.
+            for (const taxCode of validTaxCodes) {
+              if (taxCode.name === taxCodeName) {
+                // Create a classified element for the tax code and push it to the valid matched tax code array.
+                validMatchedtaxCodes.push({
+                  //type: Either 'category' or 'tax code'
+                  type: 'tax code',
+                  id: taxCode.id,
+                  name: match.item.taxCodeName,
+                  classifiedBy: 'Matching',
+                });
+                // Add the name to indicate not to add the tax code again.
+                validTaxCodesSet.add(taxCodeName);
+              }
             }
           }
         }
-      }
 
-      if (validMatchedtaxCodes.length === 0) {
-        // If no valid tax codes are found, search for possible tax codes in the database.
-        const topTaxCodes = await getTopCategoriesForTransaction(
-          uncategorizedTransaction.name,
-          validTaxCodes
-        );
-
-        // If no possible categories are found in the database, add the transaction to the noMatches array.
-        if (topTaxCodes.length === 0) {
-          noMatches.push(uncategorizedTransaction);
-        } else {
-          // Add the transaction and possible tax codes to the results, and record it was classified by database.
-          results[uncategorizedTransaction.transaction_ID] = topTaxCodes.map(
-            (taxCode) => ({
-              ...taxCode,
-              type: 'category',
-              classifiedBy: 'Database',
-            })
+        if (validMatchedtaxCodes.length === 0) {
+          // If no valid tax codes are found, search for possible tax codes in the database.
+          const topTaxCodes = await getTopCategoriesForTransaction(
+            uncategorizedTransaction.name,
+            validTaxCodes
           );
-        }
-      } else {
-        // If matches were found, order them by closest average amount.
-        const classificationsMapArray = orderClassificationsByAmount(
-          validMatchedtaxCodes,
-          matches,
-          uncategorizedTransaction,
-          'tax code'
-        );
 
-        // Create array for ordered predicted tax codes and extract just the tax code values.
-        const orderedClassifications = [];
-        for (let index = 0; index < classificationsMapArray.length; index++) {
-          // Get the category name for that index and look for the matching classification object.
-          const categoryName = classificationsMapArray[index].element;
-          const matchingCategory = validMatchedtaxCodes.find(
-            (category) => category.name === categoryName
-          );
-          // If a matching classification was found, push it into the ordered array of classifications.
-          if (matchingCategory) {
-            orderedClassifications.push(matchingCategory);
+          // If no possible categories are found in the database, add the transaction to the noMatches array.
+          if (topTaxCodes.length === 0) {
+            noMatches.push(uncategorizedTransaction);
+          } else {
+            // Add the transaction and possible tax codes to the results, and record it was classified by database.
+            results[uncategorizedTransaction.transaction_ID] = topTaxCodes.map(
+              (taxCode) => ({
+                ...taxCode,
+                type: 'category',
+                classifiedBy: 'Database',
+              })
+            );
           }
-        }
+        } else {
+          // If matches were found, order them by closest average amount.
+          const classificationsMapArray = orderClassificationsByAmount(
+            validMatchedtaxCodes,
+            matches,
+            uncategorizedTransaction,
+            'tax code'
+          );
 
-        // Add the ordered list of classified tax codes.
-        // A lower index indicates  a better match so default display (index 0) is the best match.
-        results[uncategorizedTransaction.transaction_ID] =
-          orderedClassifications;
+          // Create array for ordered predicted tax codes and extract just the tax code values.
+          const orderedClassifications = [];
+          for (let index = 0; index < classificationsMapArray.length; index++) {
+            // Get the category name for that index and look for the matching classification object.
+            const categoryName = classificationsMapArray[index].element;
+            const matchingCategory = validMatchedtaxCodes.find(
+              (category) => category.name === categoryName
+            );
+            // If a matching classification was found, push it into the ordered array of classifications.
+            if (matchingCategory) {
+              orderedClassifications.push(matchingCategory);
+            }
+          }
+
+          // Add the ordered list of classified tax codes.
+          // A lower index indicates  a better match so default display (index 0) is the best match.
+          results[uncategorizedTransaction.transaction_ID] =
+            orderedClassifications;
+        }
+      } catch (error) {
+        // Catch any errors and log them to the console.
+        console.error(
+          'Error mapping uncategorized transaction:',
+          uncategorizedTransaction,
+          error,
+          'moving on...'
+        );
       }
-    } catch (error) {
-      // Catch any errors and log them to the console.
-      console.error(
-        'Error mapping uncategorized transaction:',
-        uncategorizedTransaction,
-        error,
-        'moving on...'
-      );
     }
+  } catch {
+    console.error('Error loading fuse on transactions.');
   }
 }
 

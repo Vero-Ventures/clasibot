@@ -9,13 +9,17 @@ export async function setNextReviewTimestamp(): Promise<string> {
   // Create a new date for one week in the future (7 days)
   const futureDate = new Date(currentTime.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-  // Insert the new timestamp into the database.
-  const newForReviewTimestamp = await db
-    .insert(NextReviewTimestamp)
-    .values({ date: futureDate })
-    .returning();
-
-  return JSON.stringify(newForReviewTimestamp);
+  try {
+    // Insert the new timestamp into the database.
+    const newForReviewTimestamp = await db
+      .insert(NextReviewTimestamp)
+      .values({ date: futureDate })
+      .returning();
+    return JSON.stringify(newForReviewTimestamp);
+  } catch {
+    // If an error occurs, return just the stringified date instead.
+    return JSON.stringify(futureDate);
+  }
 }
 
 export async function getNextReviewTimestamp(): Promise<string> {

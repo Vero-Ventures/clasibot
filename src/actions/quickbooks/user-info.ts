@@ -189,6 +189,6 @@ export async function getCompanyLocation(
   } catch (error) {
     // Log the error and return an empty string to the caller if the call fails.
     console.error('Error finding company location:', error);
-    return JSON.stringify({ Country: '', Location: '' });
+    return JSON.stringify({ Country: '', Location: null });
   }
 }

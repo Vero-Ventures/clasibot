@@ -82,49 +82,57 @@ async function handleCategoryIncrement(
   transaction: Transaction,
   transactionID: number
 ) {
-  // Create or update the categorization for the transaction.
-  if (existingCategory) {
-    // Get the transaction to categorization relations for the transaction.
-    const transactionCategories = await db
-      .select()
-      .from(TransactionsToCategories)
-      .where(eq(TransactionsToCategories.transactionId, transactionID));
+  try {
+    // Create or update the categorization for the transaction.
+    if (existingCategory) {
+      // Get the transaction to categorization relations for the transaction.
+      const transactionCategories = await db
+        .select()
+        .from(TransactionsToCategories)
+        .where(eq(TransactionsToCategories.transactionId, transactionID));
 
-    // Check the relationship table to see if the transaction is already linked to the category.
-    const existingRelationship = transactionCategories.find(
-      (relationship) => relationship.categoryId === existingCategory.id
-    );
+      // Check the relationship table to see if the transaction is already linked to the category.
+      const existingRelationship = transactionCategories.find(
+        (relationship) => relationship.categoryId === existingCategory.id
+      );
 
-    if (!existingRelationship) {
-      // If there is no relationship, Create a new one between the transaction and category.
+      if (!existingRelationship) {
+        // If there is no relationship, Create a new one between the transaction and category.
+        await db.insert(TransactionsToCategories).values({
+          transactionId: transactionID,
+          categoryId: existingCategory.id,
+        });
+      }
+
+      // Update the count for the number of times the category has been used.
+      await db
+        .update(Category)
+        .set({
+          count: existingCategory.count + 1,
+        })
+        .where(eq(Category.id, existingCategory.id));
+    } else {
+      // If the category doesn't exist, create a new category with a count of 1.
+      const newCategory = await db
+        .insert(Category)
+        .values({
+          category: transaction.category,
+          count: 1,
+        })
+        .returning();
+
+      // Create a relationship between the transaction and new category.
       await db.insert(TransactionsToCategories).values({
         transactionId: transactionID,
-        categoryId: existingCategory.id,
+        categoryId: newCategory[0].id,
       });
     }
-
-    // Update the count for the number of times the category has been used.
-    await db
-      .update(Category)
-      .set({
-        count: existingCategory.count + 1,
-      })
-      .where(eq(Category.id, existingCategory.id));
-  } else {
-    // If the category doesn't exist, create a new category with a count of 1.
-    const newCategory = await db
-      .insert(Category)
-      .values({
-        category: transaction.category,
-        count: 1,
-      })
-      .returning();
-
-    // Create a relationship between the transaction and new category.
-    await db.insert(TransactionsToCategories).values({
-      transactionId: transactionID,
-      categoryId: newCategory[0].id,
-    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error: ' + error.message);
+    } else {
+      console.error('Unexpected Error.');
+    }
   }
 }
 
@@ -140,47 +148,55 @@ async function handleTaxCodeIncrement(
   transaction: Transaction,
   transactionID: number
 ) {
-  if (existingTaxCode) {
-    // Get the transaction to tax code relations for the transaction.
-    const transactionsToTaxCodes = await db
-      .select()
-      .from(TransactionsToTaxCodes)
-      .where(eq(TransactionsToTaxCodes.transactionId, transactionID));
+  try {
+    if (existingTaxCode) {
+      // Get the transaction to tax code relations for the transaction.
+      const transactionsToTaxCodes = await db
+        .select()
+        .from(TransactionsToTaxCodes)
+        .where(eq(TransactionsToTaxCodes.transactionId, transactionID));
 
-    // Check the relationship table to see if the transaction is already linked to the tax code.
-    const existingRelationship = transactionsToTaxCodes.find(
-      (relationship) => relationship.taxCodeId === existingTaxCode.id
-    );
+      // Check the relationship table to see if the transaction is already linked to the tax code.
+      const existingRelationship = transactionsToTaxCodes.find(
+        (relationship) => relationship.taxCodeId === existingTaxCode.id
+      );
 
-    if (!existingRelationship) {
-      // If there is no relationship, Create a new one between the transaction and tax code.
-      await db.insert(TransactionsToCategories).values({
+      if (!existingRelationship) {
+        // If there is no relationship, Create a new one between the transaction and tax code.
+        await db.insert(TransactionsToCategories).values({
+          transactionId: transactionID,
+          categoryId: existingTaxCode.id,
+        });
+      }
+
+      // Update the count for the number of times the tax code has been used.
+      await db
+        .update(TaxCode)
+        .set({
+          count: existingTaxCode.count + 1,
+        })
+        .where(eq(Category.id, existingTaxCode.id));
+    } else {
+      // If the category doesn't exist, create a new tax code with a count of 1.
+      const newTaxCode = await db
+        .insert(TaxCode)
+        .values({
+          taxCode: transaction.taxCodeName,
+          count: 1,
+        })
+        .returning();
+
+      // Create a relationship between the transaction and new tax code.
+      await db.insert(TransactionsToTaxCodes).values({
         transactionId: transactionID,
-        categoryId: existingTaxCode.id,
+        taxCodeId: newTaxCode[0].id,
       });
     }
-
-    // Update the count for the number of times the tax code has been used.
-    await db
-      .update(TaxCode)
-      .set({
-        count: existingTaxCode.count + 1,
-      })
-      .where(eq(Category.id, existingTaxCode.id));
-  } else {
-    // If the category doesn't exist, create a new tax code with a count of 1.
-    const newTaxCode = await db
-      .insert(TaxCode)
-      .values({
-        taxCode: transaction.taxCodeName,
-        count: 1,
-      })
-      .returning();
-
-    // Create a relationship between the transaction and new tax code.
-    await db.insert(TransactionsToTaxCodes).values({
-      transactionId: transactionID,
-      taxCodeId: newTaxCode[0].id,
-    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error: ' + error.message);
+    } else {
+      console.error('Unexpected Error.');
+    }
   }
 }
