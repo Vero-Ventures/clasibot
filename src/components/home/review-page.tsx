@@ -352,7 +352,9 @@ export default function ReviewPage({
                 window.location.href = url;
               }}>
               <span className="whitespace-normal">
-                {errorMsg ? 'Retry Transaction Selection' : 'Review Additional Transactions'}
+                {errorMsg
+                  ? 'Retry Transaction Selection'
+                  : 'Review Additional Transactions'}
               </span>
             </Button>
             <Button
