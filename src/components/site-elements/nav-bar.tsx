@@ -34,7 +34,7 @@ const Navbar = async () => {
   const name = session?.user?.name ?? '';
 
   // Define the Stripe portal URL using the user's email.
-  const stripePortalUrl = `${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
+  const stripePortalUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
     <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md md:flex-row">

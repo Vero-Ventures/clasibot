@@ -9,9 +9,9 @@ export default async function Page() {
   // Define the public stripe key to pass to the pricing table.
   let publicKey = '';
   if (process.env.APP_CONFIG === 'production') {
-    publicKey = process.env.PROD_NEXT_PUBLIC_STRIPE_PUBLIC_KEY!;
+    publicKey = process.env.PROD_STRIPE_PUBLIC_KEY!;
   } else {
-    publicKey = process.env.DEV_NEXT_PUBLIC_STRIPE_PUBLIC_KEY!;
+    publicKey = process.env.DEV_STRIPE_PUBLIC_KEY!;
   }
 
   let tableID = '';

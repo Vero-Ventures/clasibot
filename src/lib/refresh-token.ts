@@ -65,7 +65,6 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
   }
 }
 
-
 // Takes a passed TokenSet object and updates the access token.
 export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
   // Extract the refresh token from the token object.
