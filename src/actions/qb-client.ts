@@ -66,11 +66,11 @@ export async function createQBObjectWithSession(session: Session) {
 
   // Set the QuickBooks client ID and secret based on the environment.
   if (process.env.APP_CONFIG === 'production') {
-    useID = process.env.PROD_CLIENT_ID;
-    useSecret = process.env.PROD_CLIENT_SECRET;
+    useID = process.env.BACKEND_PROD_CLIENT_ID;
+    useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;
   } else {
-    useID = process.env.DEV_CLIENT_ID;
-    useSecret = process.env.DEV_CLIENT_SECRET;
+    useID = process.env.BACKEND_DEV_CLIENT_ID;
+    useSecret = process.env.BACKEND_DEV_CLIENT_SECRET;
   }
 
   // Define the API version used by the current codebase.

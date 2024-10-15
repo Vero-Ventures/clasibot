@@ -1,4 +1,4 @@
-export async function manualReview(
+export async function manualClassify(
   setManualReviewState: (newState: string) => void
 ) {
   // Preform the manual review for the current user company.

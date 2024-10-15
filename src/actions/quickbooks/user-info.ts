@@ -1,12 +1,23 @@
 'use server';
-import { createQBObject } from '@/actions/qb-client';
 import { checkFaultProperty } from './helpers';
+import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
+import type { Session } from 'next-auth/core/types';
 
 // Get the company name from the QuickBooks API.
-export async function getCompanyName(): Promise<string> {
+export async function getCompanyName(
+  session: Session | null = null
+): Promise<string> {
   try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
+    // Define the variable used to make the qbo calls.
+    let qbo;
+
+    // Check if a session was passed to use to define the qbo object.
+    // Then define the qbo object based on the session presence.
+    if (session) {
+      qbo = await createQBObjectWithSession(session);
+    } else {
+      qbo = await createQBObject();
+    }
 
     // Create a type for the response object to allow for type checking.
     type CompanyInfoResponse = {
@@ -39,10 +50,20 @@ export async function getCompanyName(): Promise<string> {
 }
 
 // Find a the company info object and return the industry.
-export async function getCompanyIndustry(): Promise<string> {
+export async function getCompanyIndustry(
+  session: Session | null = null
+): Promise<string> {
   try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
+    // Define the variable used to make the qbo calls.
+    let qbo;
+
+    // Check if a session was passed to use to define the qbo object.
+    // Then define the qbo object based on the session presence.
+    if (session) {
+      qbo = await createQBObjectWithSession(session);
+    } else {
+      qbo = await createQBObject();
+    }
 
     // Create a type for the response object to allow for type checking.
     // Name value is an array of data objects that contains the industry type.
@@ -99,10 +120,20 @@ export async function getCompanyIndustry(): Promise<string> {
 
 // Get the company location from the QBO API, return the country and the sub-location for Canadian companies.
 // To check for tax classification compatable locations, check for a country value of 'CA'.
-export async function getCompanyLocation(): Promise<string> {
+export async function getCompanyLocation(
+  session: Session | null = null
+): Promise<string> {
   try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
+    // Define the variable used to make the qbo calls.
+    let qbo;
+
+    // Check if a session was passed to use to define the qbo object.
+    // Then define the qbo object based on the session presence.
+    if (session) {
+      qbo = await createQBObjectWithSession(session);
+    } else {
+      qbo = await createQBObject();
+    }
 
     // Create a type for the response object to allow for type checking.
     type CompanyInfoResponse = {
@@ -159,67 +190,5 @@ export async function getCompanyLocation(): Promise<string> {
     // Log the error and return an empty string to the caller if the call fails.
     console.error('Error finding company location:', error);
     return JSON.stringify({ Country: '', Location: '' });
-  }
-}
-
-// Checks if a user is an accountant type profile.
-export async function getIsAccounant(): Promise<boolean> {
-  try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
-
-    // Create a type for the response object to allow for type checking.
-    type CompanyInfoResponse = {
-      QueryResponse: {
-        CompanyInfo: [
-          {
-            NameValue: [
-              {
-                Name: string;
-                Value: string;
-              },
-            ];
-          },
-        ];
-      };
-    };
-
-    // Search for a company info object related to the user.
-    const response: CompanyInfoResponse = await new Promise((resolve) => {
-      qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
-        // If there is an error, check if it has a 'Fault' property
-        if (err && checkFaultProperty(err)) {
-          // Then resolve the function with a response with values formatted to indicate failure.
-          resolve({
-            QueryResponse: {
-              CompanyInfo: [{ NameValue: [{ Name: '', Value: '' }] }],
-            },
-          });
-        }
-        resolve(data);
-      });
-    });
-
-    // Get the array of dictionary values containing company info
-    const companyInfoArray = response.QueryResponse.CompanyInfo[0].NameValue;
-
-    // Check through the array of dictionaries to check the accounting firm status.
-    for (const item of companyInfoArray) {
-      // If the accountant feature is found, return it to the caller.
-      if (item.Name === 'AccountantFeature') {
-        if (item.Value === 'True') {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
-
-    // If match is not found, return false.
-    return false;
-  } catch (error) {
-    // Log the error and return an empty string to the caller if the call fails.
-    console.error('Error checking if company is an accounting firm.', error);
-    return false;
   }
 }

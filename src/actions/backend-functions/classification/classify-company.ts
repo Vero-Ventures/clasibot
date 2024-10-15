@@ -1,6 +1,5 @@
 'use server';
 import { setNextReviewTimestamp } from '@/actions/backend-functions/next-review-timestamp';
-import { classifyTransactions } from './classify';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getForReview } from '@/actions/quickbooks/get-for-review';
 import { getPastTransactions } from '@/actions/quickbooks/get-transactions';
@@ -9,6 +8,7 @@ import {
   getCompanyLocation,
   getCompanyName,
 } from '@/actions/quickbooks/user-info';
+import { classifyTransactions } from './classify';
 import { addForReviewTransactions } from '../add-db-for-review';
 import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
@@ -40,6 +40,7 @@ export async function classifyCompany(
   );
 
   // Check if the for review transaction call encountered an error.
+  // Done by checking if the returned value is a query result only returned on failure.
   if ('result' in forReviewResult) {
     // If an error is encountered, return the query response.
     return forReviewResult;
@@ -52,7 +53,8 @@ export async function classifyCompany(
   )[][];
 
   // Get the users previously classified transactions to use as context for prediction.
-  const classifiedPastTransactions = await getClassifiedPastTransactions();
+  const classifiedPastTransactions =
+    await getClassifiedPastTransactions(session);
 
   // Define just the formatted transactions to use in classification.
   const formattedForReviewTransactions = forReviewTransactions.map(
@@ -74,7 +76,9 @@ export async function classifyCompany(
     | { error: string } = await classifyTransactions(
     classifiedPastTransactions,
     formattedForReviewTransactions,
-    companyInfo
+    companyId,
+    companyInfo,
+    session
   );
 
   // If there was an error classifing the transactions, return it as a object.
@@ -122,42 +126,55 @@ async function getForReviewTransactions(
   (ForReviewTransaction | FormattedForReviewTransaction)[][] | QueryResult
 > {
   // Get all accounts that may contain transactions
-  const foundAccounts = await getAccounts('transaction', session);
-  const userAccounts: Account[] = JSON.parse(foundAccounts);
+  const response = await getAccounts('Transaction', session);
+  const result = JSON.parse(response);
 
-  // Define array to hold found 'for review' transactions.
-  let foundTransactions: (
-    | ForReviewTransaction
-    | FormattedForReviewTransaction
-  )[][] = [];
+  // Check the result of the account fetching by checking the first index.
+  if (result[0].result === 'Error') {
+    // If the fetching failed, return an array of 0 transactions.
+    return [];
+  } else {
+    // If the fetch did not fail, remove the first value and continue.
+    const userAccounts: Account[] = result.slice(1);
 
-  // Iterate through the user accounts.
-  for (const account of userAccounts) {
-    // Get any 'for review' transactions for the current account.
-    const result = await getForReview(
-      account.id,
-      companyId,
-      fetchToken,
-      authId
-    );
-    // If the fetch was successful, append the resulting array to array of found transactions.
-    if (result.result === 'Success') {
-      // Parse and define the result details and concatenate them onto the current array of transactions.
-      const resultTransactions: (
-        | ForReviewTransaction
-        | FormattedForReviewTransaction
-      )[][] = JSON.parse(result.detail);
-      foundTransactions = foundTransactions.concat(resultTransactions);
-    } else {
-      return result;
+    // Define array to hold found 'for review' transactions.
+    let foundTransactions: (
+      | ForReviewTransaction
+      | FormattedForReviewTransaction
+    )[][] = [];
+
+    // Iterate through the user accounts.
+    for (const account of userAccounts) {
+      // Get any 'for review' transactions for the current account.
+      const result = await getForReview(
+        account.id,
+        companyId,
+        fetchToken,
+        authId
+      );
+
+      // If the fetch was successful, append the resulting detail content to array of found transactions.
+      if (result.result === 'Success') {
+        // Parse and define the result details and concatenate them onto the current array of transactions.
+        const resultTransactions: (
+          | ForReviewTransaction
+          | FormattedForReviewTransaction
+        )[][] = JSON.parse(result.detail);
+        foundTransactions = foundTransactions.concat(resultTransactions);
+      } else {
+        // Return the failure result.
+        return result;
+      }
     }
-  }
 
-  // Return the found 'for review' transactions.
-  return foundTransactions;
+    // Return the found 'for review' transactions.
+    return foundTransactions;
+  }
 }
 
-async function getClassifiedPastTransactions(): Promise<Transaction[]> {
+async function getClassifiedPastTransactions(
+  session: Session
+): Promise<Transaction[]> {
   // Get a reference for the current date and the date 5 years ago.
   const today = new Date();
   const setBackRange = 5;
@@ -171,12 +188,17 @@ async function getClassifiedPastTransactions(): Promise<Transaction[]> {
   const startDate = today.toISOString().split('T')[0];
   const endDate = fiveYearsAgo.toISOString().split('T')[0];
 
-  // Get the past transactions from QuickBooks for checking matches.
-  const response = await getPastTransactions(startDate, endDate);
-  const pastTransactions = JSON.parse(response);
-  // Return transactions with result value removed.
-  // On failure, result is still a valid empty array.
-  return pastTransactions.slice(1);
+  // Get the past transactions from QuickBooks for checking matches and parse the result.
+  const response = await getPastTransactions(startDate, endDate, session);
+  const result = JSON.parse(response);
+
+  // On failure, return an empty array to continue the process.
+  if (result[0].result === 'Error') {
+    return [];
+  } else {
+    // On success return the results with the inital query result value removed.
+    return result.slice(1);
+  }
 }
 
 async function getCompanyInfo(): Promise<CompanyInfo> {

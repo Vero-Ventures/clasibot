@@ -18,6 +18,7 @@ export async function removeForReviewTransactions(
     // Get the session to get the company ID (realm ID).
     const session = await getServerSession(options);
     const companyID = session?.realmId;
+
     // Continue with deletion if a realm ID was found.
     if (companyID) {
       // Get the transaction by unique combo of company ID and transaction ID.
@@ -28,6 +29,7 @@ export async function removeForReviewTransactions(
           eq(DatabaseForReviewTransaction.companyId, companyID) &&
             eq(DatabaseForReviewTransaction.transactionId, savedTransaction.id)
         );
+
       // Delete any relationships with categories.
       await db
         .delete(ForReviewTransactionToCategories)
@@ -37,6 +39,7 @@ export async function removeForReviewTransactions(
             transactionToDelete[0].id
           )
         );
+
       // Delete any relationships with tax codes.
       await db
         .delete(ForReviewTransactionToTaxCodes)

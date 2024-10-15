@@ -1,15 +1,26 @@
 'use server';
-import { createQBObject } from '../qb-client';
+import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
+import type { Session } from 'next-auth/core/types';
 import type { TaxCode } from '@/types/TaxCode';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import { Locations, TaxCodes } from '@/enums/taxes';
 
 // Get all the tax codes and returns them as an array of tax code objects.
-export async function getTaxCodes(): Promise<string> {
+export async function getTaxCodes(
+  session: Session | null = null
+): Promise<string> {
   try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
+    // Define the variable used to make the qbo calls.
+    let qbo;
+
+    // Check if a session was passed to use to define the qbo object.
+    // Then define the qbo object based on the session presence.
+    if (session) {
+      qbo = await createQBObjectWithSession(session);
+    } else {
+      qbo = await createQBObject();
+    }
 
     // Define format of returned group of tax code objects.
     type TaxCodeResponse = {
@@ -62,10 +73,24 @@ export async function getTaxCodes(): Promise<string> {
       }
     }
 
-    // Return the array of formatted tax codes.
+    // Return the array of a query result and the formatted tax codes as a JSON string.
     return JSON.stringify(taxCodes);
   } catch (error) {
-    return JSON.stringify(error);
+    // Return a query result formatted error message.
+    // Include a detail string if error message is present.
+    if (error instanceof Error) {
+      return JSON.stringify({
+        result: 'error',
+        message: 'Unexpected error occured while fetching accounts.',
+        detail: error.message,
+      });
+    } else {
+      return JSON.stringify({
+        result: 'error',
+        message: 'Unexpected error occured while fetching accounts.',
+        detail: 'N/A',
+      });
+    }
   }
 }
 

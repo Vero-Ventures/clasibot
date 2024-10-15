@@ -5,13 +5,14 @@ import {
   batchQueryTaxCodesLLM,
 } from '@/actions/backend-functions/llm-prediction/llm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { checkSubscription } from '@/actions/stripe';
+import { checkSubscriptionByCompany } from '@/actions/stripe';
 import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
 import {
   addTransactions,
   getTopCategoriesForTransaction,
 } from '@/actions/db-transactions';
 import type { FuseResult } from 'fuse.js';
+import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
 import type {
   Classification,
@@ -27,7 +28,9 @@ import type { Transaction } from '@/types/Transaction';
 export async function classifyTransactions(
   categorizedTransactions: Transaction[],
   uncategorizedTransactions: FormattedForReviewTransaction[],
-  companyInfo: CompanyInfo
+  realmId: string,
+  companyInfo: CompanyInfo,
+  session: Session
 ): Promise<
   | Record<
       string,
@@ -42,7 +45,7 @@ export async function classifyTransactions(
   addTransactions(categorizedTransactions);
 
   // Check the subscription status.
-  const subscriptionStatus = await checkSubscription();
+  const subscriptionStatus = await checkSubscriptionByCompany(realmId);
   if ('error' in subscriptionStatus) {
     return { error: 'Error getting subscription status' };
   }
@@ -51,15 +54,22 @@ export async function classifyTransactions(
   }
 
   try {
-    // Get valid categories from QuickBooks using helper method (categories present in the users account).
-    const validDBCategories: Classification[] =
-      await fetchValidCategories(true);
-    const validLLMCategories: Classification[] =
-      await fetchValidCategories(false);
+    // Get valid categories from QuickBooks using helper method (categories present in the companies account).
+    // Use the backend session that was created and passed to the function to get the companies accounts.
+    const validDBCategories: Classification[] = await fetchValidCategories(
+      true,
+      session
+    );
+    const validLLMCategories: Classification[] = await fetchValidCategories(
+      false,
+      session
+    );
 
     // Get valid categories from QuickBooks using helper method.
-    const [classifyTaxCodes, validTaxCodes] =
-      await fetchValidTaxCodes(companyInfo);
+    const [classifyTaxCodes, validTaxCodes] = await fetchValidTaxCodes(
+      companyInfo,
+      session
+    );
 
     // Create dictionaries that ties strings (transaction Id's) to a list of categories and a list of tax codes.
     const categoryResults: Record<string, ClassifiedElement[]> = {};
@@ -151,17 +161,31 @@ export async function classifyTransactions(
 
 // Helper method to fetch valid categories from QuickBooks that returns a promised array of Categories.
 async function fetchValidCategories(
-  filterToBase: boolean
+  filterToBase: boolean,
+  session: Session
 ): Promise<Classification[]> {
   // Define a list of valid categories using the get_accounts QuickBooks action.
-  // Accounts are the QuickBooks name for both bank accounts and transaction categories.
-  const validCategoriesResponse = JSON.parse(await getAccounts('Expense'));
+  const validCategoriesResult = JSON.parse(
+    await getAccounts('Expense', session)
+  );
+
+  if (validCategoriesResult[0].result === 'Error') {
+    // Log an error for failure catching.
+    console.error(
+      validCategoriesResult[0].message +
+        ', Detail: ' +
+        validCategoriesResult[0].detail
+    );
+    // If the fetch resulted in an error, return an empty array of classifications.
+    return [];
+  }
+
   // Return the valid categories as an array of category objects.
   // Removes the first value that indicates success or returns error codes.
   if (filterToBase) {
-    // Filter to base category is needed to match with the database.
-    // User info is not stored so only the base category is stored.
-    return validCategoriesResponse
+    // Filtering to the base category is needed to match with the database values.
+    // User info is not stored for saftey so the database uses only the base category value.
+    return validCategoriesResult
       .slice(1)
       .map((category: Account): Classification => {
         return {
@@ -172,7 +196,7 @@ async function fetchValidCategories(
       });
   } else {
     // LLM data is not saved so it can use the full category name.
-    return validCategoriesResponse
+    return validCategoriesResult
       .slice(1)
       .map((category: Account): Classification => {
         return { type: 'classification', id: category.id, name: category.name };
@@ -182,7 +206,8 @@ async function fetchValidCategories(
 
 // Helper method to fetch tax codes from QuickBooks to filter the tax codes present in the classified transaction to valid tax codes.
 async function fetchValidTaxCodes(
-  companyInfo: CompanyInfo
+  companyInfo: CompanyInfo,
+  session: Session
 ): Promise<[boolean, Classification[]]> {
   // Define variable to determine if tax code classification is done on the transactions.
   let classifyTaxCode = false;
@@ -193,7 +218,7 @@ async function fetchValidTaxCodes(
   if (companyInfo.location.Country === 'CA' && companyInfo.location.Location) {
     // Set tax codes to be found, then find the users tax codes and get the list of valid tax codes.
     classifyTaxCode = true;
-    const userTaxCodes = JSON.parse(await getTaxCodes());
+    const userTaxCodes = JSON.parse(await getTaxCodes(session));
     const validTaxCodes = await getTaxCodesByLocation(
       companyInfo.location.Location
     );
@@ -243,21 +268,25 @@ async function classifyCategoriesWithFuse(
       const possibleCategoriesSet = new Set(
         matches.map((match) => match.item.category)
       );
-      const possibleCategories = Array.from(possibleCategoriesSet);
 
-      // Get the list of possible categories from the users account.
-      const accounts = JSON.parse(await getAccounts('Expense'));
+      // Filter the list of possible categories to an array against the list of valid categories.
+      const possibleCategories = Array.from(possibleCategoriesSet).filter(
+        (category) =>
+          validCategories.some((validCat) => validCat.name === category)
+      );
+
       // Create a list to track the possible categories.
       const possibleValidCategories: ClassifiedElement[] = [];
 
-      // Iterate over the accounts to see if its name is present in the list of possible categories.
-      for (const account of accounts) {
-        if (possibleCategories.includes(account.name)) {
+      // Iterate though the valid categoires to find the ones in the filtered set of matches.
+      // Use the found valid categories to create the needed classified element objects and store them in an array.
+      for (const category of validCategories) {
+        if (possibleCategories.includes(category.name)) {
           // Add the matching category to the results array and record it was classified by matching.
           const newCategory = {
             type: 'category',
-            id: account.id,
-            name: account.name,
+            id: category.id,
+            name: category.name,
             classifiedBy: 'Matching',
           };
 

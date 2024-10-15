@@ -23,6 +23,7 @@ export async function getDatabaseTransactions(): Promise<
 > {
   // Get the session to get the companies ID (realm ID).
   const session = await getServerSession(options);
+
   // Create an array to store the raw and classified 'for review' transactions.
   const classifiedTransactions: (
     | ForReviewTransaction
@@ -62,29 +63,50 @@ export async function getDatabaseTransactions(): Promise<
         await getTransactionTaxCodes(forReviewTransaction);
 
       // Get the possible transaction accounts to find the transaction's account name.
-      const transactionAccounts = JSON.parse(await getAccounts('Transaction'));
-      // Iterate through the accounts to find the matching one and use its name to make the classified 'for review' transaction.
-      for (const account of transactionAccounts) {
-        if (account.id === forReviewTransaction.accountId) {
-          // Create the classified 'for review' transaction for the database transaction.
-          const classifiedTransaction: ClassifiedForReviewTransaction = {
-            // ID for the 'For Review' transaction.
-            transaction_ID: forReviewTransaction.id,
-            name: forReviewTransaction.description,
-            date: forReviewTransaction.date,
-            account: forReviewTransaction.accountId,
-            accountName: account.name,
-            amount: forReviewTransaction.amount,
-            categories: transactionCategories,
-            taxCodes: transactionTaxCodes,
-          };
-          classifiedTransactions.push([classifiedTransaction, rawTransaction]);
+      const transactionAccountsResult = JSON.parse(
+        await getAccounts('Transaction')
+      );
+
+      // Check if the fetch resulted in an error.
+      if (transactionAccountsResult[0].result === 'Error') {
+        // Log the error and continue to the end of the function to return an empty array.
+        console.error(
+          transactionAccountsResult[0].message +
+            ', Detail: ' +
+            transactionAccountsResult[0].detail
+        );
+      } else {
+        // If the call did not result in an error, remove the first value and continue.
+        const checkedAccounts = transactionAccountsResult.slice(1);
+
+        // Iterate through the accounts to find the matching one and use its name to make the classified 'for review' transaction.
+        for (const account of checkedAccounts) {
+          if (account.id === forReviewTransaction.accountId) {
+            // Create the classified 'for review' transaction for the database transaction.
+            const classifiedTransaction: ClassifiedForReviewTransaction = {
+              // ID for the 'For Review' transaction.
+              transaction_ID: forReviewTransaction.id,
+              name: forReviewTransaction.description,
+              date: forReviewTransaction.date,
+              account: forReviewTransaction.accountId,
+              accountName: account.name,
+              amount: forReviewTransaction.amount,
+              categories: transactionCategories,
+              taxCodes: transactionTaxCodes,
+            };
+
+            // Add both the formatted classified transaction and the raw transaction data to the array.
+            classifiedTransactions.push([
+              classifiedTransaction,
+              rawTransaction,
+            ]);
+          }
         }
       }
     }
   }
   // Return the array of classified transactions and their related raw transaction.
-  // Array will be empty if a valid realm ID could not be found from the session.
+  // Array will be empty if a valid realm ID could not be found from the session or if a QBO API fetch fails.
   return classifiedTransactions;
 }
 
@@ -121,12 +143,19 @@ async function getTransactionCategories(
   const classifiedCategories: ClassifiedElement[] = [];
 
   // Get the list of expense accounts for the user to use to get the ID of the fetched categories.
-  const expenseAccountsResponse = JSON.parse(await getAccounts('Expense'));
+  const expenseAccountsResult = JSON.parse(await getAccounts('Expense'));
 
-  // Check if the query was successful and continue with the rest of the accounts if it is.
-  if (expenseAccountsResponse[0].result === 'Success') {
-    // Define the rest of the expense accounts
-    const expenseAccounts = expenseAccountsResponse.split(1);
+  // Check if the fetch resulted in an error.
+  if (expenseAccountsResult[0].result === 'Error') {
+    // Log the error and continue to the end of the function to return an empty array.
+    console.error(
+      expenseAccountsResult[0].message +
+        ', Detail: ' +
+        expenseAccountsResult[0].detail
+    );
+  } else {
+    // If the call did not result in an error, remove the first value and continue.
+    const checkedAccounts = expenseAccountsResult.slice(1);
 
     // Iterate through the related categories to get them from the database.
     for (const category of transactionCategories) {
@@ -137,7 +166,7 @@ async function getTransactionCategories(
         .where(eq(Category.id, category.categoryId));
 
       // Iterate through the user accounts to find the account with the matching name.
-      for (const expenseAccount of expenseAccounts) {
+      for (const expenseAccount of checkedAccounts) {
         // Once the account with the matching name is found, use it to get the id of the account related to the category.
         if (expenseAccount.name === fullCategory[0].category) {
           // Push a new classified element to the array of classified categories.

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { manualReview } from '@/actions/backend-functions/classification/classify-company';
+import { manualClassify } from '@/actions/backend-functions/classification/manual-classify';
 import { addTransactions } from '@/actions/db-transactions';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
@@ -64,7 +64,7 @@ export default function ReviewPage({
 
     const startManualReview = async () => {
       // Make call to backend for review function with the related states.
-      manualReview(updateManualReviewState);
+      manualClassify(updateManualReviewState);
       // Update the state to indicate the review is finished and begin loading the newly reviewed transactions.
       setManualReviewState('Finished Review, Loading Transactions ...');
       // Load the transactions from the database after the manual review.
@@ -162,11 +162,23 @@ export default function ReviewPage({
   ) {
     // Set the saving status to true.
     setIsSaving(true);
+
     try {
       // Define an array for transactions to be saved to the database at the end for future classification use.
       const newTransactions: Transaction[] = [];
+
       // Call the list of expense accounts to get account ID's from using account names.
-      const accounts = JSON.parse(await getAccounts('Expense'));
+      const accountResults = JSON.parse(await getAccounts('Expense'));
+
+      // Initally set accounts variable to be empty and only update it if account results fetch was successful.
+      let accounts = [];
+
+      // Check the result of the account fetch.
+      if (accountResults[0].result !== 'Error') {
+        // Set the accounts variable to the account results without the query result value.
+        accounts = accountResults.slice(1);
+      }
+
       // Get the selected rows in an iterable format [key: selectedRowIndex, value: true]
       // The key is the index of the row and the value is always true for selected rows.
       const selectedRowIndices = Object.entries(selectedRows);
@@ -182,6 +194,7 @@ export default function ReviewPage({
           const rawTransaction = transactions[
             numericalIndex
           ][1] as ForReviewTransaction;
+
           // Get the ID of the transaction and use that to get its selected classifications.
           const transactionID = categorizedTransaction.transaction_ID;
           const selectedCategory = selectedCategories[transactionID];
@@ -227,10 +240,14 @@ export default function ReviewPage({
               const account = accounts.find(
                 (account: Account) => account.name === category.name
               );
+
               // If the related account exists, update the category name to use the account sub-type instead.
               // Prevents possibility of saving user inputted account names to the database.
               if (account) {
                 newDatabaseTransaction.category = account.account_sub_type;
+              } else {
+                // If no match is found, throw an error.
+                throw new Error('Error saving purchase');
               }
             }
 
@@ -246,8 +263,10 @@ export default function ReviewPage({
               '',
               ''
             );
+
             // Remove the related for review transaction and its connectionss from the database.
             const result = await removeForReviewTransactions(rawTransaction);
+
             // If the removal of transactions result is not successful, throw the detail as an error.
             if (result.result !== 'Success') {
               throw result.detail;

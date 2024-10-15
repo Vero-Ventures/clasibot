@@ -15,8 +15,9 @@ export async function getAccounts(
   try {
     // Define the variable used to make the qbo calls.
     let qbo;
+
     // Check if a session was passed to use to define the qbo object.
-    // Then define the qbo object based on the sessions presence.
+    // Then define the qbo object based on the session presence.
     if (session) {
       qbo = await createQBObjectWithSession(session);
     } else {
@@ -121,9 +122,23 @@ export async function getAccounts(
         formattedAccounts.push(newFormattedAccount);
       }
     }
-    // Return the formatted results as a JSON string.
+    // Return the array of a query result and the formatted accounts as a JSON string.
     return JSON.stringify(formattedAccounts);
   } catch (error) {
-    return JSON.stringify(error);
+    // Return a query result formatted error message.
+    // Include a detail string if error message is present.
+    if (error instanceof Error) {
+      return JSON.stringify({
+        result: 'error',
+        message: 'Unexpected error occured while fetching accounts.',
+        detail: error.message,
+      });
+    } else {
+      return JSON.stringify({
+        result: 'error',
+        message: 'Unexpected error occured while fetching accounts.',
+        detail: 'N/A',
+      });
+    }
   }
 }

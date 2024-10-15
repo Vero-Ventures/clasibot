@@ -1,14 +1,26 @@
 'use server';
 
-import { createQBObject } from '../qb-client';
+import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import { checkFaultProperty, createQueryResult } from './helpers';
+import type { Session } from 'next-auth/core/types';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Purchase, PurchaseResponse } from '@/types/Purchase';
 
 // Find a specific purchase object by its ID and return a formatted result.
-export async function findFormattedPurchase(id: string): Promise<Purchase> {
-  // Create the QuickBooks API object.
-  const qbo = await createQBObject();
+export async function findFormattedPurchase(
+  id: string,
+  session: Session | null = null
+): Promise<Purchase> {
+  // Define the variable used to make the qbo calls.
+  let qbo;
+
+  // Check if a session was passed to use to define the qbo object.
+  // Then define the qbo object based on the session presence.
+  if (session) {
+    qbo = await createQBObjectWithSession(session);
+  } else {
+    qbo = await createQBObject();
+  }
 
   // Define success and error trackers for query response creation.
   let success = true;

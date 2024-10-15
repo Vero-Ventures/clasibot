@@ -50,7 +50,11 @@ async function updateCompanyInfo(realmId: string) {
 
     // Get the company name and update the company object.
     const companyIndustry = await getCompanyIndustry();
-    if (companyName !== 'Error: Name not found') {
+    if (
+      companyIndustry !== 'Error' &&
+      companyIndustry !== 'None' &&
+      companyIndustry !== ''
+    ) {
       updateCompany.industry = companyIndustry;
     }
 
