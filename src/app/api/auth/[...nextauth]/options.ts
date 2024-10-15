@@ -1,7 +1,7 @@
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
 import createDatabaseCompany from '@/actions/user-company/create-company';
-import { refreshToken } from '@/lib/refresh-token';
+import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
 import NextAuth, { getServerSession } from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
 import type {
@@ -205,6 +205,118 @@ export const options: NextAuthOptions = {
 
             await db.insert(Company).values(JSON.parse(companyData));
           }
+        }
+      } catch (error) {
+        // Log an error and return false to indicate there was an error during sign-in.
+        console.error('Error during sign-in:', error);
+        return false;
+      }
+      // Return true to indicate that sign-in was successful.
+      return true;
+    },
+  },
+  // Define the session max age.
+  session: {
+    maxAge: 24 * 60 * 60,
+  },
+};
+
+// Define the backend values for the client ID and secret for QuickBooks based on the environment.
+const useIDBackend =
+  process.env.APP_CONFIG === 'production'
+    ? process.env.BACKEND_PROD_CLIENT_ID
+    : process.env.BACKEND_DEV_CLIENT_ID;
+const useSecretBackend =
+  process.env.APP_CONFIG === 'production'
+    ? process.env.BACKEND_PROD_CLIENT_SECRET
+    : process.env.BACKEND_DEV_CLIENT_SECRET;
+
+export const backendOptions: NextAuthOptions = {
+  // Info for QuickBooks connection through OAuth using enviroment specific values.
+  providers: [
+    {
+      clientId: useIDBackend,
+      clientSecret: useSecretBackend,
+      id: 'quickbooks',
+      name: 'QuickBooks',
+      type: 'oauth',
+      wellKnown: wellknowURL,
+      authorization: {
+        params: {
+          scope:
+            'com.intuit.quickbooks.accounting openid profile email phone address',
+        },
+      },
+
+      // Define the userinfo endpoint to get the user profile.
+      userinfo: {
+        async request(context) {
+          // Check if the access token is available in the context.
+          if (context?.tokens?.access_token) {
+            // Return the user profile using the access token.
+            return context.client.userinfo(context?.tokens?.access_token);
+          } else {
+            // Throw an error if the access token is not available.
+            throw new Error('No access token');
+          }
+        },
+      },
+
+      // Define the profile function to get the user profile.
+      idToken: true,
+      checks: ['pkce', 'state'],
+      profile(profile) {
+        // Return the user profile data.
+        return {
+          id: profile.sub,
+          name: `${profile.givenName} ${profile.familyName}`,
+          email: profile.email,
+        };
+      },
+    },
+  ],
+  callbacks: {
+    // Define the JWT callback to get the token data.
+    async jwt({ token, account, profile }) {
+      if (account) {
+        // If the account is found, update the values, delete the realmId cookie, and return the token.
+        token.userId = profile?.sub;
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.realmId = cookies().get('realmId')?.value;
+        token.expiresAt = account.expires_at;
+        cookies().delete('realmId');
+        return token;
+      }
+      // If the account is not expired return the token.
+      if (token.expiresAt && Date.now() / 1000 < token.expiresAt) {
+        return token;
+      }
+      // If the token is expired, refresh the token and return the new token.
+      return refreshBackendToken(token);
+    },
+
+    // Define the session callback to get the session data.
+    async session({ session, token }) {
+      // Set the session fields with the token data and return the session.
+      session.userId = token.userId;
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
+      session.realmId = token.realmId;
+      session.expiresAt = token.expiresAt;
+      return session;
+    },
+
+    // Define the signIn callback to sign in the user.
+    async signIn({ user }) {
+      try {
+        const email = user.email;
+
+        // Check if the user email is available.
+        if (!email) {
+          console.error('No user email found in session');
+          // Return false to indicate that sign-in failed.
+          return false;
         }
       } catch (error) {
         // Log an error and return false to indicate there was an error during sign-in.
