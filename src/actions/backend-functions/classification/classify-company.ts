@@ -1,15 +1,15 @@
 'use server';
-import { setNextReviewTimestamp } from './next-review-timestamp';
-import { classifyTransactions } from '../classify';
-import { getAccounts } from '../quickbooks/get-accounts';
-import { getForReview } from '../quickbooks/get-for-review';
-import { getPastTransactions } from '../quickbooks/get-transactions';
+import { setNextReviewTimestamp } from '@/actions/backend-functions/next-review-timestamp';
+import { classifyTransactions } from './classify';
+import { getAccounts } from '@/actions/quickbooks/get-accounts';
+import { getForReview } from '@/actions/quickbooks/get-for-review';
+import { getPastTransactions } from '@/actions/quickbooks/get-transactions';
 import {
   getCompanyIndustry,
   getCompanyLocation,
   getCompanyName,
-} from '../quickbooks/user-info';
-import { addForReviewTransactions } from '../db-review-transactions/add-db-for-review';
+} from '@/actions/quickbooks/user-info';
+import { addForReviewTransactions } from '../add-db-for-review';
 import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
@@ -258,12 +258,4 @@ function createClassifiedForReviewTransactions(
   }
 
   return newCategorizedTransactions;
-}
-
-export async function manualReview(
-  setManualReviewState: (newState: string) => void
-) {
-  // Preform the manual review for the current user company.
-  // Update the manual review to indicate the process has started.
-  setManualReviewState('Loading Transactions ...');
 }

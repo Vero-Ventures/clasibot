@@ -1,4 +1,4 @@
-import { fetchCustomSearch } from '@/actions/llm-prediction/custom-search';
+import { fetchCustomSearch } from '@/actions/backend-functions/llm-prediction/custom-search';
 
 export async function GET(req: Request) {
   // Define the url and get the query from the url.

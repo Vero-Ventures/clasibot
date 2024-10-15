@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { manualReview } from '@/actions/backend-classification/classify-company';
+import { manualReview } from '@/actions/backend-functions/classification/classify-company';
 import { addTransactions } from '@/actions/db-transactions';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';

@@ -1,4 +1,4 @@
-import { fetchKnowledgeGraph } from '@/actions/llm-prediction/knowledge-graph';
+import { fetchKnowledgeGraph } from '@/actions/backend-functions/llm-prediction/knowledge-graph';
 
 export async function GET(req: Request) {
   // Define the url and get the query from the url.

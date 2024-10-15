@@ -3,10 +3,10 @@ import Fuse from 'fuse.js';
 import {
   batchQueryCategoriesLLM,
   batchQueryTaxCodesLLM,
-} from '@/actions/llm-prediction/llm';
+} from '@/actions/backend-functions/llm-prediction/llm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { checkSubscription } from '@/actions/stripe';
-import { getTaxCodes, getTaxCodesByLocation } from './quickbooks/taxes';
+import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
 import {
   addTransactions,
   getTopCategoriesForTransaction,

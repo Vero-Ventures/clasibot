@@ -1,4 +1,4 @@
-import { setNextReviewTimestamp } from '@/actions/backend-classification/next-review-timestamp';
+import { setNextReviewTimestamp } from '@/actions/backend-functions/next-review-timestamp';
 
 export async function GET() {
   const response = await setNextReviewTimestamp();
