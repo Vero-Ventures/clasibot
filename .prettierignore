@@ -36,8 +36,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#supabase
-/src/types/supabase.ts
-
 # drizzle
 /drizzle
