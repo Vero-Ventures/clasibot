@@ -64,13 +64,24 @@ export default function ReviewPage({
 
     const startManualReview = async () => {
       // Make call to backend for review function with the related states.
-      manualClassify(updateManualReviewState);
-      // Update the state to indicate the review is finished and begin loading the newly reviewed transactions.
-      setManualReviewState('Finished Review, Loading Transactions ...');
-      // Load the transactions from the database after the manual review.
-      setLoadedTransactions(await getDatabaseTransactions());
-      // Update manual review state with a finished message.
-      setManualReviewState('Manual Review Complete.');
+      const success = await manualClassify(updateManualReviewState);
+      if (success) {
+        // Update the state to indicate the review is finished and begin loading the newly reviewed transactions.
+        setManualReviewState('Finished Review, Loading Transactions ...');
+        // Load the transactions from the database after the manual review.
+        setLoadedTransactions(await getDatabaseTransactions());
+        // Update manual review state with a finished message.
+        setManualReviewState('Manual Review Complete.');
+        // Additional actions to perform on manual review completion.
+        // Completion state handling.
+        //
+        //
+      } else {
+        // Actions to preform in the event manual review results in an error.
+        // Failure state handling.
+        //
+        //
+      }
       // Update the state to indicate review is not longer in progress.
       setIsReviewing(false);
       setOpenFinishedReviewModal(true);
