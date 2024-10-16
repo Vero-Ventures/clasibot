@@ -20,6 +20,13 @@ export const User = pgTable('User', {
   subscriptionId: uuid('subscription_id').unique(),
 });
 
+export const Firm = pgTable('Firm', {
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  userId: uuid('user_id').references(() => User.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  userName: text('user_name').notNull(),
+});
+
 export const UserToCompanyRelations = relations(User, ({ many }) => ({
   companies: many(Company),
 }));

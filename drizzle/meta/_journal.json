@@ -106,6 +106,13 @@
       "when": 1728592682584,
       "tag": "0014_opposite_gambit",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1729114954316,
+      "tag": "0015_narrow_ulik",
+      "breakpoints": true
     }
   ]
 }
