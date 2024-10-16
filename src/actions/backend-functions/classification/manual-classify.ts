@@ -7,7 +7,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 export async function manualClassify(
   setManualReviewState: (newState: string) => void
 ): Promise<boolean> {
-  // Make some call to synthetic login to get the session and related tokens.
+  // Make call to synthetic login to get the synthetic session and related tokens.
   //
   //
 
