@@ -286,11 +286,21 @@ export default function ReviewPage({
         }
       });
       // Add all the newly created savable transactions to the database and set no error message to appear.
-      await addTransactions(newTransactions);
+      const result = await addTransactions(newTransactions);
+      // Check the Query Result returned by the add transactions function and return its message and detail it if it is an error.
+      if (result.result === 'Error') {
+        console.error(
+          'Error saving existing classified transactions:',
+          result.message,
+          ', Detail: ',
+          result.detail
+        );
+        setErrorMsg('An error occurred while saving. Please try again.');
+      }
       await setErrorMsg(null);
     } catch (error) {
       // Catch any errors, log them, and set the error message.
-      console.error('Error saving categories:', error);
+      console.error('Error saving existing classified transactions:', error);
       setErrorMsg('An error occurred while saving. Please try again.');
     } finally {
       // Once the saving process is complete, set the saving status to false and open the result modal.

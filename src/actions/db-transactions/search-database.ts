@@ -1,5 +1,5 @@
 'use server';
-import type { Classification } from '@/types/Classification';
+
 import { db } from '@/db/index';
 import {
   Transaction,
@@ -9,72 +9,77 @@ import {
   TransactionsToTaxCodes,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import type { Classification } from '@/types/Classification';
 
+// Takes the name of a transaction and the valid categories for classification.
+// Returns: An array of matching classifications from the database that are within the passed valid categories.
 export async function getTopCategoriesForTransaction(
   name: string,
   validCategories: Classification[]
 ): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any transaction with the passed name.
+    // Find any transaction objects in the database with the passed name.
     const transaction = await db
       .select()
       .from(Transaction)
       .where(eq(Transaction.transactionName, name));
 
-    // Get the transaction to category relations for the transaction.
-    const transactionCategories = await db
-      .select()
-      .from(TransactionsToCategories)
-      .where(eq(TransactionsToCategories.transactionId, transaction[0].id));
-
-    // Create an array to store the categories for the transaction.
-    const categories: {
-      id: number;
-      category: string;
-      count: number;
-    }[] = [];
-
-    // Get the categories for each relationship and add it to the categories array.
-    for (const relationship of transactionCategories) {
-      const category = await db
+    // Check that a matching transaction could be found.
+    if (transaction) {
+      // Get the transaction to category relationships for the found transaction.
+      const transactionCategories = await db
         .select()
-        .from(Category)
-        .where(eq(Category.id, relationship.categoryId));
+        .from(TransactionsToCategories)
+        .where(eq(TransactionsToCategories.transactionId, transaction[0].id));
 
-      categories.push(category[0]);
-    }
+      // Create an array to store the categories related to the transaction.
+      const categories: {
+        id: number;
+        category: string;
+        count: number;
+      }[] = [];
 
-    // If there are no categories, return an empty array
-    if (categories.length === 0) {
-      return [];
-    }
+      // For each relationship, get the related category and push it to the categories array.
+      for (const relationship of transactionCategories) {
+        const category = await db
+          .select()
+          .from(Category)
+          .where(eq(Category.id, relationship.categoryId));
+        categories.push(category[0]);
+      }
 
-    // Create a dictionary that maps category names to their IDs.
-    const validCategoryMap = validCategories.reduce<{ [key: string]: string }>(
-      (acc, category) => {
+      // If no matching categories are found, return an empty array.
+      if (categories.length === 0) {
+        return [];
+      }
+
+      // Create a dictionary that maps the valid passed category names to their IDs.
+      const validCategoryMap = validCategories.reduce<{
+        [key: string]: string;
+      }>((acc, category) => {
         acc[category.name] = category.id;
         return acc;
-      },
-      {}
-    );
+      }, {});
 
-    // Filter out any categories without a valid category by checking against the dictionary.
-    const filteredCategories = categories.filter((category) =>
-      Object.hasOwn(validCategoryMap, category.category)
-    );
+      // Take the out any matched categories that do not match to a valid category.
+      const filteredCategories = categories.filter((category) =>
+        Object.hasOwn(validCategoryMap, category.category)
+      );
 
-    // Sort the categories by count in descending order.
-    // Most common categories will be sorted to the front.
-    filteredCategories.sort((a, b) => b.count - a.count);
+      // Sort the categories by count (number of connections) in descending order.
+      // Most common categories will be sorted to the start of the array.
+      filteredCategories.sort((a, b) => b.count - a.count);
 
-    const maxCount = 3;
-    // Take the first 3 categories and return them.
-    const topCategories = filteredCategories.slice(0, maxCount);
-
-    return topCategories.map((category) => ({
-      id: validCategoryMap[category.category],
-      name: category.category,
-    }));
+      // Take the top 3 (or less) categories, map the names to the Id's and return them as an array.
+      const topCategories = filteredCategories.slice(0, 3);
+      return topCategories.map((category) => ({
+        id: validCategoryMap[category.category],
+        name: category.category,
+      }));
+    } else {
+      // If no matching transaction was found, return an empty array as there are no matches.
+      return [];
+    }
   } catch (error) {
     // Catch any errors, log them, and return an empty array.
     console.error('Error searching the database:', error);
@@ -87,66 +92,69 @@ export async function getTopTaxCodesForTransaction(
   validTaxCodes: Classification[]
 ): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any transaction with the passed name.
+    // Find any transaction objects in the database with the passed name.
     const transaction = await db
       .select()
       .from(Transaction)
       .where(eq(Transaction.transactionName, name));
 
-    // Get the transaction to tax codes relations for the transaction.
-    const transactionTaxCodes = await db
-      .select()
-      .from(TransactionsToTaxCodes)
-      .where(eq(TransactionsToTaxCodes.transactionId, transaction[0].id));
-
-    // Create an array to store the tax codes for the transaction.
-    const taxCodes: {
-      id: number;
-      taxCode: string;
-      count: number;
-    }[] = [];
-
-    // Get the tax code for each relationship by its ID and add it to the tax codes array.
-    for (const relationship of transactionTaxCodes) {
-      const taxCode = await db
+    // Check that a matching transaction could be found.
+    if (transaction) {
+      // Get the transaction to tax codes relationships for the found transaction.
+      const transactionTaxCodes = await db
         .select()
-        .from(TaxCode)
-        .where(eq(TaxCode.id, relationship.transactionId));
+        .from(TransactionsToTaxCodes)
+        .where(eq(TransactionsToTaxCodes.transactionId, transaction[0].id));
 
-      taxCodes.push(taxCode[0]);
-    }
+      // Create an array to store the tax codes related to the transaction.
+      const taxCodes: {
+        id: number;
+        taxCode: string;
+        count: number;
+      }[] = [];
 
-    // If there are no tax codes, return an empty array
-    if (taxCodes.length === 0) {
+      // For each relationship, get the related tax code and push it to the tax codes array.
+      for (const relationship of transactionTaxCodes) {
+        const taxCode = await db
+          .select()
+          .from(TaxCode)
+          .where(eq(TaxCode.id, relationship.transactionId));
+        taxCodes.push(taxCode[0]);
+      }
+
+      // If no matching tax codes are found, return an empty array
+      if (taxCodes.length === 0) {
+        return [];
+      }
+
+      // Create a dictionary that maps the valid passed category tax codes to their IDs.
+      const validTaxCodeMap = validTaxCodes.reduce<{ [key: string]: string }>(
+        (acc, taxCode) => {
+          acc[taxCode.name] = taxCode.id;
+          return acc;
+        },
+        {}
+      );
+
+      // Take the out any matched tax codes that do not match to a valid tax code.
+      const filtedTaxCodes = taxCodes.filter((taxCode) =>
+        Object.hasOwn(validTaxCodeMap, taxCode.taxCode)
+      );
+
+      // Sort the tax codes by count count (number of connections) in descending order.
+      // Most common tax codes will be sorted to the start of the array.
+      filtedTaxCodes.sort((a, b) => b.count - a.count);
+
+      // Take the top 3 (or less) categories, map the names to the Id's and return them as an array.
+      const topTaxCodes = filtedTaxCodes.slice(0, 3);
+      return topTaxCodes.map((taxCode) => ({
+        id: validTaxCodeMap[taxCode.taxCode],
+        name: taxCode.taxCode,
+      }));
+    } else {
+      // If no matching transaction was found, return an empty array as there are no matches.
       return [];
     }
-
-    // Create a dictionary that maps tax code names to their IDs.
-    const validTaxCodeMap = validTaxCodes.reduce<{ [key: string]: string }>(
-      (acc, taxCode) => {
-        acc[taxCode.name] = taxCode.id;
-        return acc;
-      },
-      {}
-    );
-
-    // Filter out any tax codes without a valid name by checking against the dictionary.
-    const filtedTaxCodes = taxCodes.filter((taxCode) =>
-      Object.hasOwn(validTaxCodeMap, taxCode.taxCode)
-    );
-
-    // Sort the tax codes by count in descending order.
-    // Most common tax codes will be sorted to the front.
-    filtedTaxCodes.sort((a, b) => b.count - a.count);
-
-    const maxCount = 3;
-    // Take the first 3 tax codes and return them.
-    const topTaxCodes = filtedTaxCodes.slice(0, maxCount);
-
-    return topTaxCodes.map((taxCode) => ({
-      id: validTaxCodeMap[taxCode.taxCode],
-      name: taxCode.taxCode,
-    }));
   } catch (error) {
     // Catch any errors, log them, and return an empty array.
     console.error('Error searching the database:', error);

@@ -42,7 +42,18 @@ export async function classifyTransactions(
 > {
   try {
     // Save the users saved (classified) transactions to the database for DB classification.
-    addTransactions(categorizedTransactions);
+    const result = await addTransactions(categorizedTransactions);
+
+    // Check the Query Result returned by the add transactions function and return its message and detail it if it is an error.
+    if (result.result === 'Error') {
+      console.error(
+        'Error saving existing classified user transactions:',
+        result.message,
+        ', Detail: ',
+        result.detail
+      );
+      return { error: 'Error saving existing classified user transactions.' };
+    }
   } catch (error) {
     // Log any errors to the console, then return an error message.
     console.error('Error saving existing classified user transactions:', error);

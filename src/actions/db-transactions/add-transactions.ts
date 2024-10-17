@@ -7,24 +7,28 @@ import {
   TaxCode,
   TransactionsToTaxCodes,
 } from '@/db/schema';
-import type { Transaction } from '@/types/Transaction';
 import { eq } from 'drizzle-orm';
+import type { QueryResult } from '@/types/QueryResult';
+import type { Transaction } from '@/types/Transaction';
 
+// Takes an array of saved user transactions and saves them to the database for future classification use.
+// Returns: A Query Result object.
 export async function addTransactions(
   transactions: Transaction[]
-): Promise<void> {
-  for (const transaction of transactions) {
-    try {
-      // Make a variable to track the transaction ID used to update the relationship tables.
+): Promise<QueryResult> {
+  try {
+    for (const transaction of transactions) {
+      // Make a variable to track the Id of the current transaction.
+      // The Id is used to update the relationship tables.
       let transactionID = 0;
 
-      // Check for an existing transaction with the same name as the current transaction.
+      // Check for any existing transactions with the same name as the current transaction.
       const existingTransaction = await db
         .select()
         .from(DrizzleTransaction)
         .where(eq(DrizzleTransaction.transactionName, transaction.name));
 
-      // Check if there is an existing transaction.
+      // Check if there is no existing transaction.
       if (!existingTransaction[0]) {
         // Create a new transaction with the transaction name.
         const newTransaction = await db
@@ -34,43 +38,58 @@ export async function addTransactions(
           })
           .returning();
 
-        // Set the transaction ID to the ID of the new transaction.
+        // Record the Id of the new transaction.
         transactionID = newTransaction[0].id;
       } else {
-        // If an existing transaction is found, set the transaction ID to the ID of the existing transaction.
+        // If an existing transaction is found, record the Id.
         transactionID = existingTransaction[0].id;
       }
 
-      // Create an array of all categories in the database.
+      // Create an array of all categories and tax codes present in the database.
       const categories = await db.select().from(Category);
+      const taxCodes = await db.select().from(TaxCode);
 
-      // Check through array of categories to see if the transactions category already exists.
+      // Check the existing classifications for ones that the classifications of the current transaction.
       const existingCategory = categories.find(
         (category) => category.category === transaction.category
       );
-
-      // Create an array of all tax codes in the database.
-      const taxCodes = await db.select().from(TaxCode);
-
-      // Check through array of categories to see if the transactions category already exists.
       const existingTaxCode = taxCodes.find(
         (taxCode) => taxCode.taxCode === transaction.taxCodeName
       );
 
-      // Call method to handle creating or updating the categories for the transaction.
+      // Call helper methods to handle creating or updating the classifications and relationships for the transaction.
       handleCategoryIncrement(existingCategory, transaction, transactionID);
-
-      // Call method to handle creating or updating the tax code for the transaction.
       handleTaxCodeIncrement(existingTaxCode, transaction, transactionID);
-    } catch (error) {
-      // Catch and log any errors that occur during the transaction addition process.
-      console.error('Error adding transaction:', error);
-      throw error;
+    }
+
+    // Return a success Query Response.
+    return {
+      result: 'Success',
+      message: 'Transactions Were Saved To Database',
+      detail: 'The Classified Saved User Transactions Were Saved Successfully',
+    };
+
+    // Catch any errors and return an error Query Response with the error message if it is present.
+  } catch (error) {
+    if (error instanceof Error) {
+      return {
+        result: 'Error',
+        message: 'An Unexpected Error Occured',
+        detail: error.message,
+      };
+    } else {
+      return {
+        result: 'Error',
+        message: 'An Unexpected Error Occured',
+        detail: 'N/A',
+      };
     }
   }
 }
 
-// Based on if an existing category exists, either increments that category or makes a new category with count 1.
+// Based on if an existing category exists, either increments that category or makes a new category object with a count of 1.
+// Takes an existing category with an ID, category name, and count (indicating number of matches to saved transactions).
+// Also takes the transaction being saved and the Id of its database object.
 async function handleCategoryIncrement(
   existingCategory:
     | {
@@ -83,28 +102,28 @@ async function handleCategoryIncrement(
   transactionID: number
 ) {
   try {
-    // Create or update the categorization for the transaction.
+    // Check that a non-null category was passed.
     if (existingCategory) {
-      // Get the transaction to categorization relations for the transaction.
+      // Get the transaction to category relationships for the transaction.
       const transactionCategories = await db
         .select()
         .from(TransactionsToCategories)
         .where(eq(TransactionsToCategories.transactionId, transactionID));
 
-      // Check the relationship table to see if the transaction is already linked to the category.
+      // Check the relationships to see if the transaction is already connected to the category object.
       const existingRelationship = transactionCategories.find(
         (relationship) => relationship.categoryId === existingCategory.id
       );
 
       if (!existingRelationship) {
-        // If there is no relationship, Create a new one between the transaction and category.
+        // If there is no relationship, Create a new one between the transaction and category objects.
         await db.insert(TransactionsToCategories).values({
           transactionId: transactionID,
           categoryId: existingCategory.id,
         });
       }
 
-      // Update the count for the number of times the category has been used.
+      // Update the count for the number of times the related category object has been connected to a transaction.
       await db
         .update(Category)
         .set({
@@ -112,7 +131,8 @@ async function handleCategoryIncrement(
         })
         .where(eq(Category.id, existingCategory.id));
     } else {
-      // If the category doesn't exist, create a new category with a count of 1.
+      // If there is no existing category object for the classification, create a new category object.
+      // Count is set to one, as there is one valid connection for the category (the current transaction).
       const newCategory = await db
         .insert(Category)
         .values({
@@ -121,13 +141,14 @@ async function handleCategoryIncrement(
         })
         .returning();
 
-      // Create a relationship between the transaction and new category.
+      // Define a relationship between the transaction and new category object.
       await db.insert(TransactionsToCategories).values({
         transactionId: transactionID,
         categoryId: newCategory[0].id,
       });
     }
   } catch (error) {
+    // Catch any errors and return an error response with the error message if it is present.
     if (error instanceof Error) {
       console.error('Error: ' + error.message);
     } else {
@@ -136,7 +157,9 @@ async function handleCategoryIncrement(
   }
 }
 
-// Based on if an existing tax code exists, either increments that tax code or makes a new tax code with count 1.
+// Based on if an existing tax code exists, either increments the count or makes a new tax code obejct with a count of 1.
+// Takes an existing tax code with an ID, category name, and count (indicating number of matches to saved transactions).
+// Also takes the transaction being saved and the Id of its database object.
 async function handleTaxCodeIncrement(
   existingTaxCode:
     | {
@@ -149,27 +172,28 @@ async function handleTaxCodeIncrement(
   transactionID: number
 ) {
   try {
+    // Check that a non-null tax code was passed.
     if (existingTaxCode) {
-      // Get the transaction to tax code relations for the transaction.
+      // Get the transaction to tax codes relationships for the transaction.
       const transactionsToTaxCodes = await db
         .select()
         .from(TransactionsToTaxCodes)
         .where(eq(TransactionsToTaxCodes.transactionId, transactionID));
 
-      // Check the relationship table to see if the transaction is already linked to the tax code.
+      // Check the relationships to see if the transaction is already connected to the tax code object.
       const existingRelationship = transactionsToTaxCodes.find(
         (relationship) => relationship.taxCodeId === existingTaxCode.id
       );
 
       if (!existingRelationship) {
-        // If there is no relationship, Create a new one between the transaction and tax code.
+        // If there is no relationship, Create a new one between the transaction and tax code objects.
         await db.insert(TransactionsToCategories).values({
           transactionId: transactionID,
           categoryId: existingTaxCode.id,
         });
       }
 
-      // Update the count for the number of times the tax code has been used.
+      // Update the count for the number of times the related category object has been connected to a transaction.
       await db
         .update(TaxCode)
         .set({
@@ -177,7 +201,8 @@ async function handleTaxCodeIncrement(
         })
         .where(eq(Category.id, existingTaxCode.id));
     } else {
-      // If the category doesn't exist, create a new tax code with a count of 1.
+      // If there is no existing tax code object for the classification, create a new tax code object.
+      // Count is set to one, as there is one valid connection for the tax code (the current transaction).
       const newTaxCode = await db
         .insert(TaxCode)
         .values({
@@ -186,13 +211,14 @@ async function handleTaxCodeIncrement(
         })
         .returning();
 
-      // Create a relationship between the transaction and new tax code.
+      // Define a relationship between the transaction and new tax code object.
       await db.insert(TransactionsToTaxCodes).values({
         transactionId: transactionID,
         taxCodeId: newTaxCode[0].id,
       });
     }
   } catch (error) {
+    // Catch any errors and return an error response with the error message if it is present.
     if (error instanceof Error) {
       console.error('Error: ' + error.message);
     } else {
