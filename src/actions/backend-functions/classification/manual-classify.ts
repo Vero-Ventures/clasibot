@@ -4,6 +4,9 @@ import { classifyCompany } from './classify-company';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
 
+// Takes a function to update state on front end.
+// Returns: A boolean indicating if manual review was successful.
+// Integration: Requires synthetic login and state handling on frontend.
 export async function manualClassify(
   setManualReviewState: (newState: string) => void
 ): Promise<boolean> {

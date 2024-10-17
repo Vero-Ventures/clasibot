@@ -15,6 +15,7 @@ const stripe = new Stripe(
 
 // Takes the company name and user email from a QBO company invite.
 // Returns: A Query Result object.
+// Integration: Called when a regular company connection invite comes through.
 export async function addCompanyConnection(
   userEmail: string,
   companyName: string
@@ -113,6 +114,7 @@ export async function addCompanyConnection(
 
 // Takes the accounting firm name and name of the inviting user from a QBO accounting invite.
 // Returns: A Query Result object.
+// Integration: Called when inital to an accounting firm invite comes through.
 export async function addAccountingFirmConnection(
   connectedFirmName: string,
   userName: string
@@ -166,6 +168,8 @@ export async function addAccountingFirmConnection(
 
 // Takes a firm name and an array of company names from a QBO access update email.
 // Returns: A Query Result object.
+// Integration: Called when the permissions update email for an accounting firm comes through.
+//    Important to inform users to wait for acceptance before giving permissions.
 export async function addAccountingFirmCompanies(
   connectedFirmName: string,
   companyNames: string[]
@@ -331,6 +335,8 @@ export async function addAccountingFirmCompanies(
 
 // Takes a companies realm Id and sets it to inactive in the database.
 // Returns: A Query Result object.
+// Integration: Called by a frontend button that allows user to set a company to be disconnected.
+//    Done when a user removes the connection through QuickBooks, required to be done in app as well to avoid issues.
 export async function makeCompanyIncactive(
   realmId: string
 ): Promise<QueryResult> {

@@ -155,92 +155,74 @@ export async function queryLLM(
   }
 }
 
-export async function batchQueryCategoriesLLM(
+export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
+  transactionCategories: Record<string, ClassifiedElement[]>,
   classifications: Classification[],
-  companyInfo: CompanyInfo
+  companyInfo: CompanyInfo,
+  type: string
 ): Promise<ClassifiedResult[]> {
   try {
     // Define the resultScore threshold for the Knowledge Graph API.
     const threshold = 10;
 
     // Extract valid category names from Category objects
-    const validCategoriesNames = classifications.map(
+    const validClassificationNames = classifications.map(
       (classification) => classification.name
     );
 
-    // Generate a list of contexts for each transaction using the transaction name and the list of valid categories.
-    const contextPromises = transactions.map(
-      async (transaction: FormattedForReviewTransaction) => {
-        // Define the prompt as having no industry, then check if industry is valid.
-        let prompt = noIndustyCategoryPrompt;
-        if (
-          companyInfo.industry !== 'None' &&
-          companyInfo.industry !== 'Error'
-        ) {
-          // Set prompt to use base prompt that includes industry and set the industry value.
-          prompt = baseCategoryPrompt;
-          prompt.replace('$INDUSTRY', companyInfo.industry);
-        }
-        // Replace the values present in both prompt types.
-        prompt
-          .replace('$NAME', transaction.name)
-          .replace('$AMOUNT', Math.abs(transaction.amount).toString())
-          .replace('$CATEGORIES', validCategoriesNames.join(', '));
+    // Define the context promises variable.
+    let contextPromises;
 
-        // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
-        const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
-
-        // Filter descriptions to those with a resultScore above the threshold
-        const descriptions = kgResults.filter(
-          (result) => result.resultScore > threshold
-        );
-
-        // Define a description variable and check that the descriptions exist.
-        let description;
-        if (descriptions.length > 0) {
-          // Use the first detailed description if it exists.
-          description = descriptions[0].detailedDescription;
-        } else {
-          // Otherwise, use a default description.
-          description = 'No description available';
-        }
-
-        // Return the transaction ID, prompt, and context.
-        return {
-          prompt,
-          transaction_ID: transaction.transaction_ID,
-          context: description,
-        };
-      }
-    );
+    // Determine context promise based on classification type.
+    if (type === 'category') {
+      contextPromises = await categoryContext(
+        transactions,
+        validClassificationNames,
+        companyInfo,
+        threshold
+      );
+    } else {
+      contextPromises = await taxCodeContext(
+        transactions,
+        transactionCategories,
+        validClassificationNames,
+        companyInfo,
+        threshold
+      );
+    }
 
     // Wait for all contexts to be generated using the above method.
     const contexts = await Promise.all(contextPromises);
 
+    // Define the system instructions to use based on classification type.
+    let systemInstructions;
+    if (type === 'category') {
+      systemInstructions = CategorySystemInstructions;
+    } else {
+      systemInstructions = TaxCodeSystemInstructions;
+    }
+
     const results: ClassifiedResult[] = [];
     for (const { transaction_ID, prompt, context } of contexts) {
       // Query the Language Model for a response using the prompt and context.
-      const response = await queryLLM(
-        prompt,
-        context,
-        CategorySystemInstructions
-      );
+      const response = await queryLLM(prompt, context, systemInstructions);
       let possibleClassifications: Classification[] = [];
 
       if (response) {
         const responseText = response.toLowerCase();
 
         // Filter the valid categories to those that are included in the response text.
-        const possibleValidCategories = validCategoriesNames.filter(
-          (category) => responseText.includes(category.toLowerCase())
+        const possibleValidclassifications = validClassificationNames.filter(
+          (classification) =>
+            responseText.includes(classification.toLowerCase())
         );
 
         // Map the possible valid categories to the actual categories.
-        possibleClassifications = possibleValidCategories.map(
-          (categoryName) =>
+        possibleClassifications = possibleValidclassifications.map(
+          (classificationName) =>
             classifications.find(
-              (classification) => classification.name === categoryName
+              (classification) => classification.name === classificationName
             ) as Classification
         );
       }
@@ -265,140 +247,140 @@ export async function batchQueryCategoriesLLM(
   }
 }
 
-export async function batchQueryTaxCodesLLM(
+// Defines the context used by category classification.
+function categoryContext(
+  transactions: FormattedForReviewTransaction[],
+  validClassificationNames: string[],
+  companyInfo: CompanyInfo,
+  threshold: number
+): Promise<{
+  prompt: string;
+  transaction_ID: string;
+  context: string;
+}>[] {
+  // Generate a list of contexts for each transaction using the transaction name and the list of valid categories.
+  return transactions.map(
+    async (transaction: FormattedForReviewTransaction) => {
+      // Define the prompt as having no industry, then check if industry is valid.
+      let prompt = noIndustyCategoryPrompt;
+      if (companyInfo.industry !== 'None' && companyInfo.industry !== 'Error') {
+        // Set prompt to use base prompt that includes industry and set the industry value.
+        prompt = baseCategoryPrompt;
+        prompt.replace('$INDUSTRY', companyInfo.industry);
+      }
+      // Replace the values present in both prompt types.
+      prompt
+        .replace('$NAME', transaction.name)
+        .replace('$AMOUNT', Math.abs(transaction.amount).toString())
+        .replace('$CATEGORIES', validClassificationNames.join(', '));
+
+      // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
+      const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
+
+      // Filter descriptions to those with a resultScore above the threshold
+      const descriptions = kgResults.filter(
+        (result) => result.resultScore > threshold
+      );
+
+      // Define a description variable and check that the descriptions exist.
+      let description;
+      if (descriptions.length > 0) {
+        // Use the first detailed description if it exists.
+        description = descriptions[0].detailedDescription;
+      } else {
+        // Otherwise, use a default description.
+        description = 'No description available';
+      }
+
+      // Return the transaction ID, prompt, and context.
+      return {
+        prompt,
+        transaction_ID: transaction.transaction_ID,
+        context: description,
+      };
+    }
+  );
+}
+
+// Defines the context used by tax code classification.
+function taxCodeContext(
   transactions: FormattedForReviewTransaction[],
   transactionCategories: Record<string, ClassifiedElement[]>,
-  classifications: Classification[],
-  companyInfo: CompanyInfo
-): Promise<ClassifiedResult[]> {
-  try {
-    // Define the resultScore threshold for the Knowledge Graph API.
-    const threshold = 10;
+  validClassificationNames: string[],
+  companyInfo: CompanyInfo,
+  threshold: number
+): Promise<{
+  prompt: string;
+  transaction_ID: string;
+  context: string;
+}>[] {
+  // Generate a list of contexts for each transaction using the transaction name and the list of valid categories.
+  return transactions.map(
+    async (transaction: FormattedForReviewTransaction) => {
+      // Define the minimal value tax code prompt, then check for industry and category is valid.
+      let prompt = noCategoryAndIndustryTaxCodePrompt;
+      // Define values for if industry and category are present.
+      let industryPresent = false;
+      let categoryPresent = false;
 
-    // Extract valid category names from Category objects
-    const validCategoriesNames = classifications.map(
-      (classification) => classification.name
-    );
+      if (companyInfo.industry !== 'None' && companyInfo.industry !== 'Error') {
+        industryPresent = true;
+      }
 
-    // Generate a list of contexts for each transaction using the transaction name and the list of valid categories.
-    const contextPromises = transactions.map(
-      async (transaction: FormattedForReviewTransaction) => {
-        // Define the minimal value tax code prompt, then check for industry and category is valid.
-        let prompt = noCategoryAndIndustryTaxCodePrompt;
-        // Define values for if industry and category are present.
-        let industryPresent = false;
-        let categoryPresent = false;
+      if (transactionCategories[transaction.transaction_ID]) {
+        categoryPresent = true;
+      }
 
-        if (
-          companyInfo.industry !== 'None' &&
-          companyInfo.industry !== 'Error'
-        ) {
-          industryPresent = true;
-        }
-
-        if (transactionCategories[transaction.transaction_ID]) {
-          categoryPresent = true;
-        }
-
-        // Set prompt based on combined industry and category values.
-        if (industryPresent && !categoryPresent) {
-          prompt = noCategoryTaxCodePrompt.replace(
-            '$INDUSTRY',
-            companyInfo.industry
-          );
-        } else if (!industryPresent && categoryPresent) {
-          prompt = noIndustyTaxCodePrompt.replace(
+      // Set prompt based on combined industry and category values.
+      if (industryPresent && !categoryPresent) {
+        prompt = noCategoryTaxCodePrompt.replace(
+          '$INDUSTRY',
+          companyInfo.industry
+        );
+      } else if (!industryPresent && categoryPresent) {
+        prompt = noIndustyTaxCodePrompt.replace(
+          '$CATEGORY',
+          transactionCategories[transaction.transaction_ID][0].name
+        );
+      } else if (industryPresent && categoryPresent) {
+        prompt = baseTaxCodePrompt
+          .replace('$INDUSTRY', companyInfo.industry)
+          .replace(
             '$CATEGORY',
             transactionCategories[transaction.transaction_ID][0].name
           );
-        } else if (industryPresent && categoryPresent) {
-          prompt = baseTaxCodePrompt
-            .replace('$INDUSTRY', companyInfo.industry)
-            .replace(
-              '$CATEGORY',
-              transactionCategories[transaction.transaction_ID][0].name
-            );
-        }
-
-        // Replace the values present in all prompt types.
-        prompt
-          .replace('$NAME', transaction.name)
-          .replace('$AMOUNT', Math.abs(transaction.amount).toString())
-          .replace('$TAX_CODES', validCategoriesNames.join(', '));
-
-        // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
-        const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
-
-        // Filter descriptions to those with a resultScore above the threshold
-        const descriptions = kgResults.filter(
-          (result) => result.resultScore > threshold
-        );
-
-        // Define a description variable and check that the descriptions exist.
-        let description;
-        if (descriptions.length > 0) {
-          // Use the first detailed description if it exists.
-          description = descriptions[0].detailedDescription;
-        } else {
-          // Otherwise, use a default description.
-          description = 'No description available';
-        }
-
-        // Return the transaction ID, prompt, and context.
-        return {
-          prompt,
-          transaction_ID: transaction.transaction_ID,
-          context: description,
-        };
       }
-    );
 
-    // Wait for all contexts to be generated using the above method.
-    const contexts = await Promise.all(contextPromises);
+      // Replace the values present in all prompt types.
+      prompt
+        .replace('$NAME', transaction.name)
+        .replace('$AMOUNT', Math.abs(transaction.amount).toString())
+        .replace('$TAX_CODES', validClassificationNames.join(', '));
 
-    const results: ClassifiedResult[] = [];
-    for (const { transaction_ID, prompt, context } of contexts) {
-      // Query the Language Model for a response using the prompt and context.
-      const response = await queryLLM(
-        prompt,
-        context,
-        TaxCodeSystemInstructions
+      // Fetch detailed descriptions from the Knowledge Graph API, may return an empty array.
+      const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
+
+      // Filter descriptions to those with a resultScore above the threshold
+      const descriptions = kgResults.filter(
+        (result) => result.resultScore > threshold
       );
-      let possibleClassifications: Classification[] = [];
 
-      if (response) {
-        const responseText = response.toLowerCase();
-
-        // Filter the valid categories to those that are included in the response text.
-        const possibleValidCategories = validCategoriesNames.filter(
-          (category) => responseText.includes(category.toLowerCase())
-        );
-
-        // Map the possible valid categories to the actual categories.
-        possibleClassifications = possibleValidCategories.map(
-          (categoryName) =>
-            classifications.find(
-              (classification) => classification.name === categoryName
-            ) as Classification
-        );
+      // Define a description variable and check that the descriptions exist.
+      let description;
+      if (descriptions.length > 0) {
+        // Use the first detailed description if it exists.
+        description = descriptions[0].detailedDescription;
+      } else {
+        // Otherwise, use a default description.
+        description = 'No description available';
       }
 
-      // Add the transaction ID and possible categories to the results.
-      // Also record it was classified by the LLM.
-      results.push({
-        transaction_ID,
-        possibleClassifications,
-        classifiedBy: 'LLM API',
-      });
+      // Return the transaction ID, prompt, and context.
+      return {
+        prompt,
+        transaction_ID: transaction.transaction_ID,
+        context: description,
+      };
     }
-    // Return the results.
-    return results;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error: ' + error.message);
-    } else {
-      console.error('Unexpected Error.');
-    }
-    return [];
-  }
+  );
 }
