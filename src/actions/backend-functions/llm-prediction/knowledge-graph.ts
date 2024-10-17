@@ -1,23 +1,25 @@
 'use server';
 import { google } from 'googleapis';
 
-// Define an interface for the returned knowledge graph results.
+// Define an interface for the found and returned Knowledge Graph results.
 interface KnowledgeGraphResult {
   name: string;
   resultScore: number;
   detailedDescription: string;
 }
 
+// Takes a search query for a 'For Review' transaction from the LLM and uses Google Knowledge Graph to generate context.
+// Returns an Knowledge Graph Result object as the context.
 export async function fetchKnowledgeGraph(
   query: string
 ): Promise<KnowledgeGraphResult[]> {
-  // Create a new knowledge graph client and load the API key.
+  // Create a new Knowledge Graph client and load the API key.
   const kgsearch = google.kgsearch('v1');
   const apiKey = process.env.GOOGLE_API_KEY;
 
   try {
-    // Fetch knowledge graph results using the API key and the query.
-    // Defines the types of entities to search for and limits the number of results to 1.
+    // Fetch Knowledge Graph context by defining  the types of entities to search for.
+    // Limits the number of results to 1 for clearer use in prediction.
     const response = await kgsearch.entities.search({
       query,
       auth: apiKey,
@@ -26,7 +28,7 @@ export async function fetchKnowledgeGraph(
       indent: true,
     });
 
-    // If a response is returned, reformat the data to be returned.
+    // If a response is returned, reformat the data to the define Knowledge Graph Result object.
     if (response.data.itemListElement) {
       return response.data.itemListElement.map(
         (item: {
@@ -36,12 +38,12 @@ export async function fetchKnowledgeGraph(
           };
           resultScore: number;
         }) => {
-          // Define an empty description, then check if a detailed description was returned and update the description.
+          // Define an inital empty description, then update the description if a detailed description was returned.
           let description = '';
           if (item.result.detailedDescription) {
             description = item.result.detailedDescription.articleBody;
           }
-          // Return the reformatted result.
+          // Return the Knowledge Graph results as a formatted Knowledge Graph Result object.
           return {
             name: item.result.name,
             resultScore: item.resultScore,
@@ -50,11 +52,11 @@ export async function fetchKnowledgeGraph(
         }
       );
     } else {
-      // If no response is returned, return an empty array.
+      // If no response is returned, return an empty array as the Knowledge Graph Result object.
       return [];
     }
   } catch (error) {
-    // Log any errors that occur and return an empty array.
+    // Catch any errors that occured, log the error and return an empty array as the Knowledge Graph Result object.
     console.error('Error fetching knowledge graph:', error);
     return [];
   }

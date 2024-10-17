@@ -7,21 +7,23 @@ import {
   ForReviewTransactionToCategories,
   ForReviewTransactionToTaxCodes,
 } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import type { ForReviewTransaction } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
-import { eq } from 'drizzle-orm';
 
+// Takes a raw for review transaction and removes the related object from the database.
+// Returns: A Query Result object.
 export async function removeForReviewTransactions(
   savedTransaction: ForReviewTransaction
 ): Promise<QueryResult> {
   try {
-    // Get the session to get the company ID (realm ID).
+    // Get the session to extract the realm Id.
     const session = await getServerSession(options);
     const companyID = session?.realmId;
 
-    // Continue with deletion if a realm ID was found.
+    // Check if a valid realm Id was found.
     if (companyID) {
-      // Get the transaction by unique combo of company ID and transaction ID.
+      // Get the 'For Review' transaction by unique combo of realm Id and transaction Id.
       const transactionToDelete = await db
         .select()
         .from(DatabaseForReviewTransaction)
@@ -30,7 +32,7 @@ export async function removeForReviewTransactions(
             eq(DatabaseForReviewTransaction.transactionId, savedTransaction.id)
         );
 
-      // Delete any relationships with categories.
+      // Use the ID of the found 'For Review' transaction to find and delete and relationships to categories.
       await db
         .delete(ForReviewTransactionToCategories)
         .where(
@@ -40,7 +42,7 @@ export async function removeForReviewTransactions(
           )
         );
 
-      // Delete any relationships with tax codes.
+      // Repeat the classification relationship deletion process with the tax codes.
       await db
         .delete(ForReviewTransactionToTaxCodes)
         .where(
@@ -50,7 +52,7 @@ export async function removeForReviewTransactions(
           )
         );
 
-      // Delete the 'for review' transaction itself.
+      // After all relationships are deleted, delete the 'For Review' transaction from the database.
       await db
         .delete(DatabaseForReviewTransaction)
         .where(
@@ -67,7 +69,7 @@ export async function removeForReviewTransactions(
           '"For Review" transactions and their connections removed from the database.',
       };
     } else {
-      // Return an error query result indicating companyID could not be found.
+      // Return an error query result indicating a realm Id could not be found.
       return {
         result: 'Error',
         message: 'Company ID for current user could not be found.',
@@ -75,7 +77,7 @@ export async function removeForReviewTransactions(
       };
     }
   } catch (error) {
-    // Catch any errors, return the message if there is one, otherwise return a custom error message.
+    // Catch any errors and return an error result with the error message if it present.
     if (error instanceof Error && error.message) {
       return {
         result: 'Error',

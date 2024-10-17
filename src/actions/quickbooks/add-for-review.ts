@@ -10,13 +10,13 @@ export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
   categoryId: string,
   taxCodeId: string,
-  companyId: string,
+  realmId: string,
   fetchToken: string,
   authId: string
 ): Promise<QueryResult> {
   try {
     // Define the account ID for the call and the full endpoint to use.
-    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${companyId}/olb/ng/batchAcceptTransactions`;
+    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${realmId}/olb/ng/batchAcceptTransactions`;
 
     // Convert the passed ForReviewTransaction to a useable update object for the QBO API.
     const body = createForReviewUpdateObject(
@@ -35,7 +35,7 @@ export async function addForReview(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${authId}; SameSite=None`,
+        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${realmId}; qbo.authid=${authId}; SameSite=None`,
       },
       body: JSON.stringify(body),
     });

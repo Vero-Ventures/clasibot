@@ -7,40 +7,45 @@ import {
   ForReviewTransactionToCategories,
   Category,
   ForReviewTransactionToTaxCodes,
-  TaxCode,
+  TaxCode as DatabaseTaxCode,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getAccounts } from '../quickbooks/get-accounts';
-import { getTaxCodes } from '../quickbooks/taxes';
+import { getAccounts } from '@/actions/quickbooks/get-accounts';
+import { getTaxCodes } from '@/actions/quickbooks/taxes';
+import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
 import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
+import type { TaxCode } from '@/types/TaxCode';
 
+// Gets the 'For Review' transactions saved to the database for the current user.
+// Returns: An array of sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]
 export async function getDatabaseTransactions(): Promise<
-  (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
+  (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
 > {
   try {
-    // Get the session to get the companies ID (realm ID).
+    // Get the current session to extract the companies realmId.
     const session = await getServerSession(options);
 
-    // Create an array to store the raw and classified 'for review' transactions.
+    // Create an array to store the classified and raw 'For Review' transactions.
     const classifiedTransactions: (
-      | ForReviewTransaction
       | ClassifiedForReviewTransaction
+      | ForReviewTransaction
     )[][] = [];
 
-    // If the realm ID is present, fetch all DB transactions for that company.
+    // If the realm Id is present, fetch all database 'For Review' transactions for that company.
     if (session?.realmId) {
       const classifiedForReviewTransactions = await db
         .select()
         .from(DatabaseForReviewTransaction)
-        .where(eq(DatabaseForReviewTransaction.companyId, session?.realmId));
+        .where(eq(DatabaseForReviewTransaction.companyId, session!.realmId));
 
-      // Iterate through the fetched transactions to get their classifications and save them to the array.
+      // Iterate through the fetched 'For Review' transactions to convert them from the database formatting to the require object types.
       for (const forReviewTransaction of classifiedForReviewTransactions) {
-        // Define the raw transaction needed for the saving process later.
+        // Extract the data from the DB 'For Review' transaction to create the raw transaction format.
+        // The raw format is needed for writing to the QuickBooks database in the saving process later.
         const rawTransaction: ForReviewTransaction = {
           id: forReviewTransaction.id,
           olbTxnId: forReviewTransaction.transactionId,
@@ -56,34 +61,39 @@ export async function getDatabaseTransactions(): Promise<
           },
         };
 
-        // Call method to get the categories and tax codes for the transaction as classified elements.
+        // Call helper to convert the database data to the needed classified elements.
         const transactionCategories: ClassifiedElement[] =
           await getTransactionCategories(forReviewTransaction);
 
         const transactionTaxCodes: ClassifiedElement[] =
           await getTransactionTaxCodes(forReviewTransaction);
 
-        // Get the possible transaction accounts to find the transaction's account name.
+        // Get the possible transaction accounts from the user to find the transaction's account name.
         const transactionAccountsResult = JSON.parse(
           await getAccounts('Transaction')
         );
 
         // Check if the fetch resulted in an error.
         if (transactionAccountsResult[0].result === 'Error') {
-          // Log the error and continue to the end of the function to return an empty array.
+          // Log the error message and detail and continue to the end of the iteration.
+          // Iteration will return an empty array as no values will be pushed.
           console.error(
             transactionAccountsResult[0].message +
               ', Detail: ' +
               transactionAccountsResult[0].detail
           );
         } else {
-          // If the call did not result in an error, remove the first value and continue.
+          // If the call did not result in an error, remove the Query Result from the first index.
           const checkedAccounts = transactionAccountsResult.slice(1);
 
-          // Iterate through the accounts to find the matching one and use its name to make the classified 'for review' transaction.
+          // Iterate through the transaction accounts to find the one matching the 'For Review' transactions account Id.
+          // Needed to record its name to make the classified 'For Review' transaction (For frontend selection).
           for (const account of checkedAccounts) {
+            // Once the account with the matching name is found,
             if (account.id === forReviewTransaction.accountId) {
-              // Create the classified 'for review' transaction for the database transaction.
+              // Create the classified 'For Review' transaction.
+              // Uses the transaction details from the fetched database 'For Review' transaction, -
+              // classifications from the helper methods, and account name from the related account.
               const classifiedTransaction: ClassifiedForReviewTransaction = {
                 // ID for the 'For Review' transaction.
                 transaction_ID: forReviewTransaction.id,
@@ -96,7 +106,7 @@ export async function getDatabaseTransactions(): Promise<
                 taxCodes: transactionTaxCodes,
               };
 
-              // Add both the formatted classified transaction and the raw transaction data to the array.
+              // Add both the classified and raw 'For Review' transaction objects to the array.
               classifiedTransactions.push([
                 classifiedTransaction,
                 rawTransaction,
@@ -106,15 +116,17 @@ export async function getDatabaseTransactions(): Promise<
         }
       }
     }
-    // Return the array of classified transactions and their related raw transaction.
-    // Array will be empty if a valid realm ID could not be found from the session or if a QBO API fetch fails.
+    // Return the array of classified and raw 'For Review' transactions.
+    // Array will be empty if a valid realm ID could not be found from the session.
     return classifiedTransactions;
   } catch (error) {
+    // Catch any errors and return an error response with the error message if it present.
     if (error instanceof Error) {
       console.error('Error: ' + error.message);
     } else {
       console.error('Unexpected Error.');
     }
+    // Return an empty array on error, to indicate no fetched database 'For Review' transactions.
     return [];
   }
 }
@@ -136,11 +148,13 @@ type databaseForReviewTransaction = {
   topTaxCodeClassification: string;
 };
 
+// Takes a database 'For Review' transaction and finds its assosiated category classifications in the database.
+// Returns: Converts the database category classifications to an array of ClassifiedElements.
 async function getTransactionCategories(
   forReviewTransaction: databaseForReviewTransaction
 ): Promise<ClassifiedElement[]> {
   try {
-    // Get the categories related to the transaction and create an array to store them.
+    // Get the categories related to the transaction by its Id.
     const transactionCategories = await db
       .select()
       .from(ForReviewTransactionToCategories)
@@ -150,26 +164,29 @@ async function getTransactionCategories(
           forReviewTransaction.id
         )
       );
+
+    // Define an array to store the re-formatted classifications as Classified Elements.
     const classifiedCategories: ClassifiedElement[] = [];
 
-    // Get the list of expense accounts for the user to use to get the ID of the fetched categories.
+    // Get the list of expense accounts for the user, used to get the ID of the fetched categories.
     const expenseAccountsResult = JSON.parse(await getAccounts('Expense'));
 
     // Check if the fetch resulted in an error.
     if (expenseAccountsResult[0].result === 'Error') {
-      // Log the error and continue to the end of the function to return an empty array.
+      // Log the error message and detail from the inital Query Result index and continue to the end of the function.
+      // Function will return an empty array as no values will be pushed.
       console.error(
         expenseAccountsResult[0].message +
           ', Detail: ' +
           expenseAccountsResult[0].detail
       );
     } else {
-      // If the call did not result in an error, remove the first value and continue.
-      const checkedAccounts = expenseAccountsResult.slice(1);
+      // If the call did not result in an error, remove the Query Result in the first index.
+      const checkedAccounts = expenseAccountsResult.slice(1) as Account[];
 
-      // Iterate through the related categories to get them from the database.
+      // Iterate through the category classification relationships for the 'For Review' transaction.
       for (const category of transactionCategories) {
-        // Use the ID to get the related category from the database.
+        // Use the ID from the relationship to get the category classification from the database.
         const fullCategory = await db
           .select()
           .from(Category)
@@ -177,36 +194,41 @@ async function getTransactionCategories(
 
         // Iterate through the user accounts to find the account with the matching name.
         for (const expenseAccount of checkedAccounts) {
-          // Once the account with the matching name is found, use it to get the id of the account related to the category.
+          // Once the account with the matching name is found,
           if (expenseAccount.name === fullCategory[0].category) {
-            // Push a new classified element to the array of classified categories.
+            // Use the found account to define the ID and name, and the transaction to define the classification method.
+            // Push the defined classification to the database with the type 'category'.
             classifiedCategories.push({
               type: 'category',
               id: expenseAccount.id,
-              name: fullCategory[0].category,
+              name: expenseAccount.name,
               classifiedBy: forReviewTransaction.topCategoryClassification,
             });
           }
         }
       }
     }
-    // Return the (potentially empty) array of classified elements for the related categories.
+    // Return the (potentially empty from error catch) array of classified elements for the related categories.
     return classifiedCategories;
   } catch (error) {
+    // Catch any errors and return an error response with the error message if it present.
     if (error instanceof Error) {
       console.error('Error: ' + error.message);
     } else {
       console.error('Unexpected Error.');
     }
+    // Return an empty array on error, to indicate no related category classifications.
     return [];
   }
 }
 
+// Takes a database 'For Review' transaction and finds its assosiated tax code classifications in the database.
+// Returns: Converts the database tax code classifications to an array of ClassifiedElements.
 async function getTransactionTaxCodes(
   forReviewTransaction: databaseForReviewTransaction
 ): Promise<ClassifiedElement[]> {
   try {
-    // Get the tax codes related to the transaction and create an array to store them.
+    // Get the tax cpdes related to the transaction by its Id.
     const transactionTaxCodes = await db
       .select()
       .from(ForReviewTransactionToTaxCodes)
@@ -216,47 +238,58 @@ async function getTransactionTaxCodes(
           forReviewTransaction.id
         )
       );
+
+    // Define an array to store the re-formatted classifications as Classified Elements.
     const classifiedTaxCodes: ClassifiedElement[] = [];
 
-    // Get the list of expense accounts for the user to use to get the ID of the fetched tax codes.
+    // Get the list of tax codes for the user, used to get the ID of the fetched tax codes.
     const taxCodesResponse = JSON.parse(await getTaxCodes());
 
-    // Check if the query was successful and continue with the rest of the accounts if it is.
-    if (taxCodesResponse[0].result === 'Success') {
-      // Define the rest of the expense accounts
-      const qboTaxCodes = taxCodesResponse.split(1);
+    // Check if the fetch resulted in an error.
+    if (taxCodesResponse[0].result === 'Error') {
+      // Log the error message and detail from the inital Query Result index and continue to the end of the function.
+      // Function will return an empty array as no values will be pushed.
+      console.error(
+        taxCodesResponse[0].message + ', Detail: ' + taxCodesResponse[0].detail
+      );
+    } else {
+      // If the call did not result in an error, remove the Query Result in the first index.
+      const qboTaxCodes = taxCodesResponse.split(1) as TaxCode[];
 
-      // Iterate through the related tax codes to get them from the database.
+      // Iterate through the tax code classification relationships for the 'For Review' transaction.
       for (const taxCode of transactionTaxCodes) {
-        // Use the ID to get the related tax code from the database.
+        // Use the ID from the relationship to get the tax code classification from the database.
         const fullTaxCode = await db
           .select()
-          .from(TaxCode)
-          .where(eq(TaxCode.id, taxCode.taxCodeId));
+          .from(DatabaseTaxCode)
+          .where(eq(DatabaseTaxCode.id, taxCode.taxCodeId));
 
         // Iterate through the user tax codes to find the one with the matching name.
         for (const qboTaxCode of qboTaxCodes) {
-          // Once the tax code with the matching name is found, use it to get the id of the related tax code.
+          // Once the tax code with the matching name is found,
           if (qboTaxCode.Name === fullTaxCode[0].taxCode) {
-            // Push a new classified element to the array of classified tax codes.
+            // Use the found account to define the ID and name, and the transaction to define the classification method.
+            // Push the defined classification to the database with the type 'tax code'.
             classifiedTaxCodes.push({
-              type: 'category',
+              type: 'tax code',
               id: qboTaxCode.Id,
-              name: fullTaxCode[0].taxCode,
+              name: qboTaxCode.Name,
               classifiedBy: forReviewTransaction.topTaxCodeClassification,
             });
           }
         }
       }
     }
-    // Return the (potentially empty) array of classified elements for the related tax codes.
+    // Return the (potentially empty from error catch) array of classified elements for the related tax codes.
     return classifiedTaxCodes;
   } catch (error) {
+    // Catch any errors and return an error response with the error message if it present.
     if (error instanceof Error) {
       console.error('Error: ' + error.message);
     } else {
       console.error('Unexpected Error.');
     }
+    // Return an empty array on error, to indicate no related tax code classifications.
     return [];
   }
 }

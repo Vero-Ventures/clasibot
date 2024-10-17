@@ -2,11 +2,14 @@
 import type { customsearch_v1 } from 'googleapis';
 import { google } from 'googleapis';
 
+// Takes a search query for a 'For Review' transaction from the LLM and uses Google CSE to generate context.
+// Returns an array of CSE conext results.
 export async function fetchCustomSearch(
   query: string
 ): Promise<customsearch_v1.Schema$Result[]> {
+  // Check env value to see if custom search is enabled.
   const enableCustomSearch = process.env.ENABLE_GOOGLE_CSE === 'false';
-  // If custom search is disabled, return an empty array.
+  // If custom search is disabled, return an empty array as the CSE context.
   if (enableCustomSearch) {
     return [];
   } else {
@@ -32,11 +35,11 @@ export async function fetchCustomSearch(
           snippet: item.snippet,
         }));
       } else {
-        // If no response is returned, return an empty array.
+        // If no response is returned, return an empty array as the CSE context.
         return [];
       }
+      // Catch any errors that occured, log the error and return an empty array as the CSE context.
     } catch (error) {
-      // Log the error and return an empty array.
       console.error('Error fetching custom search:', error);
       return [];
     }
