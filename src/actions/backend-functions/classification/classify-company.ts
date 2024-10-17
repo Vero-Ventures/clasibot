@@ -2,7 +2,7 @@
 import { getForReview } from '@/actions/backend-functions/get-for-review';
 
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { getSavedTransactions } from '@/actions/quickbooks/get-transactions';
+import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
 import {
   getCompanyIndustry,
   getCompanyLocation,

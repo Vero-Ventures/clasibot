@@ -7,6 +7,7 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import { Locations, TaxCodes } from '@/enums/taxes';
 
 // Get all the tax codes and returns them as an array of tax code objects.
+// May take a synthetic login session to use instead of the regular session.
 export async function getTaxCodes(
   session: Session | null = null
 ): Promise<string> {
@@ -14,8 +15,8 @@ export async function getTaxCodes(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed to use to define the qbo object.
-    // Then define the qbo object based on the session presence.
+    // Check if a session was passed by a backend function to be used to define the qbo object.
+    // Then create the qbo object for frontend or backend functions based on the session presence.
     if (session) {
       qbo = await createQBObjectWithSession(session);
     } else {
@@ -31,7 +32,7 @@ export async function getTaxCodes(
       }[];
     };
 
-    // Define success and error trackers for query response creation.
+    // Define success tracker and error response object for error handling of QuickBooks queries.
     let success = true;
     let error: ErrorResponse = {
       Fault: {
@@ -51,6 +52,7 @@ export async function getTaxCodes(
     const response: TaxCodeResponse = await new Promise((resolve) => {
       qbo.findTaxCodes((err: ErrorResponse, data: TaxCodeResponse) => {
         if (err && checkFaultProperty(err)) {
+          // Define success as false and record the error.
           success = false;
           error = err;
         }
@@ -61,7 +63,7 @@ export async function getTaxCodes(
     // Create an array to store the tax codes.
     const taxCodes = [];
 
-    // Create a query result and push it to the tax codes array.
+    // Create a formatted Query Result object for the QBO API call then push it to the first index of the tax code array.
     const queryResult = createQueryResult(success, error);
     taxCodes.push(queryResult);
 
@@ -139,82 +141,6 @@ export async function getTaxCodesByLocation(
 
   // Return the array of tax code names.
   return taxCodeNames;
-}
-
-// Get a specific tax code using its ID.
-export async function findTaxCodebyId(id: string): Promise<string> {
-  try {
-    // Create the QuickBooks API object.
-    const qbo = await createQBObject();
-
-    // Define success and error trackers for query response creation.
-    let success = true;
-    let error: ErrorResponse = {
-      Fault: {
-        Error: [
-          {
-            Message: '',
-            Detail: '',
-            code: '',
-            element: '',
-          },
-        ],
-        type: '',
-      },
-    };
-
-    // Get a tax code by its ID.
-    const response: TaxCode = await new Promise((resolve) => {
-      qbo.getTaxCode(id, (err: ErrorResponse, data: TaxCode) => {
-        if (err && checkFaultProperty(err)) {
-          success = false;
-          error = err;
-        }
-        resolve(data);
-      });
-    });
-
-    // Create an array to store the tax codes.
-    const taxCodeResult = [];
-
-    // Create a query result and push it to the result array.
-    const queryResult = createQueryResult(success, error);
-    taxCodeResult.push(queryResult);
-
-    // Format the response and push it to the result array.
-    taxCodeResult.push(formatTaxCode(response));
-
-    // Return the array of formatted tax codes.
-    return JSON.stringify(taxCodeResult);
-  } catch (error) {
-    return JSON.stringify(error);
-  }
-}
-
-// Get specific tax codes by matching the names of found tax codes against the passed array of tax code names.
-// Only returns found matches, does not indicate if no match was found for one or more names in the passed string array.
-// Returns an empty array if no matches are found.
-export async function findTaxCodesByNames(names: string[]): Promise<string> {
-  // Get all tax codes and make an array to store ones with matching names.
-  const allTaxCodes = JSON.parse(await getTaxCodes());
-  const matchingTaxCodes = [];
-
-  // Check if index 0 (the query result value) is a success.
-  // If it is not, return the error result instead.
-  if (allTaxCodes[0].result !== 'Success') {
-    return JSON.stringify(allTaxCodes[0]);
-  }
-
-  // Iterate through the remaining indicies to check for matching Tax Codes returned by the getTaxCodes call.
-  for (let index = 1; index < allTaxCodes.length; index++) {
-    // Check if the name of the current tax code is in the list of passed names.
-    if (names.includes(allTaxCodes[index].Name)) {
-      matchingTaxCodes.push(allTaxCodes[index]);
-    }
-  }
-
-  // Return the array of found tax codes with matching names.
-  return JSON.stringify(matchingTaxCodes);
 }
 
 // Take a tax code response from the API and format it by grabbing the relevant values from the whole response.

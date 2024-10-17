@@ -1,47 +1,51 @@
 'use server';
-
 import type {
   ForReviewTransaction,
   UpdatedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 
+// Take a raw 'For Review' transaction object as well as the Id's for its category and tax code classificaions.
+// Also takes the fetch and auth Id tokens generated during synthetic login.
+// Returns: A Query Result object.
+// Integration: Called inside iteration by review page after user selects the transactions they wish to save.
+//    Requires some call to synthetic login to get the required fetch token and auth Id.
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
   categoryId: string,
   taxCodeId: string,
-  realmId: string,
   fetchToken: string,
   authId: string
 ): Promise<QueryResult> {
   try {
-    // Define the account ID for the call and the full endpoint to use.
-    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${realmId}/olb/ng/batchAcceptTransactions`;
+    // Get the session for the current user to get their realm Id, used in the update transactions endpoint.
+    const session = await getServerSession(options);
 
-    // Convert the passed ForReviewTransaction to a useable update object for the QBO API.
+    // Define the account ID for the call and the full endpoint to use. Realm Id will always be true as function is only callable by logged in users.
+    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${session!.realmId}/olb/ng/batchAcceptTransactions`;
+
+    // Convert the passed ForReviewTransaction to a useable body for the calling the update transactions endpoint.
     const body = createForReviewUpdateObject(
       forReviewTransaction,
       categoryId,
       taxCodeId
     );
 
-    // This is currently setup to use my actual QBO account linked to the yaniv's testing production company.
-    // Will need to be updated with ENV's for the agentID and authID in the future.
-    // Some method to pull ticket during login proccess will also be needed
-    //    Presently it is found by logging in and sraping network traffic with mitmproxy to get it from a response header from one of QuickBooks calls.
-
     // Call the query endpoint while passing the defined header cookies.
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${realmId}; qbo.authid=${authId}; SameSite=None`,
+        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${authId}; SameSite=None`,
       },
       body: JSON.stringify(body),
     });
 
-    // If no valid response is given, get the response text and return it in a result object with an error result.
+    // Check if a valid response was given.
     if (!response.ok) {
+      // Get the response text and return it as the detail of an error Query Result object.
       const errorText = await response.text();
       return {
         result: 'Error',
@@ -51,7 +55,7 @@ export async function addForReview(
       };
     }
 
-    // Get the response data and return it to the caller in a result object with a success result.
+    // Get the response data and return it as the detail of a success Query Result object.
     const responseData = await response.json();
     return {
       result: 'Success',
@@ -62,7 +66,7 @@ export async function addForReview(
   } catch (error) {
     // Define a default error detail.
     let errorDetail = 'An unexpected error occured.';
-    // Check if error is of type Error and update the detail if it is.
+    // Check if the caught error is of type Error and update the detail if it is.
     if (error instanceof Error) {
       errorDetail = error.message;
     }
@@ -75,14 +79,14 @@ export async function addForReview(
   }
 }
 
-// Takes the "for review" transaction data as well as the ID's for the cateory account and tax code.
-// Returns the relevant data for a "for review" transaction update as a formatted and typed object.
+// Takes the "For Review" transaction data, as well as the ID's for the classificaions.
+// Returns: An object that can be used as the body when making an update transactions call to QuickBooks.
 function createForReviewUpdateObject(
   responseData: ForReviewTransaction,
   categoryId: string,
   taxCodeId: string
 ): UpdatedForReviewTransaction {
-  // Create and return the new update object using the passed QBO entity ID's and the For Review Transaction object values.
+  // Create and API call body using the passed QBO entity ID's and the values in the 'For Review' transaction object.
   const newUpdateObject: UpdatedForReviewTransaction = {
     txnList: {
       olbTxns: [

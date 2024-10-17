@@ -5,9 +5,11 @@ import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Session } from 'next-auth/core/types';
 
-// Get all accounts from the QuickBooks API.
+// Get specific accounts from the QuickBooks API depending on passed account type.
 // Use 'Transaction' to fetch accounts that contain 'For Review' Transactions.
 // Use 'Expense' to get accounts for transaction categorization.
+// May take a synthetic login session to use instead of the regular session.
+// Returns: An array of objects starting with a Query Result, then containing Purchase objects.
 export async function getAccounts(
   accountType: string,
   session: Session | null = null
@@ -16,15 +18,15 @@ export async function getAccounts(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed to use to define the qbo object.
-    // Then define the qbo object based on the session presence.
+    // Check if a session was passed by a backend function to be used to define the qbo object.
+    // Then create the qbo object for frontend or backend functions based on the session presence.
     if (session) {
       qbo = await createQBObjectWithSession(session);
     } else {
       qbo = await createQBObject();
     }
 
-    // Define success and error trackers for query response creation.
+    // Define success tracker and error response object for error handling of QuickBooks queries.
     let success = true;
     let error: ErrorResponse = {
       Fault: {
@@ -94,6 +96,7 @@ export async function getAccounts(
         (err: ErrorResponse, data: AccountResponse) => {
           // If there is an error, check if it has a 'Fault' property.
           if (err && checkFaultProperty(err)) {
+            // Define success as false and record the error.
             success = false;
             error = err;
           }
@@ -102,6 +105,7 @@ export async function getAccounts(
       );
     });
 
+    // Create a formatted Query Result object for the QBO API call then push it to the first index of the accounts array.
     const results = response.QueryResponse.Account;
     const formattedAccounts = [];
 

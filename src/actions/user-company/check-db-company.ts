@@ -11,6 +11,7 @@ import {
 
 // Checks if the current company is set as connected to the synthetic account.
 // Returns: A string 'true/false' value for the connection state or an error message.
+// Integration: Called as part of the login pipeline
 export async function checkCompanyConnection(): Promise<string> {
   try {
     // Get the identifing info for the company from the session.

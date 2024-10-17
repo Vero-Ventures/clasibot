@@ -1,18 +1,18 @@
 'use server';
-
-import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
-import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { getAccounts } from './get-accounts';
-import { findFormattedPurchase } from './purchases';
+import { findFormattedPurchase } from './find-purchase';
+import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { getTaxCodes } from './taxes';
-import type { Session } from 'next-auth/core/types';
+import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
+import type { Session } from 'next-auth/core/types';
 
 // Get all saved transactions from the QuickBooks API.
-// Can take a start date and end date and a synthetic session as optional parameters.
+// May take a start date and end date and / or a synthetic session as optional parameters.
+// Returns: An array of objects starting with a Query Result, then containing Transaction objects.
 export async function getSavedTransactions(
   startDate = '',
   endDate = '',
@@ -22,15 +22,15 @@ export async function getSavedTransactions(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed to use to define the qbo object.
-    // Then define the qbo object based on the session presence.
+    // Check if a session was passed by a backend function to be used to define the qbo object.
+    // Then create the qbo object for frontend or backend functions based on the session presence.
     if (session) {
       qbo = await createQBObjectWithSession(session);
     } else {
       qbo = await createQBObject();
     }
 
-    // Define success and error trackers for query response creation.
+    // Define success tracker and error response object for error handling of QuickBooks queries.
     let success = true;
     let error: ErrorResponse = {
       Fault: {
@@ -57,8 +57,7 @@ export async function getSavedTransactions(
     const preferences: PreferenceResponse = await new Promise((resolve) => {
       qbo.getPreferences((err: ErrorResponse, data: PreferenceResponse) => {
         if (err && checkFaultProperty(err)) {
-          // If there was an error getting the preferences:
-          // Resolve with a PreferenceResponse with the multi-currency preference to false.
+          // Resolve the function with a response formatted to indicate Multi Currency is not enabled.
           resolve({ CurrencyPrefs: { MultiCurrencyEnabled: false } });
         }
         resolve(data);
@@ -121,6 +120,7 @@ export async function getSavedTransactions(
         (err: ErrorResponse, data: TransactionResponse) => {
           // If there is an error, check if it has a 'Fault' property
           if (err && checkFaultProperty(err)) {
+            // Define success as false and record the error.
             success = false;
             error = err;
           }
@@ -134,7 +134,7 @@ export async function getSavedTransactions(
 
     const formattedTransactions = [];
 
-    // Create a formatted query result object based on the query results and append it to the array.
+    // Create a formatted Query Result object for the QBO API call then push it to the first index of the transactions array.
     const QueryResult = createQueryResult(success, error);
     formattedTransactions.push(QueryResult);
 

@@ -266,14 +266,7 @@ export default function ReviewPage({
             newTransactions.push(newDatabaseTransaction);
 
             // Call the method to login to backend as synthetic bookkeeper and add the classified transaction to the users account/
-            await addForReview(
-              rawTransaction,
-              category.id,
-              taxCode.id,
-              '',
-              '',
-              ''
-            );
+            await addForReview(rawTransaction, category.id, taxCode.id, '', '');
 
             // Remove the related for review transaction and its connectionss from the database.
             const result = await removeForReviewTransactions(rawTransaction);

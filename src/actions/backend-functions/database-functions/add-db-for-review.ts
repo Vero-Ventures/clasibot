@@ -17,7 +17,6 @@ import type { QueryResult } from '@/types/QueryResult';
 
 // Takes an array of 'For Review' transaction sub arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a companies realmId.
 // Returns: A Query Result object.
-// Integration: Used as part of backend classification (or manual review) as the final step to save the results for frontend review.
 export async function addForReviewTransactions(
   transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][],
   realmId: string
