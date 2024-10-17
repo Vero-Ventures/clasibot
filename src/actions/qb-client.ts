@@ -9,7 +9,7 @@ export async function createQBObject() {
   // Get the server session and save it as a constant.
   const session = await getServerSession(options);
 
-  // Record the server session values.
+  // Record the relevant values from the session needed for QBO connection.
   const oauthToken = session?.accessToken;
   const realmId = session?.realmId;
   const refreshToken = session?.refreshToken;
@@ -17,11 +17,11 @@ export async function createQBObject() {
   // Determine sandbox status using ENV.
   const useSandbox = process.env.APP_CONFIG !== 'production';
 
-  // Define the variables for the QuickBooks client ID and secret.
+  // Define variables for the QuickBooks client Id and secret.
   let useID;
   let useSecret;
 
-  // Set the QuickBooks client ID and secret based on the environment.
+  // Set the QuickBooks client Id and secret based on the environment.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.PROD_CLIENT_ID;
     useSecret = process.env.PROD_CLIENT_SECRET;
@@ -50,9 +50,9 @@ export async function createQBObject() {
   return qbo;
 }
 
-// Create a QuickBooks client object.
+// Create a QuickBooks client object using a passed session for backend functions.
 export async function createQBObjectWithSession(session: Session) {
-  // Record the server session values.
+  // Record the relevant values from the session needed for QBO connection.
   const oauthToken = session?.accessToken;
   const realmId = session?.realmId;
   const refreshToken = session?.refreshToken;
@@ -60,11 +60,11 @@ export async function createQBObjectWithSession(session: Session) {
   // Determine sandbox status using ENV.
   const useSandbox = process.env.APP_CONFIG !== 'production';
 
-  // Define the variables for the QuickBooks client ID and secret.
+  // Define variables for the QuickBooks client Id and secret.
   let useID;
   let useSecret;
 
-  // Set the QuickBooks client ID and secret based on the environment.
+  // Set the QuickBooks client Id and secret based on the environment.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.BACKEND_PROD_CLIENT_ID;
     useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;

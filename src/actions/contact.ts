@@ -12,7 +12,7 @@ export async function contactAction({
   body: string;
 }): Promise<{ message: string }> {
   try {
-    // Create a new nodemailer transporter object to send the email.
+    // Create a new nodemailer transporter object to send the email using ENV.
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT ?? '465'),
@@ -38,13 +38,13 @@ export async function contactAction({
       // Return a success message.
       return { message: 'success' };
     } catch (error) {
-      // Log any errors and return an error message.
+      // Log any errors sending the message and return an error message.
       console.error('Error sending email:', error);
       return { message: 'error' };
     }
   } catch (error) {
-    // Log any errors and return an error message.
-    console.error('Error sending email:', error);
+    // Log any errors creating the transporter and return an error message.
+    console.error('Error creating transporter:', error);
     return { message: 'error' };
   }
 }

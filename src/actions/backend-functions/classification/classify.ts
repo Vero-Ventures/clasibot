@@ -9,7 +9,7 @@ import {
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
 import { batchQueryLLM } from '@/actions/backend-functions/llm-prediction/llm';
-import { checkSubscriptionByCompany } from '@/actions/stripe';
+import { checkSubscription } from '@/actions/stripe';
 import type { Account } from '@/types/Account';
 import type {
   Classification,
@@ -62,7 +62,7 @@ export async function classifyTransactions(
 
   // Check the users subscription status using the realmId fromn the passed synthetic session.
   // If there is an error or the subscription status is invalud, return an error object.
-  const subscriptionStatus = await checkSubscriptionByCompany(session.realmId!);
+  const subscriptionStatus = await checkSubscription(session.realmId!);
   if ('error' in subscriptionStatus) {
     return { error: 'Error getting subscription status' };
   }

@@ -1,5 +1,7 @@
 'use server';
 
+// Takes a database user Id as well as the realm Id of the related company.
+// Returns: A stringified object that can be used to create a database company.
 export default async function createDatabaseCompany(
   userId: string,
   realmId: string

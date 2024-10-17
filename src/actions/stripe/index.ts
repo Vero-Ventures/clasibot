@@ -5,11 +5,5 @@
 import createCustomerID from './create-customer-ID';
 import checkSubscription from './check-subscription';
 import createCustomerSession from './create-customer-session';
-import { checkSubscriptionByCompany } from './check-subscription';
 
-export {
-  createCustomerID,
-  checkSubscription,
-  checkSubscriptionByCompany,
-  createCustomerSession,
-};
+export { createCustomerID, checkSubscription, createCustomerSession };
