@@ -7,13 +7,13 @@ export type TaxCode = {
   Id: string;
   // Systems name of the tax code.
   Name: string;
-  // Automatically generate value or user entered description of the tax code.
+  // Automatically generated or user entered description of the tax code.
   Description: string;
   // If the user has the tax code enabled.
   Active: boolean;
   // Indicates if more than one tax rates comprise the tax code.
   TaxGroup: boolean;
-  // May contain more than one value, only if tax group is true.
+  // Returns more than one values when tax group is true.
   PurchaseTaxRateList: {
     // TaxRateDetail: Container for information about a tax rate inside the tax code.
     TaxRateDetail: [
