@@ -20,7 +20,7 @@ export async function checkCompanyConnection(): Promise<string> {
 
     // Check the nessasary identifing info could be found.
     if (realmId) {
-      // Check for a company with the passed realmId in the database.
+      // Check for a company with the same realm Id in the database.
       const currentCompany = await db
         .select()
         .from(Company)

@@ -125,7 +125,7 @@ export async function addAccountingFirmConnection(
       .select()
       .from(Firm)
       .where(
-        eq(Firm.name, connectedFirmName) && eq(Firm.userName, Firm.userName)
+        eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName)
       );
 
     // Check if an existing firm with that name exists.
