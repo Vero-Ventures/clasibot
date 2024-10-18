@@ -8,16 +8,16 @@ const handler = NextAuth(options);
 const GET = async (req: Request, res: Response) => {
   // Define the url from the request.
   const url = new URL(req.url || '');
-  // check if request is from /api/auth/callback/quickbooks
+  // Check if the request is from the endpoint '/api/auth/callback/quickbooks'.
   if (url.pathname === '/api/auth/callback/quickbooks') {
-    // Get the realmId from the url.
+    // Get the current realmId from the url.
     const realmId = url.searchParams.get('realmId');
-    // If realmId is available, set it in the cookies as secure.
+    // If realmId is present, set it in the cookies as secure.
     if (realmId) {
       cookies().set('realmId', realmId, { secure: true });
     }
   }
-  // Pass the request.
+  // Pass the request to a handler and return the result.
   return handler(req, res);
 };
 

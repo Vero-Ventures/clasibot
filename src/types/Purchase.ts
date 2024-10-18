@@ -1,15 +1,15 @@
 /**
- * Defines a formatted version of a purchase returned from the API.
+ * Defines a formatted version of a purchase object returned from the API.
  */
+
 export type Purchase = {
   result_info: {
-    // 'Success' | 'Error';
+    // 'Success' or 'Error';
     result: string;
-    // A message that indicates the result of the transaction.
-    // Primarily for error results.
+    // A message that indicates the result of the query.
+    // Primarily for error logging.
     message: string;
-    // A detailed message that indicates the result of the transaction.
-    // Primarily for error results.
+    // Any details related to the result of the query.
     detail: string;
   };
   //  Integer as a string.
@@ -39,20 +39,19 @@ export type PurchaseResponse = {
       DetailType: string;
       // AccountBasedExpenseLineDetail: Details of the account used for the purchase.
       AccountBasedExpenseLineDetail: {
-        // AccountRef: Reference to the account used for the purchase.
-        // Account related to the purchase defines the pruchase category
-        //    value: Id of the account connected to the purchase (integer as a string).
-        //    name: Name of the account.
+        // AccountRef: Defines the account for that transaction.
+        //    value: Id of the connected account (integer as a string).
+        //    name: Name of the connected account.
         AccountRef: { value: string; name: string };
-        // TaxCodeRef: Defines the tax code for that transaction inside a dictionary.
-        //    value: the defined name of the tax code.
-        //    name: an optional identifing name for the tax code.
+        // TaxCodeRef: Defines the tax code for that transaction.
+        //    value: Id of the connected tax code (integer as a string).
+        //    name: An optional identifing name for the connected tax code.
         TaxCodeRef: { value: string; name: string };
       };
     },
   ];
   // Potential error returned by the API.
-  // Message: Error message.
-  // Detail: Error details.
+  //    Message: Error message.
+  //    Detail: Error details.
   Error: { Message: string; Detail: string }[];
 };

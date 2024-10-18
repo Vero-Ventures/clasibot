@@ -1,11 +1,10 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import SignInButton from '@/components/inputs/sign-in-button';
 import { siteConfig } from '@/site-config/site';
+import SignInButton from '@/components/inputs/sign-in-button';
 
-// Landing Page.
 export default async function Page() {
-  // Get the server session and send user to home page if they are already logged in.
+  // Get the server session and redirect the user to home page if they are already logged in.
   const session = await getServerSession();
   if (session) {
     redirect('/home');

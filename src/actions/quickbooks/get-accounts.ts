@@ -1,6 +1,6 @@
 'use server';
-import { createQBObject, createQBObjectWithSession } from '../qb-client';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
+import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Session } from 'next-auth/core/types';
@@ -60,8 +60,11 @@ export async function getAccounts(
       }[];
     };
 
-    // Define classificaion as expense by default.
-    let classification = [
+    // Define the query parameters for 'Expense' account fetching.
+    // Fetches accounts with Classification equal to 'Expense'.
+    // Fetches all accounts that represent an transaction category.
+    //(Use IN on an array for same query type across both account types.)
+    let parameters = [
       {
         field: 'Classification',
         value: ['Expense'],
@@ -69,8 +72,11 @@ export async function getAccounts(
         limit: 1000,
       },
     ];
+
+    // Update query parameters for fetching 'Transaction' accounts.
+    // Defines a query to get all accounts that may contain 'For Review' transactions.
     if (accountType === 'Transaction') {
-      classification = [
+      parameters = [
         {
           field: 'AccountSubType',
           value: [
@@ -88,11 +94,10 @@ export async function getAccounts(
       ];
     }
 
-    // Get the expense accounts, searching by their classification (Expense or accounts related to transactions).
-    // ***Variable*** Returns a limit of 1000 accounts.
+    // Used the defined parameters to fetch the accounts from QuickBooks.
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
-        classification,
+        parameters,
         (err: ErrorResponse, data: AccountResponse) => {
           // If there is an error, check if it has a 'Fault' property.
           if (err && checkFaultProperty(err)) {
@@ -105,17 +110,18 @@ export async function getAccounts(
       );
     });
 
-    // Create a formatted Query Result object for the QBO API call then push it to the first index of the accounts array.
-    const results = response.QueryResponse.Account;
-    const formattedAccounts = [];
+    //  Get the needed account data from the QuickBooks API response.
+    const accounts = response.QueryResponse.Account;
+    const results = [];
 
-    // Create a formatted query result object based on the query results and append it to the array.
+    // Create a formatted Query Result object for the QBO API call then push it to the first index of the results array.
     const queryResult = createQueryResult(success, error);
-    formattedAccounts.push(queryResult);
+    results.push(queryResult);
 
-    // Ignore any inactive accounts and add the rest to the formatted results.
-    for (const account of results) {
+    // Iterate through the returned accounts and ignore any that are marked as inactive.
+    for (const account of accounts) {
       if (account.Active) {
+        // Format the response information to an Account object and push it to the results array.
         const newFormattedAccount: Account = {
           id: account.Id,
           name: account.Name,
@@ -123,26 +129,30 @@ export async function getAccounts(
           classification: account.Classification,
           account_sub_type: account.AccountSubType,
         };
-        formattedAccounts.push(newFormattedAccount);
+        results.push(newFormattedAccount);
       }
     }
-    // Return the array of a query result and the formatted accounts as a JSON string.
-    return JSON.stringify(formattedAccounts);
+    // Return the array of Account objects with a Query Result in the first index as a JSON string.
+    return JSON.stringify(results);
   } catch (error) {
-    // Return a query result formatted error message.
-    // Include a detail string if error message is present.
+    // Catch any errors and return them an stringified error Query Result inside an array to match standard formatting.
+    // Set the detail string to the error message if it is present.
     if (error instanceof Error) {
-      return JSON.stringify({
-        result: 'error',
-        message: 'Unexpected error occured while fetching accounts.',
-        detail: error.message,
-      });
+      return JSON.stringify([
+        {
+          result: 'error',
+          message: 'Unexpected error occured while fetching accounts.',
+          detail: error.message,
+        },
+      ]);
     } else {
-      return JSON.stringify({
-        result: 'error',
-        message: 'Unexpected error occured while fetching accounts.',
-        detail: 'N/A',
-      });
+      return JSON.stringify([
+        {
+          result: 'error',
+          message: 'Unexpected error occured while fetching accounts.',
+          detail: 'N/A',
+        },
+      ]);
     }
   }
 }

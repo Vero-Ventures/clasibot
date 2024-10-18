@@ -174,13 +174,13 @@ async function handleCategoryConnections(
 
       // If the category does not exist, create a new one in the database.
       if (!existingCategory) {
-        // Count is set to 0, as no confirmed classification for this category exists yet.
-        // If the user saves the 'For Reivew' transaction with this classification, the save function will increment the count.
+        // Number of matches is set to 0, as no confirmed classification for this category exists yet.
+        // If the user saves the 'For Reivew' transaction with this classification, the save function will increment the matches.
         const newCategory = await db
           .insert(Category)
           .values({
             category: category.name,
-            count: 0,
+            matches: 0,
           })
           .returning();
 
@@ -232,13 +232,13 @@ async function handleTaxCodeConnections(
 
       // If the tax code does not exist, create a new one in the database.
       if (!existingTaxCode) {
-        // Count is set to 0, as no confirmed classification for this tax code exists yet.
-        // If the user saves the 'For Reivew' transaction with this classification, the save function will increment the count.
+        // Number of matches is set to 0, as no confirmed classification for this tax code exists yet.
+        // If the user saves the 'For Reivew' transaction with this classification, the save function will increment the matches.
         const newTaxCode = await db
           .insert(TaxCode)
           .values({
             taxCode: taxCode.name,
-            count: 0,
+            matches: 0,
           })
           .returning();
 

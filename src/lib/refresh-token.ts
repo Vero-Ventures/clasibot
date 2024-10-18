@@ -9,7 +9,7 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
   let useID;
   let useSecret;
 
-  // Variables are set based on the environment (production or development).
+  // Variables are set based on the app configuration for frontend login use.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.PROD_CLIENT_ID;
     useSecret = process.env.PROD_CLIENT_SECRET;
@@ -45,8 +45,8 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
       body: data,
     });
 
+    // Decode the response data and throw it as an error if the response is an error.
     const responseData = await response.json();
-
     if (!response.ok) {
       throw responseData;
     }
@@ -74,7 +74,7 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
   let useID;
   let useSecret;
 
-  // Variables are set based on the environment (production or development).
+  // Variables are set based on the app configuration for backend login use.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.BACKEND_PROD_CLIENT_ID;
     useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;
@@ -110,8 +110,8 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
       body: data,
     });
 
+    // Decode the response data and throw it as an error if the response is an error.
     const responseData = await response.json();
-
     if (!response.ok) {
       throw responseData;
     }

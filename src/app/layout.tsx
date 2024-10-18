@@ -1,11 +1,12 @@
-import type { Metadata } from 'next';
+import './globals.css';
 import { siteConfig } from '@/site-config/site';
 import { Analytics } from '@vercel/analytics/react';
+import { Toaster } from '@/components/ui/toasts/toaster';
 import Footer from '@/components/site-elements/footer';
 import Navbar from '@/components/site-elements/nav-bar';
-import { Toaster } from '@/components/ui/toasts/toaster';
-import './globals.css';
+import type { Metadata } from 'next';
 
+// Define the formatting and contentof the metadata object.
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
@@ -17,6 +18,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Navbar -> Main Content -> Footer.
+  // Also defines the unseen elements: toaster and vercel analytics handlers.
   return (
     <html lang="en">
       <body

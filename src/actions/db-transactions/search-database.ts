@@ -36,7 +36,7 @@ export async function getTopCategoriesForTransaction(
       const categories: {
         id: number;
         category: string;
-        count: number;
+        matches: number;
       }[] = [];
 
       // For each relationship, get the related category and push it to the categories array.
@@ -66,9 +66,9 @@ export async function getTopCategoriesForTransaction(
         Object.hasOwn(validCategoryMap, category.category)
       );
 
-      // Sort the categories by count (number of connections) in descending order.
+      // Sort the categories by number of matches in descending order.
       // Most common categories will be sorted to the start of the array.
-      filteredCategories.sort((a, b) => b.count - a.count);
+      filteredCategories.sort((a, b) => b.matches - a.matches);
 
       // Take the top 3 (or less) categories, map the names to the Id's and return them as an array.
       const topCategories = filteredCategories.slice(0, 3);
@@ -110,7 +110,7 @@ export async function getTopTaxCodesForTransaction(
       const taxCodes: {
         id: number;
         taxCode: string;
-        count: number;
+        matches: number;
       }[] = [];
 
       // For each relationship, get the related tax code and push it to the tax codes array.
@@ -141,9 +141,9 @@ export async function getTopTaxCodesForTransaction(
         Object.hasOwn(validTaxCodeMap, taxCode.taxCode)
       );
 
-      // Sort the tax codes by count count (number of connections) in descending order.
+      // Sort the tax codes by number of matches in descending order.
       // Most common tax codes will be sorted to the start of the array.
-      filtedTaxCodes.sort((a, b) => b.count - a.count);
+      filtedTaxCodes.sort((a, b) => b.matches - a.matches);
 
       // Take the top 3 (or less) categories, map the names to the Id's and return them as an array.
       const topTaxCodes = filtedTaxCodes.slice(0, 3);

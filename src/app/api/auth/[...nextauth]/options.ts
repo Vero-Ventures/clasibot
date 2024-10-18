@@ -1,23 +1,24 @@
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { createCustomerID } from '@/actions/stripe';
 import createDatabaseCompany from '@/actions/user-company/create-company';
 import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
 import NextAuth, { getServerSession } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
   NextApiResponse,
 } from 'next';
+import type { NextAuthOptions } from 'next-auth';
 import { cookies } from 'next/headers';
-import { createCustomerID } from '@/actions/stripe';
-import { eq } from 'drizzle-orm';
 
+// Export the config options to work with Next Auth.
 export const config = {
   providers: [],
 } satisfies NextAuthOptions;
 
-// Used in server contexts
+// Export auth used in server contexts.
 export function auth(
   ...args:
     | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
@@ -42,7 +43,7 @@ const wellknowURL =
     : 'https://developer.api.intuit.com/.well-known/openid_sandbox_configuration';
 
 export const options: NextAuthOptions = {
-  // Info for QuickBooks connection through OAuth using enviroment specific values.
+  // Set the values for QuickBooks connection through OAuth.
   providers: [
     {
       clientId: useID,
@@ -58,21 +59,21 @@ export const options: NextAuthOptions = {
         },
       },
 
-      // Define the userinfo endpoint to get the user profile.
+      // Define an endpoint to get the user information.
       userinfo: {
         async request(context) {
-          // Check if the access token is available in the context.
+          // Check if the access token is present in the context.
           if (context?.tokens?.access_token) {
-            // Return the user profile using the access token.
+            // Return the user info through the access token.
             return context.client.userinfo(context?.tokens?.access_token);
           } else {
-            // Throw an error if the access token is not available.
+            // Throw an error if the access token is not present.
             throw new Error('No access token');
           }
         },
       },
 
-      // Define the profile function to get the user profile.
+      // Define the profile function to call key values for the user profile.
       idToken: true,
       checks: ['pkce', 'state'],
       profile(profile) {
@@ -85,11 +86,12 @@ export const options: NextAuthOptions = {
       },
     },
   ],
+
   callbacks: {
     // Define the JWT callback to get the token data.
     async jwt({ token, account, profile }) {
       if (account) {
-        // If the account is found, update the values, delete the realmId cookie, and return the token.
+        // If the account is found, update the values in the token, delete the realmId cookie, and return the token.
         token.userId = profile?.sub;
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -98,17 +100,17 @@ export const options: NextAuthOptions = {
         cookies().delete('realmId');
         return token;
       }
-      // If the account is not expired return the token.
+      // If no account is found, check the token is not expired and return it.
       if (token.expiresAt && Date.now() / 1000 < token.expiresAt) {
         return token;
       }
-      // If the token is expired, refresh the token and return the new token.
+      // If no account is found and token is expired, refresh the token and return the new token.
       return refreshToken(token);
     },
 
     // Define the session callback to get the session data.
     async session({ session, token }) {
-      // Set the session fields with the token data and return the session.
+      // Set the session fields data from the passed token and return the session object.
       session.userId = token.userId;
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
@@ -117,36 +119,37 @@ export const options: NextAuthOptions = {
       return session;
     },
 
-    // Define the signIn callback to sign in the user.
+    // Define the behavior of callback function called on sign in.
     async signIn({ user }) {
       try {
+        // Get the email and name of the user.
         const email = user.email;
         const [firstName, lastName] = user.name?.split(' ') ?? [];
 
-        // Check if the realm ID could be found and throw an error if it could not.
+        // Check if the realm ID could be found from the cookies and throw an error if it could not.
         if (!cookies().get('realmId')?.value) {
           throw 'Company ID could not be found for company creation.';
         }
+
         // Only reach this point if cookie is present so assert it is not-null.
         const companyID = cookies().get('realmId')!.value;
 
-        // Check if the user email is available.
+        // Check if the email was successful found from passed user.
         if (!email) {
           console.error('No user email found in session');
           // Return false to indicate that sign-in failed.
           return false;
         }
 
-        // Find the user data in the database using the email.
+        // Find the user database objecte using the found email.
         const userData = await db
           .select()
           .from(User)
           .where(eq(User.email, email));
 
-        // If the user does not exist, create a new user in the database.
+        // If no matching database user exists, create a new user in the database.
         if (userData.length === 0) {
           try {
-            // Create a new user in the database.
             const newUser = await db
               .insert(User)
               .values({
@@ -157,15 +160,16 @@ export const options: NextAuthOptions = {
               })
               .returning();
 
-            // Create a company object for the current company the user is logged in as.
+            // Create a company object for the current company that is assosaited with the new user object.
             const companyData = await createDatabaseCompany(
               newUser[0].id,
               companyID
             );
 
+            // Insert the newly created company object into the database.
             await db.insert(Company).values(JSON.parse(companyData));
 
-            // Create a new blank subscription in the database, and a user that contains the subscription.
+            // Create a new blank subscription in the database for the user object.
             const newSubscription = await db
               .insert(Subscription)
               .values({
@@ -174,54 +178,57 @@ export const options: NextAuthOptions = {
               })
               .returning();
 
-            // Update the user with the connection back to the subscription.
+            // Take the created subscription and update the database user with a connection to that subscription object.
             await db
               .update(User)
               .set({ subscriptionId: newSubscription[0].id })
               .where(eq(User.id, newUser[0].id));
 
-            // Create the stripe customerID for the user.
+            // Create a stripe customerID for the user and update the users subscription database object with it.
             await createCustomerID(newUser[0].id);
           } catch (createError) {
-            // Log an error with the error message.
+            // Catch any errors in user creation and log them.
             console.error('Error creating new user in db:', createError);
             // Return false to indicate that the new user could not be created and the sign in failed.
             return false;
           }
         } else {
-          // If the user already exists, get the companies for the user.
+          // If the user already exists in the database, get the database companies connected to the current user.
           const companies = await db
             .select()
             .from(Company)
             .where(eq(Company.userId, userData[0].id));
 
-          // Use the realm ID of the current company to check if it is not in the list of returned companies.
+          // Use the realm ID of from the cookies to check if the current company is not present in the list of user database companies.
           if (!companies.some((company) => company.realmId === companyID)) {
-            // If the company is not present, add it to the database.
+            // If there is no assosaited company database object for the current realm Id, create a new company object.
             const companyData = await createDatabaseCompany(
               userData[0].id,
               companyID
             );
 
+            // Insert the newly created company object into the database.
             await db.insert(Company).values(JSON.parse(companyData));
           }
         }
       } catch (error) {
-        // Log an error and return false to indicate there was an error during sign-in.
+        // Catch any errors in sign in process creation and log them.
         console.error('Error during sign-in:', error);
+        // Return false to indicate that the sign in process failed.
         return false;
       }
-      // Return true to indicate that sign-in was successful.
+      // Return true to indicate that sign-in process was successful.
       return true;
     },
   },
-  // Define the session max age.
+  // Define the session max age (24 Hours).
   session: {
     maxAge: 24 * 60 * 60,
   },
 };
 
-// Define the backend values for the client ID and secret for QuickBooks based on the environment.
+// Define the backend values for the client ID and secret used in synthetic login processes.
+// Values are based based on the environment configuration.
 const useIDBackend =
   process.env.APP_CONFIG === 'production'
     ? process.env.BACKEND_PROD_CLIENT_ID
@@ -232,7 +239,7 @@ const useSecretBackend =
     : process.env.BACKEND_DEV_CLIENT_SECRET;
 
 export const backendOptions: NextAuthOptions = {
-  // Info for QuickBooks connection through OAuth using enviroment specific values.
+  // Set the values for QuickBooks connection through OAuth.
   providers: [
     {
       clientId: useIDBackend,
@@ -248,21 +255,21 @@ export const backendOptions: NextAuthOptions = {
         },
       },
 
-      // Define the userinfo endpoint to get the user profile.
+      // Define an endpoint to get the user information.
       userinfo: {
         async request(context) {
-          // Check if the access token is available in the context.
+          // Check if the access token is present in the context.
           if (context?.tokens?.access_token) {
-            // Return the user profile using the access token.
+            // Return the user info through the access token.
             return context.client.userinfo(context?.tokens?.access_token);
           } else {
-            // Throw an error if the access token is not available.
+            // Throw an error if the access token is not present.
             throw new Error('No access token');
           }
         },
       },
 
-      // Define the profile function to get the user profile.
+      // Define the profile function to call key values for the user profile.
       idToken: true,
       checks: ['pkce', 'state'],
       profile(profile) {
@@ -275,11 +282,12 @@ export const backendOptions: NextAuthOptions = {
       },
     },
   ],
+
   callbacks: {
     // Define the JWT callback to get the token data.
     async jwt({ token, account, profile }) {
       if (account) {
-        // If the account is found, update the values, delete the realmId cookie, and return the token.
+        // If the account is found, update the values in the token, delete the realmId cookie, and return the token.
         token.userId = profile?.sub;
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -288,17 +296,17 @@ export const backendOptions: NextAuthOptions = {
         cookies().delete('realmId');
         return token;
       }
-      // If the account is not expired return the token.
+      // If no account is found, check the token is not expired and return it.
       if (token.expiresAt && Date.now() / 1000 < token.expiresAt) {
         return token;
       }
-      // If the token is expired, refresh the token and return the new token.
+      // If no account is found and token is expired, refresh the token and return the new token.
       return refreshBackendToken(token);
     },
 
     // Define the session callback to get the session data.
     async session({ session, token }) {
-      // Set the session fields with the token data and return the session.
+      // Set the session fields data from the passed token and return the session object.
       session.userId = token.userId;
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
@@ -307,27 +315,29 @@ export const backendOptions: NextAuthOptions = {
       return session;
     },
 
-    // Define the signIn callback to sign in the user.
+    // Define the behavior of callback function called on sign in.
     async signIn({ user }) {
       try {
+        // Get the email of the current user
         const email = user.email;
 
-        // Check if the user email is available.
+        // Check if the email was successful found from passed user.
         if (!email) {
           console.error('No user email found in session');
           // Return false to indicate that sign-in failed.
           return false;
         }
       } catch (error) {
-        // Log an error and return false to indicate there was an error during sign-in.
+        // Catch any errors in sign in process creation and log them.
         console.error('Error during sign-in:', error);
+        // Return false to indicate that the sign in process failed.
         return false;
       }
-      // Return true to indicate that sign-in was successful.
+      // Return true to indicate that sign-in process was successful.
       return true;
     },
   },
-  // Define the session max age.
+  // Define the session max age (24 Hours).
   session: {
     maxAge: 24 * 60 * 60,
   },

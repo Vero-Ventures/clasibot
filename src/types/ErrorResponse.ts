@@ -1,6 +1,9 @@
 /**
  * The default error response from the QBO API.
+ * Used to check if a failed QBO API request was successful in reaching QuickBooks.
+ * Part of error checking on most QuickBooks requests.
  */
+
 export type ErrorResponse = {
   Fault: {
     Error: {

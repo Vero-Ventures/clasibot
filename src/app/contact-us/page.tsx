@@ -1,7 +1,7 @@
 'use client';
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import Link from 'next/link';
 import { contactAction } from '@/actions/contact';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,22 +16,22 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ToastAction } from '@/components/ui/toasts/toast';
 import { useToast } from '@/components/ui/toasts/use-toast';
-import Link from 'next/link';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-// Define the contact form via Zod schema.
+// Define the 'contact us' form via Zod schema.
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
   subject: z.string().min(1, { message: 'Subject is required' }),
   body: z.string().min(1, { message: 'Message body is required' }),
 });
 
+// Define the 'Contact Us' page and its behavior.
 export default function Page() {
   // Create state to track loading status of form submission.
   const [loading, setLoading] = useState(false);
 
-  // Using the defined schema, create a blank react-hook-form.
+  // Using the defined schema, create a blank react-hook-form for the user to fill.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,8 +43,9 @@ export default function Page() {
 
   // Create a toast hook to display messages to the user.
   const { toast } = useToast();
-  // Create a toast object with the error title and description.
-  // Includes an action button to retry the form submission (resend the email).
+
+  // Create a toast object to handle errors with an error message and description.
+  // Includes an action button to allow the user to automatically retry the form submission (resend the email).
   const toastError = (values: z.infer<typeof formSchema>) => {
     toast({
       variant: 'destructive',
@@ -65,27 +66,29 @@ export default function Page() {
 
   // Define a function to handle form submission using the Zod schema.
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Set the loading message state to true and extract the key values from the passed zod form.
     setLoading(true);
-
     const { email, subject, body } = values;
 
     try {
       // Call the contactAction function with the email, subject, and body.
       const response = await contactAction({ email, subject, body });
 
+      // Check if the contact action resulted in an error and call toast error handler with its values if it did.
       if (response.message === 'error') {
         toastError(values);
       } else {
+        // If the message was sent successful, display a toast success message.
         toast({
           title: 'Email sent!',
           description: "We'll get back to you as soon as possible.",
         });
 
-        // Reset the form after submission.
+        // Reset the form after submission to allow new messages to be sent.
         form.reset();
       }
     } catch (error) {
-      // If there is an error, log the error to the console and display an error toast.
+      // Catch any errors, log them to the console and display an error toast.
       console.error(error);
       toastError(values);
     } finally {
@@ -151,7 +154,9 @@ export default function Page() {
               </FormItem>
             )}
           />
-          <div className="flex flex-col justify-end gap-4 md:flex-row">
+          <div
+            id="FormButtonsContainer"
+            className="flex flex-col justify-end gap-4 md:flex-row">
             <Link href="/" className="w-full md:w-auto">
               <Button
                 id="ReturnHomeButton"

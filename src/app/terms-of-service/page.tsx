@@ -5,6 +5,7 @@ import Data from './data.mdx';
 export default function Page() {
   // Data is an MDX file that contains the terms of service.
   // Renders the markdown file inside a typescript page.
+  // To Do: Update markdown content for app's second iteration.
   return (
     <Markdown>
       <Data />

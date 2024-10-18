@@ -1,5 +1,5 @@
 /**
- * Defines a formatted version of a tax code returned from the API.
+ * Defines a formatted version of a tax code object returned from the API.
  */
 
 export type TaxCode = {

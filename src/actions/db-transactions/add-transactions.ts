@@ -87,15 +87,15 @@ export async function addTransactions(
   }
 }
 
-// Based on if an existing category exists, either increments that category or makes a new category object with a count of 1.
-// Takes an existing category with an ID, category name, and count (indicating number of matches to saved transactions).
+// Based on if an existing category exists, either increments the number of matches for that category or makes a new category object with 1 match.
+// Takes an existing category with an ID, category name, and number of matches.
 // Also takes the transaction being saved and the Id of its database object.
 async function handleCategoryIncrement(
   existingCategory:
     | {
         id: number;
         category: string;
-        count: number;
+        matches: number;
       }
     | undefined,
   transaction: Transaction,
@@ -123,21 +123,21 @@ async function handleCategoryIncrement(
         });
       }
 
-      // Update the count for the number of times the related category object has been connected to a transaction.
+      // Update the number of matches to a transaction.
       await db
         .update(Category)
         .set({
-          count: existingCategory.count + 1,
+          matches: existingCategory.matches + 1,
         })
         .where(eq(Category.id, existingCategory.id));
     } else {
       // If there is no existing category object for the classification, create a new category object.
-      // Count is set to one, as there is one valid connection for the category (the current transaction).
+      // Number of matches is set to one, as there is one valid connection for the category (the current transaction).
       const newCategory = await db
         .insert(Category)
         .values({
           category: transaction.category,
-          count: 1,
+          matches: 1,
         })
         .returning();
 
@@ -157,15 +157,15 @@ async function handleCategoryIncrement(
   }
 }
 
-// Based on if an existing tax code exists, either increments the count or makes a new tax code obejct with a count of 1.
-// Takes an existing tax code with an ID, category name, and count (indicating number of matches to saved transactions).
+// Based on if an existing tax code exists, either increments the number of matches or makes a new tax code obejct with 1 match.
+// Takes an existing tax code with an ID, category name, and number of matches.
 // Also takes the transaction being saved and the Id of its database object.
 async function handleTaxCodeIncrement(
   existingTaxCode:
     | {
         id: number;
         taxCode: string;
-        count: number;
+        matches: number;
       }
     | undefined,
   transaction: Transaction,
@@ -193,21 +193,21 @@ async function handleTaxCodeIncrement(
         });
       }
 
-      // Update the count for the number of times the related category object has been connected to a transaction.
+      // Update the number of matches to a transaction.
       await db
         .update(TaxCode)
         .set({
-          count: existingTaxCode.count + 1,
+          matches: existingTaxCode.matches + 1,
         })
         .where(eq(Category.id, existingTaxCode.id));
     } else {
       // If there is no existing tax code object for the classification, create a new tax code object.
-      // Count is set to one, as there is one valid connection for the tax code (the current transaction).
+      // Number of matches is set to one, as there is one valid connection for the tax code (the current transaction).
       const newTaxCode = await db
         .insert(TaxCode)
         .values({
           taxCode: transaction.taxCodeName,
-          count: 1,
+          matches: 1,
         })
         .returning();
 

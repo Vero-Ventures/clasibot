@@ -1,6 +1,7 @@
 /**
- * Defines a formatted version of a account returned from the API.
+ * Defines a formatted version of an account object returned from the API.
  */
+
 export type Account = {
   // Whole number as a string.
   id: string;
@@ -9,8 +10,9 @@ export type Account = {
   // Whether the account is active.
   active: boolean;
   // Defines the higher level classification of the account.
-  // Determines if an account may contain 'for review' transactions / if it defines a possible expense category.
+  // Used to identify 'Expense' accounts.
   classification: string;
-  // Defines what category the account classifies a transaction as.
+  // 'Expense': Defines what category a transaction in that account is classified as.
+  // 'Transaction': Determines if the account may contain 'For Review' transactions.
   account_sub_type: string;
 };

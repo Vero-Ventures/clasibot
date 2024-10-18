@@ -1,10 +1,11 @@
 /**
- * Defines a formatted version of a 'for review' transaction returned from the API.
+ * Defines a formatted version of a 'For Review' transaction returned from the API.
  */
+
 import type { ClassifiedElement } from './Classification';
 
-// Defines the object recived when calling a 'for review' transaction.
-// Defines the relevant values needed to later set a 'for review' transaction as a proper classified transaction.
+// Defines the object recived when calling a 'For Review' transaction from the API.
+// Defines the values needed to later save the 'For Review' transaction to the users account.
 export type ForReviewTransaction = {
   id: string;
   olbTxnId: string;
@@ -20,7 +21,7 @@ export type ForReviewTransaction = {
   };
 };
 
-// Defines the full object needed to classify a 'for review' transaction through the API call.
+// Defines the full object needed to save a 'For Review' transaction to the users account through an API call.
 export type UpdatedForReviewTransaction = {
   txnList: {
     olbTxns: [
@@ -56,13 +57,13 @@ export type UpdatedForReviewTransaction = {
 export type FormattedForReviewTransaction = {
   // ID for the 'For Review' transaction.
   transaction_ID: string;
-  // Name related to the transaction (e.g. the payee).
+  // Name related to the transaction (AKA the payee).
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
   // The account that the for review transaction was pulled from.
   account: string;
-  // The name of the account used in frontend filering.
+  // The name of the above account, used as part of table filtering on frontend review page.
   accountName: string;
   // Total negative decimal value of the purchase.
   amount: number;
@@ -71,13 +72,13 @@ export type FormattedForReviewTransaction = {
 export type ClassifiedForReviewTransaction = {
   // ID for the 'For Review' transaction.
   transaction_ID: string;
-  // Name related to the transaction (e.g. the payee).
+  // Name related to the transaction (AKA the payee).
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
   // The account that the for review transaction was pulled from.
   account: string;
-  // The name of the account used in frontend filering.
+  // The name of the above account, used as part of table filtering on frontend review page.
   accountName: string;
   // Total negative decimal value of the purchase.
   amount: number;

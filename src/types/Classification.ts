@@ -1,7 +1,8 @@
 /**
- * Defines objects used in determining the classification of a 'for review' transaction.
- * Used in determining tax codes and transaction categories.
+ * Defines objects used in determining the classification of 'For Review' transactions.
+ * Used in determining the transactions tax codes and categories.
  */
+
 export type Classification = {
   // Either 'category' or 'tax code'
   type: string;
@@ -25,11 +26,14 @@ export type ClassifiedElement = {
 
 /**
  * Defines the format of the categorized result object.
+ * Contains multiple classifications that may apply to the 'For Review' transaction.
+ * Defines its relationship to the 'For Review' transaction by the stored transaction Id.
  */
 export type ClassifiedResult = {
   // Whole number as a string.
   transaction_ID: string;
-  // A list of possible categories the transaction could be classified as.
+  // A list of possible classifications for the 'For Review' transaction.
+  //    The type of the classification is defined inside the classification object.
   possibleClassifications: Classification[];
   // The method of classification:
   // 'Matching', 'Database', or 'LLM'

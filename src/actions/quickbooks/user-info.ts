@@ -189,7 +189,7 @@ export async function getCompanyLocation(
       // If the country is not Canadian, just return the country string.
       return JSON.stringify({
         Country: companyCountry,
-        Location: '',
+        Location: null,
       });
     }
   } catch (error) {

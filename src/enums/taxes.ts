@@ -1,8 +1,8 @@
 /**
- * Define static naming relevant for tax code identification
+ * Define static strings relevant for tax code identification.
  */
 
-// Defines standardized shorthand strings for Canada locations (provinces and territories).
+// Defines standardized 2-letter shorthand strings for Canadian locations (provinces and territories).
 export enum Locations {
   AB = 'AB',
   BC = 'BC',
