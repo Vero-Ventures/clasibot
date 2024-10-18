@@ -27,7 +27,6 @@ export const UserToCompanyRelations = relations(User, ({ many }) => ({
 export const Firm = pgTable('Firm', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   userId: uuid('user_id')
-    .unique()
     .references(() => User.id, { onDelete: 'cascade' }),
   userName: text('user_name').notNull(),
   name: text('name').notNull(),
