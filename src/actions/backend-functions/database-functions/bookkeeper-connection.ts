@@ -124,9 +124,7 @@ export async function addAccountingFirmConnection(
     const existingFirm = await db
       .select()
       .from(Firm)
-      .where(
-        eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName)
-      );
+      .where(eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName));
 
     // Check if an existing firm with that name exists.
     if (!existingFirm) {
