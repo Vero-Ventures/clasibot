@@ -6,8 +6,8 @@ import {
   uuid,
   text,
   integer,
-  serial,
   boolean,
+  serial,
   timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
@@ -20,16 +20,18 @@ export const User = pgTable('User', {
   subscriptionId: uuid('subscription_id').unique(),
 });
 
-export const Firm = pgTable('Firm', {
-  id: uuid('id').primaryKey().defaultRandom().notNull(),
-  userId: uuid('user_id').references(() => User.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
-  userName: text('user_name').notNull(),
-});
-
 export const UserToCompanyRelations = relations(User, ({ many }) => ({
   companies: many(Company),
 }));
+
+export const Firm = pgTable('Firm', {
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  userId: uuid('user_id')
+    .unique()
+    .references(() => User.id, { onDelete: 'cascade' }),
+  userName: text('user_name').notNull(),
+  name: text('name').notNull(),
+});
 
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
@@ -46,10 +48,10 @@ export const Company = pgTable('Company', {
   userId: uuid('user_id')
     .notNull()
     .references(() => User.id, { onDelete: 'cascade' }),
-  firmName: text('firm_name'),
   name: text('name').notNull(),
   industry: text('industry'),
   bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
+  firmName: text('firm_name'),
   classificationFailed: boolean('classification_failed'),
 });
 
@@ -84,8 +86,8 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   date: text('date').notNull(),
   amount: integer('amount').notNull(),
   acceptType: text('accept_type').notNull(),
-  payeeNameId: text('payee_name_id'),
   transactionTypeId: text('transaction_type_id').notNull(),
+  payeeNameId: text('payee_name_id'),
   topCategoryClassification: text('top_classification').notNull(),
   topTaxCodeClassification: text('top_classification').notNull(),
 });
@@ -107,7 +109,7 @@ export const ForReviewTransactionToTaxCodesRelationship = relations(
 export const Category = pgTable('Category', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
-  count: integer('count').notNull(),
+  matches: integer('matches').notNull(),
 });
 
 export const CategoryToTransactionsRelationship = relations(
@@ -127,7 +129,7 @@ export const CategoryToForReviewTransactionsRelationship = relations(
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('taxCode').unique().notNull(),
-  count: integer('count').notNull(),
+  matches: integer('matches').notNull(),
 });
 
 export const TaxCodesToTransactionsRelationship = relations(
