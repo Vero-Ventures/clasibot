@@ -6,13 +6,13 @@ import type {
 import type { QueryResult } from '@/types/QueryResult';
 
 // Checks a specific account of the user 'For Review' transactions, formats them and returns them.
-// Takes the Id of the account to check, the Id of the user company, the fetch token and authId token pulled from synthetic login.
+// Takes the Id of the account to check, the Id of the user company, the QBO token and authId token pulled from synthetic login.
 // Returns: A Query Result object with the found 'For Review' transactions in the detail field on success.
 //    Returned transactions are an array of sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
   accountId: string,
   realmId: string,
-  fetchToken: string,
+  qboToken: string,
   authId: string
 ): Promise<QueryResult> {
   try {
@@ -25,7 +25,7 @@ export async function getForReview(
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${realmId}; qbo.authid=${authId}; SameSite=None`,
+        cookie: `qbo.tkt=${qboToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${realmId}; qbo.authid=${authId}; SameSite=None`,
       },
     });
 

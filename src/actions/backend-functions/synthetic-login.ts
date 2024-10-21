@@ -2,6 +2,10 @@
 import type { Session } from 'next-auth/core/types';
 import type { QueryResult } from '@/types/QueryResult';
 
+// Logs into the backend clasibot app as the synthetic bookkeeper and selects a specific company.
+// Takes: the realm Id and (possibly null) firm name of a company both used for company selection during login.
+// Returns: A Query Result for the login process, the two nessasary cookie values retrived from response headers -
+//    And a session logged in as the company related to the passed realm Id.
 export async function syntheticLogin(
   realmId: string,
   firmName: string | null
@@ -16,7 +20,7 @@ export async function syntheticLogin(
     message: '',
     detail: '',
   };
-  let fetchToken = '';
+  let qboToken = '';
   let authId = '';
   let syntheticSession: Session = {
     user: {
@@ -26,5 +30,5 @@ export async function syntheticLogin(
     expires: '',
   };
 
-  return [loginResult, fetchToken, authId, syntheticSession];
+  return [loginResult, qboToken, authId, syntheticSession];
 }

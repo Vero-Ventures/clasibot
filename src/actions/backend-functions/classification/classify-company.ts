@@ -22,13 +22,13 @@ import type {
 import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
-// Takes fetch token and auth ID gotten from QBO during synthetic login as well as the generated session.
+// Takes QBO token and auth ID gotten from QBO during synthetic login as well as the generated session.
 // Manual Classification Specific:
 //        Truth value indicating it is a manual classification and a state update function for frontend updating.
 // Returns: the query result from transaction-saving or an error query result.
 // Integration: Called by weekly classification method.
 export async function classifyCompany(
-  fetchToken: string,
+  qboToken: string,
   authId: string,
   session: Session,
   manualClassify: boolean = false,
@@ -41,7 +41,7 @@ export async function classifyCompany(
     // Get the 'For Review' transactions for all accounts related to the current company.
     const forReviewResult = await getForReviewTransactions(
       session,
-      fetchToken,
+      qboToken,
       authId
     );
 
@@ -157,11 +157,11 @@ export async function classifyCompany(
   }
 }
 
-// Takes the fetch and authId tokens gotten during synthetic login, as well as the created session.
+// Takes the QBO and authId tokens gotten during synthetic login, as well as the created session.
 // Returns: an array of sub-arrays in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 async function getForReviewTransactions(
   session: Session,
-  fetchToken: string,
+  qboToken: string,
   authId: string
 ): Promise<
   (FormattedForReviewTransaction | ForReviewTransaction)[][] | QueryResult
@@ -193,7 +193,7 @@ async function getForReviewTransactions(
         const result = await getForReview(
           account.id,
           session.realmId!,
-          fetchToken,
+          qboToken,
           authId
         );
 
