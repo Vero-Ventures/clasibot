@@ -8,7 +8,6 @@ import {
   integer,
   boolean,
   serial,
-  timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -203,8 +202,3 @@ export const ForReviewTransactionToTaxCodes = pgTable(
     pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
   })
 );
-
-export const NextReviewTimestamp = pgTable('NextReviewTimestamp', {
-  id: serial('id').primaryKey(),
-  date: timestamp('date', { withTimezone: true }).notNull(),
-});

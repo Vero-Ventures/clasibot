@@ -8,7 +8,6 @@ import {
   getCompanyName,
 } from '@/actions/quickbooks/user-info';
 import { addForReviewTransactions } from '@/actions/backend-functions/database-functions/add-db-for-review';
-import { setNextReviewTimestamp } from '@/actions/backend-functions/database-functions/next-review-timestamp';
 import { classifyTransactions } from './classify';
 import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
@@ -122,11 +121,6 @@ export async function classifyCompany(
           forReviewTransactions,
           validClassificationResults
         );
-
-      // If not doing manual classification, update the database timestamp for the next automatic review.
-      if (!manualClassify) {
-        setNextReviewTimestamp();
-      }
 
       // Manual Classification: Update frontend state for database saving of classified 'For Review' transactions with non-null assertion.
       if (manualClassify) setFrontendState!('Saving Classifications ... ');
