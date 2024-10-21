@@ -31,7 +31,7 @@ export async function classifyCompany(
   fetchToken: string,
   authId: string,
   session: Session,
-  manualClassify: boolean,
+  manualClassify: boolean = false,
   setFrontendState: ((newState: string) => void) | null = null
 ): Promise<QueryResult> {
   try {
