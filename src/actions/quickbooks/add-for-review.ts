@@ -1,33 +1,57 @@
 'use server';
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
+import { db } from '@/db/index';
+import { Company } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { syntheticLogin } from '@/actions/backend-functions/synthetic-login';
 import type {
   ForReviewTransaction,
   UpdatedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
-import { getServerSession } from 'next-auth';
-import { options } from '@/app/api/auth/[...nextauth]/options';
 
 // Take a raw 'For Review' transaction object as well as the Id's for its category and tax code classificaions.
-// Also takes the fetch and auth Id tokens generated during synthetic login.
+// Also takes the QBO and auth Id tokens generated during synthetic login.
 // Returns: A Query Result object.
-// Integration: Called inside iteration by review page after user selects the transactions they wish to save.
-//    Requires some call to synthetic login to get the required fetch token and auth Id.
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
   categoryId: string,
   taxCodeId: string
 ): Promise<QueryResult> {
   try {
-    // Make call to synthetic login to get the synthetic session and related tokens.
-    //
-    //
-
-    // Temp definition of relevant values to later be replaced by a synthetic login call.
-    const fetchToken = 'null';
-    const authId = 'null';
-
-    // Get the session for the current user to get their realm Id.
+    // Get the current session to get the company realm Id.
     const session = await getServerSession(options);
+
+    // If a session could not be found, create and return an error Query Result.
+    if (!session?.realmId) {
+      return { result: '', message: '', detail: '' };
+    }
+
+    // Get the current company from the database to check for a potential firm name.
+    // Needed during synthetic login if access to company comes through an accounting firm.
+    const currentCompany = await db
+      .select()
+      .from(Company)
+      .where(eq(Company.realmId, session.realmId));
+
+    // If a datavase company could not be found, create and return an error Query Result.
+    if (!currentCompany[0]) {
+      return { result: '', message: '', detail: '' };
+    }
+
+    // Call method for synthetic login.
+    // Takes: the company realmId and potentially null firm name string.
+    // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
+    const [loginResult, qboToken, authId] = await syntheticLogin(
+      session.realmId,
+      currentCompany[0].firmName
+    );
+
+    // If the synthetic login failed, return the assosiated failure query result.
+    if (loginResult.result === 'Error') {
+      return loginResult;
+    }
 
     // Define the account ID for the call and the full endpoint to use. Realm Id will always be true as function is only callable by logged in users.
     const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${session!.realmId}/olb/ng/batchAcceptTransactions`;
@@ -44,7 +68,7 @@ export async function addForReview(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        cookie: `qbo.tkt=${fetchToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${authId}; SameSite=None`,
+        cookie: `qbo.tkt=${qboToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${authId}; SameSite=None`,
       },
       body: JSON.stringify(body),
     });

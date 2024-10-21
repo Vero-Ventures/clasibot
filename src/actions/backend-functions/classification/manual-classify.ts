@@ -1,8 +1,11 @@
 'use server';
-import { classifyCompany } from './classify-company';
-// import type { Session } from 'next-auth/core/types';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import { db } from '@/db/index';
+import { Company } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { syntheticLogin } from '@/actions/backend-functions/synthetic-login';
+import { classifyCompany } from './classify-company';
 
 // Takes a function to update state on front end.
 // Returns: A boolean indicating if manual classification was successful.
@@ -10,39 +13,73 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 export async function manualClassify(
   setManualClassificationState: (newState: string) => void
 ): Promise<boolean> {
-  // Make call to synthetic login to get the synthetic session and related tokens.
-  //
-  //
+  try {
+    // Get the current session to get the company realm Id.
+    const session = await getServerSession(options);
 
-  // Temp definition of relevant values to later be replaced by a synthetic login call.
-  const fetchToken = 'null';
-  const authId = 'null';
-  const session = await getServerSession(options);
-
-  // Only continue if a valid session is found.
-  if (session) {
-    // Make a call to the company classification method with the retrived values.
-    const result = await classifyCompany(
-      fetchToken,
-      authId,
-      session,
-      true,
-      setManualClassificationState
-    );
-
-    // Depending on the result of the classification call, update the manual classification state and return a success boolean.
-    if (result.result === 'Success') {
-      setManualClassificationState('Classifications Saved.');
-      return true;
-    } else {
-      // Log the errors encountered that resulted in failure.
-      console.error('Unexpected Error, Message:' + result.message);
+    // Handle error logging, state update, and failure return if session is not found.
+    if (!session?.realmId) {
+      console.error('Backend Classification: Session Not Found.');
       setManualClassificationState('An Unexpected Error Occured');
       return false;
     }
-  } else {
-    // Log the errors and update to failure state, then return false for success boolean.
-    console.error('Session Not Found.');
+
+    // Get the current company from the database to check for a potential firm name.
+    // Needed during synthetic login if access to company comes through an accounting firm.
+    const currentCompany = await db
+      .select()
+      .from(Company)
+      .where(eq(Company.realmId, session.realmId));
+
+    // Check that a matching company was found.
+    // Handle error logging, state update, and failure return if no matching company is found.
+    if (!currentCompany[0]) {
+      console.error('Backend Classification: Company Not Found In Database.');
+      setManualClassificationState('An Unexpected Error Occured');
+      return false;
+    }
+
+    // Call method for synthetic login.
+    // Takes: the company realmId and potentially null firm name string.
+    // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
+    const [loginResult, qboToken, authId, syntheticSession] =
+      await syntheticLogin(session.realmId, currentCompany[0].firmName);
+
+    // Check the synthetic login response to prevent any errors.
+    if (loginResult.result !== 'Error ') {
+      // Make a call to the company classification method with the retrived values.
+      const result = await classifyCompany(
+        qboToken,
+        authId,
+        syntheticSession,
+        true,
+        setManualClassificationState
+      );
+
+      // Depending on the result of the classification call, update the manual classification state and return a success boolean value.
+      if (result.result === 'Success') {
+        setManualClassificationState('Classifications Saved.');
+        return true;
+      } else {
+        // Log the error from company classification as well as updating frontend state and reutning failure boolean value.
+        console.error('Unexpected Error, Message:' + result.message);
+        setManualClassificationState('An Unexpected Error Occured');
+        return false;
+      }
+    } else {
+      // Log the query response from the failed synthetic login, update frontend to failure state, then return a failure boolean value.
+      console.error(loginResult);
+      setManualClassificationState('An Unexpected Error Occured');
+      return false;
+    }
+  } catch (error) {
+    // Catch any errors and log an error with the error message if it is present.
+    if (error instanceof Error) {
+      console.log('Error During Manual Classification : ' + error.message);
+    } else {
+      console.log('Unexpected Error During Manual Classification');
+    }
+    // Update the frontend state and return a failure boolean value.
     setManualClassificationState('An Unexpected Error Occured');
     return false;
   }
