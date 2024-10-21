@@ -7,22 +7,22 @@ import type { QueryResult } from '@/types/QueryResult';
 // Returns: A Query Result for the login process, the two nessasary cookie values retrived from response headers -
 //    And a session logged in as the company related to the passed realm Id.
 export async function syntheticLogin(
-  realmId: string,
-  firmName: string | null
+  _realmId: string,
+  _firmName: string | null
 ): Promise<[QueryResult, string, string, Session]> {
   // Synthetic Login Logic
   //
   //
   //
 
-  let loginResult: QueryResult = {
+  const loginResult: QueryResult = {
     result: '',
     message: '',
     detail: '',
   };
-  let qboToken = '';
-  let authId = '';
-  let syntheticSession: Session = {
+  const qboToken = '';
+  const authId = '';
+  const syntheticSession: Session = {
     user: {
       name: null,
       email: null,
