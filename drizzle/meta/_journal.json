@@ -134,6 +134,13 @@
       "when": 1729536708252,
       "tag": "0018_daily_caretaker",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1729544567877,
+      "tag": "0019_majestic_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }
