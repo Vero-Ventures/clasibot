@@ -127,6 +127,13 @@
       "when": 1729290121974,
       "tag": "0017_curious_black_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1729536708252,
+      "tag": "0018_daily_caretaker",
+      "breakpoints": true
     }
   ]
 }

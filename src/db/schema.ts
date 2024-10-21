@@ -16,7 +16,7 @@ export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   firstName: text('first_name'),
   lastName: text('last_name'),
-  email: text('email').unique(),
+  email: text('email').unique().notNull(),
   subscriptionId: uuid('subscription_id').unique(),
 });
 
@@ -26,9 +26,9 @@ export const UserToCompanyRelations = relations(User, ({ many }) => ({
 
 export const Firm = pgTable('Firm', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
+  name: text('name').notNull(),
   userId: uuid('user_id').references(() => User.id, { onDelete: 'cascade' }),
   userName: text('user_name').notNull(),
-  name: text('name').notNull(),
 });
 
 export const Subscription = pgTable('Subscription', {
