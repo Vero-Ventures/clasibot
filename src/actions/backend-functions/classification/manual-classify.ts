@@ -5,10 +5,10 @@ import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
 
 // Takes a function to update state on front end.
-// Returns: A boolean indicating if manual review was successful.
+// Returns: A boolean indicating if manual classification was successful.
 // Integration: Requires synthetic login and state handling on frontend.
 export async function manualClassify(
-  setManualReviewState: (newState: string) => void
+  setManualClassificationState: (newState: string) => void
 ): Promise<boolean> {
   // Make call to synthetic login to get the synthetic session and related tokens.
   //
@@ -27,24 +27,24 @@ export async function manualClassify(
       authId,
       session,
       true,
-      setManualReviewState
+      setManualClassificationState
     );
 
-    // Depending on the result of the classification call, update the manual review state and return a success boolean.
+    // Depending on the result of the classification call, update the manual classification state and return a success boolean.
     if (result.result === 'Success') {
-      setManualReviewState('Classifications Saved.');
+      setManualClassificationState('Classifications Saved.');
       return true;
     } else {
       // Log the errors encountered that resulted in failure.
       console.error('Unexpected Error, Message:' + result.message);
       console.error('Error Details: ' + result.detail);
-      setManualReviewState('An Unexpected Error Occured');
+      setManualClassificationState('An Unexpected Error Occured');
       return false;
     }
   } else {
     // Log the errors and update to failure state, then return false for success boolean.
     console.error('Session Not Found.');
-    setManualReviewState('An Unexpected Error Occured');
+    setManualClassificationState('An Unexpected Error Occured');
     return false;
   }
 }

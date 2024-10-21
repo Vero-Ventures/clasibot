@@ -1,5 +1,5 @@
 /**
- * Defines a test API route for getting a users 'for review' transactions using QuickBooks API.
+ * Defines a test API route for getting a users 'For Review' transactions using QuickBooks API.
  */
 import { getForReview } from '@/actions/backend-functions/get-for-review';
 

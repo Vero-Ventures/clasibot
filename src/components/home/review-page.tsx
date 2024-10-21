@@ -46,49 +46,54 @@ export default function ReviewPage({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Create states to track values related to the state of a manual review.
-  const [isReviewing, setIsReviewing] = useState(false);
-  const [manualReviewState, setManualReviewState] = useState<string>('');
-  const [openFinishedReviewModal, setOpenFinishedReviewModal] =
+  // Create states to track values related to the state of a manual classification.
+  const [isClassifying, setIsClassifying] = useState(false);
+  const [manualClassificationState, setManualClassificationState] =
+    useState<string>('');
+  const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
 
-  // Make function to pass to update the manual review state.
-  function updateManualReviewState(newState: string) {
-    setManualReviewState(newState);
+  // Make function to pass to update the manual classification state.
+  function updateManualClassificationState(newState: string) {
+    setManualClassificationState(newState);
   }
 
-  function handleManualReview() {
-    // Define the review process as started and update the review state.
-    setManualReviewState('Starting Review ...');
-    setIsReviewing(true);
+  function handleManualClassification() {
+    // Define the classification process as started and update the classification state.
+    setManualClassificationState('Starting Classification ...');
+    setIsClassifying(true);
 
-    const startManualReview = async () => {
-      // Make call to backend for review function with the related states.
-      const success = await manualClassify(updateManualReviewState);
+    const startManualClassification = async () => {
+      // Make call to backend 'For Review' function with the related states.
+      const success = await manualClassify(updateManualClassificationState);
       if (success) {
-        // Update the state to indicate the review is finished and begin loading the newly reviewed transactions.
-        setManualReviewState('Finished Review, Loading Transactions ...');
-        // Load the transactions from the database after the manual review.
+        // Update the state to indicate the classification is finished and begin loading the newly classified transactions.
+        setManualClassificationState(
+          'Finished Review, Loading Transactions ...'
+        );
+        // Load the transactions from the database after the manual classification.
         setLoadedTransactions(await getDatabaseTransactions());
-        // Update manual review state with a finished message.
-        setManualReviewState('Manual Review Complete.');
-        // Additional actions to perform on manual review completion.
+        // Update manual classification state with a finished message.
+        setManualClassificationState('Manual Classification Complete.');
+        // Additional actions to perform on manual classification completion.
         // Completion state handling.
         //
         //
+        //
       } else {
-        // Actions to preform in the event manual review results in an error.
+        // Actions to preform in the event manual classification results in an error.
         // Failure state handling.
         //
         //
+        //
       }
-      // Update the state to indicate review is not longer in progress.
-      setIsReviewing(false);
-      setOpenFinishedReviewModal(true);
+      // Update the state to indicate classification is not longer in progress.
+      setIsClassifying(false);
+      setOpenFinishedClassificationModal(true);
     };
 
-    // Start the manual review by calling the async function.
-    startManualReview();
+    // Start the manual classification by calling the async function.
+    startManualClassification();
   }
 
   // Updates the categorizations for each transaction when categorized transactions or categorization results change.
@@ -197,7 +202,7 @@ export default function ReviewPage({
       // Iterate through the selected rows, using only values where selected = true.
       selectedRowIndices.forEach(async ([index, selected]) => {
         if (selected) {
-          // Get the row index as a number, as well as the catagoried and raw "for review" transaction objects.
+          // Get the row index as a number, as well as the catagoried and raw 'For Review' transaction objects.
           const numericalIndex = Number(index);
           const categorizedTransaction = transactions[
             numericalIndex
@@ -268,7 +273,7 @@ export default function ReviewPage({
             // Call the method to login to backend as synthetic bookkeeper and add the classified transaction to the users account/
             await addForReview(rawTransaction, category.id, taxCode.id, '', '');
 
-            // Remove the related for review transaction and its connectionss from the database.
+            // Remove the related 'For Review' transaction and its connectionss from the database.
             const result = await removeForReviewTransactions(rawTransaction);
 
             // If the removal of transactions result is not successful, throw the detail as an error.
@@ -319,9 +324,9 @@ export default function ReviewPage({
         handleTaxCodeChange={handleTaxCodeChange}
         handleSave={handleSave}
         isSaving={isSaving}
-        handleManualReview={handleManualReview}
-        manualReviewState={manualReviewState}
-        isReviewing={isReviewing}
+        handleManualClassification={handleManualClassification}
+        manualClassificationState={manualClassificationState}
+        isClassifying={isClassifying}
       />
       {/* Only display result modal after an attempt to save sets 'modal open' state to true. */}
       <div
@@ -381,7 +386,7 @@ export default function ReviewPage({
         </div>
       </div>
       <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedReviewModal ? '' : 'hidden'}`}>
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
           <>
             <h2
@@ -392,7 +397,7 @@ export default function ReviewPage({
             <p
               id="ResultMessage"
               className="mb-6 text-center font-medium text-gray-800">
-              Your transactions have been reviewed.
+              Your transactions have been classified.
             </p>
           </>
 
@@ -400,7 +405,7 @@ export default function ReviewPage({
             <Button
               id="CloseButton"
               className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-              onClick={() => setOpenFinishedReviewModal(false)}>
+              onClick={() => setOpenFinishedClassificationModal(false)}>
               Continue
             </Button>
           </div>

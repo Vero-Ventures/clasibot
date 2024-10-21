@@ -61,7 +61,7 @@ export type FormattedForReviewTransaction = {
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
-  // The account that the for review transaction was pulled from.
+  // The account that the 'For Review' transaction was pulled from.
   account: string;
   // The name of the above account, used as part of table filtering on frontend review page.
   accountName: string;
@@ -76,7 +76,7 @@ export type ClassifiedForReviewTransaction = {
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
-  // The account that the for review transaction was pulled from.
+  // The account that the 'For Review' transaction was pulled from.
   account: string;
   // The name of the above account, used as part of table filtering on frontend review page.
   accountName: string;

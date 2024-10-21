@@ -67,7 +67,7 @@ export async function getForReview(
   }
 }
 
-// Take the "for review" transaction data and return the relevant data in a formatted and typed object.
+// Take the 'For Review' transaction data and return the relevant data in a formatted and typed object.
 function formatForReviewTransaction(
   responseData: ForReviewTransaction[]
 ): (FormattedForReviewTransaction | ForReviewTransaction)[][] {

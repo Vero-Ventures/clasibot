@@ -11,7 +11,7 @@ import { eq } from 'drizzle-orm';
 import type { ForReviewTransaction } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Takes a raw for review transaction and removes the related object from the database.
+// Takes a raw 'For Review' transaction and removes the related object from the database.
 // Returns: A Query Result object.
 export async function removeForReviewTransactions(
   savedTransaction: ForReviewTransaction

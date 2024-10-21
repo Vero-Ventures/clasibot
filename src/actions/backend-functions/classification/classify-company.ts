@@ -1,6 +1,5 @@
 'use server';
 import { getForReview } from '@/actions/backend-functions/get-for-review';
-
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
 import {
@@ -24,8 +23,8 @@ import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
 // Takes fetch token and auth ID gotten from QBO during synthetic login as well as the generated session.
-// Manual Review Specific:
-//        Truth value indicating it is a manual review and a state update function for frontend updating.
+// Manual Classification Specific:
+//        Truth value indicating it is a manual classification and a state update function for frontend updating.
 // Returns: the query result from transaction-saving or an error query result.
 // Integration: Called by weekly classification method.
 export async function classifyCompany(
@@ -36,7 +35,7 @@ export async function classifyCompany(
   setFrontendState: ((newState: string) => void) | null = null
 ): Promise<QueryResult> {
   try {
-    // Manual Review: Update frontend state for 'For Review' transaction fetching with non-null assertion.
+    // Manual Classification: Update frontend state for 'For Review' transaction fetching with non-null assertion.
     if (manualClassify) setFrontendState!('Loading New Transactions ... ');
 
     // Get the 'For Review' transactions for all accounts related to the current company.
@@ -59,7 +58,7 @@ export async function classifyCompany(
       | FormattedForReviewTransaction
     )[][];
 
-    // Manual Review: Update frontend state for fetching classified transactions with non-null assertion.
+    // Manual Classification: Update frontend state for fetching classified transactions with non-null assertion.
     if (manualClassify) setFrontendState!('Getting Transaction History ... ');
 
     // Get the saved classified transactions from the user to use as context for prediction.
@@ -75,7 +74,7 @@ export async function classifyCompany(
     // Returned values may be error / null but that is accounted for by use in LLM.
     const companyInfo = await getCompanyInfo(session);
 
-    // Manual Review: Update frontend state to indicate start of classification with non-null assertion.
+    // Manual Classification: Update frontend state to indicate start of classification with non-null assertion.
     if (manualClassify) setFrontendState!('Classifying New Transactions ... ');
 
     // Call classification on the formatted 'For Review' transactions.
@@ -113,7 +112,7 @@ export async function classifyCompany(
         }
       >;
 
-      // Manual Review: Update frontend state to indicate classified 'For Review' transaction creation with non-null assertion.
+      // Manual Classification: Update frontend state to indicate classified 'For Review' transaction creation with non-null assertion.
       if (manualClassify) setFrontendState!('Evaluating Classifications ... ');
 
       // Use transaction classification results to create classified 'For Review' transaction objects.
@@ -128,7 +127,7 @@ export async function classifyCompany(
         setNextReviewTimestamp();
       }
 
-      // Manual Review: Update frontend state for database saving of classified 'For Review' transactions with non-null assertion.
+      // Manual Classification: Update frontend state for database saving of classified 'For Review' transactions with non-null assertion.
       if (manualClassify) setFrontendState!('Saving Classifications ... ');
 
       // Save the classified 'For Review' transactions to the database.
