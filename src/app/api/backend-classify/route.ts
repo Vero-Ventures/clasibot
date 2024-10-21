@@ -1,3 +1,4 @@
+import { classificationUserIteration } from '@/actions/backend-functions/user-company-selection/user-iteration';
 import type { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -11,6 +12,15 @@ export async function GET(request: NextRequest) {
     // If the expeced auth is not found, return an unauthorized error.
     return new Response('Unauthorized', {
       status: 401,
+    });
+  } else {
+    // If the call is a valid vercel cron job, call function to iterate over users for company selection and classification.
+    classificationUserIteration();
+
+    // After starting async + concurrent classification of 'For Review' transactions in user companies.
+    // Return a new response to indicate the call to start weekly was successful.
+    return new Response('Weekly Background Classification Started.', {
+      status: 200,
     });
   }
 }
