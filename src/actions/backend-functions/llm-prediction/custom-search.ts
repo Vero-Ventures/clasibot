@@ -40,7 +40,11 @@ export async function fetchCustomSearch(
       }
       // Catch any errors that occured, log the error and return an empty array as the CSE context.
     } catch (error) {
-      console.error('Error fetching custom search:', error);
+      if (error instanceof Error) {
+        console.error('Error fetching Custom Search results: ' + error);
+      } else {
+        console.error('Unexpected error fetching Custom Search results.');
+      }
       return [];
     }
   }

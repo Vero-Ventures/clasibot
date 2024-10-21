@@ -86,7 +86,7 @@ export async function findFormattedPurchase(
       return {
         result_info: {
           result: 'error',
-          message: 'Unexpected error occured while fetching accounts.',
+          message: 'Unexpected error occured while fetching purchases.',
           detail: error.message,
         },
         id: '',
@@ -96,7 +96,7 @@ export async function findFormattedPurchase(
       return {
         result_info: {
           result: 'error',
-          message: 'Unexpected error occured while fetching accounts.',
+          message: 'Unexpected error occured while fetching purchases.',
           detail: 'N/A',
         },
         id: '',

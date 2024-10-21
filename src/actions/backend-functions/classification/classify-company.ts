@@ -45,7 +45,8 @@ export async function classifyCompany(
       authId
     );
 
-    // Check if the 'For Review' transaction call encountered an error (returned value is a query result on failure).
+    // Check if the 'For Review' transaction call encountered an error.
+    // Result is only present in Query Value typing that is only returned on error.
     if ('result' in forReviewResult) {
       // Return the query response to the caller as the error handling.
       return forReviewResult;
@@ -99,7 +100,7 @@ export async function classifyCompany(
       const resultDetail = classificationResults.error as string;
       return {
         result: 'Error',
-        message: 'Error classifying the "For Review" transactions',
+        message: 'Error Classifying The New Transactions',
         detail: resultDetail,
       };
     } else {
@@ -172,8 +173,9 @@ async function getForReviewTransactions(
 
     // Check the result of the account fetching, the first index always contains a Query Result.
     if (result[0].result === 'Error') {
-      // If the fetching failed, return an empty array.
+      // If the fetching failed, log an error message and return an empty array.
       // Process will continue without 'For Review' transactions from the current account.
+      console.error('Error getting user accounts: ' + result[0].detail);
       return [];
     } else {
       // Remove the Query Result and define the remaining values as an array of Account objects.
@@ -217,12 +219,15 @@ async function getForReviewTransactions(
   } catch (error) {
     // Return an appropriate message indicating an unexpected error fetching 'For Review' transactions.
     if (error instanceof Error) {
+      // First, log the error for backend logs.
+      console.error('Error Getting For Review Transactions:' + error.message);
       return {
         result: 'Error',
         message: 'An Unexpected Error Occured While Getting Transactions',
         detail: error.message,
       };
     } else {
+      console.error('Error: Unexpected Error Getting For Review Transactions');
       return {
         result: 'Error',
         message: 'An Unexpected Error Occured While Getting Transactions',
@@ -257,8 +262,9 @@ async function getClassifiedPastTransactions(
 
     // Check the first index which is always a Query Result.
     if (result[0].result === 'Error') {
-      // On failure to fetch transactions, return an empty array.
+      // On failure to fetch transactions, log an error and return an empty array.
       // Process will continue without prior transactions to use as context.
+      console.error('Error Loading Saved Transactions: ' + result[0].detail);
       return [];
     } else {
       // Return the resulting transactions with the inital query result value removed.
@@ -268,7 +274,7 @@ async function getClassifiedPastTransactions(
   } catch (error) {
     // Return an appropriate message indicating an unexpected error fetching saved transactions.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Fetching Saved Transactions: ' + error.message);
       return [];
     } else {
       console.error('Error: Uncexpected Error Fetching Saved Transactions');
@@ -295,14 +301,14 @@ async function getCompanyInfo(session: Session): Promise<CompanyInfo> {
   } catch (error) {
     // Log an error message and return a company info of error values.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Fetching Company Info: ' + error.message);
       return {
         name: 'Error: Name not found',
         industry: 'Error',
         location: { Country: '', Location: null },
       };
     } else {
-      console.error('Error: Uncexpected Error');
+      console.error('Error: Uncexpected Error Fetching Company Info');
       return {
         name: 'Error: Name not found',
         industry: 'Error',
@@ -389,12 +395,10 @@ function createClassifiedForReviewTransactions(
   } catch (error) {
     // Log an error message and return a company info of error values.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Creating Classified Transactions: ' + error.message);
       return [];
     } else {
-      console.error(
-        'Error: Unexpected Error Creatiing Classified Transactions'
-      );
+      console.error('Error: Unexpected Error Creating Classified Transactions');
       return [];
     }
   }

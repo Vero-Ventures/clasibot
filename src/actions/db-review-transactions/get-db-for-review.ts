@@ -122,9 +122,13 @@ export async function getDatabaseTransactions(): Promise<
   } catch (error) {
     // Catch any errors and return an error response with the error message if it present.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error(
+        'Error Getting For Review Transactions From Database: ' + error.message
+      );
     } else {
-      console.error('Unexpected Error.');
+      console.error(
+        'Unexpected Error Getting For Review Transactions From Database.'
+      );
     }
     // Return an empty array on error, to indicate no fetched database 'For Review' transactions.
     return [];
@@ -213,9 +217,9 @@ async function getTransactionCategories(
   } catch (error) {
     // Catch any errors and return an error response with the error message if it present.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Getting Transaction Categories: ' + error.message);
     } else {
-      console.error('Unexpected Error.');
+      console.error('Unexpected Error Getting Transaction Categories.');
     }
     // Return an empty array on error, to indicate no related category classifications.
     return [];
@@ -285,9 +289,9 @@ async function getTransactionTaxCodes(
   } catch (error) {
     // Catch any errors and return an error response with the error message if it present.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Getting Transaction Tax Codes: ' + error.message);
     } else {
-      console.error('Unexpected Error.');
+      console.error('Unexpected Error Getting Transaction Tax Codes.');
     }
     // Return an empty array on error, to indicate no related tax code classifications.
     return [];

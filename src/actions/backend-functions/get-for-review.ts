@@ -35,7 +35,7 @@ export async function getForReview(
       return {
         result: 'Error',
         message:
-          'Call made to Query API endpoint did not return a valid response.',
+          'Call made to Get For Review endpoint did not return a valid response.',
         detail: JSON.stringify(errorText),
       };
     }
@@ -48,12 +48,13 @@ export async function getForReview(
     return {
       result: 'Success',
       message:
-        'Request made to Query API endpoint was returned a valid response',
+        'Request made to Get For Review endpoint was returned with a valid response',
       detail: JSON.stringify(formattedResponse),
     };
   } catch (error) {
     // Define a default error detail.
-    let errorDetail = 'An unexpected error occured.';
+    let errorDetail =
+      'An unexpected error occured while getting For Review transactions.';
     // Check if error is of type Error and update the detail if it is.
     if (error instanceof Error) {
       errorDetail = error.message;
@@ -61,8 +62,8 @@ export async function getForReview(
     // If there is an error calling the API, get the response error and return it in a result object with an error result.
     return {
       result: 'Error',
-      message: 'Call made to Query API endpoint resulted in error.',
-      detail: errorDetail,
+      message: 'Call made to Get For Review endpoint resulted in error.',
+      detail: 'Error Getting For Review Transactions: ' + errorDetail,
     };
   }
 }

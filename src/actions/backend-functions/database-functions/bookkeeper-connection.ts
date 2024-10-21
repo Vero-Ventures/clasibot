@@ -99,13 +99,13 @@ export async function addCompanyConnection(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Adding Company Connection',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Adding Company Connection',
         detail: 'N/A',
       };
     }
@@ -141,7 +141,7 @@ export async function addAccountingFirmConnection(
       // If a matching firm already exists, return an error message.
       return {
         result: 'Error',
-        message: 'A Matching Firm Was Found.',
+        message: 'A Matching Firm Was Already In The Database.',
         detail:
           'A frim with that name and user name already exists in the database.',
       };
@@ -151,13 +151,13 @@ export async function addAccountingFirmConnection(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Adding The Firm Connection',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Adding The Firm Connection',
         detail: 'N/A',
       };
     }
@@ -318,13 +318,15 @@ export async function addAccountingFirmCompanies(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message:
+          'An Unexpected Error Occured Connecting Companies To Accounting Firm',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message:
+          'An Unexpected Error Occured Connecting Companies To Accounting Firm',
         detail: 'N/A',
       };
     }
@@ -355,7 +357,7 @@ export async function makeCompanyIncactive(
       // After updating the connection, return a success result.
       return {
         result: 'Success',
-        message: 'Bookkeeper disconnected.',
+        message: 'Bookkeeper connection deactivated.',
         detail: 'Bookkeeper connection to company set to false.',
       };
     } else {
@@ -371,13 +373,13 @@ export async function makeCompanyIncactive(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured The Company Inactive',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Making The Company Inactive',
         detail: 'N/A',
       };
     }

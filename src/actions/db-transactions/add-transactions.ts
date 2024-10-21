@@ -74,13 +74,13 @@ export async function addTransactions(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Adding Transaction to Database',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured',
+        message: 'An Unexpected Error Occured Adding Transaction to Database',
         detail: 'N/A',
       };
     }
@@ -150,15 +150,17 @@ async function handleCategoryIncrement(
   } catch (error) {
     // Catch any errors and return an error response with the error message if it is present.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error(
+        'Error Incremeting Count Of Transaction Categories: ' + error.message
+      );
     } else {
-      console.error('Unexpected Error.');
+      console.error('Unexpected Error Count Of Transaction Categories.');
     }
   }
 }
 
 // Based on if an existing tax code exists, either increments the number of matches or makes a new tax code obejct with 1 match.
-// Takes an existing tax code with an ID, category name, and number of matches.
+// Takes an existing tax code with an ID, tax code name, and number of matches.
 // Also takes the transaction being saved and the Id of its database object.
 async function handleTaxCodeIncrement(
   existingTaxCode:
@@ -220,9 +222,11 @@ async function handleTaxCodeIncrement(
   } catch (error) {
     // Catch any errors and return an error response with the error message if it is present.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error(
+        'Error Incremeting Count Of Transaction Tax Codes: ' + error.message
+      );
     } else {
-      console.error('Unexpected Error.');
+      console.error('Unexpected Error Count Of Transaction Tax Codes.');
     }
   }
 }

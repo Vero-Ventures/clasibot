@@ -116,15 +116,15 @@ export async function addForReviewTransactions(
       return {
         result: 'Error',
         message:
-          'An error was encountered adding a "For Review" transaction or one of its connections.',
+          'An error occurred while saving newly classified transaction to the database.',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
         message:
-          'An error was encountered adding a "For Review" transaction or one of its connections.',
-        detail: 'Unknown error encountered.',
+          'An error occurred while saving newly classified transaction to the database.',
+        detail: 'Unexpected error occurred.',
       };
     }
   }
@@ -203,9 +203,12 @@ async function handleCategoryConnections(
   } catch (error) {
     // Catch any errors, return an error string or the error message if it is present.
     if (error instanceof Error && error.message) {
-      return error.message;
+      return (
+        'Error creating category connection for the transaction: ' +
+        error.message
+      );
     } else {
-      return 'Error, creating the category connection for a transaction failed';
+      return 'Error creating category connection for the transaction: Unexpected Error';
     }
   }
 }
@@ -261,9 +264,12 @@ async function handleTaxCodeConnections(
   } catch (error) {
     // Catch any errors, return an error string or the error message if it is present.
     if (error instanceof Error && error.message) {
-      return error.message;
+      return (
+        'Error creating tax code connection for the transaction: ' +
+        error.message
+      );
     } else {
-      return 'Error, creating the category connection for a transaction failed';
+      return 'Error creating tax code connection for the transaction: Unexpected Error';
     }
   }
 }

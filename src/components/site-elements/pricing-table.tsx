@@ -10,7 +10,7 @@ export default function PricingTable({
   publicKey: string;
   tableID: string;
 }) {
-  // Create use state to store and update the customer sessi  on.
+  // Create use state to store and update the customer session.
   const [customerSession, setCustomerSession] = useState('');
 
   // Create a function to fetch the customer session.

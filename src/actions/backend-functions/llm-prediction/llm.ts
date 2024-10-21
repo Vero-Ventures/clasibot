@@ -141,7 +141,11 @@ export async function queryLLM(
     return response.text;
   } catch (error) {
     // Log any errors that occur and return an empty string.
-    console.error('Error sending query:', error);
+    if (error instanceof Error) {
+      console.error('Error sending query to llm: ' + error);
+    } else {
+      console.error('Unexpected error sending query to llm.');
+    }
     return '';
   }
 }
@@ -240,9 +244,9 @@ export async function batchQueryLLM(
   } catch (error) {
     // Catch any errors and log an error with the error message if it is present.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Using LLM Classification: ' + error.message);
     } else {
-      console.error('Unexpected Error.');
+      console.error('Unexpected Error Using LLM Classification.');
     }
     // On an error, return an empty array for the predictions.
     return [];

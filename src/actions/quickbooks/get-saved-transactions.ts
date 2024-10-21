@@ -155,7 +155,7 @@ export async function getSavedTransactions(
         {
           result: 'error',
           message:
-            'Unexpected error occured while fetching saved user transactions.',
+            'Unexpected error occured while fetching saved transactions.',
           detail: error.message,
         },
       ]);
@@ -164,7 +164,7 @@ export async function getSavedTransactions(
         {
           result: 'error',
           message:
-            'Unexpected error occured while fetching saved user transactions.',
+            'Unexpected error occured while fetching saved transactions.',
           detail: 'N/A',
         },
       ]);
@@ -265,6 +265,19 @@ async function checkAndFormatTransactions(
                 ', Tax Code Failure? ' +
                 taxCodeError
             );
+
+            if (purchaseError) {
+              console.error(
+                'Error Fetching Purchase: ' +
+                  transactionPurchase.result_info.detail
+              );
+            }
+
+            if (taxCodeError) {
+              console.error(
+                'Error fetching Tax Code: ' + userTaxCodes[0].detail
+              );
+            }
           } else {
             // If both retrivals were successful, skip the Query Result and iterate through the user tax codes.
             for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {

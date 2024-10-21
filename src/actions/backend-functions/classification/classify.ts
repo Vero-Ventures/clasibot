@@ -52,22 +52,30 @@ export async function classifyTransactions(
         ', Detail: ',
         result.detail
       );
-      return { error: 'Error saving existing classified user transactions.' };
+      return { error: 'Error saving existing classified transactions.' };
     }
   } catch (error) {
     // Log any errors to the console, then return an error message.
-    console.error('Error saving existing classified user transactions:', error);
-    return { error: 'Error saving existing classified user transactions.' };
+    if (error instanceof Error) {
+      console.error(
+        'Error saving existing classified transactions: ' + error.message
+      );
+    } else {
+      console.error(
+        'Unexpected Error Saving Existing Classified Transactions.'
+      );
+    }
+    return { error: 'Error saving existing classified transactions.' };
   }
 
   // Check the users subscription status using the realmId fromn the passed synthetic session.
   // If there is an error or the subscription status is invalud, return an error object.
   const subscriptionStatus = await checkSubscription(session.realmId!);
   if ('error' in subscriptionStatus) {
-    return { error: 'Error getting subscription status' };
+    return { error: 'Error getting user subscription status.' };
   }
   if (!subscriptionStatus.valid) {
-    return { error: 'No active subscription' };
+    return { error: 'No active user subscription.' };
   }
 
   try {
@@ -182,9 +190,13 @@ export async function classifyTransactions(
 
     // Catch any errors and check for an error message.
   } catch (error) {
-    // Return an appropriate message indicating an unexpected error.
-    console.error('Error classifying transactions:', error);
-    return { error: 'Error getting categorized transactions:' };
+    // Log any errors to the console, then return an error message.
+    if (error instanceof Error) {
+      console.error('Error Classifying New Transactions: ' + error.message);
+    } else {
+      console.error('Unexpected Classifying New Transactions.');
+    }
+    return { error: 'Uncexpected error classifying transaction.' };
   }
 }
 
@@ -242,9 +254,9 @@ async function fetchValidCategories(
   } catch (error) {
     // Return an appropriate message indicating an unexpected error.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Getting Category Classifications: ' + error.message);
     } else {
-      console.error('Unexpected Error Getting Categoy Classifications.');
+      console.error('Unexpected Error Getting Category Classifications.');
     }
     // On error, return an empty classification array.
     return [];
@@ -282,12 +294,10 @@ async function fetchValidTaxCodes(
       // Check there are valid tax codes (error check) and the query response from getting user tax codes was a success.
       if (
         validLocationalTaxCodes.length !== 0 &&
-        userTaxCodes.QueryResponse[0].result != 'Success'
+        userTaxCodes[0].result != 'Success'
       ) {
         // Extract the user tax codes from the result by removing the query result
-        const userTaxCodeArray = userTaxCodes.QueryResponse.slice(
-          1
-        ) as TaxCode[];
+        const userTaxCodeArray = userTaxCodes[0].slice(1) as TaxCode[];
 
         // Iterate through user tax codes to record valid tax code info.
         for (const taxCode of userTaxCodeArray) {
@@ -300,6 +310,14 @@ async function fetchValidTaxCodes(
             });
           }
         }
+      } else {
+        // When an error occurs, log an error before containing.
+        console.log(
+          'Error getting tax codes, Message: ' +
+            userTaxCodes[0].message +
+            ', Detail: ' +
+            userTaxCodes[0].detail
+        );
       }
     }
     // Return an array indicating if tax classification is possible and a (possibly empty) array of tax code classifications.
@@ -308,7 +326,7 @@ async function fetchValidTaxCodes(
   } catch (error) {
     // Return an appropriate message indicating an unexpected error.
     if (error instanceof Error) {
-      console.error('Error: ' + error.message);
+      console.error('Error Getting Tax Code Classifications: ' + error.message);
     } else {
       console.error('Unexpected Error Getting Tax Code Classifications.');
     }
@@ -441,66 +459,76 @@ function orderClassificationsByAmount(
   formattedTransaction: FormattedForReviewTransaction,
   type: string
 ): ClassifiedElement[] {
-  // Assosiate classification name to a count of occurences and a total.
-  const classificationAverages: Record<string, [number, number]> = {};
+  try {
+    // Assosiate classification name to a count of occurences and a total.
+    const classificationAverages: Record<string, [number, number]> = {};
 
-  // Initalize each classification as [0, 0].
-  for (const classification of possibleValidElements) {
-    classificationAverages[classification.name] = [0, 0];
-  }
-
-  // Iterate through the matches and check if they have a valid classification.
-  matches.map((match) => {
-    // Define the match classification for the current match and set its value based on classification type.
-    let matchClassification;
-    if (type === 'category') {
-      matchClassification = match.item.category;
-    } else {
-      matchClassification = match.item.taxCodeName;
+    // Initalize each classification as [0, 0].
+    for (const classification of possibleValidElements) {
+      classificationAverages[classification.name] = [0, 0];
     }
-    // Check if the match classification matches at least one name in the list of possible valid categories.
-    if (
-      possibleValidElements.some(
-        (classification) => classification.name === matchClassification
-      )
-    ) {
-      // Increment the number of matches for the classification and add the amount to the total.
-      classificationAverages[matchClassification][0] += 1;
-      // Use abs to account for possibility of expenses being recorded as positive or negitive.
-      classificationAverages[matchClassification][1] += Math.abs(
-        match.item.amount
+
+    // Iterate through the matches and check if they have a valid classification.
+    matches.map((match) => {
+      // Define the match classification for the current match and set its value based on classification type.
+      let matchClassification;
+      if (type === 'category') {
+        matchClassification = match.item.category;
+      } else {
+        matchClassification = match.item.taxCodeName;
+      }
+      // Check if the match classification matches at least one name in the list of possible valid categories.
+      if (
+        possibleValidElements.some(
+          (classification) => classification.name === matchClassification
+        )
+      ) {
+        // Increment the number of matches for the classification and add the amount to the total.
+        classificationAverages[matchClassification][0] += 1;
+        // Use abs to account for possibility of expenses being recorded as positive or negitive.
+        classificationAverages[matchClassification][1] += Math.abs(
+          match.item.amount
+        );
+      }
+    });
+
+    // Make a map of the classifications with the count of their occurences and their total.
+    const sortedClassificationAverages = Object.entries(classificationAverages)
+      .map(([element, [count, total]]) => {
+        // Define an average based on count and total, accounting for a potential count of 0.
+        const average = count > 0 ? total / count : 0;
+        // Define the difference from the 'For Review' transaction being predicted using absolute value.
+        const difference = Math.abs(formattedTransaction.amount - average);
+        // Return the differences to be sorted into an array of dictionaries containing the element and the difference.
+        return { element, difference };
+      })
+      // Sort will put A before B if (A - B) is negitive, keep order if the same, and put B before A if positive.
+      .sort((a, b) => a.difference - b.difference);
+
+    // Create array for ordered predicted classification and extract just the classification values.
+    const orderedClassifications = [];
+    for (let index = 0; index < sortedClassificationAverages.length; index++) {
+      // Get the classification name for that index and look for the matching classification object.
+      const classificationName = sortedClassificationAverages[index].element;
+      const matchingCategory = possibleValidElements.find(
+        (classification) => classification.name === classificationName
       );
+      // If a matching classification was found, push it into the ordered array of classifications.
+      if (matchingCategory) {
+        orderedClassifications.push(matchingCategory);
+      }
     }
-  });
 
-  // Make a map of the classifications with the count of their occurences and their total.
-  const sortedClassificationAverages = Object.entries(classificationAverages)
-    .map(([element, [count, total]]) => {
-      // Define an average based on count and total, accounting for a potential count of 0.
-      const average = count > 0 ? total / count : 0;
-      // Define the difference from the 'For Review' transaction being predicted using absolute value.
-      const difference = Math.abs(formattedTransaction.amount - average);
-      // Return the differences to be sorted into an array of dictionaries containing the element and the difference.
-      return { element, difference };
-    })
-    // Sort will put A before B if (A - B) is negitive, keep order if the same, and put B before A if positive.
-    .sort((a, b) => a.difference - b.difference);
-
-  // Create array for ordered predicted classification and extract just the classification values.
-  const orderedClassifications = [];
-  for (let index = 0; index < sortedClassificationAverages.length; index++) {
-    // Get the classification name for that index and look for the matching classification object.
-    const classificationName = sortedClassificationAverages[index].element;
-    const matchingCategory = possibleValidElements.find(
-      (classification) => classification.name === classificationName
-    );
-    // If a matching classification was found, push it into the ordered array of classifications.
-    if (matchingCategory) {
-      orderedClassifications.push(matchingCategory);
+    return orderedClassifications;
+  } catch (error) {
+    // Catch any errors, log a message and return the passed classifications in the same order.
+    if (error instanceof Error) {
+      console.error('Error Ordering Classifications: ' + error.message);
+    } else {
+      console.error('Unexpected Error Ordering Classifications');
     }
+    return possibleValidElements;
   }
-
-  return orderedClassifications;
 }
 
 // Helper method to classify 'For Review' transactions using the LLM API.
@@ -538,7 +566,14 @@ async function classifyCategoriesWithLLM(
     }
   } catch (error) {
     // Catch any errors and log them to the console.
-    console.error('Error from LLM API usage: ', error);
+    if (error instanceof Error) {
+      console.error(
+        'Error from LLM API category classification: ',
+        error.message
+      );
+    } else {
+      console.error('Uncexpected Error From LLM API Category Classification');
+    }
   }
 }
 
@@ -578,6 +613,13 @@ async function classifyTaxCodesWithLLM(
     }
   } catch (error) {
     // Catch any errors and log them to the console.
-    console.error('Error from LLM API usage: ', error);
+    if (error instanceof Error) {
+      console.error(
+        'Error from LLM API tax code classification: ',
+        error.message
+      );
+    } else {
+      console.error('Uncexpected Error From LLM API Tax Code Classification');
+    }
   }
 }

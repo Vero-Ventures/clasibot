@@ -15,12 +15,18 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
   categoryId: string,
-  taxCodeId: string,
-  fetchToken: string,
-  authId: string
+  taxCodeId: string
 ): Promise<QueryResult> {
   try {
-    // Get the session for the current user to get their realm Id, used in the update transactions endpoint.
+    // Make call to synthetic login to get the synthetic session and related tokens.
+    //
+    //
+
+    // Temp definition of relevant values to later be replaced by a synthetic login call.
+    const fetchToken = 'null';
+    const authId = 'null';
+
+    // Get the session for the current user to get their realm Id.
     const session = await getServerSession(options);
 
     // Define the account ID for the call and the full endpoint to use. Realm Id will always be true as function is only callable by logged in users.
@@ -50,7 +56,7 @@ export async function addForReview(
       return {
         result: 'Error',
         message:
-          'Call made to Query API endpoint did not return a valid response.',
+          'Call made to Add For Review endpoint did not return a valid response.',
         detail: JSON.stringify(errorText),
       };
     }
@@ -60,12 +66,13 @@ export async function addForReview(
     return {
       result: 'Success',
       message:
-        'Request made to Query API endpoint was returned a valid response',
+        'Request made to Add For Review endpoint was returned with a valid response',
       detail: JSON.stringify(responseData),
     };
   } catch (error) {
     // Define a default error detail.
-    let errorDetail = 'An unexpected error occured.';
+    let errorDetail =
+      'An unexpected error occured while saving classified For Review transactions.';
     // Check if the caught error is of type Error and update the detail if it is.
     if (error instanceof Error) {
       errorDetail = error.message;
@@ -73,7 +80,7 @@ export async function addForReview(
     // If there is an error calling the API, get the response error and return it in a result object with an error result.
     return {
       result: 'Error',
-      message: 'Call made to Query API endpoint resulted in error.',
+      message: 'Call made to Add For Review endpoint resulted in error.',
       detail: errorDetail,
     };
   }

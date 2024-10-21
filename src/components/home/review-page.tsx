@@ -193,6 +193,10 @@ export default function ReviewPage({
       if (accountResults[0].result !== 'Error') {
         // Set the accounts variable to the account results without the query result value.
         accounts = accountResults.slice(1);
+      } else {
+        // If account fetch failed, throw an error to be caught and displayed as well as error loggging the error message.
+        console.error('Error Fetching Accounts: ' + accountResults[0].message);
+        throw 'Accounts Fetch Failed';
       }
 
       // Get the selected rows in an iterable format [key: selectedRowIndex, value: true]
@@ -270,15 +274,25 @@ export default function ReviewPage({
             // Push the new transaction with savable info to array of transactions to be saved to the database.
             newTransactions.push(newDatabaseTransaction);
 
-            // Call the method to login to backend as synthetic bookkeeper and add the classified transaction to the users account/
-            await addForReview(rawTransaction, category.id, taxCode.id, '', '');
+            // Call the method to login to backend as synthetic bookkeeper and add the classified transaction to the users account.
+            const addResult = await addForReview(
+              rawTransaction,
+              category.id,
+              taxCode.id
+            );
+
+            // If the adding of the new transactions result is not successful, throw the message as an error.
+            if (addResult.result !== 'Success') {
+              throw addResult.message;
+            }
 
             // Remove the related 'For Review' transaction and its connectionss from the database.
-            const result = await removeForReviewTransactions(rawTransaction);
+            const removeResult =
+              await removeForReviewTransactions(rawTransaction);
 
-            // If the removal of transactions result is not successful, throw the detail as an error.
-            if (result.result !== 'Success') {
-              throw result.detail;
+            // If the removal of the new transactions result is not successful, throw the message as an error.
+            if (removeResult.result !== 'Success') {
+              throw removeResult.message;
             }
           }
         }

@@ -14,9 +14,9 @@ export async function manualClassify(
   //
   //
 
+  // Temp definition of relevant values to later be replaced by a synthetic login call.
   const fetchToken = 'null';
   const authId = 'null';
-  // Temp usage of get session to be replaced later by synthetic call.
   const session = await getServerSession(options);
 
   // Only continue if a valid session is found.
@@ -37,7 +37,6 @@ export async function manualClassify(
     } else {
       // Log the errors encountered that resulted in failure.
       console.error('Unexpected Error, Message:' + result.message);
-      console.error('Error Details: ' + result.detail);
       setManualClassificationState('An Unexpected Error Occured');
       return false;
     }
