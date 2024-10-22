@@ -4,7 +4,6 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 const config = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
@@ -45,7 +44,7 @@ const config = {
         p5: '5%',
       },
       // Defines a custom sizing based on the bug report button.
-      // Defines the size the button expands from an icon to include text.
+      // Defines the screen size the button should expand from an icon to include text.
       screens: {
         popout: '600px',
       },
