@@ -184,11 +184,7 @@ async function getForReviewTransactions(
       // Iterate through the fetched accounts that may contain 'For Review' transactions.
       for (const account of userAccounts) {
         // Get any 'For Review' transactions from the current account.
-        const result = await getForReview(
-          account.id,
-          loginTokens,
-          companyId
-        );
+        const result = await getForReview(account.id, loginTokens, companyId);
 
         // If the fetch was successful, append the resulting detail content to array of found 'For Review' transactions.
         if (result.result === 'Success') {
@@ -252,7 +248,12 @@ async function getClassifiedPastTransactions(
     const endDate = fiveYearsAgo.toISOString().split('T')[0];
 
     // Get the users saved transactions from QuickBooks for checking matches and parse the result.
-    const response = await getSavedTransactions(startDate, endDate, loginTokens, companyId);
+    const response = await getSavedTransactions(
+      startDate,
+      endDate,
+      loginTokens,
+      companyId
+    );
     const result = JSON.parse(response);
 
     // Check the first index which is always a Query Result.
@@ -288,8 +289,14 @@ async function getCompanyInfo(
   try {
     // Get the key company info values from the user-info calls.
     const userCompanyName = await getCompanyName(loginTokens, companyId);
-    const userCompanyIndustry = await getCompanyIndustry(loginTokens, companyId);
-    const userCompanyLocation = await getCompanyLocation(loginTokens, companyId);
+    const userCompanyIndustry = await getCompanyIndustry(
+      loginTokens,
+      companyId
+    );
+    const userCompanyLocation = await getCompanyLocation(
+      loginTokens,
+      companyId
+    );
     // Return the formatted company info values.
     return {
       name: userCompanyName,
