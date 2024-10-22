@@ -29,13 +29,13 @@ const config = {
       },
     },
     extend: {
-      // Define custom spacing for tailwind rules.
+      // Define custom spacing for tailwind elements.
       spacing: {
         120: '460px',
       },
-      // Add custom border width sizing.
+      // Add custom border sizing for 3 px width.
       borderWidth: {
-        '3': '3px', // Custom border width of 3px
+        '3': '3px',
       },
       // Custom padding sizes based on percentages of container.
       padding: {
