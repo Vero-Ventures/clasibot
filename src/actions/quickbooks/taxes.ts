@@ -155,10 +155,7 @@ function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
   const formattedTaxCode: TaxCode = {
     Id: taxCodeResponse.Id,
     Name: taxCodeResponse.Name,
-    Description: taxCodeResponse.Description,
     Active: taxCodeResponse.Active,
-    TaxGroup: taxCodeResponse.TaxGroup,
-    PurchaseTaxRateList: taxCodeResponse.PurchaseTaxRateList,
   };
 
   // Return the formatted object just containing the relevant data.

@@ -1,6 +1,6 @@
 /**
  * Defines a template for a structed result element to be returned by functions.
- * Standardizes information about the result of API and other function calls and conveys the relevant error information.
+ * Standardizes information about the result of function calls and passes relevant error information.
  */
 
 export type QueryResult = {
@@ -10,5 +10,6 @@ export type QueryResult = {
   // Primarily for error logging.
   message: string;
   // Any details related to the result of the query.
+  // Should only be logged internally.
   detail: string;
 };

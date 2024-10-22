@@ -1,33 +1,12 @@
 /**
- * Defines a formatted version of a tax code object returned from the API.
+ * Defines a formatted version of a Tax Code object returned from the API.
  */
 
 export type TaxCode = {
-  // Identifier of the tax code, related to purchase tax code Id value.
+  // Identifier of the Tax Code, same as the Tax Code Id value in a Purchase.
   Id: string;
-  // Systems name of the tax code.
+  // QuickBooks internal name of the Tax Code.
   Name: string;
-  // Automatically generated or user entered description of the tax code.
-  Description: string;
-  // If the user has the tax code enabled.
+  // If the user has the Tax Code enabled.
   Active: boolean;
-  // Indicates if more than one tax rates comprise the tax code.
-  TaxGroup: boolean;
-  // Returns more than one values when tax group is true.
-  PurchaseTaxRateList: {
-    // TaxRateDetail: Container for information about a tax rate inside the tax code.
-    TaxRateDetail: [
-      {
-        // Reference to the tax rate for this index.
-        //      Value: ID of the tax rate.
-        //      Name: Name of the tax rate.
-        TaxRateRef: { Value: string; Name: string };
-        // Enum indicating how the tax is applied to the transaction.
-        //      Values: TaxOnAmount, TaxOnAmountPlusTax, TaxOnTax
-        TaxTypeApplicable: string;
-        // Numerical value starting at 0 indicating order of taxes applied in ascending order.
-        TaxOrder: number;
-      },
-    ];
-  };
 };

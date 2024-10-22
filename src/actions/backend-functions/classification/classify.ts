@@ -286,7 +286,7 @@ async function fetchValidTaxCodes(
     // Presently only allow Canadian companies with a valid sub-location.
     if (
       companyInfo.location.Country === 'CA' &&
-      companyInfo.location.Location
+      companyInfo.location.SubLocation
     ) {
       // Set tax codes classification to be valid, then use the passed synthetic session to get the users tax codes.
       classifyTaxCode = true;
@@ -296,7 +296,7 @@ async function fetchValidTaxCodes(
 
       // Also fetch the valid tax codes for a user by their sub-location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(
-        companyInfo.location.Location
+        companyInfo.location.SubLocation
       );
 
       // Check there are valid tax codes (error check) and the query response from getting user tax codes was a success.

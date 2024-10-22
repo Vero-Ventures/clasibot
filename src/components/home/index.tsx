@@ -14,7 +14,7 @@ export default function HomePage() {
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
     name: '',
     industry: '',
-    location: { Country: '', Location: null },
+    location: { Country: '', SubLocation: null },
   });
 
   // Define states to prevent showing the table until the page is loaded.
@@ -30,7 +30,7 @@ export default function HomePage() {
     // Check if the sub-location is a valid Canada location.
     if (
       Object.values(Locations).includes(
-        userCompanyLocation.Location as Locations
+        userCompanyLocation.SubLocation as Locations
       )
     ) {
       // If the sub location is a valid canada location, save it to the company info.
@@ -45,8 +45,8 @@ export default function HomePage() {
         name: userCompanyName,
         industry: userCompanyIndustry,
         location: {
-          Country: userCompanyLocation.Location,
-          Location: null,
+          Country: userCompanyLocation.SubLocation,
+          SubLocation: null,
         },
       });
     }

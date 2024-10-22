@@ -20,7 +20,7 @@ export async function syntheticLogin(
     detail: '',
   };
   const loginTokens: LoginTokens = {
-    qboToken: '',
+    qboTicket: '',
     authId: '',
     accessToken: '',
     refreshToken: '',

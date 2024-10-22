@@ -1,16 +1,16 @@
 /**
- * Defines a formatted version of a saved and classified transaction returned from the API.
- * Used in transaction matching and creating a database of possible classifications.
+ * Defines a formatted version of a saved and classified Transaction returned from the API.
+ * Used in Transaction matching and creating a database of possible Classifications.
  */
 
 export type Transaction = {
-  // Name related to the transaction (AKA the payee).
+  // Name related to the Transaction (AKA the payee).
   name: string;
-  // Total positive OR negative decimal value of the transaction.
-  //    Positive vs Negative depends the type of account the transaction is associated with.
+  // Total positive OR negative decimal value of the Transaction.
+  //    Positive vs Negative depends the type of Account the transaction is associated with.
   amount: number;
-  // The category that the transaction is associated with.
+  // The Category that the Transaction is associated with.
   category: string;
-  // The tax code name extracted from the related purchase.
+  // The Tax Code name extracted from the related Purchase.
   taxCodeName: string;
 };

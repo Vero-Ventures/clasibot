@@ -187,17 +187,17 @@ export async function getCompanyLocation(
       companyCountry == 'CAN'
     ) {
       // Return company country and sub-location name.
-      return JSON.stringify({ Country: 'CA', Location: companySubLocation });
+      return JSON.stringify({ Country: 'CA', SubLocation: companySubLocation });
     } else {
       // If the country is not Canadian, just return the country string.
       return JSON.stringify({
         Country: companyCountry,
-        Location: null,
+        SubLocation: null,
       });
     }
   } catch (error) {
     // Log the error and return an empty string to the caller if the call fails.
     console.error('Error finding company location:', error);
-    return JSON.stringify({ Country: '', Location: null });
+    return JSON.stringify({ Country: '', SubLocation: null });
   }
 }

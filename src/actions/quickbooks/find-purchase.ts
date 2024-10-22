@@ -2,10 +2,10 @@
 import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
 import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { Purchase, PurchaseResponse } from '@/types/Purchase';
+import type { Purchase } from '@/types/Purchase';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Find a specific purchase object by its QuickBooks ID and return a formatted Purchase object.
+// Find a specific Purchase object by its QuickBooks ID and return a formatted Purchase object.
 // May take a synthetic login session to use instead of the regular session.
 export async function findFormattedPurchase(
   id: string,
@@ -40,7 +40,20 @@ export async function findFormattedPurchase(
       },
     };
 
-    // Search for a specific purchase object by the passed purchase Id.
+    // Define a type for the response object to allow for type checking.
+    type PurchaseResponse = {
+      Id: string;
+      Line: [
+        {
+          DetailType: string;
+          AccountBasedExpenseLineDetail: {
+            TaxCodeRef: { value: string; name: string };
+          };
+        },
+      ];
+    };
+
+    // Search for a specific Purchase object by the passed Purchase Id.
     const response: PurchaseResponse = await new Promise((resolve) => {
       qbo.getPurchase(id, (err: ErrorResponse, data: PurchaseResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -57,7 +70,8 @@ export async function findFormattedPurchase(
     const queryResult = createQueryResult(success, error);
 
     // Create a formatted result object with all fields set to null.
-    // Set the results info field of the purchase to the created Query Result.
+    // Set the results info field of the Purchase to the created Query Result.
+    //    Only single purchases are returned at a time so the Query Result is included in the object.
     const formattedResult: Purchase = {
       result_info: queryResult,
       id: '',
@@ -87,7 +101,7 @@ export async function findFormattedPurchase(
       return {
         result_info: {
           result: 'error',
-          message: 'Unexpected error occured while fetching purchases.',
+          message: 'Unexpected error occured while fetching Purchase.',
           detail: error.message,
         },
         id: '',
@@ -97,7 +111,7 @@ export async function findFormattedPurchase(
       return {
         result_info: {
           result: 'error',
-          message: 'Unexpected error occured while fetching purchases.',
+          message: 'Unexpected error occured while fetching Purchase.',
           detail: 'N/A',
         },
         id: '',

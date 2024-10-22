@@ -1,18 +1,18 @@
 /**
- * Defines a formatted version of an account object returned from the API.
+ * A formatted version of the Account data returned from the QuickBooks API.
  */
 
 export type Account = {
-  // Whole number as a string.
+  // QuickBooks internal Id.
   id: string;
-  // Name of the account
+  // Name of the Account.
   name: string;
-  // Whether the account is active.
+  // Whether the Account is active.
   active: boolean;
-  // Defines the higher level classification of the account.
-  // Used to identify 'Expense' accounts.
+  // Defines the higher level classification of the Account.
+  // Used to identify 'Expense' Accounts.
   classification: string;
-  // 'Expense': Defines what category a transaction in that account is classified as.
-  // 'Transaction': Determines if the account may contain 'For Review' transactions.
+  // 'Expense': Defines what category a transaction in that Account is classified as.
+  // 'Transaction': Determines if the Account may contain 'For Review' transactions.
   account_sub_type: string;
 };
