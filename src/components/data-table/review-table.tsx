@@ -1,9 +1,5 @@
-/**
- * Defines how the table for the review page is populated, functions, and displays.
- */
 'use client';
 import { useState, useEffect } from 'react';
-import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import {
   flexRender,
   getCoreRowModel,
@@ -12,7 +8,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
+import { DatePicker } from '@/components/inputs/date-picker';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,14 +32,15 @@ import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
-import { DatePicker } from '../inputs/date-picker';
 
 /**
- * Function Values:
+ * Takes:
  * a list of categorized transactions, a record of the selected categories,
- * a list of account names, and a value to indicate saving is in progress.
+ * a list of account names, and a value to indicate saving is in progress,
+ * If manual classification is in progress and the current state of the manual classification.
+ *
+ * Callbacks: Handle category changes and a handle saving.
  */
-// Function Callbacks: a function to handle category changes, and a function to handle saving.
 export function ReviewTable({
   categorizedTransactions,
   selectedCategories,
@@ -51,8 +50,8 @@ export function ReviewTable({
   handleSave,
   isSaving,
   handleManualClassification,
-  manualClassificationState,
   isClassifying,
+  manualClassificationState,
 }: Readonly<{
   categorizedTransactions: (
     | ForReviewTransaction
@@ -71,78 +70,79 @@ export function ReviewTable({
   manualClassificationState: string;
   isClassifying: boolean;
 }>) {
-  // Create states to track and set the important values.
-  // Column to sort by, Column filtering rules, selected Rows, and accounts to display Rows from.
+  // Create states to track and set key Table values.
+  // Column to sort by, Column filtering rules, selected Rows, and selected display Accounts.
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
-  // Define the default start and end date (two years ago & today).
+  // Define the default start and end date (two years ago & current date).
   const currentDate = new Date();
   const twoYearsAgo = new Date();
   twoYearsAgo.setFullYear(currentDate.getFullYear() - 2);
 
-  // Create state to track and set the start and end dates for the date filter.
+  // Create states to track and set the start and end values for the date filter.
   const [startDate, setStartDate] = useState<Date | null>(twoYearsAgo);
   const [endDate, setEndDate] = useState<Date | null>(currentDate);
 
+  // Define functions to handle change to the date selection and update the Table filtering.
   function changeStartDate(date: Date | null) {
     table.getColumn('date')?.setFilterValue(`${date} to ${endDate}`);
     setStartDate(date);
   }
-
   function changeEndDate(date: Date | null) {
     table.getColumn('date')?.setFilterValue(`${startDate} to ${date}`);
     setEndDate(date);
   }
 
-  // Function to update the account selection state.
+  // Update the Account selection state for Account based filtering.
   const updateAccountSelection = (account: string) => {
+    // Check if the Account is being added or removed from the filter.
     if (selectedAccounts.includes(account)) {
-      // Filter out the account from the selected accounts and update the state.
+      // Remove the Account from the list of Accounts to display.
       setSelectedAccounts(
         selectedAccounts.filter((arrayAccount) => arrayAccount !== account)
       );
     } else {
-      // Add the account to the selected accounts and update the state.
+      // Add the Account to the list of Accounts to display.
       setSelectedAccounts([...selectedAccounts, account]);
     }
   };
 
-  // Updates the 'selected accounts' state when the 'account names' value changes.
+  // Update the selected Accounts list whenever there is a change to the list of Account names.
   useEffect(() => {
     setSelectedAccounts(account_names);
   }, [account_names]);
 
-  // Extract the formatted transactions from the combined arrays.
-  const formattedTransactions = [];
+  // Extract the formatted Transactions from the [Classified, Raw] formatted array.
+  const formattedTransactions: ClassifiedForReviewTransaction[] = [];
   for (const transaction of categorizedTransactions) {
-    // Asser that the transaction type is formmated. Needed due to data coming from multi-typed array.
+    // Assert the object type as it is being added to the array.
     formattedTransactions.push(
       transaction[0] as ClassifiedForReviewTransaction
     );
   }
 
-  // Creates the react table using passed data, helper functions, and state elements.
+  // Creates the React Table using the passed data, helper functions, and states.
   const table = useReactTable({
-    // Pass the transactions as data, as well as a list of columns and the category change function.
+    // Pass the Transactions as data, a list of Columns, and the Classification update handlers.
     data: formattedTransactions,
     columns: reviewColumns(
       selectedCategories,
       handleCategoryChange,
       handleTaxCodeChange
     ),
-    // Pass the set state functions to table actions.
+    // Pass the state setters to the Table.
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
-    // Define parameters for the table.
+    // Define parameters for the Table.
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    // Pass the relevant states to the table.
+    // Pass the relevant states to the Table.
     state: {
       sorting,
       columnFilters,
@@ -150,17 +150,17 @@ export function ReviewTable({
     },
   });
 
+  // Placeholders for manual review state handling implementation.
   useEffect(() => {}, [isClassifying]);
-
   useEffect(() => {}, [manualClassificationState]);
 
-  // Update the account filter in the table when the selected accounts change.
+  // Update the Account filter in the table when the selected Accounts change.
   useEffect(() => {
-    // If no accounts are selected, set the account filter value to false to show all results.
+    // If no Accounts are selected, set the account filter false which shows all results.
     if (selectedAccounts.length === 0) {
       table.getColumn('account')?.setFilterValue(() => false);
     }
-    // Otherwise update the filter function with the new array of account names.
+    // Otherwise, update the filter function with the new array of Accounts.
     table.getColumn('account')?.setFilterValue(selectedAccounts);
   }, [selectedAccounts, table]);
 
@@ -174,15 +174,13 @@ export function ReviewTable({
           Test Manual Classification
         </Button>
       </div>
-
       <div
         id="TopFiltersContainer"
         className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
-        {/* Create an input to take text and filter to transactions with matching names. */}
         <Input
           id="NameFilterInput"
           placeholder="Filter by name..."
-          // Set the input value to the name filter from the table (or an empty string)..
+          // Set the input value to the name filter value from the table (or an empty string).
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           // When the input value changes, update the name filter value with the new value.
           onChange={(event) =>
@@ -190,28 +188,23 @@ export function ReviewTable({
           }
           className="mr-2 w-2/3 max-w-xs popout:mr-4 popout:w-1/2 md:mr-6 md:w-2/3"
         />
-        {/* Create a date picker to fetch transactions by date range. */}
         <div
           id="DateSelectionContainer"
           className="mx-auto flex w-11/12 items-center md:w-5/6">
           <div className="mt-2 grid w-full grid-cols-2 gap-x-6 px-2 mb:gap-x-12 sm:gap-x-16 md:mt-0 md:gap-x-6">
-            {/* Start and End Date pickers. */}
             <DatePicker date={startDate} setDate={changeStartDate} />
             <DatePicker date={endDate} setDate={changeEndDate} />
           </div>
         </div>
       </div>
 
-      {/* Container for bottom row of filters: accounts and columns. */}
       <div
         id="BottomFiltersContainer"
         className="mx-auto mt-8 grid grid-cols-2 gap-x-4 px-4 popout:gap-x-6 md:gap-x-12 md:px-6 lg:gap-x-20 lg:px-8 xl:gap-x-24 xl:px-10">
-        {/* Create a dropdown menu to select accounts to filter by. */}
         <div
           id="AccountFilter"
           className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
           <DropdownMenu>
-            {/* Define a button to trigger the dropdown menu. */}
             <DropdownMenuTrigger asChild>
               <Button
                 id="AccountsDropdownButton"
@@ -221,9 +214,8 @@ export function ReviewTable({
                 Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            {/* Define the content of the dropdown menu. */}
             <DropdownMenuContent align="center">
-              {/* For each account, create a checkbox item in the dropdown menu. */}
+              {/* For each Account, create a checkbox item in the dropdown menu. */}
               {account_names.map((account) => {
                 return (
                   <DropdownMenuCheckboxItem
@@ -239,10 +231,8 @@ export function ReviewTable({
           </DropdownMenu>
         </div>
 
-        {/* Define a dropdown menu to select which columns are displayed. */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {/* Define a button to trigger the dropdown menu. */}
             <Button
               id="ColumnFilterButton"
               variant="outline"
@@ -251,27 +241,26 @@ export function ReviewTable({
               Columns <ChevronDown className="ml-2 mt-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          {/* Define the content of the dropdown menu. */}
           <DropdownMenuContent align="center">
-            {/* Gets the columns and filters out the ones that cannot be hidden. */}
+            {/* Gets a list of the Columns and filters out the ones that cannot be hidden. */}
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
-                // Get the name using the column ID.
+                // Get the name of the column using the Column ID.
                 let field = column.id;
-                // Rename name column to Payee.
+                // Rename 'name' Column to 'Payee'.
                 if (column.id === 'name') {
                   field = 'Payee';
                 }
                 return (
-                  // Create a checkbox item for each column that can be hidden.
+                  // Create a checkbox item for each Column that can be hidden.
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize focus:bg-blue-300"
-                    // Checked status is determined by the associated column's visibility.
+                    // Checked status is determined by the associated Column's visibility state.
                     checked={column.getIsVisible()}
-                    // On change, toggle the visibility of the associated column.
+                    // On change, toggle the visibility of the associated Column.
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
                     }>
@@ -283,19 +272,18 @@ export function ReviewTable({
         </DropdownMenu>
       </div>
 
-      {/* Container for the table. */}
       <div
         id="TableContainer"
         className="mt-2 rounded border-2 border-gray-300">
         <Table>
-          {/* Define the top row of the table with the column labels. */}
+          {/* Define the top row of the Table with the Column labels. */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {/* Map over the columns (header groups) inside the react table header row. */}
+                {/* Map over the Columns (header groups) inside the react Table header row. */}
                 {headerGroup.headers.map((header) => {
                   return (
-                    // Create a table head object using the current header id and column header.
+                    // Create a Table head object using the current header id and Column header.
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
@@ -311,18 +299,17 @@ export function ReviewTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              // Iterate through the rows of the table to create the table body.
+              // Iterate through the rows of the Table to create the Table body.
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  // Updates the row's background color depending on the selected state of the row.
+                  // Set the Row's background color depending on the selected state.
                   className={`relative ${row.getIsSelected() ? 'bg-blue-100' : ''} hover:bg-blue-100`}
                   onClick={() => row.toggleSelected(!row.getIsSelected())}
                   style={{ cursor: 'pointer' }}>
-                  {/* Iterate over the column values (cells) inside the current row. */}
+                  {/* Iterate over the Column values (cells) inside the current Row. */}
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {/* Populate the new cell using the value from the current cell. */}
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -332,7 +319,7 @@ export function ReviewTable({
                 </TableRow>
               ))
             ) : (
-              // If the table is empty (no rows), display a message to indicate there are no results.
+              // If the Table is empty (no Tows), display a message to indicate there are no results.
               <TableRow id="EmptyTable">
                 <TableCell
                   colSpan={reviewColumns.length}
@@ -347,7 +334,7 @@ export function ReviewTable({
       <div
         id="ReviewTableOptionsContainer"
         className="flex items-center justify-between py-2">
-        {/* Inform the user of the current rows displayed compared to the total rows fetched. */}
+        {/* Inform the user of the current Rows displayed compared to the total Rows fetched. */}
         <div
           id="SelectedAndCurrentRowsInfo"
           className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
@@ -365,7 +352,6 @@ export function ReviewTable({
               className="w-20 translate-y-12 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:translate-y-0"
               size="sm"
               onClick={() => table.previousPage()}
-              // Disable the button if the table cannot move to the previous page.
               disabled={!table.getCanPreviousPage()}>
               Previous
             </Button>
@@ -377,7 +363,6 @@ export function ReviewTable({
               size="sm"
               className="absolute w-20 -translate-y-10 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:relative sm:translate-y-0"
               onClick={() => table.nextPage()}
-              // Disable the button if the table cannot move to the next page.
               disabled={!table.getCanNextPage()}>
               Next
             </Button>
@@ -386,16 +371,11 @@ export function ReviewTable({
         <div className="ml-2">
           <Button
             id="SaveButton"
-            onClick={() =>
-              // Calls the handleSave function with the currently selected rows.
-              handleSave(rowSelection, categorizedTransactions)
-            }
-            // Disable the button if the table is currently saving or no rows are selected.
+            onClick={() => handleSave(rowSelection, categorizedTransactions)}
             disabled={
               isSaving || table.getFilteredSelectedRowModel().rows.length === 0
             }
             className="ml-2 mr-4 h-12 w-24 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
-            {/* Display either the save button text or a saving message depending on the saving state. */}
             {isSaving ? 'Saving...' : 'Save'}
           </Button>
         </div>
