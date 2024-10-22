@@ -2,6 +2,22 @@ import { addCompanyConnection } from '@/actions/backend-functions/database-funct
 
 export async function POST(request: Request) {
   try {
+    // Get the Authorization header from the request
+    const authorizationHeader = request.headers.get('Authorization');
+
+    // Check for the authorization header and return if it is missing or invalid.
+    if (
+      !authorizationHeader ||
+      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
+    ) {
+      console.error(
+        'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
+      );
+      return new Response('Missing Or Invalid Authorization Header', {
+        status: 401,
+      });
+    }
+
     // Get the request body that contains the user email name and connected company name.
     const body = await request.json();
 

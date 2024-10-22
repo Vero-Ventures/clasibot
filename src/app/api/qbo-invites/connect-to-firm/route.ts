@@ -2,6 +2,22 @@ import { addAccountingFirmConnection } from '@/actions/backend-functions/databas
 
 export async function POST(request: Request) {
   try {
+    // Get the Authorization header from the request
+    const authorizationHeader = request.headers.get('Authorization');
+
+    // Check for the authorization header and return if it is missing or invalid.
+    if (
+      !authorizationHeader ||
+      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
+    ) {
+      console.error(
+        'Error Adding Accounting Firm Connection: Missing Or Invalid Authorization Header.'
+      );
+      return new Response('Missing Or Invalid Authorization Header', {
+        status: 401,
+      });
+    }
+
     // Get the request body that contains the firm name and user name.
     const body = await request.json();
 
@@ -32,7 +48,7 @@ export async function POST(request: Request) {
     await addAccountingFirmConnection(firmName, userName);
 
     // Return a success response.
-    return new Response('User Successfully Connected To Firm.')
+    return new Response('User Successfully Connected To Firm.');
   } catch (error) {
     // Catch any errors, log an identifing message and return an error response.
     if (error instanceof Error) {
