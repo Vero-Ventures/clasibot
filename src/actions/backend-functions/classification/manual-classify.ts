@@ -42,16 +42,17 @@ export async function manualClassify(
     // Call method for synthetic login.
     // Takes: the company realmId and potentially null firm name string.
     // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
-    const [loginResult, qboToken, authId, syntheticSession] =
-      await syntheticLogin(session.realmId, currentCompany[0].firmName);
+    const [loginResult, loginTokens] = await syntheticLogin(
+      session.realmId,
+      currentCompany[0].firmName
+    );
 
     // Check the synthetic login response to prevent any errors.
     if (loginResult.result !== 'Error ') {
-      // Make a call to the company classification method with the retrived values.
+      // Make a call to the company classification method with the retrived values and company Id.
       const result = await classifyCompany(
-        qboToken,
-        authId,
-        syntheticSession,
+        loginTokens,
+        session.realmId,
         true,
         setManualClassificationState
       );

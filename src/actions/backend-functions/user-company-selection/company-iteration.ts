@@ -28,15 +28,15 @@ export async function classificationCompanyIteration(user: databaseUser) {
         // Call method for synthetic login.
         // Takes: the company realmId and potentially null firm name string.
         // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
-        const [loginResult, qboToken, authId, session] = await syntheticLogin(
+        const [loginResult, loginTokens] = await syntheticLogin(
           companyId,
           connectedFirmName
         );
 
         if (loginResult.result !== 'Error') {
-          // Classify the 'For Review' transactions for the currentCompany with the synthetic login values.
+          // Classify the 'For Review' transactions for the currentCompany with the synthetic login values and company Id.
           // Use .then() to continue concurrent classification of companies.
-          classifyCompany(qboToken, authId, session).then((result) => {
+          classifyCompany(loginTokens, companyId).then((result) => {
             // Check if the classification failed and log an error it if it did.
             if (result.result === 'Error') {
               // Log the user and company the error occurred on and the message and detail returned by the classification function.
