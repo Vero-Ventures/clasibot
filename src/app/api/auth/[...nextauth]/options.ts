@@ -124,7 +124,7 @@ export const options: NextAuthOptions = {
       try {
         // Get the email and name of the user.
         const email = user.email;
-        const [firstName, lastName] = user.name?.split(' ') ?? [];
+        const userName = user.name;
 
         // Check if the realm ID could be found from the cookies and throw an error if it could not.
         if (!cookies().get('realmId')?.value) {
@@ -137,6 +137,13 @@ export const options: NextAuthOptions = {
         // Check if the email was successful found from passed user.
         if (!email) {
           console.error('No user email found in session');
+          // Return false to indicate that sign-in failed.
+          return false;
+        }
+
+        // Check if the name was successful found from passed user.
+        if (!email) {
+          console.error('No user name found in session');
           // Return false to indicate that sign-in failed.
           return false;
         }
@@ -154,8 +161,7 @@ export const options: NextAuthOptions = {
               .insert(User)
               .values({
                 email,
-                firstName,
-                lastName,
+                userName,
                 subscriptionId: null,
               })
               .returning();

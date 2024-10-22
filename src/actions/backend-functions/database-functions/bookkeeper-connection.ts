@@ -221,7 +221,7 @@ export async function addAccountingFirmCompanies(
 
             // If a user is found, get their combined name.
             if (user[0]) {
-              const fullName = user[0].firstName + ' ' + user[0].lastName;
+              const fullName = user[0].userName;
 
               // Check through the list of found firms for one with the same full name as the user.
               for (const firm of possibleFirms) {

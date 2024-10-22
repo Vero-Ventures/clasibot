@@ -9,7 +9,7 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
   let useID;
   let useSecret;
 
-  // Variables are set based on the app configuration for frontend login use.
+  // Variables for frontend login use are set based on the app configuration.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.PROD_CLIENT_ID;
     useSecret = process.env.PROD_CLIENT_SECRET;
@@ -18,11 +18,11 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
     useSecret = process.env.DEV_CLIENT_SECRET;
   }
 
+  // Define the headers and data send with the request.
   const authorizationHeader = `Basic ${Buffer.from(
     `${useID}:${useSecret}`
   ).toString('base64')}`;
 
-  // Define the headers and data send with the request.
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     Authorization: authorizationHeader,
@@ -45,7 +45,7 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
       body: data,
     });
 
-    // Decode the response data and throw it as an error if the response is an error.
+    // Decode the response data and throw it if the error check fails.
     const responseData = await response.json();
     if (!response.ok) {
       throw responseData;
@@ -74,7 +74,7 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
   let useID;
   let useSecret;
 
-  // Variables are set based on the app configuration for backend login use.
+  // Variables for backend login use are set based on the app configuration.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.BACKEND_PROD_CLIENT_ID;
     useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;
@@ -83,11 +83,11 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
     useSecret = process.env.BACKEND_DEV_CLIENT_SECRET;
   }
 
+  // Define the headers and data send with the request.
   const authorizationHeader = `Basic ${Buffer.from(
     `${useID}:${useSecret}`
   ).toString('base64')}`;
 
-  // Define the headers and data send with the request.
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     Authorization: authorizationHeader,
@@ -110,7 +110,7 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
       body: data,
     });
 
-    // Decode the response data and throw it as an error if the response is an error.
+    // Decode the response data and throw it if the error check fails.
     const responseData = await response.json();
     if (!response.ok) {
       throw responseData;

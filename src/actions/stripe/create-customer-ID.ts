@@ -45,7 +45,7 @@ export default async function createCustomerID(
       // Asserts a non-null email through the null return check above.
       const customer = await stripe.customers.create({
         email: user[0].email!,
-        name: `${user[0].firstName} ${user[0].lastName}`,
+        name: user[0].userName!,
       });
 
       // Update the subscription database object connected to the user with the new stripe ID.

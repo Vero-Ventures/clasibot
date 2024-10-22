@@ -48,7 +48,7 @@ export async function getDatabaseTransactions(): Promise<
         // The raw format is needed for writing to the QuickBooks database in the saving process later.
         const rawTransaction: ForReviewTransaction = {
           id: forReviewTransaction.id,
-          olbTxnId: forReviewTransaction.transactionId,
+          olbTxnId: forReviewTransaction.reviewTransactionId,
           qboAccountId: forReviewTransaction.accountId,
           description: forReviewTransaction.description,
           origDescription: forReviewTransaction.origDescription,
@@ -143,7 +143,7 @@ type databaseForReviewTransaction = {
   origDescription: string;
   acceptType: string;
   companyId: string;
-  transactionId: string;
+  reviewTransactionId: string;
   accountId: string;
   amount: number;
   payeeNameId: string | null;
@@ -164,7 +164,7 @@ async function getTransactionCategories(
       .from(ForReviewTransactionToCategories)
       .where(
         eq(
-          ForReviewTransactionToCategories.transactionId,
+          ForReviewTransactionToCategories.reviewTransactionId,
           forReviewTransaction.id
         )
       );
@@ -238,7 +238,7 @@ async function getTransactionTaxCodes(
       .from(ForReviewTransactionToTaxCodes)
       .where(
         eq(
-          ForReviewTransactionToTaxCodes.transactionId,
+          ForReviewTransactionToTaxCodes.reviewTransactionId,
           forReviewTransaction.id
         )
       );

@@ -1,8 +1,10 @@
 /**
- * Define static strings relevant for tax code identification.
+ * Define static strings relevant for Tax Code identification.
  */
 
 // Defines standardized 2-letter shorthand strings for Canadian locations (provinces and territories).
+//    Should be used by QuickBooks for in Canada Company locations.
+//    Used to determine which Tax Codes will apply to a Company's transactions.
 export enum Locations {
   AB = 'AB',
   BC = 'BC',
@@ -19,8 +21,9 @@ export enum Locations {
   YT = 'YT',
 }
 
-// Defines a list of the current tax codes for Canada.
-// Links typescript variable style names to full tax code names (same names for frontend and API).
+// Defines a list of the current Tax Codes for Canada.
+//    Links variable style names to full Tax Code names
+//    QuickBooks Tax Codes use the same names for frontend and backend.
 export enum TaxCodes {
   Exempt = 'Exempt',
   ZeroRated = 'Zero-rated',

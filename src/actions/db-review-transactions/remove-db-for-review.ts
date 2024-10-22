@@ -29,7 +29,10 @@ export async function removeForReviewTransactions(
         .from(DatabaseForReviewTransaction)
         .where(
           eq(DatabaseForReviewTransaction.companyId, companyID) &&
-            eq(DatabaseForReviewTransaction.transactionId, savedTransaction.id)
+            eq(
+              DatabaseForReviewTransaction.reviewTransactionId,
+              savedTransaction.id
+            )
         );
 
       // Use the ID of the found 'For Review' transaction to find and delete and relationships to categories.
@@ -37,7 +40,7 @@ export async function removeForReviewTransactions(
         .delete(ForReviewTransactionToCategories)
         .where(
           eq(
-            ForReviewTransactionToCategories.transactionId,
+            ForReviewTransactionToCategories.reviewTransactionId,
             transactionToDelete[0].id
           )
         );
@@ -47,7 +50,7 @@ export async function removeForReviewTransactions(
         .delete(ForReviewTransactionToTaxCodes)
         .where(
           eq(
-            ForReviewTransactionToTaxCodes.transactionId,
+            ForReviewTransactionToTaxCodes.reviewTransactionId,
             transactionToDelete[0].id
           )
         );
@@ -57,7 +60,10 @@ export async function removeForReviewTransactions(
         .delete(DatabaseForReviewTransaction)
         .where(
           eq(DatabaseForReviewTransaction.companyId, companyID) &&
-            eq(DatabaseForReviewTransaction.transactionId, savedTransaction.id)
+            eq(
+              DatabaseForReviewTransaction.reviewTransactionId,
+              savedTransaction.id
+            )
         );
 
       // Return a success query result.

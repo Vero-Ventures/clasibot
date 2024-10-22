@@ -43,7 +43,7 @@ export async function addForReviewTransactions(
         .where(
           eq(DatabaseForReviewTransaction.companyId, realmId) &&
             eq(
-              DatabaseForReviewTransaction.transactionId,
+              DatabaseForReviewTransaction.reviewTransactionId,
               classifiedTransaction.transaction_ID
             )
         );
@@ -54,7 +54,7 @@ export async function addForReviewTransactions(
         // Contains the values needed for frontend display, along with the raw data needed for writing to QuickBooks.
         const databaseObject = {
           companyId: realmId,
-          transactionId: classifiedTransaction.transaction_ID,
+          reviewTransactionId: classifiedTransaction.transaction_ID,
           accountId: classifiedTransaction.account,
           accountName: classifiedTransaction.accountName,
           description: rawTransaction.description,
@@ -194,7 +194,7 @@ async function handleCategoryConnections(
       // Create a connection between 'For Review' transaction object and the related category object.
       // Use the passed 'For Reivew' transaction Id, and the stored Id of the found or created category.
       await db.insert(ForReviewTransactionToCategories).values({
-        transactionId: newTransactionId,
+        reviewTransactionId: newTransactionId,
         categoryId: databaseCategoryId,
       });
     }
@@ -255,7 +255,7 @@ async function handleTaxCodeConnections(
       // Create a connection between 'For Review' transaction object and the related tax code object.
       // Use the passed 'For Reivew' transaction Id, and the stored Id of the found or created tax code.
       await db.insert(ForReviewTransactionToTaxCodes).values({
-        transactionId: newTransactionId,
+        reviewTransactionId: newTransactionId,
         taxCodeId: databaseTaxCodeId,
       });
     }
