@@ -1,1 +1,0 @@
-ALTER TABLE "ForReviewTransaction" ALTER COLUMN "description" SET NOT NULL;

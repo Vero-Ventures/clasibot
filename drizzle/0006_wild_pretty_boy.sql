@@ -1,1 +1,0 @@
-ALTER TABLE "ForReviewTransaction" ADD COLUMN "accept_type" text NOT NULL;

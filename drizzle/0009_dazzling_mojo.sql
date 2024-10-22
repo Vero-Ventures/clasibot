@@ -1,1 +1,0 @@
-ALTER TABLE "ForReviewTransaction" ADD COLUMN "top_classification" text NOT NULL;

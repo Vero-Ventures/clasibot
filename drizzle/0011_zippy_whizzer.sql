@@ -1,1 +1,0 @@
-ALTER TABLE "NextReviewDateTime" RENAME TO "NextReviewTimestamp";
