@@ -6,10 +6,10 @@ import { getTaxCodes } from './taxes';
 import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
+import type { LoginTokens } from '@/types/LoginTokens';
+import type { QueryResult } from '@/types/QueryResult';
 import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
-import type { Session } from 'next-auth/core/types';
-import type { QueryResult } from '@/types/QueryResult';
 
 // Get all past saved transactions from the QuickBooks API.
 // May take a start date and end date and / or a synthetic session as optional parameters.
@@ -17,7 +17,8 @@ import type { QueryResult } from '@/types/QueryResult';
 export async function getSavedTransactions(
   startDate = '',
   endDate = '',
-  session: Session | null = null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
@@ -25,8 +26,8 @@ export async function getSavedTransactions(
 
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
-    if (session) {
-      qbo = await createQBObjectWithSession(session);
+    if (loginTokens && companyId) {
+      qbo = await createQBObjectWithSession(loginTokens, companyId);
     } else {
       qbo = await createQBObject();
     }
@@ -142,7 +143,7 @@ export async function getSavedTransactions(
     // Check if transaction rows were reterned by the QuickBooks API call and the query result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {
       // Call helper method to check and format response data and return an array of valid formatted transactions.
-      checkAndFormatTransactions(responseRows, results, session);
+      checkAndFormatTransactions(responseRows, results, loginTokens, companyId);
     }
 
     // Return the formatted results as a JSON string.
@@ -185,10 +186,11 @@ async function checkAndFormatTransactions(
     Summary: string;
   }[],
   results: (QueryResult | Transaction)[],
-  session: Session | null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ) {
   // Call list of expense accounts to check the transaction classifications against.
-  const accounts = await getAccounts('Expense');
+  const accounts = await getAccounts('Expense', loginTokens, companyId);
   const accountResults = JSON.parse(accounts);
 
   // Check if the account call was a failure and set the Query Result index of the results to an error if it was.
@@ -242,11 +244,14 @@ async function checkAndFormatTransactions(
           // Pass the session to work with both frontend and backend calls.
           const transactionPurchase = await findFormattedPurchase(
             String(row.ColData[idRow].id),
-            session
+            loginTokens,
+            companyId
           );
 
           // Get the users tax codes and parse it to a Query Result and an array of Tax Code objects.
-          const userTaxCodes = JSON.parse(await getTaxCodes(session));
+          const userTaxCodes = JSON.parse(
+            await getTaxCodes(loginTokens, companyId)
+          );
 
           // Check if fetch of either the purchase and tax codes resulted in an error.
           if (

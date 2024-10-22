@@ -1,13 +1,14 @@
 'use server';
 import { checkFaultProperty } from './query-helpers';
 import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
-import type { Session } from 'next-auth/core/types';
+import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get the company name from the QuickBooks API.
 // May take a session to work with backend functions.
 // Returns: The company name as a string or 'Error: Name not found'
 export async function getCompanyName(
-  session: Session | null = null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
@@ -15,8 +16,8 @@ export async function getCompanyName(
 
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
-    if (session) {
-      qbo = await createQBObjectWithSession(session);
+    if (loginTokens && companyId) {
+      qbo = await createQBObjectWithSession(loginTokens, companyId);
     } else {
       qbo = await createQBObject();
     }
@@ -55,7 +56,8 @@ export async function getCompanyName(
 // May take a session to work with backend functions.
 // Returns: The company industry as a string or 'Error' / 'None'
 export async function getCompanyIndustry(
-  session: Session | null = null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
@@ -63,8 +65,8 @@ export async function getCompanyIndustry(
 
     // Check if a session was passed to be used to define the qbo object.
     // Then define the qbo object based on the session presence.
-    if (session) {
-      qbo = await createQBObjectWithSession(session);
+    if (loginTokens && companyId) {
+      qbo = await createQBObjectWithSession(loginTokens, companyId);
     } else {
       qbo = await createQBObject();
     }
@@ -126,7 +128,8 @@ export async function getCompanyIndustry(
 // Get the company location from the QBO API, return the country and the sub-location for Canadian companies.
 // To check for tax classification compatable locations (Canadian), check for a country value of 'CA'.
 export async function getCompanyLocation(
-  session: Session | null = null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
@@ -134,8 +137,8 @@ export async function getCompanyLocation(
 
     // Check if a session was passed to be used to define the qbo object.
     // Then define the qbo object based on the session presence.
-    if (session) {
-      qbo = await createQBObjectWithSession(session);
+    if (loginTokens && companyId) {
+      qbo = await createQBObjectWithSession(loginTokens, companyId);
     } else {
       qbo = await createQBObject();
     }

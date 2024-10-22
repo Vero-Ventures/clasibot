@@ -4,12 +4,13 @@ import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { Locations, TaxCodes } from '@/enums/taxes';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
-import type { Session } from 'next-auth/core/types';
+import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get all the tax codes and returns them as an array of tax code objects.
 // May take a synthetic login session to use instead of the regular session.
 export async function getTaxCodes(
-  session: Session | null = null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
@@ -17,8 +18,8 @@ export async function getTaxCodes(
 
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
-    if (session) {
-      qbo = await createQBObjectWithSession(session);
+    if (loginTokens && companyId) {
+      qbo = await createQBObjectWithSession(loginTokens, companyId);
     } else {
       qbo = await createQBObject();
     }

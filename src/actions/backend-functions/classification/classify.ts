@@ -1,7 +1,6 @@
 'use server';
 import Fuse from 'fuse.js';
 import type { FuseResult } from 'fuse.js';
-import type { Session } from 'next-auth/core/types';
 import {
   addTransactions,
   getTopCategoriesForTransaction,
@@ -18,6 +17,7 @@ import type {
 } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
+import type { LoginTokens } from '@/types/LoginTokens';
 import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
 
@@ -29,7 +29,8 @@ export async function classifyTransactions(
   categorizedTransactions: Transaction[],
   uncategorizedTransactions: FormattedForReviewTransaction[],
   companyInfo: CompanyInfo,
-  session: Session
+  loginTokens: LoginTokens,
+  companyId: string
 ): Promise<
   | Record<
       string,
@@ -70,7 +71,7 @@ export async function classifyTransactions(
 
   // Check the users subscription status using the realmId fromn the passed synthetic session.
   // If there is an error or the subscription status is invalud, return an error object.
-  const subscriptionStatus = await checkSubscription(session.realmId!);
+  const subscriptionStatus = await checkSubscription(companyId);
   if ('error' in subscriptionStatus) {
     return { error: 'Error getting user subscription status.' };
   }
@@ -83,17 +84,20 @@ export async function classifyTransactions(
     // Fetch parsed names for DB useage. (DB saves transactions with base names to avoid identifing user information).
     const validDBCategories: Classification[] = await fetchValidCategories(
       true,
-      session
+      loginTokens,
+      companyId
     );
     const validLLMCategories: Classification[] = await fetchValidCategories(
       false,
-      session
+      loginTokens,
+      companyId
     );
 
     // Get use the location from the company info to get the valid tax codes.
     const [classifyTaxCodes, validTaxCodes] = await fetchValidTaxCodes(
       companyInfo,
-      session
+      loginTokens,
+      companyId
     );
 
     // Create dictionaries that ties strings (transaction Id's) to a list of categories and a list of tax codes.
@@ -205,12 +209,13 @@ export async function classifyTransactions(
 // Returns: An array of classification objects for the catagories in the users expense accounts.
 async function fetchValidCategories(
   filterToBase: boolean,
-  session: Session
+  loginTokens: LoginTokens,
+  companyId: string
 ): Promise<Classification[]> {
   try {
     // Gets a list of valid categories by getting the users 'Expense' type accounts.
     const validCategoriesResult = JSON.parse(
-      await getAccounts('Expense', session)
+      await getAccounts('Expense', loginTokens, companyId)
     );
 
     // Check if the account fetch query result was an error.
@@ -268,7 +273,8 @@ async function fetchValidCategories(
 // Returns: An array of classification objects for the tax codes in the companies location.
 async function fetchValidTaxCodes(
   companyInfo: CompanyInfo,
-  session: Session
+  loginTokens: LoginTokens,
+  companyId: string
 ): Promise<[boolean, Classification[]]> {
   try {
     // Define variable to inform caller if tax code classification is doable for the user.
@@ -284,7 +290,9 @@ async function fetchValidTaxCodes(
     ) {
       // Set tax codes classification to be valid, then use the passed synthetic session to get the users tax codes.
       classifyTaxCode = true;
-      const userTaxCodes = JSON.parse(await getTaxCodes(session));
+      const userTaxCodes = JSON.parse(
+        await getTaxCodes(loginTokens, companyId)
+      );
 
       // Also fetch the valid tax codes for a user by their sub-location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(

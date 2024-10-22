@@ -3,7 +3,7 @@ import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { Session } from 'next-auth/core/types';
+import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get specific accounts from the QuickBooks API depending on passed account type.
 // Use 'Transaction' to fetch accounts that contain 'For Review' Transactions.
@@ -12,7 +12,8 @@ import type { Session } from 'next-auth/core/types';
 // Returns: An array of objects starting with a Query Result, then containing Purchase objects.
 export async function getAccounts(
   accountType: string,
-  session: Session | null = null
+  loginTokens: LoginTokens | null = null,
+  companyId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
@@ -20,8 +21,8 @@ export async function getAccounts(
 
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
-    if (session) {
-      qbo = await createQBObjectWithSession(session);
+    if (loginTokens && companyId) {
+      qbo = await createQBObjectWithSession(loginTokens, companyId);
     } else {
       qbo = await createQBObject();
     }

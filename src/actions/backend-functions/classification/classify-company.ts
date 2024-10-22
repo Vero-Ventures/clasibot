@@ -9,7 +9,6 @@ import {
 } from '@/actions/quickbooks/user-info';
 import { addForReviewTransactions } from '@/actions/backend-functions/database-functions/add-db-for-review';
 import { classifyTransactions } from './classify';
-import type { Session } from 'next-auth/core/types';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
@@ -18,18 +17,18 @@ import type {
   FormattedForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
+import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
-// Takes QBO token and auth ID gotten from QBO during synthetic login as well as the generated session.
+// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company being classified.
 // Manual Classification Specific:
 //        Truth value indicating it is a manual classification and a state update function for frontend updating.
 // Returns: the query result from transaction-saving or an error query result.
 // Integration: Called by weekly classification method.
 export async function classifyCompany(
-  qboToken: string,
-  authId: string,
-  session: Session,
+  loginTokens: LoginTokens,
+  companyId: string,
   manualClassify: boolean = false,
   setFrontendState: ((newState: string) => void) | null = null
 ): Promise<QueryResult> {
@@ -39,9 +38,8 @@ export async function classifyCompany(
 
     // Get the 'For Review' transactions for all accounts related to the current company.
     const forReviewResult = await getForReviewTransactions(
-      session,
-      qboToken,
-      authId
+      loginTokens,
+      companyId
     );
 
     // Check if the 'For Review' transaction call encountered an error.
@@ -62,8 +60,10 @@ export async function classifyCompany(
     if (manualClassify) setFrontendState!('Getting Transaction History ... ');
 
     // Get the saved classified transactions from the user to use as context for prediction.
-    const classifiedPastTransactions =
-      await getClassifiedPastTransactions(session);
+    const classifiedPastTransactions = await getClassifiedPastTransactions(
+      loginTokens,
+      companyId
+    );
 
     // Extract the formatted 'For Review' transactions to use in classification.
     const formattedForReviewTransactions = forReviewTransactions.map(
@@ -72,7 +72,7 @@ export async function classifyCompany(
 
     // Get company info for the user, used in assisting with classification by LLM.
     // Returned values may be error / null but that is accounted for by use in LLM.
-    const companyInfo = await getCompanyInfo(session);
+    const companyInfo = await getCompanyInfo(loginTokens, companyId);
 
     // Manual Classification: Update frontend state to indicate start of classification with non-null assertion.
     if (manualClassify) setFrontendState!('Classifying New Transactions ... ');
@@ -90,7 +90,8 @@ export async function classifyCompany(
       classifiedPastTransactions,
       formattedForReviewTransactions,
       companyInfo,
-      session
+      loginTokens,
+      companyId
     );
 
     // Checl for error created by classification.
@@ -129,7 +130,7 @@ export async function classifyCompany(
       // Return the resulting Query Result created by the database saving function.
       return await addForReviewTransactions(
         classifiedForReviewTransactions,
-        session.realmId!
+        companyId
       );
     }
     // Catch any errors and check for an error message.
@@ -151,18 +152,17 @@ export async function classifyCompany(
   }
 }
 
-// Takes the QBO and authId tokens gotten during synthetic login, as well as the created session.
+// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company.
 // Returns: an array of sub-arrays in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 async function getForReviewTransactions(
-  session: Session,
-  qboToken: string,
-  authId: string
+  loginTokens: LoginTokens,
+  companyId: string
 ): Promise<
   (FormattedForReviewTransaction | ForReviewTransaction)[][] | QueryResult
 > {
   try {
     // Get all accounts that may contain 'For Review' transactions.
-    const response = await getAccounts('Transaction', session);
+    const response = await getAccounts('Transaction', loginTokens, companyId);
     const result = JSON.parse(response);
 
     // Check the result of the account fetching, the first index always contains a Query Result.
@@ -186,9 +186,8 @@ async function getForReviewTransactions(
         // Get any 'For Review' transactions from the current account.
         const result = await getForReview(
           account.id,
-          session.realmId!,
-          qboToken,
-          authId
+          loginTokens,
+          companyId
         );
 
         // If the fetch was successful, append the resulting detail content to array of found 'For Review' transactions.
@@ -231,10 +230,12 @@ async function getForReviewTransactions(
   }
 }
 
-// Takes a session generated during synthetic login.
-// Returns: an array of transactions objects for the users classified transactions.
+// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company.
+// Gets the users companies saved and classified transactions for reference in classification prediction.
+// Returns: An array of transactions objects for the users classified transactions.
 async function getClassifiedPastTransactions(
-  session: Session
+  loginTokens: LoginTokens,
+  companyId: string
 ): Promise<Transaction[]> {
   try {
     // Get a reference for the current date and the date 5 years ago.
@@ -251,7 +252,7 @@ async function getClassifiedPastTransactions(
     const endDate = fiveYearsAgo.toISOString().split('T')[0];
 
     // Get the users saved transactions from QuickBooks for checking matches and parse the result.
-    const response = await getSavedTransactions(startDate, endDate, session);
+    const response = await getSavedTransactions(startDate, endDate, loginTokens, companyId);
     const result = JSON.parse(response);
 
     // Check the first index which is always a Query Result.
@@ -277,14 +278,18 @@ async function getClassifiedPastTransactions(
   }
 }
 
-// Gets the company info for the current user using the synthetic login sesssion.
-// Returns: the company info as an object
-async function getCompanyInfo(session: Session): Promise<CompanyInfo> {
+// Gets the info for the current company that is used in transaction classification.
+// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company.
+// Returns: The relevant company info as an object.
+async function getCompanyInfo(
+  loginTokens: LoginTokens,
+  companyId: string
+): Promise<CompanyInfo> {
   try {
     // Get the key company info values from the user-info calls.
-    const userCompanyName = await getCompanyName(session);
-    const userCompanyIndustry = await getCompanyIndustry(session);
-    const userCompanyLocation = await getCompanyLocation(session);
+    const userCompanyName = await getCompanyName(loginTokens, companyId);
+    const userCompanyIndustry = await getCompanyIndustry(loginTokens, companyId);
+    const userCompanyLocation = await getCompanyLocation(loginTokens, companyId);
     // Return the formatted company info values.
     return {
       name: userCompanyName,

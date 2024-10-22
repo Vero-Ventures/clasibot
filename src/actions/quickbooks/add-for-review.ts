@@ -43,7 +43,7 @@ export async function addForReview(
     // Call method for synthetic login.
     // Takes: the company realmId and potentially null firm name string.
     // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
-    const [loginResult, qboToken, authId] = await syntheticLogin(
+    const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
       currentCompany[0].firmName
     );
@@ -68,7 +68,7 @@ export async function addForReview(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        cookie: `qbo.tkt=${qboToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${authId}; SameSite=None`,
+        cookie: `qbo.tkt=${loginTokens.qboToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
       },
       body: JSON.stringify(body),
     });

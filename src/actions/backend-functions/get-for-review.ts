@@ -3,6 +3,7 @@ import type {
   ForReviewTransaction,
   FormattedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
+import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 
 // Checks a specific account of the user 'For Review' transactions, formats them and returns them.
@@ -11,21 +12,20 @@ import type { QueryResult } from '@/types/QueryResult';
 //    Returned transactions are an array of sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
   accountId: string,
-  realmId: string,
-  qboToken: string,
-  authId: string
+  loginTokens: LoginTokens,
+  companyId: string
 ): Promise<QueryResult> {
   try {
     // Define the parameters for the call and use them to help define the full endpoint to use.
     // Defined using the ID of the current account to fetch transactions from and the ID of the user company.
     const parameters = `accountId=${accountId}&sort=-txnDate&reviewState=PENDING&ignoreMatching=false`;
-    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${realmId}/olb/ng/getTransactions?${parameters}`;
+    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${companyId}/olb/ng/getTransactions?${parameters}`;
 
     // Call the query endpoint and pass the required auth cookies.
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=${qboToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${realmId}; qbo.authid=${authId}; SameSite=None`,
+        cookie: `qbo.tkt=${loginTokens?.qboToken}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
       },
     });
 

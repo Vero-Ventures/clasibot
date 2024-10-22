@@ -2,7 +2,7 @@
 import QB from 'node-quickbooks';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
-import type { Session } from 'next-auth/core/types';
+import type { LoginTokens } from '@/types/LoginTokens';
 
 // Create a QuickBooks client object.
 export async function createQBObject() {
@@ -51,11 +51,14 @@ export async function createQBObject() {
 }
 
 // Create a QuickBooks client object using a passed session for backend functions.
-export async function createQBObjectWithSession(session: Session) {
+export async function createQBObjectWithSession(
+  loginTokens: LoginTokens,
+  companyId: string
+) {
   // Record the relevant values from the session needed for QBO connection.
-  const oauthToken = session?.accessToken;
-  const realmId = session?.realmId;
-  const refreshToken = session?.refreshToken;
+  const oauthToken = loginTokens.accessToken;
+  const realmId = companyId;
+  const refreshToken = loginTokens.refreshToken;
 
   // Determine sandbox status using ENV.
   const useSandbox = process.env.APP_CONFIG !== 'production';
