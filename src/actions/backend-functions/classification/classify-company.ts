@@ -311,14 +311,14 @@ async function getCompanyInfo(
       return {
         name: 'Error: Name not found',
         industry: 'Error',
-        location: { Country: '', Location: null },
+        location: { Country: '', SubLocation: null },
       };
     } else {
       console.error('Error: Uncexpected Error Fetching Company Info');
       return {
         name: 'Error: Name not found',
         industry: 'Error',
-        location: { Country: '', Location: null },
+        location: { Country: '', SubLocation: null },
       };
     }
   }
