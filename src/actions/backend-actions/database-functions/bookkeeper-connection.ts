@@ -171,7 +171,7 @@ export async function addAccountingFirmCompanies(
   companyNames: string[]
 ): Promise<QueryResult> {
   try {
-    // Create a variable to track the updates success and array to track failed companies.
+    // Create a variable to track the overall update success and array to track failed to connect Company names.
     let success = true;
     const failedCompanies = [];
 
@@ -186,20 +186,20 @@ export async function addAccountingFirmCompanies(
 
     // Check if any possible Firms were found.
     if (possibleFirms) {
-      // Iterate through the company names passed from the email.
+      // Iterate through the Company names passed from the email.
       for (const companyName of companyNames) {
-        // Get all companies with a matching name.
+        // Get all Companies with a matching name.
         const matchingCompanies = await db
           .select()
           .from(Company)
           .where(eq(Company.name, companyName));
 
-        // Iterate through matching companies if any are found.
+        // Iterate through matching Companies, if any are found.
         if (matchingCompanies) {
           for (const potentialCompany of matchingCompanies) {
-            // If the matching user has already been found, update the company.
+            // If the matching User has already been found, update the Company.
             if (matchingUser) {
-              // Update the companies connection status and set an assosiated Firm name.
+              // Update the Company connection status and set an assosiated Firm name.
               await db
                 .update(Company)
                 .set({
@@ -207,36 +207,34 @@ export async function addAccountingFirmCompanies(
                   firmName: connectedFirmName,
                 })
                 .where(eq(Company.id, potentialCompany.id));
-              // Skip to the next company.
+              // Skip to the next Company.
               break;
             }
 
-            // Get the database user connected to the company.
+            // Get the database User connected to the Company.
             const user = await db
               .select()
               .from(User)
               .where(eq(User.id, potentialCompany.userId));
 
-            // If a user is found, get their combined name.
+            // Check if a matching User was found.
             if (user[0]) {
-              const fullName = user[0].userName;
-
-              // Check through the list of found Firms for one with the same full name as the user.
+              // Check through the list of found Firms for one with the same full name as the User.
               for (const firm of possibleFirms) {
-                if (fullName === firm.userName) {
-                  // If a match is found, define that user for that Firm by their database Id.
+                if (user[0].userName === firm.userName) {
+                  // If a match is found, define that User for that Firm by their database Id.
                   await db
                     .update(Firm)
                     .set({ userId: user[0].id })
                     .where(eq(Firm.id, firm.id));
 
-                  // Find the user's subscription in the database by the user database Id.
+                  // Find the User Subscription in the database by the database User object Id.
                   const userSubscription = await db
                     .select()
                     .from(Subscription)
                     .where(eq(Subscription.userId, user[0].id));
 
-                  // Get the subscription status from Stripe using a list of customers with matching ID's.
+                  // Get the Subscription status from Stripe using a list of customers with matching ID's.
                   const subscription = await stripe.subscriptions.list({
                     customer: userSubscription[0].stripeId!,
                   });
@@ -244,10 +242,10 @@ export async function addAccountingFirmCompanies(
                   // Check if the subscription is active and valid.
                   const subStatus = subscription.data[0]?.status;
                   if (subStatus) {
-                    // If the matching users subscription is valid, record the related user for later shortcutting.
+                    // If the matching Users Subscription is valid, record the related User for later shortcutting.
                     matchingUser = User.id;
 
-                    // If the user has a valid subscription update the company connection status and related Firm name.
+                    // Update the Company connection status and related Firm name.
                     await db
                       .update(Company)
                       .set({
@@ -256,10 +254,10 @@ export async function addAccountingFirmCompanies(
                       })
                       .where(eq(Company.id, potentialCompany.id));
 
-                    // Continue to the next company.
+                    // Continue to the next Company.
                     break;
                   } else {
-                    // If a matching user is found, but the subscription is invalid, return an error to indicate success with an invalid subscription.
+                    // If a matching User is found, but the Subscription is invalid, return an error to indicate success with an invalid Subscription.
                     return {
                       result: 'Error',
                       message: 'User subscription was invalid.',
@@ -269,25 +267,25 @@ export async function addAccountingFirmCompanies(
                   }
                 }
               }
-              // If no potential related Firms are found, set success to false and push the company name to the list of failed connections.
+              // If no potential related Firms are found, set success to false and push the Company name to the list of failed connections.
               success = false;
               failedCompanies.push(potentialCompany.name);
             } else {
-              // If no potential related users are found, set success to false and push the company name to the list of failed connections.
+              // If no potential related Users are found, set success to false and push the Company name to the list of failed connections.
               success = false;
               failedCompanies.push(potentialCompany.name);
             }
-            // If no matches were found for the company name, set success to false and push the company name to the list of failed connections.
+            // If no matches were found for the Company name, set success to false and push the Company name to the list of failed connections.
             success = false;
             failedCompanies.push(potentialCompany.name);
           }
         } else {
-          // If no matching companies were found, set success to false and push the current company name to the list of failed connections.
+          // If no matching Companies were found, set success to false and push the current Company name to the list of failed connections.
           success = false;
           failedCompanies.push(companyName);
         }
       }
-      // After checking all companies, either return a Query Result.
+      // After checking all Companies, either return a Query Result.
       if (success) {
         return {
           result: 'Success',
@@ -296,7 +294,7 @@ export async function addAccountingFirmCompanies(
             'The related user and firm for each company was found and the company was connected.',
         };
       } else {
-        // On failure, return a stringified version of the array of failed connection companies.
+        // On failure, return a stringified version of the array of failed connection Companies.
         return {
           result: 'Error',
           message: 'One or more companies could not be found.',
@@ -304,7 +302,7 @@ export async function addAccountingFirmCompanies(
         };
       }
     } else {
-      // If no Firms with a matching name are found, return an error.
+      // If no Firms with a matching name were found, return an error.
       return {
         result: 'Error',
         message: 'No firms could be found.',
@@ -331,21 +329,21 @@ export async function addAccountingFirmCompanies(
   }
 }
 
-// Takes a companies realm Id and sets it to inactive in the database.
+// Takes a Company realm Id and sets it to inactive in the database.
 // Returns: A Query Result object.
-// Integration: Called by a frontend button that allows user to set a company to be disconnected.
-//    Done when a user removes the connection through QuickBooks, required to be done in app as well to avoid issues.
+// Integration: Called by a frontend button that allows the User to set a Company to be disconnected.
+//    Done when a User removes the connection through QuickBooks, required to be done in app as well to avoid issues.
 export async function makeCompanyIncactive(
   realmId: string
 ): Promise<QueryResult> {
   try {
-    // Find the company in the database with the matching ID.
+    // Find the Company in the database with the matching ID.
     const company = await db
       .select()
       .from(Company)
       .where(eq(Company.realmId, realmId));
 
-    // If a company is found, set its connection status to false.
+    // If a Company is found, set its connection status to false.
     if (company[0]) {
       await db
         .update(Company)
@@ -359,7 +357,7 @@ export async function makeCompanyIncactive(
         detail: 'Bookkeeper connection to company set to false.',
       };
     } else {
-      // If no matching company could be found, return an error result.
+      // If no matching Company could be found, return an error result.
       return {
         result: 'Error',
         message: 'Company could not be found.',
