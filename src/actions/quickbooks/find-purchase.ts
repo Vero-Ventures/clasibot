@@ -16,15 +16,16 @@ export async function findFormattedPurchase(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed by a backend function to use to define the qbo object.
-    // Then create the qbo object for frontend or backend functions based on the session presence.
+    // Check if synthetic login tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
+      // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
+      // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
     }
 
-    // Define success tracker and error response object for error handling of QuickBooks queries.
+    // Define a success tracking value and the format of QuickBooks and error response objects.
     let success = true;
     let error: ErrorResponse = {
       Fault: {
@@ -53,7 +54,7 @@ export async function findFormattedPurchase(
       ];
     };
 
-    // Search for a specific Purchase object by the passed Purchase Id.
+    // Search for a specific Purchase object using the passed Purchase Id.
     const response: PurchaseResponse = await new Promise((resolve) => {
       qbo.getPurchase(id, (err: ErrorResponse, data: PurchaseResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -69,23 +70,22 @@ export async function findFormattedPurchase(
     // Create a formatted Query Result object for the QBO API call.
     const queryResult = createQueryResult(success, error);
 
-    // Create a formatted result object with all fields set to null.
-    // Set the results info field of the Purchase to the created Query Result.
-    //    Only single purchases are returned at a time so the Query Result is included in the object.
+    // Create a Purchase object with all fields set to null.
+    //    Only one Purchase is returned per call, so the Query Result is recorded inside the object.
     const formattedResult: Purchase = {
       result_info: queryResult,
       id: '',
       taxCodeId: '',
     };
 
-    // If the query did not encounter an error, get the Id from the response and update the formatted result object.
+    // If the query did not encounter an error, get the Id from the response and update the Purchase object.
     if (success) {
       formattedResult.id = response.Id;
-      // Iterate through the line field for the tax code ID.
-      // If the tax code is present, it is found in the AccountBasedExpenseLineDetail field.
+      // Iterate through the line field to find the Tax Code ID.
+      // If present the Tax Code is found in the 'AccountBasedExpenseLineDetail' field.
       for (const line of response.Line) {
         if (line.DetailType === 'AccountBasedExpenseLineDetail') {
-          // Set the formatted result objects taxCodeId from the current line and break the loop.
+          // Set the Purchase taxCodeId using the value found within the line and break the loop to stop looking.
           formattedResult.taxCodeId =
             line.AccountBasedExpenseLineDetail.TaxCodeRef.value;
           break;
@@ -96,7 +96,7 @@ export async function findFormattedPurchase(
     return formattedResult;
   } catch (error) {
     // Return an empty formatted Purchase object with an error Query Result in the results info.
-    // Include a detail string if error message is present.
+    // Include a detail string in the Query Result if the error message is present.
     if (error instanceof Error) {
       return {
         result_info: {

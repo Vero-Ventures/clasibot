@@ -11,8 +11,7 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Take a raw 'For Review' transaction object as well as the Id's for its category and tax code classificaions.
-// Also takes the QBO and auth Id tokens generated during synthetic login.
+// Take a Raw 'For Review' transaction object as well as the Id's for its classificaions.
 // Returns: A Query Result object.
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
@@ -23,47 +22,47 @@ export async function addForReview(
     // Get the current session to get the company realm Id.
     const session = await getServerSession(options);
 
-    // If a session could not be found, create and return an error Query Result.
+    // If a session realm Id could not be found, create and return an error Query Result.
     if (!session?.realmId) {
       return { result: '', message: '', detail: '' };
     }
 
-    // Get the current company from the database to check for a potential firm name.
-    // Needed during synthetic login if access to company comes through an accounting firm.
+    // Get the database Company object to check for a potential firm name.
+    // Needed during synthetic login if access to Company comes through an Firm.
     const currentCompany = await db
       .select()
       .from(Company)
       .where(eq(Company.realmId, session.realmId));
 
-    // If a datavase company could not be found, create and return an error Query Result.
+    // If a database Company could not be found, create and return an error Query Result.
     if (!currentCompany[0]) {
       return { result: '', message: '', detail: '' };
     }
 
-    // Call method for synthetic login.
-    // Takes: the company realmId and potentially null firm name string.
-    // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
+    // Call method for synthetic login with the realm Id of the company and the potential firm name.
+    // Returns: A QueryResult and a dictionary containing the tokens from synthetic login.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
       currentCompany[0].firmName
     );
 
-    // If the synthetic login failed, return the assosiated failure query result.
+    // If the synthetic login process failed, return the assosiated failure Query Result.
     if (loginResult.result === 'Error') {
       return loginResult;
     }
 
-    // Define the account ID for the call and the full endpoint to use. Realm Id will always be true as function is only callable by logged in users.
+    // Define the account ID for the call and the full endpoint to use.
     const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${session!.realmId}/olb/ng/batchAcceptTransactions`;
 
-    // Convert the passed ForReviewTransaction to a useable body for the calling the update transactions endpoint.
+    // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
     const body = createForReviewUpdateObject(
       forReviewTransaction,
       categoryId,
       taxCodeId
     );
 
-    // Call the query endpoint while passing the defined header cookies.
+    // Call the query endpoint while passing the required header cookies.
+    // Pass the Update 'For Review' transaction object as the body, converted to a string.
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -73,7 +72,7 @@ export async function addForReview(
       body: JSON.stringify(body),
     });
 
-    // Check if a valid response was given.
+    // Check if a valid response is received.
     if (!response.ok) {
       // Get the response text and return it as the detail of an error Query Result object.
       const errorText = await response.text();
@@ -83,35 +82,37 @@ export async function addForReview(
           'Call made to Add For Review endpoint did not return a valid response.',
         detail: JSON.stringify(errorText),
       };
+    } else {
+      // Get the response data and return it as the detail of a success Query Result object.
+      const responseData = await response.json();
+      return {
+        result: 'Success',
+        message:
+          'Request made to Add For Review endpoint was returned with a valid response',
+        detail: JSON.stringify(responseData),
+      };
     }
-
-    // Get the response data and return it as the detail of a success Query Result object.
-    const responseData = await response.json();
-    return {
-      result: 'Success',
-      message:
-        'Request made to Add For Review endpoint was returned with a valid response',
-      detail: JSON.stringify(responseData),
-    };
   } catch (error) {
-    // Define a default error detail.
-    let errorDetail =
-      'An unexpected error occured while saving classified For Review transactions.';
-    // Check if the caught error is of type Error and update the detail if it is.
+    // Catch any errors and return an appropriate error Query Result based on the caught error.
     if (error instanceof Error) {
-      errorDetail = error.message;
+      return {
+        result: 'Error',
+        message: 'Call made to Add For Review endpoint resulted in error.',
+        detail: 'Error' + error.message,
+      };
+    } else {
+      return {
+        result: 'Error',
+        message: 'Call made to Add For Review endpoint resulted in error.',
+        detail:
+          'An unexpected error occured while saving classified For Review transactions.',
+      };
     }
-    // If there is an error calling the API, get the response error and return it in a result object with an error result.
-    return {
-      result: 'Error',
-      message: 'Call made to Add For Review endpoint resulted in error.',
-      detail: errorDetail,
-    };
   }
 }
 
 // Takes the "For Review" transaction data, as well as the ID's for the classificaions.
-// Returns: An object that can be used as the body when making an update transactions call to QuickBooks.
+// Returns: An formatted Update 'For Review' transaction object.
 function createForReviewUpdateObject(
   responseData: ForReviewTransaction,
   categoryId: string,

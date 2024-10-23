@@ -45,7 +45,7 @@ export async function classifyCompany(
     // Check if the 'For Review' transaction call encountered an error.
     // Result is only present in Query Value typing that is only returned on error.
     if ('result' in forReviewResult) {
-      // Return the query response to the caller as the error handling.
+      // Return the query result to the caller as the error handling.
       return forReviewResult;
     }
 

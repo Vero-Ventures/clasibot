@@ -11,7 +11,7 @@ import type { QueryResult } from '@/types/QueryResult';
 import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
 
-// Get all past saved transactions from the QuickBooks API.
+// Get all past saved Transaction from the QuickBooks API.
 // May take a start date and end date and / or a synthetic session as optional parameters.
 // Returns: An array of objects starting with a Query Result, then containing Transaction objects.
 export async function getSavedTransactions(
@@ -24,15 +24,16 @@ export async function getSavedTransactions(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed by a backend function to be used to define the qbo object.
-    // Then create the qbo object for frontend or backend functions based on the session presence.
+    // Check if synthetic login tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
+      // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
+      // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
     }
 
-    // Define success tracker and error response object for error handling of QuickBooks queries.
+    // Define a success tracking value and the format of QuickBooks and error response objects.
     let success = true;
     let error: ErrorResponse = {
       Fault: {
@@ -55,23 +56,22 @@ export async function getSavedTransactions(
       };
     };
 
-    // Query user preferences to get the multi-currency preference for the user.
-    // Multi-Currency determines the name of the columnn that contains the transaction amount.
+    // Query User preferences to get the Multi-Currency preference for the User.
+    // Multi-Currency determines the name of the columnn that contains the Transaction amount.
     const preferences: PreferenceResponse = await new Promise((resolve) => {
       qbo.getPreferences((err: ErrorResponse, data: PreferenceResponse) => {
         if (err && checkFaultProperty(err)) {
-          // Resolve the function with a response formatted to indicate Multi Currency is not enabled.
+          // Resolve the function with a response formatted to indicate Multi-Currency is not enabled.
           resolve({ CurrencyPrefs: { MultiCurrencyEnabled: false } });
         }
         resolve(data);
       });
     });
 
-    // Get the current date to potentially use in start and end date setting..
+    // Get the current date to use as a base for the Transaction date range.
     const today = new Date();
 
-    // If no start date was passed as an argument, define a default start date.
-    // Default Balue: 2 years ago.
+    // If no start date was passed as an argument, set the end of the range to the default: 2 Years Ago
     if (startDate === '') {
       const TwoYearsAgo = new Date(
         today.getFullYear() - 2,
@@ -81,13 +81,13 @@ export async function getSavedTransactions(
       startDate = TwoYearsAgo.toISOString().split('T')[0];
     }
 
-    // If no end date was passed as an argument, set the end date to the default: the current date.
+    // If no end date was passed as an argument, set the end of the range to the default: the current date.
     if (endDate === '') {
       endDate = today.toISOString().split('T')[0];
     }
 
-    // Defines the start date, end date, maximum returned transactions.
-    // Columns defines a list of the data columns for each transaction to included as part of the response.
+    // Defines the date range and the maximum number of returned Transactions.
+    // Columns defines a list of the data columns to include for the Transactions.
     const parameters = {
       start_date: startDate,
       end_date: endDate,
@@ -95,14 +95,14 @@ export async function getSavedTransactions(
       columns: ['txn_type', 'name', 'other_account'],
     };
 
-    // Check MultiCurrencyEnabled and add the appropriate column that determines transaction amount to the parameters.
+    // Check MultiCurrencyEnabled and add the appropriate parameters for Transaction amount column.
     if (preferences.CurrencyPrefs.MultiCurrencyEnabled) {
       parameters.columns.push('subt_nat_home_amount');
     } else {
       parameters.columns.push('subt_nat_amount');
     }
 
-    // Define a type for the response object to allow for type checking.
+    // Define a type for the QBO response to allow for type checking.
     type TransactionResponse = {
       Rows: {
         Row: {
@@ -116,7 +116,7 @@ export async function getSavedTransactions(
       }[];
     };
 
-    // Call API to get a list of transactions.
+    // Used the defined parameters to fetch User Transactions from QuickBooks.
     const response: TransactionResponse = await new Promise((resolve) => {
       qbo.reportTransactionList(
         parameters,
@@ -132,25 +132,25 @@ export async function getSavedTransactions(
       );
     });
 
-    // Get the results rows from the JSON response and define a results array.
+    //  Get the Transaction Row data from the response and create a results array.
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
 
-    // Create a formatted Query Result object for the QBO API call then push it to the first index of the transactions array.
+    // Create a formatted Query Result object for the QBO API call.
+    // Push the Query Result to the first index of the results array.
     const QueryResult = createQueryResult(success, error);
     results.push(QueryResult);
 
-    // Check if transaction rows were reterned by the QuickBooks API call and the Query Result was not an error.
+    // Check if Transaction rows were found and that the Query Result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {
-      // Call helper method to check and format response data and return an array of valid formatted transactions.
+      // Call helper method to check and format response data into Transactions.
       checkAndFormatTransactions(responseRows, results, loginTokens, companyId);
     }
 
     // Return the formatted results as a JSON string.
     return JSON.stringify(results);
   } catch (error) {
-    // Catch any errors and return them an stringified error Query Result inside an array to match standard formatting.
-    // Set the detail string to the error message if it is present.
+    // Catch any errors and return an appropriate error Query Result based on the caught error.
     if (error instanceof Error) {
       return JSON.stringify([
         {
@@ -173,9 +173,9 @@ export async function getSavedTransactions(
   }
 }
 
-// Takes the QuickBooks response rows and a results array.
-// Also takes the session to make purchase calls for both frontend and backend calls.
-// Formats the rows response into transactions to be stored in the results array.
+// Formats the response rows into Transactions.
+// Takes: the QuickBooks response rows and a results array.
+//    May also take synthetic login tokens and company Id for backend calls.
 // Returns: A results array containing a Query Result in the first index and the formatted Transaction objects.
 async function checkAndFormatTransactions(
   rows: {
@@ -189,50 +189,52 @@ async function checkAndFormatTransactions(
   loginTokens: LoginTokens | null = null,
   companyId: string | null = null
 ) {
-  // Call list of expense accounts to check the transaction classifications against.
+  // Call list of expense Accounts to check the Transaction Classifications against.
   const accounts = await getAccounts('Expense', loginTokens, companyId);
   const accountResults = JSON.parse(accounts);
 
-  // Check if the account call was a failure and set the Query Result index of the results to an error if it was.
+  // Check if the Account fetch Query Result is an error.
   if (accountResults[0].result === 'Error') {
-    results[0] = {
-      result: 'error',
-      message:
-        'Unexpected error occured while fetching expense accounts for transaction checking.',
-      detail: accountResults[0].message,
-    };
+    // Set the to contain an error Query Result with the message from the Account fetch Query Result as the detail.
+    results = [
+      {
+        result: 'error',
+        message:
+          'Unexpected error occured while fetching expense accounts for transaction checking.',
+        detail: accountResults[0].message,
+      },
+    ];
   } else {
-    // If the accounts call was successful, remove the Query Result from the first index and define the array of Account objects.
+    // If the fetch Accounts call was successful, define an array of just the Account objects (no Query Result).
     const parsedAccounts: Account[] = accountResults.slice(1);
 
-    // Iterate through the transaction rows to check and format them.
+    // Iterate through the Transaction rows to find and format the Transaction data
     for (const row of rows) {
-      // Check if the row is a summary row and skip it if it is.
+      // Check if the row is a summary row and skip it.
       if (row.Summary) {
         break;
       }
 
-      // Define the index values of the important transaction values.
+      // Define the index values of the rows with important Transaction values.
       const idRow = 0;
       const nameRow = 1;
       const categoryRow = 2;
       const amountRow = 3;
 
-      // Skip no-name transactions (needed for prediction matching), transactions without a category,
-      // Transactions without an amount are skiped as it ensures only expense transactions are recorded (also helps with prediction ordering).
+      // Skip Transactions missing a name, category, or without a negative amount.
       if (
         row.ColData[nameRow].value !== '' &&
         row.ColData[categoryRow].value !== '' &&
         Number(row.ColData[amountRow].value) < 0
       ) {
-        // Only continue if an expense account with the same name as the category exists.
+        // Only continue if there is an expense Account with the same name as the Transaction Category.
         if (
           parsedAccounts.some(
             (account) => account.name === row.ColData[categoryRow].value
           )
         ) {
-          // Convert the values from transaction row to a Transaction object.
-          // Explicitly defined types due to values from the API being both strings and numbers.
+          // Use the values from Transaction rows to create the Transaction object.
+          //    Explicitly defined types due to values being passed as either strings or numbers.
           const newFormattedTransaction: Transaction = {
             name: String(row.ColData[nameRow].value),
             amount: Number(row.ColData[amountRow].value),
@@ -240,60 +242,61 @@ async function checkAndFormatTransactions(
             taxCodeName: '',
           };
 
-          // Search for the purchase related to the transaction to get the tax rate.
-          // Pass the session to work with both frontend and backend calls.
+          // Search for the Purchase related to the Transaction to get the Tax Code.
+          // Pass synthetic login tokens and realm Id in case backend call is needed.
           const transactionPurchase = await findFormattedPurchase(
             String(row.ColData[idRow].id),
             loginTokens,
             companyId
           );
 
-          // Get the users tax codes and parse it to a Query Result and an array of Tax Code objects.
+          // Get the Users Tax Codes and parse it to a Query Result and an array of Tax Code objects.
           const userTaxCodes = JSON.parse(
             await getTaxCodes(loginTokens, companyId)
           );
 
-          // Check if fetch of either the purchase and tax codes resulted in an error.
+          // Check if either the Purchase or Tax Code fetches resulted in an error Query Result.
           if (
             transactionPurchase.result_info.result === 'Error' ||
             userTaxCodes[0].result === 'Error'
           ) {
-            // Define truth values for both the purchase and tax codes to indicate if that fetch failed.
+            // Define truth values for both the Purchase and Tax Code to indicate if that fetch failed.
             const purchaseError =
               transactionPurchase.result_info.result === 'Error';
             const taxCodeError = userTaxCodes[0].result === 'Error';
 
-            // When an error occurs, leave the tax code unfilled and log an error.
-            console.log(
-              'Error getting transaction tax details, Purchase Failure? ' +
+            // Log an error indicating an issue with the Transaction.
+            console.error(
+              'Error getting transaction tax details,\nPurchase Failure: ' +
                 purchaseError +
-                ', Tax Code Failure? ' +
+                ', Tax Code Failure: ' +
                 taxCodeError
             );
 
+            // Log seperate errors for each fetch that failed with the error details.
             if (purchaseError) {
               console.error(
                 'Error Fetching Purchase: ' +
                   transactionPurchase.result_info.detail
               );
             }
-
             if (taxCodeError) {
               console.error(
                 'Error fetching Tax Code: ' + userTaxCodes[0].detail
               );
             }
           } else {
-            // If both retrivals were successful, skip the Query Result and iterate through the user tax codes.
+            // If both fetches were successful, iterate through the User Tax Codes.
+            // Skips the Query Result in the first index.
             for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {
-              // Find the tax code that matches the one in the purchase object related to the current transaction row.
+              // Find the Tax Code that matches the one in the Puchase object for the Transaction.
               if (taxCode.Id == transactionPurchase.taxCodeId) {
-                // Update the formatted transaction with the tax code name.
+                // Update the formatted Transaction with the Tax Code name.
                 newFormattedTransaction.taxCodeName = taxCode.Name;
               }
             }
 
-            // Add the formatted transaction for the current row to the array.
+            // Add the new formatted Transaction to the array.
             results.push(newFormattedTransaction);
           }
         }

@@ -3,9 +3,9 @@ import { checkFaultProperty } from './query-helpers';
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Get the company name from the QuickBooks API.
-// May take a session to work with backend functions.
-// Returns: The company name as a string or 'Error: Name not found'
+// Get the Company name from the QuickBooks API.
+// Takes: May take synthetic login tokens and the companies realm Id.
+// Returns: The Company name as a string or 'Error: Name not found'
 export async function getCompanyName(
   loginTokens: LoginTokens | null = null,
   companyId: string | null = null
@@ -14,20 +14,21 @@ export async function getCompanyName(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed by a backend function to be used to define the qbo object.
-    // Then create the qbo object for frontend or backend functions based on the session presence.
+    // Check if synthetic login tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
+      // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
+      // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
     }
 
-    // Define a type for the response to allow for type checking.
+    // Define a type for the QBO response to allow for type checking.
     type CompanyInfoResponse = {
       QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
     };
 
-    // Search for the company info for the user.
+    // Search for the User Company Info.
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -43,18 +44,18 @@ export async function getCompanyName(
       });
     });
 
-    // Return the name value from the company info.
+    // Return the name value from the Company Info.
     return response.QueryResponse.CompanyInfo[0].CompanyName;
   } catch (error) {
-    // Log the error and return an error string that indicates failure.
+    // Log the error and return an error string that indicates failure to find.
     console.error('Error finding company name:', error);
     return 'Error: Name not found';
   }
 }
 
-// Get the company industry from the QuickBooks API.
-// May take a session to work with backend functions.
-// Returns: The company industry as a string or 'Error' / 'None'
+// Get the Company industry from the QuickBooks API.
+// Takes: May take synthetic login tokens and the companies realm Id.
+// Returns: The Company industry as a string or 'Error' / 'None'
 export async function getCompanyIndustry(
   loginTokens: LoginTokens | null = null,
   companyId: string | null = null
@@ -63,16 +64,16 @@ export async function getCompanyIndustry(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed to be used to define the qbo object.
-    // Then define the qbo object based on the session presence.
+    // Check if synthetic login tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
+      // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
+      // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
     }
 
-    // Define a type for the response to allow for type checking.
-    // Name value is an array of data objects that contains amoung its values, a dictionary that contains the industry type.
+    // Define a type for the QBO response to allow for type checking.
     type CompanyInfoResponse = {
       QueryResponse: {
         CompanyInfo: [
@@ -88,7 +89,7 @@ export async function getCompanyIndustry(
       };
     };
 
-    // Search for the company info for the user.
+    // Search for the User Company Info
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -104,11 +105,11 @@ export async function getCompanyIndustry(
       });
     });
 
-    // Get the array of info objects containing the dictionaries that include the industry type.
+    // Get the array of objects containing the dictionaries that include the industry type.
     const companyNameValueArray =
       response.QueryResponse.CompanyInfo[0].NameValue;
 
-    // Iterate through the dictionaries to look for the one with the industry type.
+    // Iterate through the values to look for the one containingw the industry type.
     for (const item of companyNameValueArray) {
       // If the industry type is found, return it to the caller.
       if (item.Name === 'QBOIndustryType' || item.Name === 'IndustryType') {
@@ -116,17 +117,18 @@ export async function getCompanyIndustry(
       }
     }
 
-    // If no match was found for 'QBOIndustryType' or 'IndustryType', return 'None'.
+    // If no match was found for dictionaries that contain industry type, return 'None'.
     return 'None';
   } catch (error) {
-    // Log the error and return an error string that indicates failure.
+    // Log the error and return an error string that indicates failure to find.
     console.error('Error finding industry:', error);
     return 'Error';
   }
 }
 
-// Get the company location from the QBO API, return the country and the sub-location for Canadian companies.
-// To check for tax classification compatable locations (Canadian), check for a country value of 'CA'.
+// Get the company location from the QBO API, return the country and the Sub-location for Canadian companies.
+// Takes: May take synthetic login tokens and the companies realm Id.
+// Returns: A stringified object that contains the Country and Sub-location.
 export async function getCompanyLocation(
   loginTokens: LoginTokens | null = null,
   companyId: string | null = null
@@ -135,15 +137,16 @@ export async function getCompanyLocation(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed to be used to define the qbo object.
-    // Then define the qbo object based on the session presence.
+    // Check if synthetic login tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
+      // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
+      // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
     }
 
-    // Define a type for the response to allow for type checking.
+    // Define a type for the QBO response to allow for type checking.
     type CompanyInfoResponse = {
       QueryResponse: {
         CompanyInfo: [
@@ -152,7 +155,7 @@ export async function getCompanyLocation(
       };
     };
 
-    // Search for the company info for the user.
+    // Search for the User Company Info
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -171,22 +174,23 @@ export async function getCompanyLocation(
     });
 
     // Countries should be defined by either a 3 letter '3166-1 alpha-3' code or by the full name.
-    // Example: Either 'CAN' or 'Canada'  NOTE: Presently using CA for Canada so the possible values are unclear.
+    // Example: Either 'CAN' or 'Canada'
+    //    NOTE: QuickBooks presently uses 'CA' for Canada so the range of possible values are unclear.
     const companyCountry =
       response.QueryResponse.CompanyInfo[0].CompanyAddr.Country;
 
-    // Exact list of sub locations is undefined, presently only working with Canadian values anyhow.
-    // Currenly assume that sub-locations use standardized 2 letter abbreviations (check taxes enum).
+    // Exact list of Sub-locations is undefined, presently only working with Canadian values.
+    // Currenly assume that Sub-locations use standardized 2 letter abbreviations (taxes enum).
     const companySubLocation =
       response.QueryResponse.CompanyInfo[0].CompanyAddr.CountrySubDivisionCode;
 
-    // Check if the company is Canadian (check value against know possible values for Canada).
+    // Check if the company is Canadian (check value against known possible values for Canada).
     if (
       companyCountry === 'CA' ||
       companyCountry === 'Canada' ||
       companyCountry == 'CAN'
     ) {
-      // Return company country and sub-location name.
+      // Return Company Country and Sub-location name.
       return JSON.stringify({ Country: 'CA', SubLocation: companySubLocation });
     } else {
       // If the country is not Canadian, just return the country string.
@@ -196,7 +200,7 @@ export async function getCompanyLocation(
       });
     }
   } catch (error) {
-    // Log the error and return an empty string to the caller if the call fails.
+    // Log the error and return an error object that indicates failure to find.
     console.error('Error finding company location:', error);
     return JSON.stringify({ Country: '', SubLocation: null });
   }

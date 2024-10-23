@@ -299,7 +299,7 @@ async function fetchValidTaxCodes(
         companyInfo.location.SubLocation
       );
 
-      // Check there are valid tax codes (error check) and the query response from getting user tax codes was a success.
+      // Check there are valid tax codes (error check) and the Query Result from getting user tax codes was a success.
       if (
         validLocationalTaxCodes.length !== 0 &&
         userTaxCodes[0].result != 'Success'

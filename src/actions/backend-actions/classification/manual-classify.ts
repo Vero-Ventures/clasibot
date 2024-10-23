@@ -68,7 +68,7 @@ export async function manualClassify(
         return false;
       }
     } else {
-      // Log the query response from the failed synthetic login, update frontend to failure state, then return a failure boolean value.
+      // Log the Query Result from the failed synthetic login, update frontend to failure state, then return a failure boolean value.
       console.error(loginResult);
       setManualClassificationState('An Unexpected Error Occured');
       return false;

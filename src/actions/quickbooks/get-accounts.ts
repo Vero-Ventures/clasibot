@@ -5,9 +5,9 @@ import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Get specific accounts from the QuickBooks API depending on passed account type.
-// Use 'Transaction' to fetch accounts that contain 'For Review' Transactions.
-// Use 'Expense' to get accounts for transaction categorization.
+// Get specific Accounts from the QuickBooks API depending on passed Account type.
+// Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
+// Use 'Expense' to get Accounts for transaction categorization.
 // May take a synthetic login session to use instead of the regular session.
 // Returns: An array of objects starting with a Query Result, then containing Purchase objects.
 export async function getAccounts(
@@ -19,15 +19,16 @@ export async function getAccounts(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if a session was passed by a backend function to be used to define the qbo object.
-    // Then create the qbo object for frontend or backend functions based on the session presence.
+    // Check if synthetic login tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
+      // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
+      // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
     }
 
-    // Define success tracker and error response object for error handling of QuickBooks queries.
+    // Define a success tracking value and the format of QuickBooks and error response objects.
     let success = true;
     let error: ErrorResponse = {
       Fault: {
@@ -43,7 +44,7 @@ export async function getAccounts(
       },
     };
 
-    // Define a type for the response object to allow for type checking.
+    // Define a type for the QBO response to allow for type checking.
     type AccountResponse = {
       QueryResponse: {
         Account: {
@@ -61,10 +62,8 @@ export async function getAccounts(
       }[];
     };
 
-    // Define the query parameters for 'Expense' account fetching.
-    // Fetches accounts with Classification equal to 'Expense'.
-    // Fetches all accounts that represent an transaction category.
-    //(Use IN on an array for same query type across both account types.)
+    // Define the query parameters for 'Expense' Account fetching.
+    // Fetches Accounts with Classification set to 'Expense' (Represent a possible Transaction category).
     let parameters = [
       {
         field: 'Classification',
@@ -74,8 +73,8 @@ export async function getAccounts(
       },
     ];
 
-    // Update query parameters for fetching 'Transaction' accounts.
-    // Defines a query to get all accounts that may contain 'For Review' transactions.
+    // Update query parameters if fetching 'Transaction' Accounts.
+    // Defines a query to get all Accounts that may contain 'For Review' transactions.
     if (accountType === 'Transaction') {
       parameters = [
         {
@@ -95,7 +94,7 @@ export async function getAccounts(
       ];
     }
 
-    // Used the defined parameters to fetch the accounts from QuickBooks.
+    // Used the defined parameters to fetch specified User Accounts from QuickBooks.
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
         parameters,
@@ -111,18 +110,19 @@ export async function getAccounts(
       );
     });
 
-    //  Get the needed account data from the QuickBooks API response.
+    //  Get the Account data from the response and create a results array.
     const accounts = response.QueryResponse.Account;
     const results = [];
 
-    // Create a formatted Query Result object for the QBO API call then push it to the first index of the results array.
+    // Create a formatted Query Result object for the QBO API call.
+    // Push the Query Result to the first index of the results array.
     const queryResult = createQueryResult(success, error);
     results.push(queryResult);
 
-    // Iterate through the returned accounts and ignore any that are marked as inactive.
+    // Iterate through the returned Accounts and ignore any that are marked as inactive.
     for (const account of accounts) {
       if (account.Active) {
-        // Format the response information to an Account object and push it to the results array.
+        // Create an Account object for the current Account response and push it to the results array.
         const newFormattedAccount: Account = {
           id: account.Id,
           name: account.Name,
@@ -136,8 +136,7 @@ export async function getAccounts(
     // Return the array of Account objects with a Query Result in the first index as a JSON string.
     return JSON.stringify(results);
   } catch (error) {
-    // Catch any errors and return them an stringified error Query Result inside an array to match standard formatting.
-    // Set the detail string to the error message if it is present.
+    // Catch any errors and return an appropriate error Query Result based on the caught error.
     if (error instanceof Error) {
       return JSON.stringify([
         {
