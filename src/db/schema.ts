@@ -13,8 +13,7 @@ import { relations } from 'drizzle-orm';
 
 export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  firstName: text('first_name'),
-  lastName: text('last_name'),
+  userName: text('user_name'),
   email: text('email').unique().notNull(),
   subscriptionId: uuid('subscription_id').unique(),
 });
@@ -46,9 +45,8 @@ export const Company = pgTable('Company', {
     .notNull()
     .references(() => User.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
-  industry: text('industry'),
-  bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
   firmName: text('firm_name'),
+  bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
   classificationFailed: boolean('classification_failed'),
 });
 
@@ -76,7 +74,7 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   companyId: text('company_id')
     .notNull()
     .references(() => Company.realmId, { onDelete: 'cascade' }),
-  transactionId: text('transaction_id').notNull(),
+  reviewTransactionId: text('review_transaction_id').notNull(),
   accountId: text('account_id').notNull(),
   description: text('description').notNull(),
   origDescription: text('orig_description').notNull(),
@@ -119,7 +117,7 @@ export const CategoryToTransactionsRelationship = relations(
 export const CategoryToForReviewTransactionsRelationship = relations(
   Category,
   ({ many }) => ({
-    transactions: many(ForReviewTransaction),
+    reviewTransactions: many(ForReviewTransaction),
   })
 );
 
@@ -139,7 +137,7 @@ export const TaxCodesToTransactionsRelationship = relations(
 export const TaxCodesToForReviewTransactionsRelationship = relations(
   TaxCode,
   ({ many }) => ({
-    transactions: many(ForReviewTransaction),
+    reviewTransactions: many(ForReviewTransaction),
   })
 );
 
@@ -176,7 +174,7 @@ export const TransactionsToTaxCodes = pgTable(
 export const ForReviewTransactionToCategories = pgTable(
   'ForReviewTransactionsToCategories',
   {
-    transactionId: uuid('transaction_id')
+    reviewTransactionId: uuid('review_transaction_id')
       .notNull()
       .references(() => ForReviewTransaction.id),
     categoryId: integer('category_id')
@@ -184,14 +182,14 @@ export const ForReviewTransactionToCategories = pgTable(
       .references(() => Category.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.categoryId] }),
+    pk: primaryKey({ columns: [t.reviewTransactionId, t.categoryId] }),
   })
 );
 
 export const ForReviewTransactionToTaxCodes = pgTable(
   'ForReviewTransactionsToTaxCodes',
   {
-    transactionId: uuid('transaction_id')
+    reviewTransactionId: uuid('review_transaction_id')
       .notNull()
       .references(() => ForReviewTransaction.id),
     taxCodeId: integer('tax_code_id')
@@ -199,6 +197,6 @@ export const ForReviewTransactionToTaxCodes = pgTable(
       .references(() => TaxCode.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
+    pk: primaryKey({ columns: [t.reviewTransactionId, t.taxCodeId] }),
   })
 );
