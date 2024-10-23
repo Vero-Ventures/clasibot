@@ -2,10 +2,10 @@ import { addCompanyConnection } from '@/actions/backend-functions/database-funct
 
 export async function POST(request: Request) {
   try {
-    // Get the Authorization header from the request
+    // Get the Authorization header from the request.
     const authorizationHeader = request.headers.get('Authorization');
 
-    // Check for the authorization header and return if it is missing or invalid.
+    // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
       !authorizationHeader ||
       authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get the request body that contains the user email name and connected company name.
+    // Get request body that contains the user email name and connected company name.
     const body = await request.json();
 
     // Extract the user email and company name from the request body.
@@ -26,22 +26,25 @@ export async function POST(request: Request) {
     const companyName: string = body.companyName;
 
     // Check if valid user email name and company name was passed.
-    // Return an error response if no valid values were passed.
+    // Log error responses for the missing values.
     if (!userEmail) {
       console.error(
         'Error Adding Company Connection: No Valid User Email Passed.'
       );
-      return new Response('No Valid User Email', { status: 400 });
     }
 
     if (!companyName) {
       console.error(
         'Error Adding Company Connection: No Valid Company Name Passed.'
       );
-      return new Response('No Valid Company Name', { status: 400 });
     }
 
-    // Find the users companies using their email and set the company with the related name to connected.
+    // Return an error response if either of the values are missing.
+    if (!userEmail || !companyName) {
+      return new Response('Missing Required Value In Body', { status: 400 });
+    }
+
+    // Call handler for company accountant invite emails.
     await addCompanyConnection(userEmail, companyName);
 
     // Return a success response.

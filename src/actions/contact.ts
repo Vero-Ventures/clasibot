@@ -2,7 +2,7 @@
 import nodemailer from 'nodemailer';
 
 // Takes an email, subject, and body string.
-export async function contactAction({
+export async function sendContactEmail({
   email,
   subject,
   body,

@@ -2,10 +2,10 @@ import { addAccountingFirmCompanies } from '@/actions/backend-functions/database
 
 export async function POST(request: Request) {
   try {
-    // Get the Authorization header from the request
+    // Get the Authorization header from the request.
     const authorizationHeader = request.headers.get('Authorization');
 
-    // Check for the authorization header and return if it is missing or invalid.
+    // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
       !authorizationHeader ||
       authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get the request body that contains the firm name and newly connected companies.
+    // Get request body that contains the firm name and company names.
     const body = await request.json();
 
     // Extract the firm name and company names from the request body.
@@ -26,23 +26,24 @@ export async function POST(request: Request) {
     const companyNames: string[] = body.companies || [];
 
     // Check if valid firm name and company names were passed.
-    // Return an error response if no valid values were passed.
+    // Log error responses for the missing values.
     if (!firmName) {
       console.error(
         'Error Adding Accounting Firm Companies: No Valid Firm Name Passed.'
       );
-      return new Response('No Valid Firm Name', { status: 400 });
     }
-
     if (!companyNames.length) {
       console.error(
         'Error Adding Accounting Firm Companies: No Valid Company Names Passed.'
       );
-      return new Response('No Valid Company Names', { status: 400 });
     }
 
-    // If valid values were passed, update the connections of the passed companies.
-    // Finds related firm in database and updates the related companies using array of passed company names.
+    // Return an error response if either of the values are missing.
+    if (!firmName || !companyNames.length) {
+      return new Response('Missing Required Value In Body', { status: 400 });
+    }
+
+    // Call handler for accounting firm client access emails.
     await addAccountingFirmCompanies(firmName, companyNames);
 
     // Return a success response.

@@ -1,8 +1,10 @@
 import { findFormattedPurchase } from '@/actions/quickbooks/find-purchase';
 
 export async function GET() {
-  // Call server action to find a specific purchase using QuickBooks API.
-  const purchase = await findFormattedPurchase('144');
-  // Return the purchase as a JSON object.
+  // Call action to find a specific Purchase from QuickBooks API.
+  // Returns a formatted object.
+  const purchase = await findFormattedPurchase('');
+
+  // Return the Purchase as a JSON object.
   return Response.json(purchase);
 }

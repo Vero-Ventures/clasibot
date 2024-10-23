@@ -2,10 +2,10 @@ import { addAccountingFirmConnection } from '@/actions/backend-functions/databas
 
 export async function POST(request: Request) {
   try {
-    // Get the Authorization header from the request
+    // Get the Authorization header from the request.
     const authorizationHeader = request.headers.get('Authorization');
 
-    // Check for the authorization header and return if it is missing or invalid.
+    // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
       !authorizationHeader ||
       authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get the request body that contains the firm name and user name.
+    // Get request body that contains the firm name and user name.
     const body = await request.json();
 
     // Extract the firm name and user name from the request body.
@@ -26,25 +26,24 @@ export async function POST(request: Request) {
     const userName: string = body.userName;
 
     // Check if valid firm name and user name were passed.
-    // Return an error response if no valid values were passed.
+    // Log error responses for the missing values.
     if (!firmName) {
       console.error(
         'Error Adding Accounting Firm Connection: No Valid Firm Name Passed.'
       );
-      return new Response('No Valid Firm Name', { status: 400 });
     }
-
     if (!userName) {
       console.error(
         'Error Adding Accounting Firm Connection: No Valid User Name Passed.'
       );
-      return new Response('No Valid User Name', { status: 400 });
     }
 
-    // Connects the user to a firm that is used is finding and connecting the firms client companies.
-    // If no existing matching firm is found- create a new firm and connect it to the user.
-    // If existing matches are found, check if the user already belongs to any of them -
-    //      If yes, return and continue, otherwise create a new firm and connect it to the user.
+    // Return an error response if either of the values are missing.
+    if (!firmName || !userName) {
+      return new Response('Missing Required Value In Body', { status: 400 });
+    }
+
+    // Call handler for accounting firm connection emails.
     await addAccountingFirmConnection(firmName, userName);
 
     // Return a success response.

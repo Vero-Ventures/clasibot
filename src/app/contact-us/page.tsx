@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Link from 'next/link';
-import { contactAction } from '@/actions/contact';
+import { sendContactEmail } from '@/actions/contact';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -45,12 +45,12 @@ export default function Page() {
   const { toast } = useToast();
 
   // Create a toast object to handle errors with an error message and description.
-  // Includes an action button to allow the user to automatically retry the form submission (resend the email).
+  // Action button allosw the user to retry the form submission (resend the email).
   const toastError = (values: z.infer<typeof formSchema>) => {
     toast({
       variant: 'destructive',
-      title: 'Uh oh! Something went wrong.',
-      description: 'There was a problem with your request.',
+      title: 'Something went wrong.',
+      description: 'There was a problem sending your message.',
       action: (
         <ToastAction
           id="RetryEmail"
@@ -71,11 +71,12 @@ export default function Page() {
     const { email, subject, body } = values;
 
     try {
-      // Call the contactAction function with the email, subject, and body.
-      const response = await contactAction({ email, subject, body });
+      // Call the email handler function with the email, subject, and body.
+      const response = await sendContactEmail({ email, subject, body });
 
-      // Check if the contact action resulted in an error and call toast error handler with its values if it did.
+      // Check if sending the message resulted in an error.
       if (response.message === 'error') {
+        // Call toast error handler with the form values.
         toastError(values);
       } else {
         // If the message was sent successful, display a toast success message.
@@ -89,10 +90,14 @@ export default function Page() {
       }
     } catch (error) {
       // Catch any errors, log them to the console and display an error toast.
-      console.error(error);
+      if (error instanceof Error) {
+        console.error('Error Sending Message : ' + error.message);
+      } else {
+        console.error('Unexpected Error Sending Message');
+      }
       toastError(values);
     } finally {
-      // After successful OR failed sending, the loading state to false.
+      // After any sending attempt, the loading state to false.
       setLoading(false);
     }
   };
@@ -161,7 +166,7 @@ export default function Page() {
               <Button
                 id="ReturnHomeButton"
                 className="w-full rounded-lg bg-gray-500 px-4 py-2 text-white shadow-md transition-colors duration-300 hover:bg-gray-600 md:w-auto">
-                Go back to home
+                Return to Home
               </Button>
             </Link>
             <Button
