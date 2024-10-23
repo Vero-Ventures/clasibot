@@ -1,5 +1,5 @@
 'use server';
-import { getForReview } from '@/actions/backend-functions/get-for-review';
+import { getForReview } from '@/actions/backend-actions/get-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
 import {
@@ -7,7 +7,7 @@ import {
   getCompanyLocation,
   getCompanyName,
 } from '@/actions/quickbooks/user-info';
-import { addForReviewTransactions } from '@/actions/backend-functions/database-functions/add-db-for-review';
+import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/add-db-for-review';
 import { classifyTransactions } from './classify';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';

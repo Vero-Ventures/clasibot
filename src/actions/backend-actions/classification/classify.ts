@@ -7,7 +7,7 @@ import {
 } from '@/actions/db-transactions';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
-import { batchQueryLLM } from '@/actions/backend-functions/llm-prediction/llm';
+import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/llm';
 import { checkSubscription } from '@/actions/stripe';
 import type { Account } from '@/types/Account';
 import type {

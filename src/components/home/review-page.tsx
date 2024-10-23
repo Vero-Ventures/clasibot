@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
-import { manualClassify } from '@/actions/backend-functions/classification/manual-classify';
+import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
 import { addTransactions } from '@/actions/db-transactions';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';

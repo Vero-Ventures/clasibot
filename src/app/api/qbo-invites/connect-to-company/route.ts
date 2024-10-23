@@ -1,4 +1,4 @@
-import { addCompanyConnection } from '@/actions/backend-functions/database-functions/bookkeeper-connection';
+import { addCompanyConnection } from '@/actions/backend-actions/database-functions/bookkeeper-connection';
 
 export async function POST(request: Request) {
   try {

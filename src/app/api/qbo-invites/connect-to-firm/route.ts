@@ -1,4 +1,4 @@
-import { addAccountingFirmConnection } from '@/actions/backend-functions/database-functions/bookkeeper-connection';
+import { addAccountingFirmConnection } from '@/actions/backend-actions/database-functions/bookkeeper-connection';
 
 export async function POST(request: Request) {
   try {

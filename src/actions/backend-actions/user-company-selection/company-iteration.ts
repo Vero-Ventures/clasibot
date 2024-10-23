@@ -2,8 +2,8 @@
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { syntheticLogin } from '@/actions/backend-functions/synthetic-login';
-import { classifyCompany } from '@/actions/backend-functions/classification/classify-company';
+import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
+import { classifyCompany } from '@/actions/backend-actions/classification/classify-company';
 
 type databaseUser = {
   id: string;
