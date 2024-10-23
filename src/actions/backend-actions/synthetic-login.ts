@@ -2,14 +2,14 @@
 import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Logs into the backend clasibot app as the synthetic bookkeeper and selects a specific company.
-// Takes: the realm Id and (possibly null) firm name of a company both used for company selection during login.
+// Logs into the backend Clasibot app as the synthetic bookkeeper and selects a specific Company.
+// Takes: the realm Id and (possibly null) and the firm name of a Company.
 // Returns: A Query Result for the login process and a Login Token object containing the 4 tokens from the login process.
 export async function syntheticLogin(
   _realmId: string,
   _firmName: string | null
 ): Promise<[QueryResult, LoginTokens]> {
-  // Synthetic Login Logic
+  // Synthetic Login Logic (Makes use of realm Id and firm name in Company selection.)
   //
   //
   //

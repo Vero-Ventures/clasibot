@@ -6,9 +6,9 @@ import type {
 import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Checks a specific account of the user 'For Review' transactions, formats them and returns them.
-// Takes the Id of the account to check, the Id of the user company, the QBO token and authId token pulled from synthetic login.
-// Returns: A Query Result object with the found 'For Review' transactions in the detail field on success.
+// Checks a specific Account of the User for 'For Review' transactions, formats and returns them.
+// Takes the Account Id, the Id of the Company, the QBO token and a set of synthetic login tokens.
+// Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
 //    Returned transactions are an array of sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
   accountId: string,
@@ -16,12 +16,12 @@ export async function getForReview(
   companyId: string
 ): Promise<QueryResult> {
   try {
-    // Define the parameters for the call and use them to help define the full endpoint to use.
-    // Defined using the ID of the current account to fetch transactions from and the ID of the user company.
+    // Define the parameters for the GET call, then define the full endpoint.
+    // Uses the Id of the Company and the Id of the Account to fetch the 'For Review' transactions from.
     const parameters = `accountId=${accountId}&sort=-txnDate&reviewState=PENDING&ignoreMatching=false`;
     const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${companyId}/olb/ng/getTransactions?${parameters}`;
 
-    // Call the query endpoint and pass the required auth cookies.
+    // Call the query endpoint while passing the required header cookies.
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
@@ -29,8 +29,9 @@ export async function getForReview(
       },
     });
 
-    // If no valid response is recived, get the response text and return it in an error Query Result object.
+    // Check if a valid response is received.
     if (!response.ok) {
+      // Get the response text and return it as the detail of an error Query Result object.
       const errorText = await response.text();
       return {
         result: 'Error',
@@ -40,11 +41,12 @@ export async function getForReview(
       };
     }
 
-    // Get the response data, format it, and return it to the caller in a result object with a success result.
+    // Get the response 'For Review' transaction data and format it.
     const responseData: {
       items: [ForReviewTransaction];
     } = await response.json();
     const formattedResponse = formatForReviewTransaction(responseData.items);
+    // Return the formatted 'For Review' transactions as the detail of a success Query Result.
     return {
       result: 'Success',
       message:
@@ -52,29 +54,31 @@ export async function getForReview(
       detail: JSON.stringify(formattedResponse),
     };
   } catch (error) {
-    // Define a default error detail.
-    let errorDetail =
-      'An unexpected error occured while getting For Review transactions.';
-    // Check if error is of type Error and update the detail if it is.
+    // Catch any errors and return an appropriate error Query Result based on the caught error.
     if (error instanceof Error) {
-      errorDetail = error.message;
+      return {
+        result: 'Error',
+        message: 'Call made to Get For Review endpoint resulted in error.',
+        detail: 'Error' + error.message,
+      };
+    } else {
+      return {
+        result: 'Error',
+        message: 'Call made to Get For Review endpoint resulted in error.',
+        detail:
+          'An unexpected error occured while saving classified For Review transactions.',
+      };
     }
-    // If there is an error calling the API, get the response error and return it in a result object with an error result.
-    return {
-      result: 'Error',
-      message: 'Call made to Get For Review endpoint resulted in error.',
-      detail: 'Error Getting For Review Transactions: ' + errorDetail,
-    };
   }
 }
 
-// Take the 'For Review' transaction data and return the relevant data in a formatted and typed object.
+// Take the 'For Review' transaction data and return it in a formatted object.
 function formatForReviewTransaction(
   responseData: ForReviewTransaction[]
 ): (FormattedForReviewTransaction | ForReviewTransaction)[][] {
   const transactions = [];
   for (const transactionItem of responseData) {
-    // Only record expense (spending) transactions.
+    // Only record expense Transactions (check that money left the account).
     if (transactionItem.amount < 0) {
       const newTransaction: FormattedForReviewTransaction = {
         transaction_ID: transactionItem.id,

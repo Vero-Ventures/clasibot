@@ -62,7 +62,7 @@ export async function addForReview(
     );
 
     // Call the query endpoint while passing the required header cookies.
-    // Pass the Update 'For Review' transaction object as the body, converted to a string.
+    // Pass the 'Update For Review' transaction object as the body, converted to a string.
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -111,8 +111,8 @@ export async function addForReview(
   }
 }
 
-// Takes the "For Review" transaction data, as well as the ID's for the classificaions.
-// Returns: An formatted Update 'For Review' transaction object.
+// Takes the 'For Review' transaction data, as well as the ID's for the Classificaions.
+// Returns: An formatted 'Update For Review' transaction object.
 function createForReviewUpdateObject(
   responseData: ForReviewTransaction,
   categoryId: string,

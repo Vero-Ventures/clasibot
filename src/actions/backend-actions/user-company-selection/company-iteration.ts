@@ -5,60 +5,76 @@ import { eq } from 'drizzle-orm';
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
 import { classifyCompany } from '@/actions/backend-actions/classification/classify-company';
 
+// Define the type of data passed to the function.
 type databaseUser = {
   id: string;
 };
 
+// Iterates through a Users Companies and starts the Classification process for them.
+// Takes: The Id of the User whose Companies should be Classified.
+// Uses error loggin instead of returning values.
 export async function classificationCompanyIteration(user: databaseUser) {
   try {
-    // Get all companies assosiated with the user.
+    // Get all Companies assosiated with the User.
     const userCompanies = await db
       .select()
       .from(Company)
       .where(eq(Company.userId, user.id));
 
-    // Iterate through the users connected companies.
+    // Iterate through the User connected database Company objects.
     for (const currentCompany of userCompanies) {
-      // Check that the company is set to have a valid connection to the synthetic bookkeeper.
+      // Check that the database Company object has a valid connection to the synthetic bookkeeper.
+      //    May not be accurate reflection of QuickBooks, but considered to be true if true in the database.
       if (currentCompany.bookkeeperConnected) {
-        // Get the company Id and potential firm name needed for company selection in synthetic login.
+        // Get the Company Id and potential firm name from the Company.
         const companyId = currentCompany.realmId;
         const connectedFirmName = currentCompany.firmName;
 
         // Call method for synthetic login.
-        // Takes: the company realmId and potentially null firm name string.
-        // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
+        // Takes: The company realmId and possible firm name used for Company selection.
+        // Returns: A QueryResult and the tokens fetched during the synthetic login process.
         const [loginResult, loginTokens] = await syntheticLogin(
           companyId,
           connectedFirmName
         );
 
+        // Check that the synthetic login did not result in an error.
         if (loginResult.result !== 'Error') {
-          // Classify the 'For Review' transactions for the currentCompany with the synthetic login values and company Id.
-          // Use .then() to continue concurrent classification of companies.
+          // Classify the 'For Review' transactions for the current Company.
+          // Passes the with the synthetic login values and company Id needed for backend Classificaion.
           classifyCompany(loginTokens, companyId).then((result) => {
-            // Check if the classification failed and log an error it if it did.
+            // Use .then() to deal with error logging while the main process continues.
+            //    Allows the async Classificaion of Comapnies to be done concurrently.
+
             if (result.result === 'Error') {
-              // Log the user and company the error occurred on and the message and detail returned by the classification function.
+              // If the classification process resulted in an error.
+              // Log the User and Company the error occurred on.
               console.error({
                 result:
                   'Error - User: ' +
                   user.id +
                   ', Company: ' +
                   currentCompany.id,
+                // Include the message and detail from the returned Query Result.
                 message: result.message,
                 detail: result.detail,
               });
+
+              // Update the database Company object.
+              // Record that the backend Classificaion process encountered an error and failed.
+              db.update(Company)
+                .set({ classificationFailed: true })
+                .where(eq(Company.id, companyId));
             }
           });
         } else {
-          // If the synthetic login failed, log the error Query Result then continue to the next company.
+          // If the synthetic login failed, log the error Query Result then continue to the next Company.
           console.error(loginResult);
         }
       }
     }
   } catch (error) {
-    // Catch and log any errors when getting user companies.
+    // Catch and log any errors when getting User Companies.
     if (error instanceof Error) {
       console.error({
         result: 'Error - User: ' + user.id,
