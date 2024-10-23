@@ -94,7 +94,7 @@ export async function getAccounts(
       ];
     }
 
-    // Used the defined parameters to fetch specified User Accounts from QuickBooks.
+    // Used the defined parameters to fetch specified user Accounts from QuickBooks.
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
         parameters,

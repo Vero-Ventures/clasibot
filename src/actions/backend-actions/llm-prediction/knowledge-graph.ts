@@ -18,8 +18,8 @@ export async function fetchKnowledgeGraph(
   const apiKey = process.env.GOOGLE_API_KEY;
 
   try {
-    // Fetch Knowledge Graph context by defining  the types of entities to search for.
-    // Limits the number of results to 1 for clearer use in prediction.
+    // Fetch Knowledge Graph context by defining the types of entities to search for.
+    // Limited to a single result for clearer use in predictions.
     const response = await kgsearch.entities.search({
       query,
       auth: apiKey,
@@ -28,7 +28,7 @@ export async function fetchKnowledgeGraph(
       indent: true,
     });
 
-    // If a response is returned, reformat the data to the define Knowledge Graph Result object.
+    // If a response is returned, format the data to the define Knowledge Graph Result object.
     if (response.data.itemListElement) {
       return response.data.itemListElement.map(
         (item: {
@@ -38,7 +38,7 @@ export async function fetchKnowledgeGraph(
           };
           resultScore: number;
         }) => {
-          // Define an inital empty description, then update the description if a detailed description was returned.
+          // Define an inital empty description, then update it if a detailed description was returned.
           let description = '';
           if (item.result.detailedDescription) {
             description = item.result.detailedDescription.articleBody;
@@ -56,7 +56,7 @@ export async function fetchKnowledgeGraph(
       return [];
     }
   } catch (error) {
-    // Catch any errors that occured, log the error and return an empty array as the Knowledge Graph Result object.
+    // Catch any errors that occured, log the error ,and return an empty array as the Knowledge Graph Result object.
     if (error instanceof Error) {
       console.error('Error fetching Knowledge Graph search: ' + error);
     } else {

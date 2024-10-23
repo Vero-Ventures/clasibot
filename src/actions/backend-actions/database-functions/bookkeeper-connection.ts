@@ -6,46 +6,46 @@ import type { QueryResult } from '@/types/QueryResult';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
-// Used to check the users subscription before updating database.
+// Used to check the User Subscription before updating database.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes the company name and user email from a QBO company invite.
+// Takes the User email and Company name from a QBO company invite.
 // Returns: A Query Result object.
-// Integration: Called when a regular company connection invite comes through.
+// Integration: Called when a regular Company connection invite comes through.
 export async function addCompanyConnection(
   userEmail: string,
   companyName: string
 ): Promise<QueryResult> {
   try {
-    // Use the passed user email to find the related user from the database.
+    // Use the passed User email to find the related User from the database.
     const databaseUser = await db
       .select()
       .from(User)
       .where(eq(User.email, userEmail));
 
-    // Check that a related user was found.
+    // Check that a related database User object was found.
     if (databaseUser) {
-      // Find the user's subscription in the database from the user ID.
+      // Find the User Subscription in the database from the User ID.
       const userSubscription = await db
         .select()
         .from(Subscription)
         .where(eq(Subscription.userId, databaseUser[0].id));
 
-      // Get the subscription status from Stripe by checking for customers with matching ID's.
+      // Get the Subscription status from Stripe by checking for customers with matching ID's.
       const subscription = await stripe.subscriptions.list({
         customer: userSubscription[0].stripeId!,
       });
 
-      // Check the subscription is active and valid.
+      // Check the Subscription is active and valid.
       const subStatus = subscription.data[0]?.status;
 
-      // Continue if a valid subscription is found.
+      // Continue if a valid Subscription is found.
       if (subStatus) {
-        // Check for companies in the database related to the found user and have that company name.
+        // Check for Companies in the database related to the found User and have the passed Company name.
         const databaseCompanies = await db
           .select()
           .from(Company)
@@ -55,21 +55,20 @@ export async function addCompanyConnection(
           );
 
         if (databaseCompanies) {
-          // Update all the users companies in the database with that name and return a success message.
+          // Update all the User Companies in the database with that name and return a success message.
           for (const company of databaseCompanies) {
             await db
               .update(Company)
               .set({ bookkeeperConnected: true })
               .where(eq(Company.id, company.id));
           }
-
           return {
             result: 'Success',
             message: 'Bookkeeper connected.',
             detail: 'Bookkeeper connection to company set to true.',
           };
         } else {
-          // If no companies could be found, return an error message.
+          // If no matching Companies could be found, return an error message.
           return {
             result: 'Error',
             message: 'Company could not be found.',
@@ -78,7 +77,7 @@ export async function addCompanyConnection(
           };
         }
       } else {
-        // If the user was found, but had an invalid subscription, return an error message.
+        // If the User was found, but had an invalid Subscription, return an error message.
         return {
           result: 'Error',
           message: 'User subscription was invalid.',
@@ -87,7 +86,7 @@ export async function addCompanyConnection(
         };
       }
     } else {
-      // If no matching users could be found, return an error message.
+      // If no matching Users could be found, return an error message.
       return {
         result: 'Error',
         message: 'User could not be found.',
@@ -112,23 +111,23 @@ export async function addCompanyConnection(
   }
 }
 
-// Takes the accounting firm name and name of the inviting user from a QBO accounting invite.
+// Takes the accounting Firm name and User name from a QBO accounting invite.
 // Returns: A Query Result object.
-// Integration: Called when inital to an accounting firm invite comes through.
+// Integration: Called when inital to an accounting Firm invite comes through.
 export async function addAccountingFirmConnection(
   connectedFirmName: string,
   userName: string
 ): Promise<QueryResult> {
   try {
-    // Get all companies matching the passed firm name and user name.
+    // Get all Firms matching the passed Firm name and User name.
     const existingFirm = await db
       .select()
       .from(Firm)
       .where(eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName));
 
-    // Check if an existing firm with that name exists.
+    // Check if an existing Firm with that name exists.
     if (!existingFirm) {
-      // If no existing furm exists, create it and return a success response.
+      // If no existing Firm exists, create it and return a success response.
       await db
         .insert(Firm)
         .values({ name: connectedFirmName, userName: userName });
@@ -138,12 +137,12 @@ export async function addAccountingFirmConnection(
         detail: 'An accounting firm with that name and user name was created.',
       };
     } else {
-      // If a matching firm already exists, return an error message.
+      // If a matching Firm already exists, return an error message.
       return {
         result: 'Error',
         message: 'A Matching Firm Was Already In The Database.',
         detail:
-          'A frim with that name and user name already exists in the database.',
+          'A firm with that name and user name already exists in the database.',
       };
     }
   } catch (error) {
@@ -164,10 +163,9 @@ export async function addAccountingFirmConnection(
   }
 }
 
-// Takes a firm name and an array of company names from a QBO access update email.
+// Takes a Firm name and an array of Company names from a QBO access update email.
 // Returns: A Query Result object.
-// Integration: Called when the permissions update email for an accounting firm comes through.
-//    Important to inform users to wait for acceptance before giving permissions.
+// Integration: Called when the client access update email for an accounting Firm comes through.
 export async function addAccountingFirmCompanies(
   connectedFirmName: string,
   companyNames: string[]
@@ -177,16 +175,16 @@ export async function addAccountingFirmCompanies(
     let success = true;
     const failedCompanies = [];
 
-    // Check for an accounting firm with the passed name.
+    // Check for an accounting Firm with the passed name.
     const possibleFirms = await db
       .select()
       .from(Firm)
       .where(eq(Firm.name, connectedFirmName));
 
-    // Create a variable to shortcut updates after a matching firms is found.
+    // Create a variable to shortcut updates after a matching Firm is found.
     let matchingUser;
 
-    // Check if any possible firms were found.
+    // Check if any possible Firms were found.
     if (possibleFirms) {
       // Iterate through the company names passed from the email.
       for (const companyName of companyNames) {
@@ -201,7 +199,7 @@ export async function addAccountingFirmCompanies(
           for (const potentialCompany of matchingCompanies) {
             // If the matching user has already been found, update the company.
             if (matchingUser) {
-              // Update the companies connection status and set an assosiated firm name.
+              // Update the companies connection status and set an assosiated Firm name.
               await db
                 .update(Company)
                 .set({
@@ -223,10 +221,10 @@ export async function addAccountingFirmCompanies(
             if (user[0]) {
               const fullName = user[0].userName;
 
-              // Check through the list of found firms for one with the same full name as the user.
+              // Check through the list of found Firms for one with the same full name as the user.
               for (const firm of possibleFirms) {
                 if (fullName === firm.userName) {
-                  // If a match is found, define that user for that firm by their database Id.
+                  // If a match is found, define that user for that Firm by their database Id.
                   await db
                     .update(Firm)
                     .set({ userId: user[0].id })
@@ -249,7 +247,7 @@ export async function addAccountingFirmCompanies(
                     // If the matching users subscription is valid, record the related user for later shortcutting.
                     matchingUser = User.id;
 
-                    // If the user has a valid subscription update the company connection status and related firm name.
+                    // If the user has a valid subscription update the company connection status and related Firm name.
                     await db
                       .update(Company)
                       .set({
@@ -271,7 +269,7 @@ export async function addAccountingFirmCompanies(
                   }
                 }
               }
-              // If no potential related firms are found, set success to false and push the company name to the list of failed connections.
+              // If no potential related Firms are found, set success to false and push the company name to the list of failed connections.
               success = false;
               failedCompanies.push(potentialCompany.name);
             } else {
@@ -306,7 +304,7 @@ export async function addAccountingFirmCompanies(
         };
       }
     } else {
-      // If no firms with a matching name are found, return an error.
+      // If no Firms with a matching name are found, return an error.
       return {
         result: 'Error',
         message: 'No firms could be found.',

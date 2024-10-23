@@ -56,7 +56,7 @@ export async function getSavedTransactions(
       };
     };
 
-    // Query User preferences to get the Multi-Currency preference for the User.
+    // Query user preferences to get the Multi-Currency preference for the user.
     // Multi-Currency determines the name of the columnn that contains the Transaction amount.
     const preferences: PreferenceResponse = await new Promise((resolve) => {
       qbo.getPreferences((err: ErrorResponse, data: PreferenceResponse) => {
@@ -116,7 +116,7 @@ export async function getSavedTransactions(
       }[];
     };
 
-    // Used the defined parameters to fetch User Transactions from QuickBooks.
+    // Used the defined parameters to fetch user Transactions from QuickBooks.
     const response: TransactionResponse = await new Promise((resolve) => {
       qbo.reportTransactionList(
         parameters,
@@ -250,7 +250,7 @@ async function checkAndFormatTransactions(
             companyId
           );
 
-          // Get the Users Tax Codes and parse it to a Query Result and an array of Tax Code objects.
+          // Get the user Tax Codes and parse it to a Query Result and an array of Tax Code objects.
           const userTaxCodes = JSON.parse(
             await getTaxCodes(loginTokens, companyId)
           );
@@ -286,7 +286,7 @@ async function checkAndFormatTransactions(
               );
             }
           } else {
-            // If both fetches were successful, iterate through the User Tax Codes.
+            // If both fetches were successful, iterate through the user Tax Codes.
             // Skips the Query Result in the first index.
             for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {
               // Find the Tax Code that matches the one in the Puchase object for the Transaction.

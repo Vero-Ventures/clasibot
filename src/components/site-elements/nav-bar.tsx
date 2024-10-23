@@ -13,7 +13,7 @@ const Navbar = async () => {
   // Check the user's subscription status.
   const subscriptionStatus = await checkSubscription();
 
-  // Define values to be used in the User Eession info elements.
+  // Define values to be used in the user Session info elements.
   let userStatus;
   let statusColor;
 

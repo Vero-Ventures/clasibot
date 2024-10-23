@@ -232,7 +232,7 @@ async function fetchValidCategories(
 
     // Check if the categories need to be filtered prior to being returned.
     if (filterToBase) {
-      // User info is not stored for security so the database uses only the base category value.
+      // user info is not stored for security so the database uses only the base category value.
       // Therefore, filtering to the base category is needed in database matching steps.
       return validCategoriesResult
         .slice(1)

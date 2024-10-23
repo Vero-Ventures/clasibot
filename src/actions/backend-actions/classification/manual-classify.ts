@@ -24,8 +24,8 @@ export async function manualClassify(
       return false;
     }
 
-    // Get the current company from the database to check for a potential firm name.
-    // Needed during synthetic login if access to company comes through an accounting firm.
+    // Get the current company from the database to check for a potential Firm name.
+    // Needed during synthetic login if access to company comes through an accounting Firm.
     const currentCompany = await db
       .select()
       .from(Company)
@@ -40,7 +40,7 @@ export async function manualClassify(
     }
 
     // Call method for synthetic login.
-    // Takes: the company realmId and potentially null firm name string.
+    // Takes: the company realmId and potentially null Firm name string.
     // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,

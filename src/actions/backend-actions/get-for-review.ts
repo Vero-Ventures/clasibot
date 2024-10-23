@@ -6,7 +6,7 @@ import type {
 import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Checks a specific Account of the User for 'For Review' transactions, formats and returns them.
+// Checks a specific Account of the user for 'For Review' transactions, formats and returns them.
 // Takes the Account Id, the Id of the Company, the QBO token and a set of synthetic login tokens.
 // Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
 //    Returned transactions are an array of sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].

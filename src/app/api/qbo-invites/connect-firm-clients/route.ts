@@ -18,14 +18,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get request body that contains the firm name and company names.
+    // Get request body that contains the Firm name and company names.
     const body = await request.json();
 
-    // Extract the firm name and company names from the request body.
+    // Extract the Firm name and company names from the request body.
     const firmName: string = body.firmName;
     const companyNames: string[] = body.companies || [];
 
-    // Check if valid firm name and company names were passed.
+    // Check if valid Firm name and company names were passed.
     // Log error responses for the missing values.
     if (!firmName) {
       console.error(
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call handler for accounting firm client access emails.
+    // Call handler for accounting Firm client access emails.
     await addAccountingFirmCompanies(firmName, companyNames);
 
     // Return a success response.

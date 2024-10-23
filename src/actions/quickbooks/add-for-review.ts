@@ -27,7 +27,7 @@ export async function addForReview(
       return { result: '', message: '', detail: '' };
     }
 
-    // Get the database Company object to check for a potential firm name.
+    // Get the database Company object to check for a potential Firm name.
     // Needed during synthetic login if access to Company comes through an Firm.
     const currentCompany = await db
       .select()
@@ -39,7 +39,7 @@ export async function addForReview(
       return { result: '', message: '', detail: '' };
     }
 
-    // Call method for synthetic login with the realm Id of the company and the potential firm name.
+    // Call method for synthetic login with the realm Id of the company and the potential Firm name.
     // Returns: A QueryResult and a dictionary containing the tokens from synthetic login.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
@@ -54,7 +54,7 @@ export async function addForReview(
     // Define the account ID for the call and the full endpoint to use.
     const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${session!.realmId}/olb/ng/batchAcceptTransactions`;
 
-    // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
+    // Convert the passed 'For Review' transaction to the format needed when calling the update user Transactions endpoint.
     const body = createForReviewUpdateObject(
       forReviewTransaction,
       categoryId,

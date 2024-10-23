@@ -7,18 +7,19 @@ import { google } from 'googleapis';
 export async function fetchCustomSearch(
   query: string
 ): Promise<customsearch_v1.Schema$Result[]> {
-  // Check env value to see if custom search is enabled.
+  // Check that Custom Search is enabled.
   const enableCustomSearch = process.env.ENABLE_GOOGLE_CSE === 'false';
-  // If custom search is disabled, return an empty array as the CSE context.
+
+  // If Custom Search is disabled, return an empty array as the CSE context.
   if (enableCustomSearch) {
     return [];
   } else {
-    // Create a new custom search client and load the API key.
+    // Create a new Custom Search client and load the API key.
     const customsearch = google.customsearch('v1');
     const apiKey = process.env.GOOGLE_API_KEY;
 
     try {
-      // Fetch custom search results using the API key, custom search engine ID, and query.
+      // Fetch Custom Searchresults using the API key, Custom Search Engine ID, and query.
       // Limits the number of results to 3.
       const response = await customsearch.cse.list({
         auth: apiKey,
@@ -27,7 +28,7 @@ export async function fetchCustomSearch(
         num: 3,
       });
 
-      // If a response is returned, reformat and return the data.
+      // If a response is returned, format and return the data.
       if (response.data.items) {
         return response.data.items.map((item) => ({
           title: item.title,
@@ -38,7 +39,7 @@ export async function fetchCustomSearch(
         // If no response is returned, return an empty array as the CSE context.
         return [];
       }
-      // Catch any errors that occured, log the error and return an empty array as the CSE context.
+      // Catch any errors that occured, log the error, and return an empty array as the CSE context.
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error fetching Custom Search results: ' + error);

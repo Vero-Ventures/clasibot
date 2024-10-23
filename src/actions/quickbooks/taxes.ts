@@ -6,7 +6,7 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Get all the User Tax Codes and returns them as an array of Tax Code objects.
+// Get all the user Tax Codes and returns them as an array of Tax Code objects.
 // May take a synthetic login session to use instead of the regular session.
 export async function getTaxCodes(
   loginTokens: LoginTokens | null = null,
@@ -50,7 +50,7 @@ export async function getTaxCodes(
       },
     };
 
-    // Get all User Tax Code objects from QuickBooks.
+    // Get all user Tax Code objects from QuickBooks.
     const response: TaxCodeResponse = await new Promise((resolve) => {
       qbo.findTaxCodes((err: ErrorResponse, data: TaxCodeResponse) => {
         if (err && checkFaultProperty(err)) {

@@ -211,7 +211,7 @@ export const options: NextAuthOptions = {
             return false;
           }
         } else {
-          // If the user already exists in the database, get the database companies connected to the current User.
+          // If the User already exists in the database, get the database companies connected to the current User.
           const companies = await db
             .select()
             .from(Company)

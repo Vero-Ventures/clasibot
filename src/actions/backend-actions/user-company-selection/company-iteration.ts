@@ -10,28 +10,28 @@ type databaseUser = {
   id: string;
 };
 
-// Iterates through a Users Companies and starts the Classification process for them.
-// Takes: The Id of the User whose Companies should be Classified.
+// Iterates through a user Companies and starts the Classification process for them.
+// Takes: The Id of the user whose Companies should be Classified.
 // Uses error loggin instead of returning values.
 export async function classificationCompanyIteration(user: databaseUser) {
   try {
-    // Get all Companies assosiated with the User.
+    // Get all Companies assosiated with the user.
     const userCompanies = await db
       .select()
       .from(Company)
       .where(eq(Company.userId, user.id));
 
-    // Iterate through the User connected database Company objects.
+    // Iterate through the user connected database Company objects.
     for (const currentCompany of userCompanies) {
       // Check that the database Company object has a valid connection to the synthetic bookkeeper.
       //    May not be accurate reflection of QuickBooks, but considered to be true if true in the database.
       if (currentCompany.bookkeeperConnected) {
-        // Get the Company Id and potential firm name from the Company.
+        // Get the Company Id and potential Firm name from the Company.
         const companyId = currentCompany.realmId;
         const connectedFirmName = currentCompany.firmName;
 
         // Call method for synthetic login.
-        // Takes: The company realmId and possible firm name used for Company selection.
+        // Takes: The company realmId and possible Firm name used for Company selection.
         // Returns: A QueryResult and the tokens fetched during the synthetic login process.
         const [loginResult, loginTokens] = await syntheticLogin(
           companyId,
@@ -48,7 +48,7 @@ export async function classificationCompanyIteration(user: databaseUser) {
 
             if (result.result === 'Error') {
               // If the classification process resulted in an error.
-              // Log the User and Company the error occurred on.
+              // Log the user and Company the error occurred on.
               console.error({
                 result:
                   'Error - User: ' +
@@ -74,7 +74,7 @@ export async function classificationCompanyIteration(user: databaseUser) {
       }
     }
   } catch (error) {
-    // Catch and log any errors when getting User Companies.
+    // Catch and log any errors when getting user Companies.
     if (error instanceof Error) {
       console.error({
         result: 'Error - User: ' + user.id,

@@ -28,7 +28,7 @@ export async function getCompanyName(
       QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
     };
 
-    // Search for the User Company Info.
+    // Search for the user Company Info.
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -89,7 +89,7 @@ export async function getCompanyIndustry(
       };
     };
 
-    // Search for the User Company Info
+    // Search for the user Company Info
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -155,7 +155,7 @@ export async function getCompanyLocation(
       };
     };
 
-    // Search for the User Company Info
+    // Search for the user Company Info
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property

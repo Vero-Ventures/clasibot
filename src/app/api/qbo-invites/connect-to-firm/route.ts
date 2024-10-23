@@ -18,14 +18,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get request body that contains the firm name and user name.
+    // Get request body that contains the Firm name and user name.
     const body = await request.json();
 
-    // Extract the firm name and user name from the request body.
+    // Extract the Firm name and user name from the request body.
     const firmName: string = body.firmName;
     const userName: string = body.userName;
 
-    // Check if valid firm name and user name were passed.
+    // Check if valid Firm name and user name were passed.
     // Log error responses for the missing values.
     if (!firmName) {
       console.error(
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call handler for accounting firm connection emails.
+    // Call handler for accounting Firm connection emails.
     await addAccountingFirmConnection(firmName, userName);
 
     // Return a success response.

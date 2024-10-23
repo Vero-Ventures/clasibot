@@ -7,21 +7,21 @@ import { eq } from 'drizzle-orm';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
-// Used to check the users Subscription status.
+// Used to check the User Subscription status.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Check the Subscription status of the current user using the session.
+// Check the Subscription status of the current User using the session.
 // May take an optional realmId to support backend functions.
 // Returns: An object with a status string and a validity boolean or an error object with a string value.
 export default async function checkSubscription(
   realmId: string | null = null
 ): Promise<{ status: string; valid: boolean } | { error: string }> {
   try {
-    // Define the user variable to be retrived by frontend or backend check.
+    // Define the User variable to be retrived by frontend or backend check.
     let user;
 
     // Check if a realm Id was passed and find the User using backend method.

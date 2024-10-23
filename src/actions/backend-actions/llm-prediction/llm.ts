@@ -15,15 +15,15 @@ import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction
 // Define the AI provider and model to use.
 const provider = process.env.AI_PROVIDER;
 
-// Define the base prompts to use in different circumstances.
+// Define the base prompts and system instructions to use in different circumstances.
 
-// Category Predictions: Base prediction and prediction for a missing industry for the user company.
+//    Category Predictions: Base prediction and prediction for a missing industry for the user company.
 const baseCategoryPrompt =
   'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? Categories: $CATEGORIES';
 const noIndustyCategoryPrompt =
   'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? Categories: $CATEGORIES';
 
-// Tax Code Predictions: Base prediction, missing industry prediction, missing categories prediction, and missing industry + categories prediction.
+//     Tax Code Predictions: Base prediction, missing industry prediction, missing categories prediction, and missing industry + categories prediction.
 const baseTaxCodePrompt =
   'Using only provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? The transaction took place in $LOCATION and is categorized as $CATEGORY. Tax Codes: $TAX_CODES';
 const noIndustyTaxCodePrompt =
@@ -33,7 +33,7 @@ const noCategoryTaxCodePrompt =
 const noCategoryAndIndustryTaxCodePrompt =
   'Using only provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? The transaction took place in $LOCATION. Tax Codes: $TAX_CODES';
 
-// Defines the system instructions for the model to use on category prediction prompts.
+//    Defines the system instructions for the model to use on category prediction prompts.
 const CategorySystemInstructions = `
   You are an assistant that provides concise answers.
   You are helping a user categorize their transaction for accountant business expenses purposes.
@@ -42,7 +42,7 @@ const CategorySystemInstructions = `
   If you are unsure, respond with "None" followed by just the search query to search the web.
   `;
 
-// Defines the system instructions for the model to use on tax code prediction prompts.
+//    Defines the system instructions for the model to use on tax code prediction prompts.
 const TaxCodeSystemInstructions = `
 You are an assistant that provides concise answers.
 You are helping a user identify the tax code on their transaction for accountant business expenses purposes.
@@ -51,13 +51,13 @@ If no description is provided, try to use the name of the transaction to infer t
 If you are unsure, respond with "None" followed by just the search query to search the web.
 `;
 
-// Define the message interface for the model with its role and and a string variable.
+// Define the message interface for the model.
 export interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-// Internal function used by the batch query to make the individual predictions for each passed classification.
+// Internal function used by the batch query function to make the individual predictions for each Classification.
 export async function queryLLM(
   query: string,
   context: string,
@@ -96,10 +96,10 @@ export async function queryLLM(
       // Extract the search query from the response and format it.
       const searchQuery = response.text.split('None')[1].trim();
 
-      // Fetch custom search results using the search query, may return an empty array.
+      // Fetch Custom Search results using the search query. Uses an empty array on failure.
       const searchResults = (await fetchCustomSearch(searchQuery)) || [];
 
-      // Define additional information: by joining the individual search results with a space.
+      // Define the additional information by joining the individual Custom Search results with a space.
       let additionalInfo = '';
       if (searchResults.length !== 0) {
         additionalInfo = searchResults
@@ -107,7 +107,7 @@ export async function queryLLM(
           .join(' ');
       }
 
-      // If no search results are found, return an empty string.
+      // If no Custom Search results are found, return an empty string.
       if (searchResults.length === 0) {
         return '';
       } else {
@@ -150,9 +150,9 @@ export async function queryLLM(
   }
 }
 
-// Takes an array of 'For Review' transactions to predict, a record that connects a 'For Review' transaction Id to an array of possible class classified elements, -
-// An array of the possible classifications, the company info to be used as context, and the type of classification.
-// Returns: An array of classified results that connect a transaction Id to its possible classifications and the classification method.
+// Takes: an array of 'For Review' transactions, a record of 'For Review' transaction Id's to arrays of possible Classified elements, -
+//    An array of the possible Classifications, the Company Info to be used as context, and the type of Classification being predicted.
+// Returns: An array of Classified results.
 export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
   transactionClassifications: Record<string, ClassifiedElement[]>,
@@ -164,7 +164,7 @@ export async function batchQueryLLM(
     // Define the resultScore threshold for the Knowledge Graph API.
     const threshold = 10;
 
-    // Extract valid classification names from the passed classification objects.
+    // Extract valid Classification names from the passed Classification objects.
     const validClassificationNames = classifications.map(
       (classification) => classification.name
     );
@@ -172,9 +172,9 @@ export async function batchQueryLLM(
     // Define the context promises variable.
     let contextPromises;
 
-    // Determine context promise based on classification type.
+    // Determine context promise based on Classification type.
     if (type === 'category') {
-      // Get the context used for a category prediction.
+      // Get the context used for a Category prediction.
       contextPromises = await categoryContext(
         transactions,
         validClassificationNames,
@@ -182,6 +182,7 @@ export async function batchQueryLLM(
         threshold
       );
     } else {
+      // Get the context used for Tax Code prediction.
       contextPromises = await taxCodeContext(
         transactions,
         transactionClassifications,
@@ -191,10 +192,10 @@ export async function batchQueryLLM(
       );
     }
 
-    // Wait for all contexts to be generated using the context promises generated for the 'For Review' transactions.
+    // Wait for all contexts to be generated using the context promises for the 'For Review' transactions.
     const contexts = await Promise.all(contextPromises);
 
-    // Define the system instructions based on the classification type.
+    // Define the system instructions based on the Classification type.
     let systemInstructions;
     if (type === 'category') {
       systemInstructions = CategorySystemInstructions;
@@ -202,26 +203,26 @@ export async function batchQueryLLM(
       systemInstructions = TaxCodeSystemInstructions;
     }
 
-    // Create an array to track the classified results and iterate through the returned contexts.
+    // Create an array to track the Classified results and iterate through the returned contexts.
     const results: ClassifiedResult[] = [];
     for (const { transaction_ID, prompt, context } of contexts) {
       // Query the Language Model for a response using the prompt and context.
       const response = await queryLLM(prompt, context, systemInstructions);
 
-      // Create an array to contain the possible classification and check for a response.
+      // Create an array to contain the possible Classification and check for a response.
       let possibleClassifications: Classification[] = [];
       if (response) {
         // If a response is found, convert it to standardized case.
         const responseText = response.toLowerCase();
 
-        // Filter the valid classifications to those that are included in the response text.
+        // Filter the valid Classifications to those that are included in the response text.
         const possibleValidclassifications = validClassificationNames.filter(
           (classification) =>
             responseText.includes(classification.toLowerCase())
         );
 
-        // Map the possible valid classifications to the full classification objects.
-        // Iterates through the names, finds the related classification object and adds it to the array with a defined type.
+        // Map the possible valid Classifications to the full Classification objects.
+        // Iterates through the names to find and add the related Classification object.
         possibleClassifications = possibleValidclassifications.map(
           (classificationName) =>
             classifications.find(
@@ -230,8 +231,8 @@ export async function batchQueryLLM(
         );
       }
 
-      // Take the possible classifications and push them to the array with the related 'For Review' transactions Id.
-      // Also defines the classification method to be by LLM.
+      // Take the possible Classifications and push them to the array with the related 'For Review' transactions Id.
+      // Also defines the Classification method to be done by LLM.
       results.push({
         transaction_ID,
         possibleClassifications,
@@ -239,7 +240,7 @@ export async function batchQueryLLM(
       });
     }
 
-    // Return the array of classified results for the passed 'For Review' transactions.
+    // Return the array of Classified results for the passed 'For Review' transactions.
     return results;
   } catch (error) {
     // Catch any errors and log an error with the error message if it is present.
@@ -253,8 +254,8 @@ export async function batchQueryLLM(
   }
 }
 
-// Defines the context used for a category classification prediction.
-// Takes the 'For Review' transactions being predicted, the array of possible classification names, the company info context, and the threshold value.
+// Defines the context used for a Category Classification prediction.
+// Takes the 'For Review' transactions, the possible Classification names, the Company Info context, and the threshold value.
 // Returns: An array of objects (per passed transaction) with the prompt, transaction Id, and prediction context.
 function categoryContext(
   transactions: FormattedForReviewTransaction[],
@@ -267,19 +268,20 @@ function categoryContext(
   context: string;
 }>[] {
   // Generates and returns the contexts for each 'For Review' transaction.
-  // Uses the name, list of valid categories, and the company info for an industry.
+  // Uses the name, list of valid Categories, and the Company Info for the industry.
   return transactions.map(
     async (transaction: FormattedForReviewTransaction) => {
       // Define an inital prompt assuming the industry is not present, then check if industry is valid.
       let prompt = noIndustyCategoryPrompt;
 
       if (companyInfo.industry !== 'None' && companyInfo.industry !== 'Error') {
-        // Update the base promt to the category prompt that incudes industry and use replace to include the industry value..
+        // Update the base promt to the Category prompt that incudes industry.
+        // Use replace to include the industry value.
         prompt = baseCategoryPrompt;
         prompt.replace('$INDUSTRY', companyInfo.industry);
       }
 
-      // Replace the values present in all prompt types: the transaction name, its amount, and the possible classification categories.
+      // Replace the values present in all prompt types: the Transaction name, amount, and possible Classification Categories.
       prompt
         .replace('$NAME', transaction.name)
         .replace('$AMOUNT', Math.abs(transaction.amount).toString())
@@ -313,8 +315,8 @@ function categoryContext(
   );
 }
 
-// Defines the context used for a tax code classification prediction.
-// Takes the transactions being predicted, the array of possible classification names, the company info context, and the threshold value.
+// Defines the context used for a tax code Classification prediction.
+// Takes the 'For Review' transactions, predicted Classification names, possible Tax Code names, the company info context, and the threshold value.
 function taxCodeContext(
   transactions: FormattedForReviewTransaction[],
   transactionCategories: Record<string, ClassifiedElement[]>,
@@ -327,17 +329,17 @@ function taxCodeContext(
   context: string;
 }>[] {
   // Generates and returns the contexts for each 'For Review' transaction.
-  // Uses the name, list of valid categories, and the company info for an industry.
+  // Uses the name, list of valid Tax Codes, predicted Categories, and the Company Info for an industry.
   return transactions.map(
     async (transaction: FormattedForReviewTransaction) => {
-      // Define an inital prompt assuming the industry amd categories are not present, then check if industry is valid.
+      // Define an inital prompt assuming the industry and Categories are not present, then check if industry is valid.
       let prompt = noCategoryAndIndustryTaxCodePrompt;
 
-      // Define truth values to track if the company industry and predicted categories are present.
+      // Define truth values to track if the Company industry and predicted Categories are present.
       let industryPresent = false;
       let categoryPresent = false;
 
-      // Set the truth values for the validity of the prediction context values.
+      // Set the truth values for the presence of the prediction context values.
       if (companyInfo.industry !== 'None' && companyInfo.industry !== 'Error') {
         industryPresent = true;
       }
@@ -345,21 +347,21 @@ function taxCodeContext(
         categoryPresent = true;
       }
 
-      // Set prompt based on combined truth values of validity of the industry and predicted categories.
+      // Set prompt based on combined truth values of presence of the industry and predicted Categories.
       if (industryPresent && !categoryPresent) {
-        // If industry is present, but no categories, set the prompt and replace with the real values.
+        // If industry is present, but no Categories, set the prompt and replace with the real values.
         prompt = noCategoryTaxCodePrompt.replace(
           '$INDUSTRY',
           companyInfo.industry
         );
       } else if (!industryPresent && categoryPresent) {
-        // If categories are present, but no industry, set the prompt and replace with the real values.
+        // If Categories are present, but no industry, set the prompt and replace with the real values.
         prompt = noIndustyTaxCodePrompt.replace(
           '$CATEGORY',
           transactionCategories[transaction.transaction_ID][0].name
         );
       } else if (industryPresent && categoryPresent) {
-        // If both categories and industry are present, set the prompt and replace with the real values.
+        // If both Categories and industry are present, set the prompt and replace with the real values.
         prompt = baseTaxCodePrompt
           .replace('$INDUSTRY', companyInfo.industry)
           .replace(
@@ -368,7 +370,7 @@ function taxCodeContext(
           );
       }
 
-      // Replace the values present in all prompt types: the transaction name, its amount, and the possible classification tax codes.
+      // Replace the values present in all prompt types: the transaction name, its amount, and the possible Classification Tax Codes.
       prompt
         .replace('$NAME', transaction.name)
         .replace('$AMOUNT', Math.abs(transaction.amount).toString())
