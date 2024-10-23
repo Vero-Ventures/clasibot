@@ -74,7 +74,7 @@ export async function addForReviewTransactions(
           .values(databaseObject)
           .returning();
 
-        // Create variables to track results of the connecting the 'For Review' transaction to its related classification database objects.
+        // Create variables to track results of the connecting the 'For Review' transaction to its related database Classification objects.
         let categoryConnectionResult = '';
         let taxCodeConnectionResult = '';
 

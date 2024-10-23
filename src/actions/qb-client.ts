@@ -1,22 +1,11 @@
 'use server';
-import QB from 'node-quickbooks';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+import QB from 'node-quickbooks';
 import type { LoginTokens } from '@/types/LoginTokens';
 
 // Create a QuickBooks client object.
-export async function createQBObject() {
-  // Get the server session and save it as a constant.
-  const session = await getServerSession(options);
-
-  // Record the relevant values from the session needed for QBO connection.
-  const oauthToken = session?.accessToken;
-  const realmId = session?.realmId;
-  const refreshToken = session?.refreshToken;
-
-  // Determine sandbox status using ENV.
-  const useSandbox = process.env.APP_CONFIG !== 'production';
-
+export async function getQBObject() {
   // Define variables for the QuickBooks client Id and secret.
   let useID;
   let useSecret;
@@ -30,44 +19,28 @@ export async function createQBObject() {
     useSecret = process.env.DEV_CLIENT_SECRET;
   }
 
-  // Define the API version used by the current codebase.
-  const minorVersion = 73;
+  // Get the server to find values needed for QB object creation.
+  const session = await getServerSession(options);
 
-  // Create the QuickBooks API calls object.
-  const qbo = new QB(
-    useID,
-    useSecret,
-    oauthToken,
-    false,
-    realmId,
-    useSandbox,
-    false,
-    minorVersion,
-    '2.0',
-    refreshToken
-  );
+  // Record the relevant values from the session needed for QBO connection.
+  const oauthToken = session?.accessToken;
+  const realmId = session?.realmId;
+  const refreshToken = session?.refreshToken;
 
-  return qbo;
+  // Call and return the QB object creation method.
+  return createQBObject(useID!, useSecret!, oauthToken, realmId, refreshToken);
 }
 
 // Create a QuickBooks client object using a passed session for backend functions.
-export async function createQBObjectWithSession(
+export async function getQBObjectWithSession(
   loginTokens: LoginTokens,
   companyId: string
 ) {
-  // Record the relevant values from the session needed for QBO connection.
-  const oauthToken = loginTokens.accessToken;
-  const realmId = companyId;
-  const refreshToken = loginTokens.refreshToken;
-
-  // Determine sandbox status using ENV.
-  const useSandbox = process.env.APP_CONFIG !== 'production';
-
   // Define variables for the QuickBooks client Id and secret.
   let useID;
   let useSecret;
 
-  // Set the QuickBooks client Id and secret based on the environment.
+  // Set the QuickBooks backend client Id and secret based on the environment.
   if (process.env.APP_CONFIG === 'production') {
     useID = process.env.BACKEND_PROD_CLIENT_ID;
     useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;
@@ -75,6 +48,25 @@ export async function createQBObjectWithSession(
     useID = process.env.BACKEND_DEV_CLIENT_ID;
     useSecret = process.env.BACKEND_DEV_CLIENT_SECRET;
   }
+
+  // Record the relevant values from the session needed for QBO connection.
+  const oauthToken = loginTokens.accessToken;
+  const realmId = companyId;
+  const refreshToken = loginTokens.refreshToken;
+
+  // Call and return the QB object creation method.
+  return createQBObject(useID, useSecret, oauthToken, realmId, refreshToken);
+}
+
+function createQBObject(
+  useID: string | undefined,
+  useSecret: string | undefined,
+  oauthToken: string | undefined,
+  realmId: string | undefined,
+  refreshToken: string | undefined
+) {
+  // Determine sandbox status using ENV.
+  const useSandbox = process.env.APP_CONFIG !== 'production';
 
   // Define the API version used by the current codebase.
   const minorVersion = 73;

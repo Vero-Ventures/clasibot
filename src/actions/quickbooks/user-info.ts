@@ -1,6 +1,6 @@
 'use server';
 import { checkFaultProperty } from './query-helpers';
-import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get the company name from the QuickBooks API.
@@ -17,9 +17,9 @@ export async function getCompanyName(
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
     if (loginTokens && companyId) {
-      qbo = await createQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
-      qbo = await createQBObject();
+      qbo = await getQBObject();
     }
 
     // Define a type for the response to allow for type checking.
@@ -66,9 +66,9 @@ export async function getCompanyIndustry(
     // Check if a session was passed to be used to define the qbo object.
     // Then define the qbo object based on the session presence.
     if (loginTokens && companyId) {
-      qbo = await createQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
-      qbo = await createQBObject();
+      qbo = await getQBObject();
     }
 
     // Define a type for the response to allow for type checking.
@@ -138,9 +138,9 @@ export async function getCompanyLocation(
     // Check if a session was passed to be used to define the qbo object.
     // Then define the qbo object based on the session presence.
     if (loginTokens && companyId) {
-      qbo = await createQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
-      qbo = await createQBObject();
+      qbo = await getQBObject();
     }
 
     // Define a type for the response to allow for type checking.

@@ -1,5 +1,5 @@
 'use server';
-import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Purchase } from '@/types/Purchase';
@@ -19,9 +19,9 @@ export async function findFormattedPurchase(
     // Check if a session was passed by a backend function to use to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
     if (loginTokens && companyId) {
-      qbo = await createQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
-      qbo = await createQBObject();
+      qbo = await getQBObject();
     }
 
     // Define success tracker and error response object for error handling of QuickBooks queries.

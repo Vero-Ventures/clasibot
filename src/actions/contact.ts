@@ -1,7 +1,7 @@
 'use server';
 import nodemailer from 'nodemailer';
 
-// Takes an email, subject, and body string.
+// Takes the user email, contact subject, and email body.
 export async function sendContactEmail({
   email,
   subject,
@@ -12,7 +12,7 @@ export async function sendContactEmail({
   body: string;
 }): Promise<{ message: string }> {
   try {
-    // Create a new nodemailer transporter object to send the email using ENV.
+    // Create a new nodemailer transporter object to send the email.
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT ?? '465'),
@@ -24,7 +24,7 @@ export async function sendContactEmail({
       },
     });
 
-    // Define the email options; The sender, the receiver, the subject, and the body.
+    // Define the email elements; The sender, the receiver, the subject, and the body.
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.CONTACT_EMAIL,
@@ -38,12 +38,12 @@ export async function sendContactEmail({
       // Return a success message.
       return { message: 'success' };
     } catch (error) {
-      // Log any errors sending the message and return an error message.
+      // Catch and log any errors sending the message, then return an error message.
       console.error('Error sending email:', error);
       return { message: 'error' };
     }
   } catch (error) {
-    // Log any errors creating the transporter and return an error message.
+    // Catch and log any errors creating the transporter, then return an error message.
     console.error('Error creating transporter:', error);
     return { message: 'error' };
   }

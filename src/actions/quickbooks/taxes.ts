@@ -1,5 +1,5 @@
 'use server';
-import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { Locations, TaxCodes } from '@/enums/taxes';
 import type { ErrorResponse } from '@/types/ErrorResponse';
@@ -19,9 +19,9 @@ export async function getTaxCodes(
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
     if (loginTokens && companyId) {
-      qbo = await createQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
-      qbo = await createQBObject();
+      qbo = await getQBObject();
     }
 
     // Define format of the returned group of tax code objects.

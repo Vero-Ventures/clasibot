@@ -5,50 +5,49 @@ import { eq } from 'drizzle-orm';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
-// Used to create a stripe user.
+// Used to create a stripe User.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes a user ID as a string to create a customer Id if possible and provides a response object.
+// Takes a User ID as a string to create a Customer Id and provides a response object.
 export default async function createCustomerID(
   userId: string
 ): Promise<Response> {
   try {
-    // Find the database subscription object whose user Id matches the passed value.
+    // Find the database Subscription object by matching the User Id to the passed value.
     const subscription = await db
       .select()
       .from(Subscription)
       .where(eq(Subscription.userId, userId));
 
-    // If no subscription was found, return an error.
+    // If no Subscription was found, return an error.
     if (!subscription[0]) {
       return Response.json({ error: 'User not found!' });
     }
 
-    // Check for a user stripe ID in the subscription object.
+    // Check for a User stripe ID in the Subscription object.
     const userStripeId = subscription[0]?.stripeId;
-
-    // If the subscription did not have a stripe ID, create a new customer with the user's email and name.
+    // If no stripe Id is found, create a new Customer with the User's email and name.
     if (!userStripeId) {
-      // Get the user object from the database using the passed user Id.
+      // Get the User object from the database using the passed User Id.
       const user = await db.select().from(User).where(eq(User.id, userId));
 
-      // If the fetched user does not exist, return an error.
+      // If the fetched User does not exist, return an error.
       if (!user[0]) {
         return Response.json({ error: 'User not found!' });
       }
 
-      // Create a customer object with a email and name pulled from the user database object.
-      // Asserts a non-null email through the null return check above.
+      // Create a Customer object with a email and name pulled from the database User object.
       const customer = await stripe.customers.create({
+        // Asserts a non-null values through the returning on null check above.
         email: user[0].email!,
         name: user[0].userName!,
       });
 
-      // Update the subscription database object connected to the user with the new stripe ID.
+      // Update the database Subscription object connected to the User with the new stripe ID.
       await db
         .update(Subscription)
         .set({
@@ -56,10 +55,10 @@ export default async function createCustomerID(
         })
         .where(eq(Subscription.userId, user[0].id));
 
-      // Return a response indicating the customer was created.
+      // Return a response indicating the Customer was created.
       return Response.json({ message: 'Customer created!' });
     } else {
-      // If the user already has a stripe ID, return an error.
+      // If the User already has a stripe ID, return an error.
       return Response.json({ error: 'User already has stripe customerID!' });
     }
   } catch (error) {

@@ -1,20 +1,20 @@
 'use server';
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getServerSession } from 'next-auth';
-import { options } from '@/app/api/auth/[...nextauth]/options';
 
-// Checks if the current company is set as connected to the synthetic account.
+// Checks if the current company is set connected to the synthetic account in the database.
 // Returns: A string 'true/false' value for the connection state or an error message.
 // Integration: Called as part of the login pipeline
 export async function checkCompanyConnection(): Promise<string> {
   try {
-    // Get the identifing info for the company from the session.
+    // Get the current session and use it to get the realm Id.
     const session = await getServerSession(options);
     const realmId = session?.realmId;
 
-    // Check the nessasary identifing info could be found.
+    // Check the realm Id could be found.
     if (realmId) {
       // Check for a company with the same realm Id in the database.
       const currentCompany = await db
@@ -22,15 +22,15 @@ export async function checkCompanyConnection(): Promise<string> {
         .from(Company)
         .where(eq(Company.realmId, realmId));
 
-      // Then, return the connection status as 'true' or 'false'.
+      // Return the connection status for the company as a string ('true' or 'false').
       if (currentCompany.length > 0) {
         return String(currentCompany[0].bookkeeperConnected);
       } else {
-        // If no company is found, the connection is false.
+        // If no company could be found, the connection is considered false.
         return 'false';
       }
     } else {
-      // If realm ID could not be found from the session, the connection is false.
+      // If realm ID could not be found from the session, the connection is considered false.
       return 'false';
     }
   } catch (error) {

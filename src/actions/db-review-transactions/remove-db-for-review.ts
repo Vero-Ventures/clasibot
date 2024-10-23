@@ -17,13 +17,13 @@ export async function removeForReviewTransactions(
   savedTransaction: ForReviewTransaction
 ): Promise<QueryResult> {
   try {
-    // Get the session to extract the realm Id.
+    // Get the session and extract the realm Id.
     const session = await getServerSession(options);
     const companyID = session?.realmId;
 
     // Check if a valid realm Id was found.
     if (companyID) {
-      // Get the 'For Review' transaction by unique combo of realm Id and transaction Id.
+      // Get the 'For Review' transaction by the unique combo of realm Id and database Transaction Id.
       const transactionToDelete = await db
         .select()
         .from(DatabaseForReviewTransaction)
@@ -35,7 +35,7 @@ export async function removeForReviewTransactions(
             )
         );
 
-      // Use the ID of the found 'For Review' transaction to find and delete and relationships to categories.
+      // Use the ID of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
       await db
         .delete(ForReviewTransactionToCategories)
         .where(
@@ -44,8 +44,6 @@ export async function removeForReviewTransactions(
             transactionToDelete[0].id
           )
         );
-
-      // Repeat the classification relationship deletion process with the tax codes.
       await db
         .delete(ForReviewTransactionToTaxCodes)
         .where(
@@ -55,7 +53,7 @@ export async function removeForReviewTransactions(
           )
         );
 
-      // After all relationships are deleted, delete the 'For Review' transaction from the database.
+      // After all Relationships are deleted, delete the 'For Review' transaction from the database.
       await db
         .delete(DatabaseForReviewTransaction)
         .where(
@@ -66,7 +64,7 @@ export async function removeForReviewTransactions(
             )
         );
 
-      // Return a success query result.
+      // Return a success Query Result.
       return {
         result: 'Success',
         message:
@@ -75,7 +73,7 @@ export async function removeForReviewTransactions(
           '"For Review" transactions and their connections removed from the database.',
       };
     } else {
-      // Return an error query result indicating a realm Id could not be found.
+      // Return an error Query Result indicating the realm Id could not be found.
       return {
         result: 'Error',
         message: 'Company ID for current user could not be found.',
@@ -83,7 +81,7 @@ export async function removeForReviewTransactions(
       };
     }
   } catch (error) {
-    // Catch any errors and return an error result with the error message if it present.
+    // Catch any errors and return an error Query Result with the error message if it present.
     if (error instanceof Error && error.message) {
       return {
         result: 'Error',

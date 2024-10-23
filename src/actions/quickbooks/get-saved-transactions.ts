@@ -3,7 +3,7 @@ import { getAccounts } from './get-accounts';
 import { findFormattedPurchase } from './find-purchase';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { getTaxCodes } from './taxes';
-import { createQBObject, createQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import type { Account } from '@/types/Account';
 import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { LoginTokens } from '@/types/LoginTokens';
@@ -27,9 +27,9 @@ export async function getSavedTransactions(
     // Check if a session was passed by a backend function to be used to define the qbo object.
     // Then create the qbo object for frontend or backend functions based on the session presence.
     if (loginTokens && companyId) {
-      qbo = await createQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, companyId);
     } else {
-      qbo = await createQBObject();
+      qbo = await getQBObject();
     }
 
     // Define success tracker and error response object for error handling of QuickBooks queries.
@@ -140,7 +140,7 @@ export async function getSavedTransactions(
     const QueryResult = createQueryResult(success, error);
     results.push(QueryResult);
 
-    // Check if transaction rows were reterned by the QuickBooks API call and the query result was not an error.
+    // Check if transaction rows were reterned by the QuickBooks API call and the Query Result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {
       // Call helper method to check and format response data and return an array of valid formatted transactions.
       checkAndFormatTransactions(responseRows, results, loginTokens, companyId);
