@@ -10,9 +10,10 @@ import {
 import { eq } from 'drizzle-orm';
 import type { Classification } from '@/types/Classification';
 
-// Takes the name of a Transaction and the valid Categories for Classification.
+// Search the database for potential Categories that match a passed Transaction name.
+// Takes: The name of the Transaction and the valid Categories for Classification.
 // Returns: An array of matching Classifications from the database that are contained within the array of valid Categories.
-export async function getTopCategoriesForTransaction(
+export async function searchDatabaseTransactionCategories(
   name: string,
   validCategories: Classification[]
 ): Promise<{ id: string; name: string }[]> {
@@ -91,9 +92,10 @@ export async function getTopCategoriesForTransaction(
   }
 }
 
-// Takes the name of a Transaction and the valid Tax Codes for Classification.
+// Search the database for potential Tax Codes that match a passed Transaction name.
+// Takes: The name of the Transaction and the valid Tax Codes for Classification.
 // Returns: An array of matching Classifications from the database that are contained within the array of valid ax Codes.
-export async function getTopTaxCodesForTransaction(
+export async function searchDatabaseTransactionTaxCodes(
   name: string,
   validTaxCodes: Classification[]
 ): Promise<{ id: string; name: string }[]> {

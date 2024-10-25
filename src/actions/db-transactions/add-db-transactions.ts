@@ -11,10 +11,10 @@ import { eq } from 'drizzle-orm';
 import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
-// Saves Classified Transactions to the database for future Classification use.
+// Saves Classified User Transactions to the database for future Classification use.
 // Takes: An array of saved User Transactions.
-// Returns: A Query Result object.
-export async function addTransactions(
+// Returns: A Query Result object for saving the Transactions to the database.
+export async function addDatabaseTransactions(
   transactions: Transaction[]
 ): Promise<QueryResult> {
   try {
@@ -88,7 +88,7 @@ export async function addTransactions(
   }
 }
 
-// Either increments the number of matches for an existing Category or makes a new Category object with 1 match.
+// Either increments the number of matches for an existing Category or makes a new database Category object with 1 match.
 // Takes: A potentially undefined existing Category, the Transaction being saved, and the Id of the database Transaction object.
 async function handleCategoryIncrement(
   existingCategory:
@@ -159,7 +159,7 @@ async function handleCategoryIncrement(
   }
 }
 
-// Either increments the number of matches for an existing Tax Code or makes a new Tax Code object with 1 match.
+// Either increments the number of matches for an existing Tax Code or makes a new database Tax Code object with 1 match.
 // Takes: A potentially undefined existing Tax Code, the Transaction being saved, and the Id of the database Transaction object.
 async function handleTaxCodeIncrement(
   existingTaxCode:
