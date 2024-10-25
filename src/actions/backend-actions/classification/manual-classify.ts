@@ -40,7 +40,7 @@ export async function manualClassify(
     }
 
     // Call synthetic login method with the Company realm Id and (possibly null) Firm name for the Company.
-    // Returns: A QueryResult and the tokens retrived from synthetic login process.
+    // Returns: A QueryResult and a synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
       currentCompany[0].firmName

@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-// Takes: A nullable Date object and a setDate function.
+// Takes: A nullable Date object and a setDate callback function.
 export function DatePicker({
   date,
   setDate,

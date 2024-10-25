@@ -1,9 +1,9 @@
 /**
- * Define the exports for the transactionDatabase folder.
+ * Define the exports for the db-transactions folder.
  */
 
 export {
-  getTopCategoriesForTransaction,
-  getTopTaxCodesForTransaction,
-} from './search-database';
-export { addTransactions } from './add-transactions';
+  searchDatabaseTransactionCategories,
+  searchDatabaseTransactionTaxCodes,
+} from './search-db-transactions';
+export { addDatabaseTransactions } from './add-db-transactions';

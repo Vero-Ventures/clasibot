@@ -2,9 +2,9 @@
 import Fuse from 'fuse.js';
 import type { FuseResult } from 'fuse.js';
 import {
-  addTransactions,
-  getTopCategoriesForTransaction,
-  getTopTaxCodesForTransaction,
+  addDatabaseTransactions,
+  searchDatabaseTransactionCategories,
+  searchDatabaseTransactionTaxCodes,
 } from '@/actions/db-transactions';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
@@ -24,7 +24,7 @@ import type { Transaction } from '@/types/Transaction';
 
 // Takes: A list of saved Transactions a list of uncategorized 'For Review' transactions, -
 //        A set of synthetic Login Tokens, and the Company Info for Tax Codes and LLM Classification.
-// Returns: A record that connects a transaction Id to an array of Classified elements for bothe Categories and Tax Codes.
+// Returns: A record that connects a 'For Review' transaction Id to an array of Classified elements for bothe Categories and Tax Codes.
 //    On error, instead returns an object with field error that contains a short error message.
 export async function classifyTransactions(
   categorizedTransactions: Transaction[],
@@ -44,24 +44,24 @@ export async function classifyTransactions(
 > {
   try {
     // Save the User saved (Classified) Transactions to the database for DB Classification.
-    const result = await addTransactions(categorizedTransactions);
+    const result = await addDatabaseTransactions(categorizedTransactions);
 
     // Check the Query Result returned by the add Transactions function resulted in an error.
     // Return its message and detail an error Query Result is found.
     if (result.result === 'Error') {
       console.error(
-        'Error saving existing classified user transactions:',
+        'Error saving existing Classified User Transactions:',
         result.message,
         ', Detail: ',
         result.detail
       );
-      return { error: 'Error saving existing classified transactions.' };
+      return { error: 'Error saving existing Classified Transactions.' };
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
     if (error instanceof Error) {
       console.error(
-        'Error saving existing classified transactions: ' + error.message
+        'Error saving existing Classified Transactions: ' + error.message
       );
     } else {
       console.error(
@@ -69,21 +69,21 @@ export async function classifyTransactions(
       );
     }
     // Return an error object with an error message.
-    return { error: 'Error saving existing classified transactions.' };
+    return { error: 'Error saving existing Classified Transactions.' };
   }
 
-  // Check the User subscription status using the passed Company realm Id
-  // If there is an error or the subscription status is invalud, return an error object.
+  // Check the User Subscription status using the passed Company realm Id
+  // If there is an error or the Subscription status is invalud, return an error object.
   const subscriptionStatus = await checkSubscription(companyId);
   if ('error' in subscriptionStatus) {
-    return { error: 'Error getting user subscription status.' };
+    return { error: 'Error getting User Subscription status.' };
   }
   if (!subscriptionStatus.valid) {
-    return { error: 'No active user subscription.' };
+    return { error: 'No active User Subscription.' };
   }
 
   try {
-    // Get valid Categories from QuickBooks (Categories present in the Companies Account) using synthetic session.
+    // Get valid Categories from QuickBooks (Categories present in the Companies Account) using a synthetic Login Tokens object.
     // Fetch parsed names for DB useage. (DB saves Transactions with base names to avoid identifing User information).
     const validDBCategories: Classification[] = await fetchValidCategories(
       true,
@@ -207,7 +207,7 @@ export async function classifyTransactions(
 }
 
 // Helper method to fetch User Categories from QuickBooks and filters to base Category if needed.
-// Takes a boolean to indicate filtering and a synthetic session.
+// Takes a boolean to indicate filtering and a synthetic Login Tokens object.
 // Returns: An array of Classification objects for the catagories in the User expense Accounts.
 async function fetchValidCategories(
   filterToBase: boolean,
@@ -220,7 +220,7 @@ async function fetchValidCategories(
       await getAccounts('Expense', loginTokens, companyId)
     );
 
-    // Check if the Account fetch query result resulted in an error.
+    // Check if the Account fetch Query Result resulted in an error.
     if (validCategoriesResult[0].result === 'Error') {
       // Log an error for failure catching using the Query Result.
       console.error(
@@ -270,7 +270,7 @@ async function fetchValidCategories(
 }
 
 // Helper method to fetch User Tax Codes from QuickBooks and filter to the ones applicable for the Companies location.
-// Takes the Company Info for the location and a synthetic session.
+// Takes the Company Info for the location and a synthetic Login Tokens object.
 // Returns: An array of Classification objects for the Tax Codes in the Companies location.
 async function fetchValidTaxCodes(
   companyInfo: CompanyInfo,
@@ -289,7 +289,7 @@ async function fetchValidTaxCodes(
       companyInfo.location.Country === 'CA' &&
       companyInfo.location.SubLocation
     ) {
-      // Set Tax Codes Classification to be valid, then use the passed synthetic session to get the User Tax Codes.
+      // Set Tax Codes Classification to be valid, then use the passed synthetic Login Tokens to get the User Tax Codes.
       classifyTaxCode = true;
       const userTaxCodes = JSON.parse(
         await getTaxCodes(loginTokens, companyId)
@@ -305,7 +305,7 @@ async function fetchValidTaxCodes(
         validLocationalTaxCodes.length !== 0 &&
         userTaxCodes[0].result != 'Success'
       ) {
-        // Extract the User Tax Codes from the result by removing the query result
+        // Extract the User Tax Codes from the result by removing the Query Result
         const userTaxCodeArray = userTaxCodes[0].slice(1) as TaxCode[];
 
         // Iterate through User Tax Codes to record valid Tax Code info.
@@ -322,7 +322,7 @@ async function fetchValidTaxCodes(
       } else {
         // When an error occurs, log an error before containing.
         console.log(
-          'Error getting tax codes, Message: ' +
+          'Error getting Tax Codes, Message: ' +
             userTaxCodes[0].message +
             ', Detail: ' +
             userTaxCodes[0].detail
@@ -370,7 +370,7 @@ async function classifyWithFuse(
 
         // Iterate through the matches found for the current 'For Review' transaction.
         for (const match of matches) {
-          // Define the category name, then find its value based on the Classification type.
+          // Define the Category name, then find its value based on the Classification type.
           let classificationName;
           if (type === 'category') {
             classificationName = match.item.category;
@@ -400,12 +400,12 @@ async function classifyWithFuse(
           // If no valid Classifications are found, search for possible Classifications in the database.
           let topClassifications;
           if (type === 'category') {
-            topClassifications = await getTopCategoriesForTransaction(
+            topClassifications = await searchDatabaseTransactionCategories(
               uncategorizedTransaction.name,
               validClassifications
             );
           } else {
-            topClassifications = await getTopTaxCodesForTransaction(
+            topClassifications = await searchDatabaseTransactionTaxCodes(
               uncategorizedTransaction.name,
               validClassifications
             );
@@ -584,7 +584,7 @@ async function classifyCategoriesWithLLM(
     // Catch any errors and log them to the console. Include the error message if it is present.
     if (error instanceof Error) {
       console.error(
-        'Error from LLM API category classification: ',
+        'Error from LLM API Category Classification: ',
         error.message
       );
     } else {
@@ -631,7 +631,7 @@ async function classifyTaxCodesWithLLM(
     // Catch any errors and log them to the console. Include the error message if it is present.
     if (error instanceof Error) {
       console.error(
-        'Error from LLM API tax code classification: ',
+        'Error from LLM API Tax Code Classification: ',
         error.message
       );
     } else {

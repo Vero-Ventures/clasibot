@@ -34,16 +34,17 @@ import type {
 } from '@/types/ForReviewTransaction';
 
 /**
- * Takes:
+ * Takes (Variables):
  * A list of Classified 'For Review' transactions, a record of the selected Classifications,
- * A list of Account names, and a value to indicate saving is in progress,
- * If manual Classification is in progress and the current state of the manual Classification.
+ * A list of Account names, and a bolean value to indicate if saving is in progress,
+ * Boolean value indicating if manual Classification is in progress and a string indicateing its current state.
  *
- * Callbacks: Handle Classification and saving processes.
+ * Takes (Callbacks): Handlers for the Classification and saving processes.
  */
 export function ReviewTable({
   categorizedTransactions,
   selectedCategories,
+  selectedTaxCodes,
   account_names,
   handleCategoryChange,
   handleTaxCodeChange,
@@ -58,6 +59,7 @@ export function ReviewTable({
     | ClassifiedForReviewTransaction
   )[][];
   selectedCategories: Record<string, string>;
+  selectedTaxCodes: Record<string, string>;
   account_names: string[];
   handleCategoryChange: (transaction_Id: string, category: string) => void;
   handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void;
@@ -130,6 +132,7 @@ export function ReviewTable({
     data: formattedTransactions,
     columns: reviewColumns(
       selectedCategories,
+      selectedTaxCodes,
       handleCategoryChange,
       handleTaxCodeChange
     ),

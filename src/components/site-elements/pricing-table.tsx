@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
+// Takes: Stripe Env variables used to define the pricing table.
 export default function PricingTable({
   publicKey,
   tableId,
@@ -10,25 +11,25 @@ export default function PricingTable({
   publicKey: string;
   tableId: string;
 }) {
-  // Define state to store and update the customer session.
+  // Define state to store and update the Customer session.
   const [customerSession, setCustomerSession] = useState('');
 
-  // Define function to fetch and set the customer session.
+  // Define function to fetch and set the Customer session.
   const fetchCustomerSession = async () => {
-    // Create a user stripe customer session.
+    // Create a user Stripe Customer session.
     const userStripeCustomerSession = (await createCustomerSession()) as {
       customerSession: string;
     };
 
-    // Set the customer session state with the retrieved value.
+    // Set the Customer session state with the retrieved value.
     setCustomerSession(userStripeCustomerSession.customerSession);
   };
 
-  // Fetch the customer session on change of the public key value.
+  // Fetch the Customer session on change of the public key value.
   useEffect(() => {
-    // Fetch the customer session.
+    // Fetch the Customer session.
     fetchCustomerSession();
-    // Set an interval to re-fetch the customer session every 30 minutes.
+    // Set an interval to re-fetch the Customer session every 30 minutes.
     const interval = setInterval(
       () => {
         fetchCustomerSession();
@@ -47,7 +48,7 @@ export default function PricingTable({
         src="https://js.stripe.com/v3/pricing-table.js"
         strategy="afterInteractive"
       />
-      {/* If the customer session is present (logged in user), load the table using the customer's session. */}
+      {/* If the Customer session is present (logged in user), load the table using the Customer's session. */}
       {customerSession && (
         <stripe-pricing-table
           pricing-table-id={tableId}

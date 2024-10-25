@@ -34,7 +34,7 @@ export default async function checkSubscription(
 
       // If a Company cannot be found, return an error object.
       if (!userCompany[0]) {
-        return { error: 'Error getting company' };
+        return { error: 'Error getting Company' };
       }
 
       // Get the User from the database by the related User Id value in the fetched Company.
@@ -76,7 +76,7 @@ export default async function checkSubscription(
       return { error: 'User Subscription not found!' };
     }
 
-    // Get the subscription status from Stripe using the stripeId value in the Subscription object.
+    // Get the Subscription status from Stripe using the Stripe Id value in the Subscription object.
     const subscription = await stripe.subscriptions.list({
       customer: userSubscription[0].stripeId,
     });

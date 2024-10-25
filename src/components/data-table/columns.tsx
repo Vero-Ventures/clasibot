@@ -209,8 +209,11 @@ const commonColumns = [
 ];
 
 // Define the Columns for the Review Table.
+// Takes: A record of the Classifications and handlers for updating the selected Classification for a specific Row.
+// Returns: The definition for the Columns to display in the review Table.
 export const reviewColumns = (
   selectedCategories: Record<string, string>,
+  selectedTaxCodes: Record<string, string>,
   handleCategoryChange: (transaction_Id: string, category: string) => void,
   handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void
 ): ColumnDef<ClassifiedForReviewTransaction>[] => [
@@ -256,8 +259,8 @@ export const reviewColumns = (
     accessorKey: 'taxCodes',
     header: 'Tax Codes',
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      const categories: Classification[] = row.getValue('taxCodes');
-      return categories.length > 0 ? (
+      const taxCodes: Classification[] = row.getValue('taxCodes');
+      return taxCodes.length > 0 ? (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"
           onClick={(e) => e.stopPropagation()}
@@ -266,11 +269,11 @@ export const reviewColumns = (
           onChange={(e) => {
             handleTaxCodeChange(row.original.transaction_Id, e.target.value);
           }}
-          value={selectedCategories[row.original.transaction_Id]}>
+          value={selectedTaxCodes[row.original.transaction_Id]}>
           {/* Map the Tax Codes associated with the Transaction to a dropdown */}
-          {categories.map((category) => (
-            <option key={category.name} value={category.name}>
-              {category.name}
+          {taxCodes.map((taxCodes) => (
+            <option key={taxCodes.name} value={taxCodes.name}>
+              {taxCodes.name}
             </option>
           ))}
         </select>
@@ -316,7 +319,7 @@ export const reviewColumns = (
       // Determine the text to display on a hover card on top of the Confidence Bar.
       let hoverText = '';
       if (confidenceValue === 0) {
-        hoverText = 'No categorization results found.';
+        hoverText = 'No Classification results found.';
       }
       if (confidenceValue === LLMClassified) {
         hoverText = 'Results found by LLM prediction.';

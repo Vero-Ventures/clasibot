@@ -58,6 +58,8 @@ export interface Message {
 }
 
 // Internal function used by the batch query function to make the individual predictions for each Classification.
+// Takes: A query, context, and system instructions string used in LLM prediction.
+// Returns: The LLm prediction as string or a blank string on failure to predict.
 export async function queryLLM(
   query: string,
   context: string,
@@ -151,9 +153,10 @@ export async function queryLLM(
   }
 }
 
-// Takes: an array of 'For Review' transactions, a record of 'For Review' transaction Id's to arrays of possible Classified elements, -
-//    An array of the possible Classifications, the Company Info to be used as context, and the type of Classification being predicted.
-// Returns: An array of Classified results.
+// Makes multiple queries to the LLM to predict the Classificaions of multiple 'For Review' transactions.
+// Takes: An array of 'For Review' transactions, a record of 'For Review' transaction Id's to arrays of possible Classified elements, -
+// An array of the possible Classifications, the Company Info to be used as context, and the type of Classification being predicted.
+// Returns: An array of Classified Result objects connected to the passed 'For Review' transactions.
 export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
   transactionClassifications: Record<string, ClassifiedElement[]>,
@@ -256,7 +259,7 @@ export async function batchQueryLLM(
 
 // Defines the context used for a Category Classification prediction.
 // Take: An array of 'For Review' transactions, the possible Category names, the Company Info context, and the threshold value.
-// Returns: An array of objects (per passed Transaction) with the prompt, transaction Id, and prediction context.
+// Returns: An array of objects (per passed Transaction) with the prompt, Transaction Id, and prediction context.
 function categoryContext(
   transactions: FormattedForReviewTransaction[],
   validClassificationNames: string[],
@@ -305,7 +308,7 @@ function categoryContext(
         description = 'No description available';
       }
 
-      // For the current 'For Review' transaction being mapped, return the transaction Id, prompt, and context.
+      // For the current 'For Review' transaction being mapped, return the Transaction Id, prompt, and context.
       return {
         prompt,
         transaction_Id: transaction.transaction_Id,
@@ -317,7 +320,7 @@ function categoryContext(
 
 // Defines the context used for a Tax Code Classification prediction.
 // Takes: An array of'For Review' transactions, predicted Category names, possible Tax Code names, the Company Info context, and the threshold value.
-// Returns: An array of objects (per passed Transaction) with the prompt, transaction Id, and prediction context.
+// Returns: An array of objects (per passed Transaction) with the prompt, Transaction Id, and prediction context.
 function taxCodeContext(
   transactions: FormattedForReviewTransaction[],
   transactionCategories: Record<string, ClassifiedElement[]>,
@@ -395,7 +398,7 @@ function taxCodeContext(
         description = 'No description available';
       }
 
-      // For the current 'For Review' transaction being mapped, return the transaction Id, prompt, and context.
+      // For the current 'For Review' transaction being mapped, return the Transaction Id, prompt, and context.
       return {
         prompt,
         transaction_Id: transaction.transaction_Id,

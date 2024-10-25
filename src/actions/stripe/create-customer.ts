@@ -5,14 +5,16 @@ import { eq } from 'drizzle-orm';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
-// Used to create a stripe User.
+// Used to create a Stripe User.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes a User Id as a string to create a Stripe Id and provides a response object.
+// Creates a new Stripe Customer and records their Stripe Id to a User database Subscription object.
+// Takes: A User Id as a string to create a Stripe Id.
+// Returns: A response object containing a success message or an error.
 export default async function createCustomer(
   userId: string
 ): Promise<Response> {
@@ -28,9 +30,9 @@ export default async function createCustomer(
       return Response.json({ error: 'User not found!' });
     }
 
-    // Check for a User stripe Id in the Subscription object.
+    // Check for a User Stripe Id in the Subscription object.
     const userStripeId = subscription[0]?.stripeId;
-    // If no stripe Id is found, create a new Customer with the User email and name.
+    // If no Stripe Id is found, create a new Customer with the User email and name.
     if (!userStripeId) {
       // Get the User object from the database using the passed User Id.
       const user = await db.select().from(User).where(eq(User.id, userId));
@@ -47,7 +49,7 @@ export default async function createCustomer(
         name: user[0].userName!,
       });
 
-      // Update the database Subscription object connected to the User with the new stripe Id.
+      // Update the database Subscription object connected to the User with the new Stripe Id.
       await db
         .update(Subscription)
         .set({
@@ -58,8 +60,8 @@ export default async function createCustomer(
       // Return a response indicating the Customer was created.
       return Response.json({ message: 'Customer created!' });
     } else {
-      // If the User already has a stripe Id, return an error.
-      return Response.json({ error: 'User already has stripe customerId!' });
+      // If the User already has a Stripe Id, return an error.
+      return Response.json({ error: 'User already has Stripe Customer Id!' });
     }
   } catch (error) {
     // Catch any errors and return an error response, include the error message if it is present.

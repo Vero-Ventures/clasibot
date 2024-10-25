@@ -3,7 +3,7 @@ import HomePage from '@/components/home';
 import PricingTable from '@/components/site-elements/pricing-table';
 
 export default async function Page() {
-  // Define the public stripe key and pricing table Id based on app config.
+  // Define the public Stripe key and pricing table Id based on app config.
   let publicKey = '';
   let tableId = '';
 
@@ -15,10 +15,10 @@ export default async function Page() {
     tableId = process.env.DEV_PRICING_TABLE_ID!;
   }
 
-  // Get User subscription status.
+  // Get User Subscription status.
   const subscriptionStatus = await checkSubscription();
 
-  // Check in an invalid subscription staus was returned (Not an error).
+  // Check in an invalid Subscription staus was returned (Not an error).
   if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
     // For an unsubscribed User display the pricing table alongside the regular home page.
     // Pricing table displays above on smaller screens and to the left on larger screens.
@@ -33,6 +33,6 @@ export default async function Page() {
       </div>
     );
   }
-  // If a subscription is present and valid, display the homepage as normal.
+  // If a Subscription is present and valid, display the homepage as normal.
   return <HomePage />;
 }

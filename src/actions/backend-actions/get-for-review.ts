@@ -7,9 +7,9 @@ import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 
 // Checks a specific Account of the User for 'For Review' transactions, formats and returns them.
-// Takes the Account Id, the Id of the Company, the QBO token and a set of synthetic Login Tokens.
+// Takes: The Id of Account to check, a set of synthetic Login Tokens, and the Company realm Id.
 // Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
-//    Returned transactions are an array of Sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
+//    Returned 'For Review' transactions are an array of Sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
   accountId: string,
   loginTokens: LoginTokens,
@@ -36,7 +36,7 @@ export async function getForReview(
       return {
         result: 'Error',
         message:
-          'Call made to Get For Review endpoint did not return a valid response.',
+          'Call made to "Get For Review" endpoint did not return a valid response.',
         detail: JSON.stringify(errorText),
       };
     }
@@ -50,7 +50,7 @@ export async function getForReview(
     return {
       result: 'Success',
       message:
-        'Request made to Get For Review endpoint was returned with a valid response',
+        'Request made to "Get For Review" endpoint was returned with a valid response',
       detail: JSON.stringify(formattedResponse),
     };
   } catch (error) {
@@ -58,21 +58,23 @@ export async function getForReview(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'Call made to Get For Review endpoint resulted in error.',
+        message: 'Call made to "Get For Review" endpoint resulted in error.',
         detail: 'Error' + error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'Call made to Get For Review endpoint resulted in error.',
+        message: 'Call made to "Get For Review" endpoint resulted in error.',
         detail:
-          'An unexpected error occured while saving classified For Review transactions.',
+          'An unexpected error occured while saving Classified "For Review" transactions.',
       };
     }
   }
 }
 
-// Take the 'For Review' transaction data and return it in a formatted object.
+// Takes Raw 'For Review' transactions, formats them and stores them in an array of Sub-arrays for each Transaction.
+// Take: An array of Raw 'For Review' transactions data.
+// Returns: An array of Sub-arrays for the results in the format: [FormattedForReviewTransaction, ForReviewTransaction].
 function formatForReviewTransaction(
   responseData: ForReviewTransaction[]
 ): (FormattedForReviewTransaction | ForReviewTransaction)[][] {

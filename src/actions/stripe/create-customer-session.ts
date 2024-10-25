@@ -7,15 +7,15 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
-// Used to create a stripe Customer session.
+// Used to create a Stripe Customer session.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Use the current session to create a stripe session.
-// Returns: An object with either the Customer session or an error.
+// Use the current session to create a Stripe session.
+// Returns: An object containing either the Customer session or an error.
 export default async function createCustomerSession(): Promise<
   { customerSession: string } | { error: string }
 > {
@@ -47,13 +47,13 @@ export default async function createCustomerSession(): Promise<
 
     // If no matching Subscription object is found, return an error.
     if (!userSubscription[0]) {
-      return { error: 'User subscription not found!' };
+      return { error: 'User Subscription not found!' };
     }
 
-    // Check if the database User object has a stripe Id value.
+    // Check if the database User object has a Stripe Id value.
     const userStripeId = userSubscription[0]?.stripeId;
     if (userStripeId) {
-      // Create a new Customer session with the User stripe Id.
+      // Create a new Customer session with the User Stripe Id.
       // Session sets the pricing table component to enabled.
       const customerSession = await stripe.customerSessions.create({
         customer: userStripeId,
@@ -69,8 +69,8 @@ export default async function createCustomerSession(): Promise<
         customerSession: customerSession.client_secret,
       };
     } else {
-      // If the database User object does not have a stripe Id value, return an error response.
-      return { error: 'User is missing a stripe customer Id' };
+      // If the database User object does not have a Stripe Id value, return an error response.
+      return { error: 'User is missing a Stripe Customer Id' };
     }
   } catch (error) {
     // Catch any errors and return an error response, include the error message if it is present.

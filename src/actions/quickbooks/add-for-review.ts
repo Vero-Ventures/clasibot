@@ -11,8 +11,9 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Take a Raw 'For Review' transaction object as well as the Id's for its Classifications.
-// Returns: A Query Result object.
+// Updates the User QuickBooks to add a 'For Review' transaction to the saved Transactions with the passed Classificaions.
+// Takes: A Raw 'For Review' transaction, and the Id's of its Classificaions.
+// Returns: A Query Result object for updating the User QuickBooks Transactions.
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
   categoryId: string,
@@ -39,8 +40,8 @@ export async function addForReview(
       return { result: '', message: '', detail: '' };
     }
 
-    // Call method for synthetic login with the Company realm Id and the potential Firm name.
-    // Returns: A QueryResult and a dictionary containing the tokens from synthetic login.
+    // Call synthetic login with the Company realm Id and the potential Firm name.
+    // Returns: A QueryResult and a synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
       currentCompany[0].firmName
@@ -79,7 +80,7 @@ export async function addForReview(
       return {
         result: 'Error',
         message:
-          'Call made to Add For Review endpoint did not return a valid response.',
+          'Call made to "Add For Review" endpoint did not return a valid response.',
         detail: JSON.stringify(errorText),
       };
     } else {
@@ -88,7 +89,7 @@ export async function addForReview(
       return {
         result: 'Success',
         message:
-          'Request made to Add For Review endpoint was returned with a valid response',
+          'Request made to "Add For Review" endpoint was returned with a valid response',
         detail: JSON.stringify(responseData),
       };
     }
@@ -97,15 +98,15 @@ export async function addForReview(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'Call made to Add For Review endpoint resulted in error.',
+        message: 'Call made to "Add For Review" endpoint resulted in error.',
         detail: 'Error' + error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'Call made to Add For Review endpoint resulted in error.',
+        message: 'Call made to "Add For Review" endpoint resulted in error.',
         detail:
-          'An unexpected error occured while saving classified For Review transactions.',
+          'An unexpected error occured while saving Classified "For Review" transactions.',
       };
     }
   }

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
-import { addTransactions } from '@/actions/db-transactions';
+import { addDatabaseTransactions } from '@/actions/db-transactions';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
@@ -100,7 +100,7 @@ export default function ReviewPage({
 
   // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
   useEffect(() => {
-    // Load the transactions from the database.
+    // Load the Transactions from the database.
     const loadForReviewTransactions = async () => {
       setLoadedTransactions(await getDatabaseTransactions());
     };
@@ -241,7 +241,7 @@ export default function ReviewPage({
           // Throw an error if the Id for that Transaction cannot be found.
           // Occurs if the selected Classification is not present in Classified 'For Review' transaction's Classifications.
           if (!category || !taxCode) {
-            throw new Error('Error saving purchase');
+            throw new Error('Error saving Purchase');
           } else {
             // Create a new Transaction object to be saved using the Classified Transaction and its Classifications.
             const newDatabaseTransaction: Transaction = {
@@ -267,7 +267,7 @@ export default function ReviewPage({
                 newDatabaseTransaction.category = account.account_sub_type;
               } else {
                 // If no match is found, throw an error.
-                throw new Error('Error saving purchase');
+                throw new Error('Error saving Purchase');
               }
             }
 
@@ -299,12 +299,12 @@ export default function ReviewPage({
       });
 
       // Add all the newly created Transactions to the database.
-      const result = await addTransactions(newTransactions);
+      const result = await addDatabaseTransactions(newTransactions);
       // Check the Query Result if returned by the add Transactions function resulted in an error.
       if (result.result === 'Error') {
         // If the result was an error, log the message and detail and update the error message state.
         console.error(
-          'Error saving existing classified transactions:',
+          'Error saving existing Classified Transactions:',
           result.message,
           ', Detail: ',
           result.detail
@@ -316,9 +316,9 @@ export default function ReviewPage({
     } catch (error) {
       // Catch any errors and log them (include the error message if it is present).
       if (error instanceof Error) {
-        console.error('Error saving existing classified transactions:', error);
+        console.error('Error saving existing Classified Transactions:', error);
       } else {
-        console.error('Error saving existing classified transactions:', error);
+        console.error('Error saving existing Classified Transactions:', error);
       }
       // On error, set the error message state.
       setErrorMsg('An error occurred while saving. Please try again.');
@@ -342,6 +342,7 @@ export default function ReviewPage({
       <ReviewTable
         categorizedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}
+        selectedTaxCodes={selectedTaxCodes}
         account_names={accounts}
         handleCategoryChange={handleCategoryChange}
         handleTaxCodeChange={handleTaxCodeChange}

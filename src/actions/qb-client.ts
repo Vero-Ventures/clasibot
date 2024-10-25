@@ -4,6 +4,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import QB from 'node-quickbooks';
 import type { LoginTokens } from '@/types/LoginTokens';
 
+// Create a QuickBooks client object for frontend functions.
 // Returns: A QuickBooks object used for API calls.
 export async function getQBObject() {
   // Define variables for the QuickBooks client Id and secret.
@@ -31,7 +32,7 @@ export async function getQBObject() {
   return createQBObject(useId!, useSecret!, oauthToken, realmId, refreshToken);
 }
 
-// Create a QuickBooks client object using a passed session for backend functions.
+// Create a QuickBooks client object for backend functions.
 // Takes: A set of synthetic Login Tokens and a Company realm Id.
 // Returns: A QuickBooks object used for API calls.
 export async function getQBObjectWithSession(

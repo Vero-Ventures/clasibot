@@ -2,8 +2,6 @@
 import { db } from '@/db/index';
 import {
   ForReviewTransaction as DatabaseForReviewTransaction,
-  ForReviewTransactionToCategories,
-  ForReviewTransactionToTaxCodes,
   Category,
   TaxCode,
 } from '@/db/schema';
@@ -15,8 +13,9 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
+// Adds newly Classified 'For Review' transactions to the database to be pulled and shown to User for review on the frontend.
 // Takes: An array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a Company realm Id.
-// Returns: A Query Result object.
+// Returns: A Query Result object for adding the 'For Review' transactions to the database.
 export async function addForReviewTransactions(
   transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][],
   realmId: string
@@ -27,16 +26,15 @@ export async function addForReviewTransactions(
       const classifiedTransaction =
         transaction[0] as ClassifiedForReviewTransaction;
 
-      // Find the confidence level of the predictions in the the Classified 'For Review' transaction.
-      const [categoryConfidence, taxCodeConfidence] = getConfidenceLevels(
-        classifiedTransaction
-      );
+      // Find the Classification type of the predictions in the the Classified 'For Review' transaction.
+      const [categoryPredictionType, taxCodePredictionType] =
+        getClassificationType(classifiedTransaction);
 
       // Extract and define the type of the Raw 'For Review' transaction which contains data for writing to QuickBooks.
       const rawTransaction = transaction[0] as ForReviewTransaction;
 
       // Check if the current 'For Review' transaction has already been saved into the database.
-      // Compares the Company realm Id and transaction Id which is a unique combination (transaction Id's are unique by Company).
+      // Compares the Company realm Id and 'For Review' transaction Id which is a unique combination (Transaction Id's are unique by Company).
       const matchingTransactions = await db
         .select()
         .from(DatabaseForReviewTransaction)
@@ -64,31 +62,26 @@ export async function addForReviewTransactions(
           acceptType: rawTransaction.acceptType,
           payeeNameId: rawTransaction.addAsQboTxn.nameId,
           transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
-          topCategoryClassification: categoryConfidence,
-          topTaxCodeClassification: taxCodeConfidence,
+          topCategoryClassification: categoryPredictionType,
+          topTaxCodeClassification: taxCodePredictionType,
         };
 
         // Write the new 'For Review' transaction to the database.
-        const newTransaction = await db
-          .insert(DatabaseForReviewTransaction)
-          .values(databaseObject)
-          .returning();
+        await db.insert(DatabaseForReviewTransaction).values(databaseObject);
 
         // Create variables to track results of the connecting the 'For Review' transaction to its related database Classification objects.
         let categoryConnectionResult = '';
         let taxCodeConnectionResult = '';
 
         // Check if Category and Tax Code Classifications are present.
-        // Then call helper functions to connect the 'For Review' transaction to the Classificaions in the database.
+        // Then call helper functions to store the related Classificaions in the database.
         if (classifiedTransaction.categories) {
           categoryConnectionResult = await handleCategoryConnections(
-            newTransaction[0].id,
             classifiedTransaction.categories
           );
         }
         if (classifiedTransaction.taxCodes) {
           taxCodeConnectionResult = await handleTaxCodeConnections(
-            newTransaction[0].id,
             classifiedTransaction.taxCodes
           );
         }
@@ -115,46 +108,47 @@ export async function addForReviewTransactions(
       return {
         result: 'Error',
         message:
-          'An error occurred while saving newly classified transaction to the database.',
+          'An error occurred while saving newly Classified Transaction to the database.',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
         message:
-          'An error occurred while saving newly classified transaction to the database.',
+          'An error occurred while saving newly Classified Transaction to the database.',
         detail: 'Unexpected error occurred.',
       };
     }
   }
 }
 
-// Takes: A Classified 'For Review' transaction and uses its Classification methods to produce Confidence Values.
-// Returns: An array of the Confidence Values in the format [categoryConfidence, taxCodeConfidence].
-function getConfidenceLevels(
+// Gets the Classification type of the predictions in a Classified 'For Review' transaction.
+// Takes: A Classified 'For Review' transaction.
+// Returns: An array of the Classificaion Types in the format [categoryConfidence, taxCodeConfidence].
+function getClassificationType(
   classifiedTransaction: ClassifiedForReviewTransaction
 ): [string, string] {
   // Define a value to track the Classification method for each type.
-  let categoryConfidence = 'None';
-  let taxCodeConfidence = 'None';
+  let categoryPredictionType = 'None';
+  let taxCodePredictionType = 'None';
 
   // If a Classification is present all Classification will use the same method.
   // Extracting the Classification method of the first Classification can be used to get the confidence level.
   if (classifiedTransaction.categories) {
-    categoryConfidence = classifiedTransaction.categories[0].classifiedBy;
+    categoryPredictionType = classifiedTransaction.categories[0].classifiedBy;
   }
   if (classifiedTransaction.taxCodes) {
-    taxCodeConfidence = classifiedTransaction.taxCodes[0].classifiedBy;
+    taxCodePredictionType = classifiedTransaction.taxCodes[0].classifiedBy;
   }
 
   // Return the Confidence Value strings in an array.
-  return [categoryConfidence, taxCodeConfidence];
+  return [categoryPredictionType, taxCodePredictionType];
 }
 
-// Takes the Id of a new database 'For Review' transaction, as well as its related Catagory Classifications.
-// Returns: A string inidicating success or an error.
+// Creates database Category objects for any new Catagories being saved to database with the Classified 'For Review' transactions.
+// Takes: The Classified Element objects for the of the related Catagory Classifications.
+// Returns: A string with a success or error message.
 async function handleCategoryConnections(
-  newTransactionId: string,
   newTransactionCategories: ClassifiedElement[]
 ): Promise<string> {
   try {
@@ -163,38 +157,20 @@ async function handleCategoryConnections(
 
     // Check all Category Classified Elements connected to the 'For Review' transaction.
     for (const category of newTransactionCategories) {
-      // Check if a related Category already exists.
+      // Check if a related Category already exists for the current Category Classified Element.
       const existingCategory = existingCategories.find(
         (dbCategory) => dbCategory.category === category.name
       );
-
-      // Create a value to store the found Category Id or the Id of a newly created Category.
-      let databaseCategoryId = 0;
 
       // If the Category does not exist, create a new one in the database.
       if (!existingCategory) {
         // Number of matches is set to 0, as no Classifications for this Category have been saved yet.
         // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
-        const newCategory = await db
-          .insert(Category)
-          .values({
-            category: category.name,
-            matches: 0,
-          })
-          .returning();
-
-        // Store the Id of the newly created Category.
-        databaseCategoryId = newCategory[0].id;
-      } else {
-        // If the Category already exists, store its Id.
-        databaseCategoryId = existingCategory.id;
+        await db.insert(Category).values({
+          category: category.name,
+          matches: 0,
+        });
       }
-
-      // Define the Relationship between the database 'For Review' transaction object and the related database Category object.
-      await db.insert(ForReviewTransactionToCategories).values({
-        reviewTransactionId: newTransactionId,
-        categoryId: databaseCategoryId,
-      });
     }
     // Return a string indicating success.
     return 'Success';
@@ -202,19 +178,19 @@ async function handleCategoryConnections(
     // Catch any errors and return an error string, include the error message if it is present.
     if (error instanceof Error && error.message) {
       return (
-        'Error creating category connection for the transaction: ' +
+        'Error creating Category connection for the Transaction: ' +
         error.message
       );
     } else {
-      return 'Error creating category connection for the transaction: Unexpected Error';
+      return 'Error creating Category connection for the Transaction: Unexpected Error';
     }
   }
 }
 
-// Takes the Id of a new database 'For Review' transaction, as well as its related Tax Code CAlassifications.
-// Returns: A string inidicating success or an error.
+// Creates database Tax Code objects for any new Tax Code being saved to database with the Classified 'For Review' transactions.
+// Takes: The Classified Element objects for the of the related Tax Code Classifications.
+// Returns: A string with a success or error message.
 async function handleTaxCodeConnections(
-  newTransactionId: string,
   newTransactionTaxCodes: ClassifiedElement[]
 ): Promise<string> {
   try {
@@ -223,38 +199,20 @@ async function handleTaxCodeConnections(
 
     // Check all Tax Code Classified Elements connected to the 'For Review' transaction.
     for (const taxCode of newTransactionTaxCodes) {
-      // Check if a related Tax Code already exists.
+      // Check if a related Category already exists for the current Category Classified Element.
       const existingTaxCode = existingTaxCodes.find(
         (dbTaxCode) => dbTaxCode.taxCode === taxCode.name
       );
-
-      // Create a value to store the found Tax Code Id or the Id of a newly created Tax Code.
-      let databaseTaxCodeId = 0;
 
       // If the Tax Code does not exist, create a new one in the database.
       if (!existingTaxCode) {
         // Number of matches is set to 0, as no Classifications for this Tax Code have been saved yet.
         // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
-        const newTaxCode = await db
-          .insert(TaxCode)
-          .values({
-            taxCode: taxCode.name,
-            matches: 0,
-          })
-          .returning();
-
-        // Store the Id of the newly created Tax Code.
-        databaseTaxCodeId = newTaxCode[0].id;
-      } else {
-        // If the Tax Code already exists, save its Id.
-        databaseTaxCodeId = existingTaxCode.id;
+        await db.insert(TaxCode).values({
+          taxCode: taxCode.name,
+          matches: 0,
+        });
       }
-
-      // Define the Relationship between the database 'For Review' transaction object and the related database Tax Code object.
-      await db.insert(ForReviewTransactionToTaxCodes).values({
-        reviewTransactionId: newTransactionId,
-        taxCodeId: databaseTaxCodeId,
-      });
     }
     // Return a string indicating success.
     return 'Success';
@@ -262,11 +220,11 @@ async function handleTaxCodeConnections(
     // Catch any errors and return an error string, include the error message if it is present.
     if (error instanceof Error && error.message) {
       return (
-        'Error creating tax code connection for the transaction: ' +
+        'Error creating Tax Code connection for the Transaction: ' +
         error.message
       );
     } else {
-      return 'Error creating tax code connection for the transaction: Unexpected Error';
+      return 'Error creating Tax Code connection for the Transaction: Unexpected Error';
     }
   }
 }

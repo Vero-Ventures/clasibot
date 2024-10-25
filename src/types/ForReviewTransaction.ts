@@ -62,7 +62,7 @@ export type UpdatedForReviewTransaction = {
 export type FormattedForReviewTransaction = {
   // Id for the 'For Review' transaction.
   transaction_Id: string;
-  // Name related to the transaction (AKA the payee).
+  // Name related to the 'For Review' transaction (AKA the payee).
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
@@ -78,7 +78,7 @@ export type FormattedForReviewTransaction = {
 export type ClassifiedForReviewTransaction = {
   // Id for the 'For Review' transaction.
   transaction_Id: string;
-  // Name related to the transaction (AKA the payee).
+  // Name related to the 'For Review' transaction (AKA the payee).
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
@@ -88,8 +88,8 @@ export type ClassifiedForReviewTransaction = {
   accountName: string;
   // Total value of the Purchase as a negative decimal.
   amount: number;
-  // An (potentially empty) array of possible Categories for the transaction to be Classified as.
+  // An (potentially empty) array of possible Categories for the 'For Review' transaction to be Classified as.
   categories: ClassifiedElement[] | null;
-  // An (potentially empty) array of possible Tax Codes for the transaction to be Classified as.
+  // An (potentially empty) array of possible Tax Codes for the 'For Review' transaction to be Classified as.
   taxCodes: ClassifiedElement[] | null;
 };

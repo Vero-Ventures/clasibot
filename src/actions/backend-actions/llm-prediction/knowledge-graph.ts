@@ -7,9 +7,9 @@ interface KnowledgeGraphResult {
   resultScore: number;
   detailedDescription: string;
 }
-
-// Takes a search query for a 'For Review' transaction from the LLM and uses Google Knowledge Graph to generate context.
-// Returns an Knowledge Graph Result object as the context.
+// Generates context for LLM using Google Knowledge Graph.
+// Takes: A search query for a 'For Review' transaction.
+// Returns an array of Knowledge Graph conext results.
 export async function fetchKnowledgeGraph(
   query: string
 ): Promise<KnowledgeGraphResult[]> {

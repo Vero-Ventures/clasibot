@@ -12,7 +12,7 @@ import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
 
 // Get all past saved Transaction from the QuickBooks API.
-// May take a start date and end date and / or a synthetic session as optional parameters.
+// Takes: Optional values for a start date, end date, synthetic Login Tokens and Company realm Id.
 // Returns: An array of objects starting with a Query Result, then containing Transaction objects.
 export async function getSavedTransactions(
   startDate = '',
@@ -156,7 +156,7 @@ export async function getSavedTransactions(
         {
           result: 'error',
           message:
-            'Unexpected error occured while fetching saved transactions.',
+            'Unexpected error occured while fetching saved Transactions.',
           detail: error.message,
         },
       ]);
@@ -165,7 +165,7 @@ export async function getSavedTransactions(
         {
           result: 'error',
           message:
-            'Unexpected error occured while fetching saved transactions.',
+            'Unexpected error occured while fetching saved Transactions.',
           detail: 'N/A',
         },
       ]);
@@ -174,8 +174,8 @@ export async function getSavedTransactions(
 }
 
 // Formats the response rows into Transactions.
-// Takes: the QuickBooks response rows and a results array.
-//    May also take synthetic Login Tokens and Company Id for backend calls.
+// Takes: The QuickBooks response rows and a results array.
+//    May also take synthetic Login Tokens and Company realm Id for backend calls.
 // Returns: A results array containing a Query Result in the first index and the formatted Transaction objects.
 async function checkAndFormatTransactions(
   rows: {
@@ -200,7 +200,7 @@ async function checkAndFormatTransactions(
       {
         result: 'error',
         message:
-          'Unexpected error occured while fetching expense accounts for transaction checking.',
+          'Unexpected error occured while fetching expense Accounts for Transaction checking.',
         detail: accountResults[0].message,
       },
     ];
@@ -267,7 +267,7 @@ async function checkAndFormatTransactions(
 
             // Log an error indicating an issue with the Transaction.
             console.error(
-              'Error getting transaction tax details,\nPurchase Failure: ' +
+              'Error getting Transaction tax details,\nPurchase Failure: ' +
                 purchaseError +
                 ', Tax Code Failure: ' +
                 taxCodeError

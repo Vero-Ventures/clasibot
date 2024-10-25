@@ -48,7 +48,7 @@ export async function getCompanyName(
     return response.QueryResponse.CompanyInfo[0].CompanyName;
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    console.error('Error finding company name:', error);
+    console.error('Error finding Company name:', error);
     // On error, return the default error object that indicates failure to find.
     return 'Error: Name not found';
   }
@@ -202,7 +202,7 @@ export async function getCompanyLocation(
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    console.error('Error finding company location:', error);
+    console.error('Error finding Company location:', error);
     // On error, return the default error object that indicates failure to find.
     return JSON.stringify({ Country: '', SubLocation: null });
   }

@@ -6,7 +6,7 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Get all valid Canadian tax codes for a User location.
+// Get all valid Canadian Tax Codes for a User location.
 // Takes: An optional set of Login Tokens and a Company realm Id.
 // Returns: An array of Tax Code objects as a string.
 export async function getTaxCodes(
@@ -88,13 +88,13 @@ export async function getTaxCodes(
     if (error instanceof Error) {
       return JSON.stringify({
         result: 'error',
-        message: 'Unexpected error occured while fetching accounts.',
+        message: 'Unexpected error occured while fetching Accounts.',
         detail: error.message,
       });
     } else {
       return JSON.stringify({
         result: 'error',
-        message: 'Unexpected error occured while fetching accounts.',
+        message: 'Unexpected error occured while fetching Accounts.',
         detail: 'N/A',
       });
     }
@@ -152,7 +152,9 @@ export async function getTaxCodesByLocation(
   return taxCodeNames;
 }
 
-// Take a Tax Code response from QuickBooks and converts it to a formatted Tax Code object.
+// Converts QuickBooks Tax Codes to a formatted Tax Code objects.
+// Takes: A QuickBooks Tax Code object.
+// Returns: A formatted Tax Code object.
 function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
   // Create object with relevant elements from the passed raw API Tax Code object.
   const formattedTaxCode: TaxCode = {
@@ -165,7 +167,8 @@ function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
   return formattedTaxCode;
 }
 
-// Takes a Tax Code name and check if it currently valid for use.
+// Check Tax Code names to see if they are currently valid for use.
+// Takes: A Tax Code name as a string.
 // Returns: The Tax Code validity as a boolean value.
 function checkForCurrentTaxCode(taxCodeName: string): boolean {
   // Check the Tax Code name against the Enum of valid Tax Codes.

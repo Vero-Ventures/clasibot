@@ -10,9 +10,9 @@ type databaseUser = {
   id: string;
 };
 
-// Iterates through a User Companies and starts the Classification process for them.
+// Iterates through a User Companies and starts their Classification process.
 // Takes: The Id of the User whose Companies should be Classified.
-// Uses error loggin instead of returning values.
+// Async and concurrent method uses error loggin instead of returning values.
 export async function classificationCompanyIteration(user: databaseUser) {
   try {
     // Get all Companies assosiated with the User.
@@ -21,18 +21,18 @@ export async function classificationCompanyIteration(user: databaseUser) {
       .from(Company)
       .where(eq(Company.userId, user.id));
 
-    // Iterate through the user connected database Company objects.
+    // Iterate through the User connected database Company objects.
     for (const currentCompany of userCompanies) {
       // Check that the database Company object has a valid connection to the synthetic bookkeeper.
       //    May not be accurate reflection of QuickBooks, but considered to be true if true in the database.
       if (currentCompany.bookkeeperConnected) {
-        // Get the Company Id and potential Firm name from the Company.
+        // Get the Company realm Id and potential Firm name from the Company.
         const companyId = currentCompany.realmId;
         const connectedFirmName = currentCompany.firmName;
 
         // Call method for synthetic login.
         // Takes: The Company realm Id and possible Firm name used for Company selection.
-        // Returns: A QueryResult and the tokens fetched during the synthetic login process.
+        // Returns: A QueryResult and a synthetic Login Tokens object.
         const [loginResult, loginTokens] = await syntheticLogin(
           companyId,
           connectedFirmName
@@ -44,7 +44,7 @@ export async function classificationCompanyIteration(user: databaseUser) {
           console.error(loginResult);
         } else {
           // Classify the 'For Review' transactions for the current Company.
-          // Passes the with the synthetic login values and Company Id needed for backend Classificaion.
+          // Passes the the synthetic Login Tokens and Company realm Id needed for backend Classificaion.
           classifyCompany(loginTokens, companyId).then((result) => {
             // Use .then() to deal with error logging while the main process continues.
             //    Allows the async Classificaion of Comapnies to be done concurrently.

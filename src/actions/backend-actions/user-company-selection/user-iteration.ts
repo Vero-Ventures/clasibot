@@ -12,8 +12,8 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Iterates through the User objects to check subscription and call for Classificaion of their Companies.
-// Uses error loggin instead of returning values.
+// Iterates through the User objects to check Subscription and call for Classificaion of their Companies.
+// Async and concurrent method uses error loggin instead of returning values.
 export async function classificationUserIteration() {
   try {
     // Get all of the User and Subscription objects in the database.
@@ -27,9 +27,9 @@ export async function classificationUserIteration() {
         (subscription) => subscription.userId === currentUser.id
       );
 
-      // If a Subscription is found and it has an assosiated stripe Id, check the Subscription status.
+      // If a Subscription is found and it has an assosiated Stripe Id, check the Subscription status.
       if (userSubscription?.stripeId) {
-        // Get the Subscription data from stripe and extract the status field.
+        // Get the Subscription data from Stripe and extract the status field.
         const subData = await stripe.subscriptions.list({
           customer: userSubscription.stripeId,
         });

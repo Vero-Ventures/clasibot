@@ -5,8 +5,9 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Purchase } from '@/types/Purchase';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Find a specific Purchase object by its QuickBooks Id and return a formatted Purchase object.
-// May take a synthetic login session to use instead of the regular session.
+// Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.
+// Takes: The Id of the Purchase to find from QuickBooks
+//    May also take synthetic Login Tokens and Company realm Id for backend calls.
 export async function findFormattedPurchase(
   id: string,
   loginTokens: LoginTokens | null = null,

@@ -13,9 +13,9 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes the User email and Company name from a QBO Company invite.
-// Returns: A Query Result object.
-// Integration: Called when a regular Company connection invite comes through.
+// Takes info from a QuickBooks Company invite email and updates the related database Company object.
+// Takes: The User email and Company name from a QBO Company invite.
+// Returns: A Query Result object for finding and updating the Comapany in the database.
 export async function addCompanyConnection(
   userEmail: string,
   companyName: string
@@ -35,7 +35,7 @@ export async function addCompanyConnection(
         .from(Subscription)
         .where(eq(Subscription.userId, databaseUser[0].id));
 
-      // Get the Subscription status from Stripe by checking for customers with matching Id.
+      // Get the Subscription status from Stripe by checking for Customers with matching Id.
       const subscription = await stripe.subscriptions.list({
         customer: userSubscription[0].stripeId!,
       });
@@ -65,7 +65,7 @@ export async function addCompanyConnection(
           return {
             result: 'Success',
             message: 'Bookkeeper connected.',
-            detail: 'Bookkeeper connection to company set to true.',
+            detail: 'Bookkeeper connection to Company set to true.',
           };
         } else {
           // If no matching Companies could be found, return an error message.
@@ -73,16 +73,16 @@ export async function addCompanyConnection(
             result: 'Error',
             message: 'Company could not be found.',
             detail:
-              'No Companies with that name were found belonging to the user with that email.',
+              'No Companies with that name were found belonging to the User with that email.',
           };
         }
       } else {
         // If the User was found, but had an invalid Subscription, return an error message.
         return {
           result: 'Error',
-          message: 'User subscription was invalid.',
+          message: 'User Subscription was invalid.',
           detail:
-            'User subscription either did not exist or is not presently active.',
+            'User Subscription either did not exist or is not presently active.',
         };
       }
     } else {
@@ -111,9 +111,9 @@ export async function addCompanyConnection(
   }
 }
 
-// Takes the accounting Firm name and User name from a QBO accounting invite.
-// Returns: A Query Result object.
-// Integration: Called when inital to an accounting Firm invite comes through.
+// Takes info from a QuickBooks accounting Firm invite email and creates a related database Firm object.
+// Takes: The accounting Firm name and User name from a QBO Firm invite.
+// Returns: A Query Result object for adding the Firm to database.
 export async function addAccountingFirmConnection(
   connectedFirmName: string,
   userName: string
@@ -134,7 +134,7 @@ export async function addAccountingFirmConnection(
       return {
         result: 'Success',
         message: 'Firm Created.',
-        detail: 'An accounting firm with that name and user name was created.',
+        detail: 'An accounting Firm with that name and User name was created.',
       };
     } else {
       // If a matching Firm already exists, return an error message.
@@ -142,7 +142,7 @@ export async function addAccountingFirmConnection(
         result: 'Error',
         message: 'A Matching Firm Was Already In The Database.',
         detail:
-          'A firm with that name and user name already exists in the database.',
+          'A Firm with that name and User name already exists in the database.',
       };
     }
   } catch (error) {
@@ -163,9 +163,9 @@ export async function addAccountingFirmConnection(
   }
 }
 
-// Takes a Firm name and an array of Company names from a QBO access update email.
+// Takes info from a QuickBooks Firm client access email and updates the related database Company objects.
+// Takes: A Firm name and an array of Company names from a QBO client access update email.
 // Returns: A Query Result object.
-// Integration: Called when the client access update email for an accounting Firm comes through.
 export async function addAccountingFirmCompanies(
   connectedFirmName: string,
   companyNames: string[]
@@ -234,12 +234,12 @@ export async function addAccountingFirmCompanies(
                     .from(Subscription)
                     .where(eq(Subscription.userId, user[0].id));
 
-                  // Get the Subscription status from Stripe using a list of customers with matching Id.
+                  // Get the Subscription status from Stripe using a list of Customers with matching Id.
                   const subscription = await stripe.subscriptions.list({
                     customer: userSubscription[0].stripeId!,
                   });
 
-                  // Check if the subscription is active and valid.
+                  // Check if the Subscription is active and valid.
                   const subStatus = subscription.data[0]?.status;
                   if (subStatus) {
                     // If the matching Users Subscription is valid, record the related User for later shortcutting.
@@ -260,9 +260,9 @@ export async function addAccountingFirmCompanies(
                     // If a matching User is found, but the Subscription is invalid, return an error to indicate success with an invalid Subscription.
                     return {
                       result: 'Error',
-                      message: 'User subscription was invalid.',
+                      message: 'User Subscription was invalid.',
                       detail:
-                        'A match was found but the users subscription either did not exist or is not presently active.',
+                        'A match was found but the User Subscription either did not exist or is not presently active.',
                     };
                   }
                 }
@@ -291,7 +291,7 @@ export async function addAccountingFirmCompanies(
           result: 'Success',
           message: 'All companies matched and activated.',
           detail:
-            'The related user and firm for each company was found and the company was connected.',
+            'The related User and Firm for each Company was found and the Company was connected.',
         };
       } else {
         // On failure, return a stringified version of the array of failed connection Companies.
@@ -305,8 +305,8 @@ export async function addAccountingFirmCompanies(
       // If no Firms with a matching name were found, return an error.
       return {
         result: 'Error',
-        message: 'No firms could be found.',
-        detail: 'No firms with that name were found.',
+        message: 'No Firms could be found.',
+        detail: 'No Firms with that name were found.',
       };
     }
   } catch (error) {
@@ -329,10 +329,10 @@ export async function addAccountingFirmCompanies(
   }
 }
 
-// Takes a Company realm Id and sets it to inactive in the database.
+// Updates a database Company object to be set as disconnected from the synthetic bookkeeper.
+//    Done to prevent us from continuing to access that Company.
+// Takes: A Company realm Id.
 // Returns: A Query Result object.
-// Integration: Called by a frontend button that allows the User to set a Company to be disconnected.
-//    Done when a User removes the connection through QuickBooks, required to be done in app as well to avoid issues.
 export async function makeCompanyIncactive(
   realmId: string
 ): Promise<QueryResult> {
@@ -354,14 +354,14 @@ export async function makeCompanyIncactive(
       return {
         result: 'Success',
         message: 'Bookkeeper connection deactivated.',
-        detail: 'Bookkeeper connection to company set to false.',
+        detail: 'Bookkeeper connection to Company set to false.',
       };
     } else {
       // If no matching Company could be found, return an error result.
       return {
         result: 'Error',
         message: 'Company could not be found.',
-        detail: 'No company with that realm Id could be found.',
+        detail: 'No Company with that realm Id could be found.',
       };
     }
   } catch (error) {

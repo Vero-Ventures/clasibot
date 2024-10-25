@@ -2,6 +2,8 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { QueryResult } from '@/types/QueryResult';
 
 // Check for the 'Fault' property in error objects returned from QuickBooks calls.
+// Takes: An unknown type object called error.
+// Returns: Boolean value indicating if passed object was an error object with a 'fault' propery.
 export function checkFaultProperty(
   error: unknown
 ): error is { Fault: unknown } {
@@ -15,7 +17,7 @@ export function checkFaultProperty(
 }
 
 // Create a formatted result object based on the result of a function call.
-// Takes a boolean success indicator and any relevant results info.
+// Takes: A boolean success indicator and any relevant results info.
 // Returns: A Query Result object created with the passed values.
 export function createQueryResult(
   success: boolean,

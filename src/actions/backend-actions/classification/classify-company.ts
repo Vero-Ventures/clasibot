@@ -22,8 +22,8 @@ import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
 // Classifies and saves the 'For Review' transactions for a specific Company.
-// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
-// Manual Classification Specific:
+// Takes: A set of synthetic Login Tokens and the realm Id of the Company.
+//    Manual Classification Specific:
 //        Boolean value for Classification method (true for frontend call) a callback function for updating frontend state.
 // Returns: The Query Result from 'For Review' transaction saving function or an error Query Result.
 export async function classifyCompany(
@@ -130,7 +130,7 @@ export async function classifyCompany(
         // Return an error Query Result
         return {
           result: 'Error',
-          message: 'Error Creating Classified For Review Transactions',
+          message: 'Error Creating Classified "For Review" Transactions',
           detail: 'Unexpected Error',
         };
       }
@@ -164,8 +164,8 @@ export async function classifyCompany(
 }
 
 // Gets the 'For Review' transactions from the Company Accounts.
-// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
-// Returns: An array of Sub-arrays in the format: [FormattedForReviewTransaction, ForReviewTransaction]
+// Takes: The set of synthetic Login Tokens and the realm Id of the Company.
+// Returns: An array of Sub-arrays for the 'For Review' transactions in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 async function getForReviewTransactions(
   loginTokens: LoginTokens,
   companyId: string
@@ -227,14 +227,16 @@ async function getForReviewTransactions(
     // Catch and log any errors, include the error message if it is present.
     // Also retrun an error Query Result object.
     if (error instanceof Error) {
-      console.error('Error Getting For Review Transactions:' + error.message);
+      console.error('Error Getting "For Review" Transactions:' + error.message);
       return {
         result: 'Error',
         message: 'An Unexpected Error Occured While Getting Transactions',
         detail: error.message,
       };
     } else {
-      console.error('Error: Unexpected Error Getting For Review Transactions');
+      console.error(
+        'Error: Unexpected Error Getting "For Review" Transactions'
+      );
       return {
         result: 'Error',
         message: 'An Unexpected Error Occured While Getting Transactions',
@@ -245,8 +247,8 @@ async function getForReviewTransactions(
 }
 
 // Gets the saved and Classified Transactions from the Company for use in LLM prediction.
-// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
-// Returns: An array of transactions objects for the User Classified transactions.
+// Takes: The set of synthetic Login Tokens and the realm Id of the Company.
+// Returns: An array of Transactions objects for the User Classified Transactions.
 async function getClassifiedPastTransactions(
   loginTokens: LoginTokens,
   companyId: string
@@ -297,7 +299,7 @@ async function getClassifiedPastTransactions(
 }
 
 // Gets the Company Info that is used in Transaction Classification.
-// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
+// Takes: The set of synthetic Login Tokens and the realm Id of the Company.
 // Returns: The relevant Company Info object.
 async function getCompanyInfo(
   loginTokens: LoginTokens,
@@ -342,7 +344,7 @@ async function getCompanyInfo(
 }
 
 // Takes: The array of Formatted and Raw 'For Review' transactions -
-//    Also takes a record of Transaction Id to arrays of the Classifications.
+//        And a record of Transaction Id to the Classification arrays.
 // Returns: The 'For Review' transaction array converted to Sub-arrays of [ClassifiedForReviewTransactions, ForReviewTransaction].
 function createClassifiedForReviewTransactions(
   forReviewTransactions: (

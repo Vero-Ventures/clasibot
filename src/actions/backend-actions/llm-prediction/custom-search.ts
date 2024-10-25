@@ -2,7 +2,8 @@
 import type { customsearch_v1 } from 'googleapis';
 import { google } from 'googleapis';
 
-// Takes a search query for a 'For Review' transaction from the LLM and uses Google CSE to generate context.
+// Generates context for LLM using Google Custom Search Engine.
+// Takes: A search query for a 'For Review' transaction.
 // Returns an array of CSE conext results.
 export async function fetchCustomSearch(
   query: string

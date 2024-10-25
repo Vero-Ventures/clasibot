@@ -10,7 +10,7 @@ import SignOutButton from '@/components/inputs/sign-out-button';
 import ChangeCompanyButton from '@/components/inputs/change-company-button';
 
 const Navbar = async () => {
-  // Check the user's subscription status.
+  // Check the user's Subscription status.
   const subscriptionStatus = await checkSubscription();
 
   // Define values to be used in the user Session info elements.

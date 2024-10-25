@@ -130,7 +130,7 @@ export const options: NextAuthOptions = {
         // Check if the realm Id can be found from the cookies and throw an error if it could not.
         if (!cookies().get('realmId')?.value) {
           // Throw an error to be caught and logged at the end of sign in.
-          throw 'Company Id could not be found for company creation.';
+          throw 'Company Id could not be found for Company creation.';
         }
 
         // Only reach this point if realm Id is present so record it as not null.
@@ -192,11 +192,11 @@ export const options: NextAuthOptions = {
               .set({ subscriptionId: newSubscription[0].id })
               .where(eq(User.id, newUser[0].id));
 
-            // Create a stripe customerId for the User and update the database Subscription object with it.
+            // Create a Stripe Customer Id for the User and update the database Subscription object with it.
             const createdCustomer = await createCustomer(newUser[0].id);
             const createdCustomerResult = await createdCustomer.json();
 
-            // Check the result of customer create and return an error if it failed.
+            // Check the result of Customer create and return an error if it failed.
             if (createdCustomerResult.error) {
               console.error(
                 'Error creating new user in db:',

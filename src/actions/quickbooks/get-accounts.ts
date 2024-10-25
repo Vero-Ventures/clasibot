@@ -8,7 +8,8 @@ import type { LoginTokens } from '@/types/LoginTokens';
 // Get specific Accounts from the QuickBooks API depending on passed Account type.
 // Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
 // Use 'Expense' to get Accounts for Categorization.
-// May take a synthetic login session to use instead of the regular session.
+// Takes: The account type as either a 'Transaction' or 'Expense' string.
+//    May also take synthetic Login Tokens and Company realm Id for backend calls.
 // Returns: An array of objects starting with a Query Result, then containing Purchase objects.
 export async function getAccounts(
   accountType: string,
@@ -62,20 +63,22 @@ export async function getAccounts(
       }[];
     };
 
-    // Define the query parameters for 'Expense' Account fetching.
-    // Fetches Accounts with Classification set to 'Expense' (Represent a possible Transaction Category).
-    let parameters = [
-      {
-        field: 'Classification',
-        value: ['Expense'],
-        operator: 'IN',
-        limit: 1000,
-      },
-    ];
-
-    // Update query parameters if fetching 'Transaction' Accounts.
-    // Defines a query to get all Accounts that may contain 'For Review' transactions.
-    if (accountType === 'Transaction') {
+    // Define a parameters variable, then check the passed Transaction type to set the it accordingly.
+    let parameters;
+    if (accountType === 'Expense') {
+      // Define the query parameters for 'Expense' Account fetching.
+      // Fetches Accounts with Classification set to 'Expense' (Represent a possible Transaction Category).
+      parameters = [
+        {
+          field: 'Classification',
+          value: ['Expense'],
+          operator: 'IN',
+          limit: 1000,
+        },
+      ];
+    } else if (accountType === 'Transaction') {
+      // Define the query parameters for 'Transaction' Account fetching.
+      // Fetches Accounts that may contain 'For Review' transactions.
       parameters = [
         {
           field: 'AccountSubType',
@@ -92,6 +95,15 @@ export async function getAccounts(
           limit: 1000,
         },
       ];
+    } else {
+      // If no valid type was passed, return an error Query Result.
+      return JSON.stringify([
+        {
+          result: 'error',
+          message: 'Invalid Transaction Fetch Type Passed',
+          detail: `Passed Transaction Type To Fetch Was Not 'Expense' or 'Transaction'`,
+        },
+      ]);
     }
 
     // Used the defined parameters to fetch specified User Accounts from QuickBooks.
@@ -141,7 +153,7 @@ export async function getAccounts(
       return JSON.stringify([
         {
           result: 'error',
-          message: 'Unexpected error occured while fetching accounts.',
+          message: 'Unexpected error occured while fetching Accounts.',
           detail: error.message,
         },
       ]);
@@ -149,7 +161,7 @@ export async function getAccounts(
       return JSON.stringify([
         {
           result: 'error',
-          message: 'Unexpected error occured while fetching accounts.',
+          message: 'Unexpected error occured while fetching Accounts.',
           detail: 'N/A',
         },
       ]);

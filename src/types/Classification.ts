@@ -27,7 +27,7 @@ export type ClassifiedElement = {
 /**
  * Defines the format of the Categorized result object.
  * Contains multiple Classifications that may apply to a 'For Review' transaction.
- * Defines connection to the 'For Review' transaction with the transaction Id.
+ * Defines connection to the 'For Review' transaction with the Transaction Id.
  */
 export type ClassifiedResult = {
   //  QuickBooks internal Id.

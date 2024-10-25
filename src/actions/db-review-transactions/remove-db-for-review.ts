@@ -11,8 +11,9 @@ import { eq } from 'drizzle-orm';
 import type { ForReviewTransaction } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Takes a raw 'For Review' transaction and removes the related object from the database.
-// Returns: A Query Result object.
+// Removes a 'For Review' transaction from the database after it is saved to User QuickBooks Transactions.
+// Takes:  A Raw 'For Review' transaction object
+// Returns: A Query Result object for removing the Transaction from the database.
 export async function removeForReviewTransactions(
   savedTransaction: ForReviewTransaction
 ): Promise<QueryResult> {
@@ -76,7 +77,7 @@ export async function removeForReviewTransactions(
       // Return an error Query Result indicating the Company realm Id could not be found.
       return {
         result: 'Error',
-        message: 'Company Id for current user could not be found.',
+        message: 'Company Id for current User could not be found.',
         detail: 'Identifier Company Id could not be found in the session.',
       };
     }

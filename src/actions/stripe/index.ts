@@ -1,5 +1,5 @@
 /**
- * Define and export all the stripe related actions here.
+ * Define and export all the Stripe related actions here.
  */
 
 import createCustomer from './create-customer';

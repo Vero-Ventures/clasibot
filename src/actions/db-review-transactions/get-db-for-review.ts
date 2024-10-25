@@ -152,11 +152,12 @@ export async function getDatabaseTransactions(): Promise<
     // Catch any errors and return an error object, include the error message if it is present.
     if (error instanceof Error) {
       console.error(
-        'Error Getting For Review Transactions From Database: ' + error.message
+        'Error Getting "For Review" Transactions From Database: ' +
+          error.message
       );
     } else {
       console.error(
-        'Unexpected Error Getting For Review Transactions From Database.'
+        'Unexpected Error Getting "For Review" Transactions From Database.'
       );
     }
     // Return an empty array on error, as the database fetch failed.
@@ -181,8 +182,9 @@ type databaseForReviewTransaction = {
   topTaxCodeClassification: string;
 };
 
-// Takes a database 'For Review' transaction and finds its assosiated Category Classifications in the database.
-// Returns: Converts the database Category Classifications to an array of ClassifiedElements.
+// Gets the Classified Elements for the Categories assosiated with a 'For Review' transaction saved to the database.
+// Takes: A database 'For Review' transaction and the expense Accounts for the current User.
+// Returns: An array of Classified Elements for the related Categories.
 async function getTransactionCategories(
   forReviewTransaction: databaseForReviewTransaction,
   expenseAccountsResult: Account[]
@@ -242,8 +244,9 @@ async function getTransactionCategories(
   }
 }
 
-// Takes a database 'For Review' transaction and finds its assosiated Tax Code Classifications in the database.
-// Returns: Converts the database Tax Code Classifications to an array of ClassifiedElements.
+// Gets the Classified Elements for the Tax Codes assosiated with a 'For Review' transaction saved to the database.
+// Takes: A database 'For Review' transaction and the valid Tax Codes for the current User.
+// Returns: An array of Classified Elements for the related Tax Codes.
 async function getTransactionTaxCodes(
   forReviewTransaction: databaseForReviewTransaction,
   taxCodesResponse: TaxCode[]

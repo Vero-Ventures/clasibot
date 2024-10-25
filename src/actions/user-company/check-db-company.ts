@@ -5,8 +5,8 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-// Checks if the current Company is set connected to the synthetic accountant in the database.
-// Returns: A string 'true/false' value for the connection state or an error message.
+// Checks if the current Company is set connected to the synthetic bookkeeper in the database.
+// Returns: A string 'true / false' value for the connection state or an error message string.
 export async function checkCompanyConnection(): Promise<string> {
   try {
     // Get the current session and use it to get the Company realm Id.
