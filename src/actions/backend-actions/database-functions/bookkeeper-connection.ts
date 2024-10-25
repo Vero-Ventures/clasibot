@@ -13,7 +13,7 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes the User email and Company name from a QBO company invite.
+// Takes the User email and Company name from a QBO Company invite.
 // Returns: A Query Result object.
 // Integration: Called when a regular Company connection invite comes through.
 export async function addCompanyConnection(
@@ -29,13 +29,13 @@ export async function addCompanyConnection(
 
     // Check that a related database User object was found.
     if (databaseUser) {
-      // Find the User Subscription in the database from the User ID.
+      // Find the User Subscription in the database from the User Id.
       const userSubscription = await db
         .select()
         .from(Subscription)
         .where(eq(Subscription.userId, databaseUser[0].id));
 
-      // Get the Subscription status from Stripe by checking for customers with matching ID's.
+      // Get the Subscription status from Stripe by checking for customers with matching Id.
       const subscription = await stripe.subscriptions.list({
         customer: userSubscription[0].stripeId!,
       });
@@ -86,7 +86,7 @@ export async function addCompanyConnection(
         };
       }
     } else {
-      // If no matching Users could be found, return an error message.
+      // If no matching User could be found, return an error message.
       return {
         result: 'Error',
         message: 'User could not be found.',
@@ -234,7 +234,7 @@ export async function addAccountingFirmCompanies(
                     .from(Subscription)
                     .where(eq(Subscription.userId, user[0].id));
 
-                  // Get the Subscription status from Stripe using a list of customers with matching ID's.
+                  // Get the Subscription status from Stripe using a list of customers with matching Id.
                   const subscription = await stripe.subscriptions.list({
                     customer: userSubscription[0].stripeId!,
                   });
@@ -337,7 +337,7 @@ export async function makeCompanyIncactive(
   realmId: string
 ): Promise<QueryResult> {
   try {
-    // Find the Company in the database with the matching ID.
+    // Find the Company in the database with the matching Id.
     const company = await db
       .select()
       .from(Company)
@@ -361,7 +361,7 @@ export async function makeCompanyIncactive(
       return {
         result: 'Error',
         message: 'Company could not be found.',
-        detail: 'No company with that realm ID could be found.',
+        detail: 'No company with that realm Id could be found.',
       };
     }
   } catch (error) {

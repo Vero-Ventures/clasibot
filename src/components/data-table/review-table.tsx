@@ -59,8 +59,8 @@ export function ReviewTable({
   )[][];
   selectedCategories: Record<string, string>;
   account_names: string[];
-  handleCategoryChange: (transaction_ID: string, category: string) => void;
-  handleTaxCodeChange: (transaction_ID: string, taxCode: string) => void;
+  handleCategoryChange: (transaction_Id: string, category: string) => void;
+  handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void;
   handleSave: (
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
@@ -247,7 +247,7 @@ export function ReviewTable({
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
-                // Get the name of the column using the Column ID.
+                // Get the name of the column using the Column Id.
                 let field = column.id;
                 // Rename 'name' Column to 'Payee'.
                 if (column.id === 'name') {

@@ -19,7 +19,7 @@ export async function fetchCustomSearch(
     const apiKey = process.env.GOOGLE_API_KEY;
 
     try {
-      // Fetch Custom Searchresults using the API key, Custom Search Engine ID, and query.
+      // Fetch Custom Searchresults using the API key, Custom Search Engine Id, and query.
       // Limits the number of results to 3.
       const response = await customsearch.cse.list({
         auth: apiKey,

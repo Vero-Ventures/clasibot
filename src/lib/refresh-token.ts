@@ -5,22 +5,22 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
   // Extract the refresh token from the token object.
   const currentRefreshToken = token?.refreshToken;
 
-  // Define the variables for the QuickBooks client ID and secret.
-  let useID;
+  // Define the variables for the QuickBooks client Id and secret.
+  let useId;
   let useSecret;
 
   // Variables for frontend login use are set based on the app configuration.
   if (process.env.APP_CONFIG === 'production') {
-    useID = process.env.PROD_CLIENT_ID;
+    useId = process.env.PROD_CLIENT_ID;
     useSecret = process.env.PROD_CLIENT_SECRET;
   } else {
-    useID = process.env.DEV_CLIENT_ID;
+    useId = process.env.DEV_CLIENT_ID;
     useSecret = process.env.DEV_CLIENT_SECRET;
   }
 
   // Define the headers and data send with the request.
   const authorizationHeader = `Basic ${Buffer.from(
-    `${useID}:${useSecret}`
+    `${useId}:${useSecret}`
   ).toString('base64')}`;
 
   const headers = {
@@ -70,22 +70,22 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
   // Extract the refresh token from the token object.
   const currentRefreshToken = token?.refreshToken;
 
-  // Define the variables for the QuickBooks client ID and secret.
-  let useID;
+  // Define the variables for the QuickBooks client Id and secret.
+  let useId;
   let useSecret;
 
   // Variables for backend login use are set based on the app configuration.
   if (process.env.APP_CONFIG === 'production') {
-    useID = process.env.BACKEND_PROD_CLIENT_ID;
+    useId = process.env.BACKEND_PROD_CLIENT_ID;
     useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;
   } else {
-    useID = process.env.BACKEND_DEV_CLIENT_ID;
+    useId = process.env.BACKEND_DEV_CLIENT_ID;
     useSecret = process.env.BACKEND_DEV_CLIENT_SECRET;
   }
 
   // Define the headers and data send with the request.
   const authorizationHeader = `Basic ${Buffer.from(
-    `${useID}:${useSecret}`
+    `${useId}:${useSecret}`
   ).toString('base64')}`;
 
   const headers = {

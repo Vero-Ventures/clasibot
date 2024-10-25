@@ -14,10 +14,10 @@ export async function manualClassify(
   setFrontendState: (newState: string) => void
 ): Promise<boolean> {
   try {
-    // Get the current session for the realm Id of the currently logged in Company.
+    // Get the current session for the Company realm Id of the currently logged in Company.
     const session = await getServerSession(options);
 
-    // If session or realm Id are not found, handle error logging, state update, and return a failure value.
+    // If session or Company realm Id are not found, handle error logging, state update, and return a failure value.
     if (!session?.realmId) {
       console.error('Backend Classification: Session Not Found.');
       setFrontendState('An Unexpected Error Occured');
@@ -32,14 +32,14 @@ export async function manualClassify(
       .where(eq(Company.realmId, session.realmId));
 
     // Check that a matching database Company object was found.
-    // Handle error logging, state update, and failure return if no matching company is found.
+    // Handle error logging, state update, and failure return if no matching Company is found.
     if (!currentCompany[0]) {
       console.error('Backend Classification: Company Not Found In Database.');
       setFrontendState('An Unexpected Error Occured');
       return false;
     }
 
-    // Call synthetic login method with the realm Id and (possibly null) Firm name for the Company.
+    // Call synthetic login method with the Company realm Id and (possibly null) Firm name for the Company.
     // Returns: A QueryResult and the tokens retrived from synthetic login process.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
@@ -54,7 +54,7 @@ export async function manualClassify(
       return false;
     } else {
       // If synthetic login was success, call the Company Classification handler.
-      // Pass the synthetic Login Tokens, realm Id, manual Classification boolean, and frontend state handler
+      // Pass the synthetic Login Tokens, Company realm Id, manual Classification boolean, and frontend state handler
       const result = await classifyCompany(
         loginTokens,
         session.realmId,

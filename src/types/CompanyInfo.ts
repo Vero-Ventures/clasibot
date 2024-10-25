@@ -1,5 +1,5 @@
 /**
- * Tracks the important info from the user Company in a single object.
+ * Tracks the important info from the User Company in a single object.
  */
 import type { Locations } from '@/enums/taxes';
 

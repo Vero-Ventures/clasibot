@@ -20,13 +20,13 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { TaxCode } from '@/types/TaxCode';
 
-// Gets the 'For Review' transactions saved to the database for the current user.
-// Returns: An array of sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]
+// Gets the 'For Review' transactions saved to the database for the current User.
+// Returns: An array of Sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]
 export async function getDatabaseTransactions(): Promise<
   (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
 > {
   try {
-    // Get the current session to extract the companies realm Id.
+    // Get the current session to extract the Company realm Id.
     const session = await getServerSession(options);
 
     // Create an array to store the Classified and Raw 'For Review' transactions.
@@ -35,7 +35,7 @@ export async function getDatabaseTransactions(): Promise<
       | ForReviewTransaction
     )[][] = [];
 
-    // Get the the Expense and Transaction Accounts from the user.
+    // Get the the Expense and Transaction Accounts from the User.
     const transactionAccountsResult = JSON.parse(
       await getAccounts('Transaction')
     );
@@ -64,7 +64,7 @@ export async function getDatabaseTransactions(): Promise<
       return [];
     }
 
-    // Get the list of Tax Codes for the user.
+    // Get the list of Tax Codes for the User.
     const taxCodesResponse = JSON.parse(await getTaxCodes());
 
     // Check if the Tax Code fetch resulted in an error.
@@ -80,7 +80,7 @@ export async function getDatabaseTransactions(): Promise<
       return [];
     }
 
-    // If the realm Id is present, fetch all database 'For Review' transactions for that company.
+    // If the Company realm Id is present, fetch all database 'For Review' transactions for that Company.
     if (session?.realmId) {
       const classifiedForReviewTransactions = await db
         .select()
@@ -125,8 +125,8 @@ export async function getDatabaseTransactions(): Promise<
           if (account.id === forReviewTransaction.accountId) {
             // Create the Classified 'For Review' transaction.
             const classifiedTransaction: ClassifiedForReviewTransaction = {
-              // ID for the 'For Review' transaction.
-              transaction_ID: forReviewTransaction.id,
+              // Id for the 'For Review' transaction.
+              transaction_Id: forReviewTransaction.id,
               name: forReviewTransaction.description,
               date: forReviewTransaction.date,
               account: forReviewTransaction.accountId,
@@ -146,7 +146,7 @@ export async function getDatabaseTransactions(): Promise<
       }
     }
     // Return the array of Classified and Raw 'For Review' transactions.
-    // Array will be empty if a valid realm ID could not be found from the session.
+    // Array will be empty if a valid realm Id could not be found from the session.
     return classifiedTransactions;
   } catch (error) {
     // Catch any errors and return an error object, include the error message if it is present.

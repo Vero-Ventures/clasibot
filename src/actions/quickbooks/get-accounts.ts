@@ -19,7 +19,7 @@ export async function getAccounts(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -94,7 +94,7 @@ export async function getAccounts(
       ];
     }
 
-    // Used the defined parameters to fetch specified user Accounts from QuickBooks.
+    // Used the defined parameters to fetch specified User Accounts from QuickBooks.
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
         parameters,

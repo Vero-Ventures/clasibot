@@ -10,12 +10,12 @@ type databaseUser = {
   id: string;
 };
 
-// Iterates through a user Companies and starts the Classification process for them.
-// Takes: The Id of the user whose Companies should be Classified.
+// Iterates through a User Companies and starts the Classification process for them.
+// Takes: The Id of the User whose Companies should be Classified.
 // Uses error loggin instead of returning values.
 export async function classificationCompanyIteration(user: databaseUser) {
   try {
-    // Get all Companies assosiated with the user.
+    // Get all Companies assosiated with the User.
     const userCompanies = await db
       .select()
       .from(Company)
@@ -31,7 +31,7 @@ export async function classificationCompanyIteration(user: databaseUser) {
         const connectedFirmName = currentCompany.firmName;
 
         // Call method for synthetic login.
-        // Takes: The company realmId and possible Firm name used for Company selection.
+        // Takes: The Company realm Id and possible Firm name used for Company selection.
         // Returns: A QueryResult and the tokens fetched during the synthetic login process.
         const [loginResult, loginTokens] = await syntheticLogin(
           companyId,
@@ -44,7 +44,7 @@ export async function classificationCompanyIteration(user: databaseUser) {
           console.error(loginResult);
         } else {
           // Classify the 'For Review' transactions for the current Company.
-          // Passes the with the synthetic login values and company Id needed for backend Classificaion.
+          // Passes the with the synthetic login values and Company Id needed for backend Classificaion.
           classifyCompany(loginTokens, companyId).then((result) => {
             // Use .then() to deal with error logging while the main process continues.
             //    Allows the async Classificaion of Comapnies to be done concurrently.

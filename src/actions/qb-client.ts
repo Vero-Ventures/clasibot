@@ -4,18 +4,18 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import QB from 'node-quickbooks';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Create a QuickBooks client object.
+// Returns: A QuickBooks object used for API calls.
 export async function getQBObject() {
   // Define variables for the QuickBooks client Id and secret.
-  let useID;
+  let useId;
   let useSecret;
 
   // Set the QuickBooks client Id and secret based on the environment.
   if (process.env.APP_CONFIG === 'production') {
-    useID = process.env.PROD_CLIENT_ID;
+    useId = process.env.PROD_CLIENT_ID;
     useSecret = process.env.PROD_CLIENT_SECRET;
   } else {
-    useID = process.env.DEV_CLIENT_ID;
+    useId = process.env.DEV_CLIENT_ID;
     useSecret = process.env.DEV_CLIENT_SECRET;
   }
 
@@ -28,24 +28,26 @@ export async function getQBObject() {
   const refreshToken = session?.refreshToken;
 
   // Call and return the QB object creation method.
-  return createQBObject(useID!, useSecret!, oauthToken, realmId, refreshToken);
+  return createQBObject(useId!, useSecret!, oauthToken, realmId, refreshToken);
 }
 
 // Create a QuickBooks client object using a passed session for backend functions.
+// Takes: A set of synthetic Login Tokens and a Company realm Id.
+// Returns: A QuickBooks object used for API calls.
 export async function getQBObjectWithSession(
   loginTokens: LoginTokens,
   companyId: string
 ) {
   // Define variables for the QuickBooks client Id and secret.
-  let useID;
+  let useId;
   let useSecret;
 
   // Set the QuickBooks backend client Id and secret based on the environment.
   if (process.env.APP_CONFIG === 'production') {
-    useID = process.env.BACKEND_PROD_CLIENT_ID;
+    useId = process.env.BACKEND_PROD_CLIENT_ID;
     useSecret = process.env.BACKEND_PROD_CLIENT_SECRET;
   } else {
-    useID = process.env.BACKEND_DEV_CLIENT_ID;
+    useId = process.env.BACKEND_DEV_CLIENT_ID;
     useSecret = process.env.BACKEND_DEV_CLIENT_SECRET;
   }
 
@@ -55,11 +57,13 @@ export async function getQBObjectWithSession(
   const refreshToken = loginTokens.refreshToken;
 
   // Call and return the QB object creation method.
-  return createQBObject(useID, useSecret, oauthToken, realmId, refreshToken);
+  return createQBObject(useId, useSecret, oauthToken, realmId, refreshToken);
 }
 
+// Takes: Possibly undefined variables used in QuickBooks object creation.
+// Returns: A QuickBooks object used for API calls.
 function createQBObject(
-  useID: string | undefined,
+  useId: string | undefined,
   useSecret: string | undefined,
   oauthToken: string | undefined,
   realmId: string | undefined,
@@ -73,7 +77,7 @@ function createQBObject(
 
   // Create the QuickBooks API calls object.
   const qbo = new QB(
-    useID,
+    useId,
     useSecret,
     oauthToken,
     false,

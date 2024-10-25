@@ -15,7 +15,7 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Takes an array of 'For Review' transaction sub arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a realmId.
+// Takes: An array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a Company realm Id.
 // Returns: A Query Result object.
 export async function addForReviewTransactions(
   transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][],
@@ -36,7 +36,7 @@ export async function addForReviewTransactions(
       const rawTransaction = transaction[0] as ForReviewTransaction;
 
       // Check if the current 'For Review' transaction has already been saved into the database.
-      // Compares the realm Id and transaction Id which is a unique combination (transaction Id's are unique by company).
+      // Compares the Company realm Id and transaction Id which is a unique combination (transaction Id's are unique by Company).
       const matchingTransactions = await db
         .select()
         .from(DatabaseForReviewTransaction)
@@ -44,7 +44,7 @@ export async function addForReviewTransactions(
           eq(DatabaseForReviewTransaction.companyId, realmId) &&
             eq(
               DatabaseForReviewTransaction.reviewTransactionId,
-              classifiedTransaction.transaction_ID
+              classifiedTransaction.transaction_Id
             )
         );
 
@@ -54,7 +54,7 @@ export async function addForReviewTransactions(
         // Contains the values needed for frontend display and for writing to QuickBooks.
         const databaseObject = {
           companyId: realmId,
-          reviewTransactionId: classifiedTransaction.transaction_ID,
+          reviewTransactionId: classifiedTransaction.transaction_Id,
           accountId: classifiedTransaction.account,
           accountName: classifiedTransaction.accountName,
           description: rawTransaction.description,
@@ -129,7 +129,7 @@ export async function addForReviewTransactions(
   }
 }
 
-// Takes a classifiedForReviewTransaction and uses its Classification methods to produce Confidence Values.
+// Takes: A Classified 'For Review' transaction and uses its Classification methods to produce Confidence Values.
 // Returns: An array of the Confidence Values in the format [categoryConfidence, taxCodeConfidence].
 function getConfidenceLevels(
   classifiedTransaction: ClassifiedForReviewTransaction
@@ -151,7 +151,7 @@ function getConfidenceLevels(
   return [categoryConfidence, taxCodeConfidence];
 }
 
-// Takes the ID of a new database 'For Review' transaction, as well as its related Catagory Classifications.
+// Takes the Id of a new database 'For Review' transaction, as well as its related Catagory Classifications.
 // Returns: A string inidicating success or an error.
 async function handleCategoryConnections(
   newTransactionId: string,
@@ -174,7 +174,7 @@ async function handleCategoryConnections(
       // If the Category does not exist, create a new one in the database.
       if (!existingCategory) {
         // Number of matches is set to 0, as no Classifications for this Category have been saved yet.
-        // If the user saves the 'For Review' transaction with this Classification, the save function will increment the matches.
+        // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
         const newCategory = await db
           .insert(Category)
           .values({
@@ -211,7 +211,7 @@ async function handleCategoryConnections(
   }
 }
 
-// Takes the ID of a new database 'For Review' transaction, as well as its related Tax Code CAlassifications.
+// Takes the Id of a new database 'For Review' transaction, as well as its related Tax Code CAlassifications.
 // Returns: A string inidicating success or an error.
 async function handleTaxCodeConnections(
   newTransactionId: string,
@@ -234,7 +234,7 @@ async function handleTaxCodeConnections(
       // If the Tax Code does not exist, create a new one in the database.
       if (!existingTaxCode) {
         // Number of matches is set to 0, as no Classifications for this Tax Code have been saved yet.
-        // If the user saves the 'For Review' transaction with this Classification, the save function will increment the matches.
+        // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
         const newTaxCode = await db
           .insert(TaxCode)
           .values({

@@ -7,6 +7,6 @@ export type TaxCode = {
   Id: string;
   // QuickBooks internal name of the Tax Code.
   Name: string;
-  // If the user has the Tax Code enabled.
+  // If the User has the Tax Code enabled.
   Active: boolean;
 };

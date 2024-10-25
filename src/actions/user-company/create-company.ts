@@ -1,12 +1,12 @@
 'use server';
 
-// Takes a database user object Id as well as the realm Id of the related company.
-// Returns: A stringified object that can be used to create a database company object.
+// Takes: A database User object Id as well as the related Company realm Id.
+// Returns: A stringified object that can be used to create a database Company object.
 export default async function createDatabaseCompany(
   userId: string,
   realmId: string
 ): Promise<string> {
-  // Create a new company object to be saved in the database.
+  // Create a new Company object to be saved in the database.
   const newCompany = {
     realmId: realmId,
     userId: userId,
@@ -16,6 +16,6 @@ export default async function createDatabaseCompany(
     firmName: null,
   };
 
-  // Stringify and return the database company object.
+  // Stringify and return the database Company object.
   return JSON.stringify(newCompany);
 }

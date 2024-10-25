@@ -4,7 +4,7 @@ import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get the Company name from the QuickBooks API.
-// Takes: May take synthetic Login Tokens and the companies realm Id.
+// Takes: May take synthetic Login Tokens and the Company realm Id.
 // Returns: The Company name as a string or 'Error: Name not found'
 export async function getCompanyName(
   loginTokens: LoginTokens | null = null,
@@ -14,7 +14,7 @@ export async function getCompanyName(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -28,7 +28,7 @@ export async function getCompanyName(
       QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
     };
 
-    // Search for the user Company Info.
+    // Search for the User Company Info.
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -55,7 +55,7 @@ export async function getCompanyName(
 }
 
 // Get the Company industry from the QuickBooks API.
-// Takes: May take synthetic Login Tokenss and the companies realm Id.
+// Takes: May take synthetic Login Tokenss and the Company realm Id.
 // Returns: The Company industry as a string or 'Error' / 'None'
 export async function getCompanyIndustry(
   loginTokens: LoginTokens | null = null,
@@ -65,7 +65,7 @@ export async function getCompanyIndustry(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -90,7 +90,7 @@ export async function getCompanyIndustry(
       };
     };
 
-    // Search for the user Company Info
+    // Search for the User Company Info
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -127,8 +127,8 @@ export async function getCompanyIndustry(
   }
 }
 
-// Get the company location from the QBO API, return the country and the Sub-location for Canadian companies.
-// Takes: May take synthetic Login Tokens and the companies realm Id.
+// Get the Company location from the QBO API, return the country and the Sub-location for Canadian Companies.
+// Takes: May take synthetic Login Tokens and the Companies realm Id.
 // Returns: A stringified object that contains the Country and Sub-location.
 export async function getCompanyLocation(
   loginTokens: LoginTokens | null = null,
@@ -138,7 +138,7 @@ export async function getCompanyLocation(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokenss and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -156,7 +156,7 @@ export async function getCompanyLocation(
       };
     };
 
-    // Search for the user Company Info
+    // Search for the User Company Info
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -185,7 +185,7 @@ export async function getCompanyLocation(
     const companySubLocation =
       response.QueryResponse.CompanyInfo[0].CompanyAddr.CountrySubDivisionCode;
 
-    // Check if the company is Canadian (check value against known possible values for Canada).
+    // Check if the Company is Canadian (check value against known possible values for Canada).
     if (
       companyCountry === 'CA' ||
       companyCountry === 'Canada' ||

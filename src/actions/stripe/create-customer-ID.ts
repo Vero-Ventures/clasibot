@@ -12,8 +12,8 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes a User ID as a string to create a Customer Id and provides a response object.
-export default async function createCustomerID(
+// Takes a User Id as a string to create a Customer Id and provides a response object.
+export default async function createCustomerId(
   userId: string
 ): Promise<Response> {
   try {
@@ -28,9 +28,9 @@ export default async function createCustomerID(
       return Response.json({ error: 'User not found!' });
     }
 
-    // Check for a User stripe ID in the Subscription object.
+    // Check for a User stripe Id in the Subscription object.
     const userStripeId = subscription[0]?.stripeId;
-    // If no stripe Id is found, create a new Customer with the User's email and name.
+    // If no stripe Id is found, create a new Customer with the User email and name.
     if (!userStripeId) {
       // Get the User object from the database using the passed User Id.
       const user = await db.select().from(User).where(eq(User.id, userId));
@@ -47,7 +47,7 @@ export default async function createCustomerID(
         name: user[0].userName!,
       });
 
-      // Update the database Subscription object connected to the User with the new stripe ID.
+      // Update the database Subscription object connected to the User with the new stripe Id.
       await db
         .update(Subscription)
         .set({
@@ -58,8 +58,8 @@ export default async function createCustomerID(
       // Return a response indicating the Customer was created.
       return Response.json({ message: 'Customer created!' });
     } else {
-      // If the User already has a stripe ID, return an error.
-      return Response.json({ error: 'User already has stripe customerID!' });
+      // If the User already has a stripe Id, return an error.
+      return Response.json({ error: 'User already has stripe customerId!' });
     }
   } catch (error) {
     // Catch any errors and return an error response, include the error message if it is present.

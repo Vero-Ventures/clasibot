@@ -17,25 +17,25 @@ export async function removeForReviewTransactions(
   savedTransaction: ForReviewTransaction
 ): Promise<QueryResult> {
   try {
-    // Get the session and extract the realm Id.
+    // Get the session and extract the Company realm Id.
     const session = await getServerSession(options);
-    const companyID = session?.realmId;
+    const companyId = session?.realmId;
 
-    // Check if a valid realm Id was found.
-    if (companyID) {
-      // Get the 'For Review' transaction by the unique combo of realm Id and database Transaction Id.
+    // Check if a valid Company realm Id was found.
+    if (companyId) {
+      // Get the 'For Review' transaction by the unique combo of Company realm Id and database Transaction Id.
       const transactionToDelete = await db
         .select()
         .from(DatabaseForReviewTransaction)
         .where(
-          eq(DatabaseForReviewTransaction.companyId, companyID) &&
+          eq(DatabaseForReviewTransaction.companyId, companyId) &&
             eq(
               DatabaseForReviewTransaction.reviewTransactionId,
               savedTransaction.id
             )
         );
 
-      // Use the ID of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
+      // Use the Id of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
       await db
         .delete(ForReviewTransactionToCategories)
         .where(
@@ -57,7 +57,7 @@ export async function removeForReviewTransactions(
       await db
         .delete(DatabaseForReviewTransaction)
         .where(
-          eq(DatabaseForReviewTransaction.companyId, companyID) &&
+          eq(DatabaseForReviewTransaction.companyId, companyId) &&
             eq(
               DatabaseForReviewTransaction.reviewTransactionId,
               savedTransaction.id
@@ -73,11 +73,11 @@ export async function removeForReviewTransactions(
           '"For Review" transactions and their connections removed from the database.',
       };
     } else {
-      // Return an error Query Result indicating the realm Id could not be found.
+      // Return an error Query Result indicating the Company realm Id could not be found.
       return {
         result: 'Error',
-        message: 'Company ID for current user could not be found.',
-        detail: 'Identifier Company ID could not be found in the session.',
+        message: 'Company Id for current user could not be found.',
+        detail: 'Identifier Company Id could not be found in the session.',
       };
     }
   } catch (error) {

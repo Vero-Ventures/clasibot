@@ -1,7 +1,8 @@
 'use server';
 import nodemailer from 'nodemailer';
 
-// Takes the user email, contact subject, and email body.
+// Takes: The user email, contact subject, and email body.
+// Returns: A message object containing a success or error result message.
 export async function sendContactEmail({
   email,
   subject,

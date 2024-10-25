@@ -18,14 +18,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get request body that contains the Firm name and user name.
+    // Get request body that contains the Firm name and User name.
     const body = await request.json();
 
-    // Extract the Firm name and user name from the request body.
+    // Extract the Firm name and User name from the request body.
     const firmName: string = body.firmName;
     const userName: string = body.userName;
 
-    // Check if valid Firm name and user name were passed.
+    // Check if valid Firm name and User name were passed.
     // Log error responses for the missing values.
     if (!firmName) {
       console.error(

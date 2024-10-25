@@ -17,7 +17,7 @@ const provider = process.env.AI_PROVIDER;
 
 // Define the base prompts and system instructions to use in different circumstances.
 
-//    Category Predictions: Base prediction and prediction for a missing industry for the user company.
+//    Category Predictions: Base prediction and prediction for a missing industry for the user Company.
 const baseCategoryPrompt =
   'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? Categories: $CATEGORIES';
 const noIndustyCategoryPrompt =
@@ -206,7 +206,7 @@ export async function batchQueryLLM(
 
     // Create an array to track the Classified results and iterate through the returned contexts.
     const results: ClassifiedResult[] = [];
-    for (const { transaction_ID, prompt, context } of contexts) {
+    for (const { transaction_Id, prompt, context } of contexts) {
       // Query the Language Model for a response using the prompt and context.
       const response = await queryLLM(prompt, context, systemInstructions);
 
@@ -235,7 +235,7 @@ export async function batchQueryLLM(
       // Take the possible Classifications and push them to the array with the related 'For Review' transactions Id.
       // Also defines the Classification method to be done by LLM.
       results.push({
-        transaction_ID,
+        transaction_Id,
         possibleClassifications,
         classifiedBy: 'LLM API',
       });
@@ -255,7 +255,7 @@ export async function batchQueryLLM(
 }
 
 // Defines the context used for a Category Classification prediction.
-// Takes the 'For Review' transactions, the possible Classification names, the Company Info context, and the threshold value.
+// Take: An array of 'For Review' transactions, the possible Category names, the Company Info context, and the threshold value.
 // Returns: An array of objects (per passed Transaction) with the prompt, transaction Id, and prediction context.
 function categoryContext(
   transactions: FormattedForReviewTransaction[],
@@ -264,7 +264,7 @@ function categoryContext(
   threshold: number
 ): Promise<{
   prompt: string;
-  transaction_ID: string;
+  transaction_Id: string;
   context: string;
 }>[] {
   // Generates and returns the contexts for each 'For Review' transaction.
@@ -305,10 +305,10 @@ function categoryContext(
         description = 'No description available';
       }
 
-      // For the current 'For Review' transaction being mapped, return the transaction ID, prompt, and context.
+      // For the current 'For Review' transaction being mapped, return the transaction Id, prompt, and context.
       return {
         prompt,
-        transaction_ID: transaction.transaction_ID,
+        transaction_Id: transaction.transaction_Id,
         context: description,
       };
     }
@@ -316,7 +316,8 @@ function categoryContext(
 }
 
 // Defines the context used for a Tax Code Classification prediction.
-// Takes the 'For Review' transactions, predicted Classification names, possible Tax Code names, the Company Info context, and the threshold value.
+// Takes: An array of'For Review' transactions, predicted Category names, possible Tax Code names, the Company Info context, and the threshold value.
+// Returns: An array of objects (per passed Transaction) with the prompt, transaction Id, and prediction context.
 function taxCodeContext(
   transactions: FormattedForReviewTransaction[],
   transactionCategories: Record<string, ClassifiedElement[]>,
@@ -325,7 +326,7 @@ function taxCodeContext(
   threshold: number
 ): Promise<{
   prompt: string;
-  transaction_ID: string;
+  transaction_Id: string;
   context: string;
 }>[] {
   // Generates and returns the contexts for each 'For Review' transaction.
@@ -343,7 +344,7 @@ function taxCodeContext(
       if (companyInfo.industry !== 'None' && companyInfo.industry !== 'Error') {
         industryPresent = true;
       }
-      if (transactionCategories[transaction.transaction_ID]) {
+      if (transactionCategories[transaction.transaction_Id]) {
         categoryPresent = true;
       }
 
@@ -358,7 +359,7 @@ function taxCodeContext(
         // If Categories are present, but no industry, set the prompt and replace with the real values.
         prompt = noIndustyTaxCodePrompt.replace(
           '$CATEGORY',
-          transactionCategories[transaction.transaction_ID][0].name
+          transactionCategories[transaction.transaction_Id][0].name
         );
       } else if (industryPresent && categoryPresent) {
         // If both Categories and industry are present, set the prompt and replace with the real values.
@@ -366,7 +367,7 @@ function taxCodeContext(
           .replace('$INDUSTRY', companyInfo.industry)
           .replace(
             '$CATEGORY',
-            transactionCategories[transaction.transaction_ID][0].name
+            transactionCategories[transaction.transaction_Id][0].name
           );
       }
 
@@ -394,10 +395,10 @@ function taxCodeContext(
         description = 'No description available';
       }
 
-      // For the current 'For Review' transaction being mapped, return the transaction ID, prompt, and context.
+      // For the current 'For Review' transaction being mapped, return the transaction Id, prompt, and context.
       return {
         prompt,
-        transaction_ID: transaction.transaction_ID,
+        transaction_Id: transaction.transaction_Id,
         context: description,
       };
     }

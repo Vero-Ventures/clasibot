@@ -5,7 +5,7 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { Purchase } from '@/types/Purchase';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Find a specific Purchase object by its QuickBooks ID and return a formatted Purchase object.
+// Find a specific Purchase object by its QuickBooks Id and return a formatted Purchase object.
 // May take a synthetic login session to use instead of the regular session.
 export async function findFormattedPurchase(
   id: string,
@@ -16,7 +16,7 @@ export async function findFormattedPurchase(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -81,7 +81,7 @@ export async function findFormattedPurchase(
     // If the query did not encounter an error, get the Id from the response and update the Purchase object.
     if (success) {
       formattedResult.id = response.Id;
-      // Iterate through the line field to find the Tax Code ID.
+      // Iterate through the line field to find the Tax Code Id.
       // If present the Tax Code is found in the 'AccountBasedExpenseLineDetail' field.
       for (const line of response.Line) {
         if (line.DetailType === 'AccountBasedExpenseLineDetail') {

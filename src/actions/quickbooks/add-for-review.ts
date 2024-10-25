@@ -19,10 +19,10 @@ export async function addForReview(
   taxCodeId: string
 ): Promise<QueryResult> {
   try {
-    // Get the current session to get the company realm Id.
+    // Get the current session to get the Company realm Id.
     const session = await getServerSession(options);
 
-    // If a session realm Id could not be found, create and return an error Query Result.
+    // If a session Company realm Id could not be found, create and return an error Query Result.
     if (!session?.realmId) {
       return { result: '', message: '', detail: '' };
     }
@@ -39,7 +39,7 @@ export async function addForReview(
       return { result: '', message: '', detail: '' };
     }
 
-    // Call method for synthetic login with the realm Id of the company and the potential Firm name.
+    // Call method for synthetic login with the Company realm Id and the potential Firm name.
     // Returns: A QueryResult and a dictionary containing the tokens from synthetic login.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
@@ -51,10 +51,10 @@ export async function addForReview(
       return loginResult;
     }
 
-    // Define the Account ID for the call and the full endpoint to use.
+    // Define the Account Id for the call and the full endpoint to use.
     const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${session!.realmId}/olb/ng/batchAcceptTransactions`;
 
-    // Convert the passed 'For Review' transaction to the format needed when calling the update user Transactions endpoint.
+    // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
     const body = createForReviewUpdateObject(
       forReviewTransaction,
       categoryId,
@@ -111,14 +111,14 @@ export async function addForReview(
   }
 }
 
-// Takes the 'For Review' transaction data, as well as the ID's for the Classificaions.
+// Takes the 'For Review' transaction data, as well as the Id's for the Classificaions.
 // Returns: An formatted 'Update For Review' transaction object.
 function createForReviewUpdateObject(
   responseData: ForReviewTransaction,
   categoryId: string,
   taxCodeId: string
 ): UpdatedForReviewTransaction {
-  // Create and API call body using the passed QBO entity ID's and the values in the 'For Review' transaction object.
+  // Create and API call body using the passed QBO entity Id's and the values in the 'For Review' transaction object.
   const newUpdateObject: UpdatedForReviewTransaction = {
     txnList: {
       olbTxns: [

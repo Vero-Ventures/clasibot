@@ -31,7 +31,7 @@ export type ClassifiedElement = {
  */
 export type ClassifiedResult = {
   //  QuickBooks internal Id.
-  transaction_ID: string;
+  transaction_Id: string;
   // A list of possible Classifications for the 'For Review' transaction.
   //    The type of the Classification is defined inside the Classification object.
   possibleClassifications: Classification[];

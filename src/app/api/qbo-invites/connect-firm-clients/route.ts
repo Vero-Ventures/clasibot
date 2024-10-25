@@ -18,14 +18,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get request body that contains the Firm name and company names.
+    // Get request body that contains the Firm name and Company names.
     const body = await request.json();
 
-    // Extract the Firm name and company names from the request body.
+    // Extract the Firm name and Company names from the request body.
     const firmName: string = body.firmName;
     const companyNames: string[] = body.companies || [];
 
-    // Check if valid Firm name and company names were passed.
+    // Check if valid Firm name and Company names were passed.
     // Log error responses for the missing values.
     if (!firmName) {
       console.error(

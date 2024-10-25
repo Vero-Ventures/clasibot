@@ -53,7 +53,7 @@ export default async function createCustomerSession(): Promise<
     // Check if the database User object has a stripe Id value.
     const userStripeId = userSubscription[0]?.stripeId;
     if (userStripeId) {
-      // Create a new Customer session with the User's stripe Id.
+      // Create a new Customer session with the User stripe Id.
       // Session sets the pricing table component to enabled.
       const customerSession = await stripe.customerSessions.create({
         customer: userStripeId,

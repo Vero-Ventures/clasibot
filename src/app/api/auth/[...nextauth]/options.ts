@@ -10,7 +10,7 @@ import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { createCustomerID } from '@/actions/stripe';
+import { createCustomerId } from '@/actions/stripe';
 import createDatabaseCompany from '@/actions/user-company/create-company';
 
 // Export the config options to work with Next Auth.
@@ -28,9 +28,9 @@ export function auth(
   return getServerSession(...args, config);
 }
 
-// Define the frontend values for the client ID, secret, and wellknow URL for QuickBooks.
+// Define the frontend values for the client Id, secret, and wellknow URL for QuickBooks.
 // Values are based on the environment configuration.
-const useID =
+const useId =
   process.env.APP_CONFIG === 'production'
     ? process.env.PROD_CLIENT_ID
     : process.env.DEV_CLIENT_ID;
@@ -47,7 +47,7 @@ export const options: NextAuthOptions = {
   // Set the values for QuickBooks connection through OAuth.
   providers: [
     {
-      clientId: useID,
+      clientId: useId,
       clientSecret: useSecret,
       id: 'quickbooks',
       name: 'QuickBooks',
@@ -92,7 +92,7 @@ export const options: NextAuthOptions = {
     // Define the JWT callback to get the token data.
     async jwt({ token, account, profile }) {
       if (account) {
-        // If the account is found, set the values in the token, delete the realmId cookie, and return the token.
+        // If the account is found, set the values in the token, delete the realm Id cookie, and return the token.
         token.userId = profile?.sub;
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -123,40 +123,40 @@ export const options: NextAuthOptions = {
     // Define the behavior of callback function called on frontend sign in.
     async signIn({ user }) {
       try {
-        // Get the email and name of the user.
+        // Get the email and name of the User.
         const email = user.email;
         const userName = user.name;
 
-        // Check if the realm ID can be found from the cookies and throw an error if it could not.
+        // Check if the realm Id can be found from the cookies and throw an error if it could not.
         if (!cookies().get('realmId')?.value) {
           // Throw an error to be caught and logged at the end of sign in.
-          throw 'Company ID could not be found for company creation.';
+          throw 'Company Id could not be found for company creation.';
         }
 
         // Only reach this point if realm Id is present so record it as not null.
-        const companyID = cookies().get('realmId')!.value;
+        const companyId = cookies().get('realmId')!.value;
 
-        // Check if the email was successfuly found from the passed user.
+        // Check if the email was successfuly found from the passed User.
         if (!email) {
           // If no email is found, return false to indicate that sign-in failed.
           console.error('No user email found in session');
           return false;
         }
 
-        // Check if the user name was successful found from passed user.
+        // Check if the User name was successful found from passed User.
         if (!userName) {
           // If no user name is found, false to indicate that sign-in failed.
           console.error('No user name found in session');
           return false;
         }
 
-        // Find the database User object with the user email.
+        // Find the database User object with the User email.
         const userData = await db
           .select()
           .from(User)
           .where(eq(User.email, email));
 
-        // Check for any existing database Users matching the current User.
+        // Check for any existing database User objects matching the current User.
         if (userData.length === 0) {
           try {
             // If no matching database User exists (new User), create a new User object in the database.
@@ -172,7 +172,7 @@ export const options: NextAuthOptions = {
             // Create a Company object that is assosaited with the new User.
             const companyData = await createDatabaseCompany(
               newUser[0].id,
-              companyID
+              companyId
             );
             // Insert the newly created Company object into the database.
             await db.insert(Company).values(JSON.parse(companyData));
@@ -192,8 +192,8 @@ export const options: NextAuthOptions = {
               .set({ subscriptionId: newSubscription[0].id })
               .where(eq(User.id, newUser[0].id));
 
-            // Create a stripe customerID for the User and update the database Subscription object with it.
-            const createdCustomer = await createCustomerID(newUser[0].id);
+            // Create a stripe customerId for the User and update the database Subscription object with it.
+            const createdCustomer = await createCustomerId(newUser[0].id);
             const createdCustomerResult = await createdCustomer.json();
 
             // Check the result of customer create and return an error if it failed.
@@ -211,19 +211,19 @@ export const options: NextAuthOptions = {
             return false;
           }
         } else {
-          // If the User already exists in the database, get the database companies connected to the current User.
+          // If the User already exists in the database, get the database Companies connected to the current User.
           const companies = await db
             .select()
             .from(Company)
             .where(eq(Company.userId, userData[0].id));
 
-          // Use the current companies realm Id to check if it present in the list of the Users database companies.
-          if (!companies.some((company) => company.realmId === companyID)) {
-            // If there is no assosaited database company object for the current realm Id -
+          // Use the current Company realm Id to check if it present in the list of the User database Companies.
+          if (!companies.some((company) => company.realmId === companyId)) {
+            // If there is no assosaited database User object for the current Company realm Id -
             // Create a new Company object that is assosaited with the new User.
             const companyData = await createDatabaseCompany(
               userData[0].id,
-              companyID
+              companyId
             );
             // Insert the newly created Company object into the database.
             await db.insert(Company).values(JSON.parse(companyData));
@@ -245,9 +245,9 @@ export const options: NextAuthOptions = {
   },
 };
 
-// Define the backend values for the client ID and secret used in synthetic login processes.
+// Define the backend values for the client Id and secret used in synthetic login processes.
 // Values are based based on the environment configuration.
-const useIDBackend =
+const useIdBackend =
   process.env.APP_CONFIG === 'production'
     ? process.env.BACKEND_PROD_CLIENT_ID
     : process.env.BACKEND_DEV_CLIENT_ID;
@@ -260,7 +260,7 @@ export const backendOptions: NextAuthOptions = {
   // Set the values for QuickBooks connection through OAuth.
   providers: [
     {
-      clientId: useIDBackend,
+      clientId: useIdBackend,
       clientSecret: useSecretBackend,
       id: 'quickbooks',
       name: 'QuickBooks',
@@ -305,7 +305,7 @@ export const backendOptions: NextAuthOptions = {
     // Define the JWT callback to get the token data.
     async jwt({ token, account, profile }) {
       if (account) {
-        // If the account is found, set the values in the token, delete the realmId cookie, and return the token.
+        // If the account is found, set the values in the token, delete the realm Id cookie, and return the token.
         token.userId = profile?.sub;
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -336,10 +336,10 @@ export const backendOptions: NextAuthOptions = {
     // Define the behavior of callback function called on backend sign in.
     async signIn({ user }) {
       try {
-        // Get the email of the current user
+        // Get the email of the current User
         const email = user.email;
 
-        // Check if the email was successfuly found from the passed user.
+        // Check if the email was successfuly found from the passed User.
         if (!email) {
           // If no email is found, return false to indicate that sign-in failed.
           console.error('No user email found in session');

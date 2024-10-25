@@ -5,10 +5,10 @@ import { createCustomerSession } from '@/actions/stripe';
 
 export default function PricingTable({
   publicKey,
-  tableID,
+  tableId,
 }: {
   publicKey: string;
-  tableID: string;
+  tableId: string;
 }) {
   // Define state to store and update the customer session.
   const [customerSession, setCustomerSession] = useState('');
@@ -50,7 +50,7 @@ export default function PricingTable({
       {/* If the customer session is present (logged in user), load the table using the customer's session. */}
       {customerSession && (
         <stripe-pricing-table
-          pricing-table-id={tableID}
+          pricing-table-id={tableId}
           publishable-key={publicKey}
           customer-session-client-secret={customerSession}
         />

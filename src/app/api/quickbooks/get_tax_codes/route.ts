@@ -1,7 +1,7 @@
 import { getTaxCodes } from '@/actions/quickbooks/taxes';
 
 export async function GET() {
-  // Call action to get formatted user Tax Codes from QuickBooks API.
+  // Call action to get formatted User Tax Codes from QuickBooks API.
   const taxCodes = await getTaxCodes();
 
   // Return the Tax Codes as a JSON object.

@@ -6,8 +6,9 @@ import type { ErrorResponse } from '@/types/ErrorResponse';
 import type { TaxCode } from '@/types/TaxCode';
 import type { LoginTokens } from '@/types/LoginTokens';
 
-// Get all the user Tax Codes and returns them as an array of Tax Code objects.
-// May take a synthetic login session to use instead of the regular session.
+// Get all valid Canadian tax codes for a User location.
+// Takes: An optional set of Login Tokens and a Company realm Id.
+// Returns: An array of Tax Code objects as a string.
 export async function getTaxCodes(
   loginTokens: LoginTokens | null = null,
   companyId: string | null = null
@@ -16,7 +17,7 @@ export async function getTaxCodes(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -50,7 +51,7 @@ export async function getTaxCodes(
       },
     };
 
-    // Get all user Tax Code objects from QuickBooks.
+    // Get all User Tax Code objects from QuickBooks.
     const response: TaxCodeResponse = await new Promise((resolve) => {
       qbo.findTaxCodes((err: ErrorResponse, data: TaxCodeResponse) => {
         if (err && checkFaultProperty(err)) {
@@ -100,7 +101,7 @@ export async function getTaxCodes(
   }
 }
 
-// Finds the valid Tax Codes for a user by their specific Canadian Sub-location.
+// Finds the valid Tax Codes for a User by their specific Canadian Sub-location.
 // Takes: A Canadian sub-location name defined by the Locations enum.
 // Returns: An array of the Tax Code names used by the Sub-location.
 export async function getTaxCodesByLocation(

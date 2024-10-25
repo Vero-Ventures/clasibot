@@ -22,7 +22,7 @@ import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
 // Classifies and saves the 'For Review' transactions for a specific Company.
-// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
+// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
 // Manual Classification Specific:
 //        Boolean value for Classification method (true for frontend call) a callback function for updating frontend state.
 // Returns: The Query Result from 'For Review' transaction saving function or an error Query Result.
@@ -59,7 +59,7 @@ export async function classifyCompany(
     // Manual Classification: Update frontend state for fetching saved Classified Transactions.
     if (manualClassify) setFrontendState!('Getting Transaction History ... ');
 
-    // Get the saved Classified Transactions from the user to use as context for prediction.
+    // Get the saved Classified Transactions from the User to use as context for prediction.
     const classifiedPastTransactions = await getClassifiedPastTransactions(
       loginTokens,
       companyId
@@ -70,7 +70,7 @@ export async function classifyCompany(
       (subArray) => subArray[0] as FormattedForReviewTransaction
     );
 
-    // Get Company Info for the user as context during LLM predictions.
+    // Get Company Info for the User as context during LLM predictions.
     const companyInfo = await getCompanyInfo(loginTokens, companyId);
 
     // Manual Classification: Update frontend state to indicate start of Classification.
@@ -164,7 +164,7 @@ export async function classifyCompany(
 }
 
 // Gets the 'For Review' transactions from the Company Accounts.
-// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
+// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
 // Returns: An array of Sub-arrays in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 async function getForReviewTransactions(
   loginTokens: LoginTokens,
@@ -245,8 +245,8 @@ async function getForReviewTransactions(
 }
 
 // Gets the saved and Classified Transactions from the Company for use in LLM prediction.
-// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
-// Returns: An array of transactions objects for the users Classified transactions.
+// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
+// Returns: An array of transactions objects for the User Classified transactions.
 async function getClassifiedPastTransactions(
   loginTokens: LoginTokens,
   companyId: string
@@ -297,7 +297,7 @@ async function getClassifiedPastTransactions(
 }
 
 // Gets the Company Info that is used in Transaction Classification.
-// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
+// Takes: The tokens retrived from synthetic login and the realm Id of the Company.
 // Returns: The relevant Company Info object.
 async function getCompanyInfo(
   loginTokens: LoginTokens,
@@ -342,7 +342,7 @@ async function getCompanyInfo(
 }
 
 // Takes: The array of Formatted and Raw 'For Review' transactions -
-//    Also takes a record of Transaction IDs to arrays of the Classifications.
+//    Also takes a record of Transaction Id to arrays of the Classifications.
 // Returns: The 'For Review' transaction array converted to Sub-arrays of [ClassifiedForReviewTransactions, ForReviewTransaction].
 function createClassifiedForReviewTransactions(
   forReviewTransactions: (
@@ -386,7 +386,7 @@ function createClassifiedForReviewTransactions(
 
       // Extract the value for the current 'For Review' transaction from the passed 'For Review' transaction record.
       const transactionClassifications =
-        nonNullResult[formattedTransaction.transaction_ID];
+        nonNullResult[formattedTransaction.transaction_Id];
 
       // Check if the Classification result values for the current 'For Review' transaction are present.
       if (transactionClassifications) {
@@ -400,7 +400,7 @@ function createClassifiedForReviewTransactions(
       newCategorizedTransactions.push([
         // Define a Classified 'For Review' transaction to be added.
         {
-          transaction_ID: formattedTransaction.transaction_ID,
+          transaction_Id: formattedTransaction.transaction_Id,
           name: formattedTransaction.name,
           date: formattedTransaction.date,
           account: formattedTransaction.account,

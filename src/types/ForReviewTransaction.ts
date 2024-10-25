@@ -9,7 +9,7 @@
 import type { ClassifiedElement } from './Classification';
 
 // Defines the object recived when calling a 'For Review' transaction from the API.
-// Contains the values needed later when saving the 'For Review' transaction to the users Account.
+// Contains the values needed later when saving the 'For Review' transaction to the User Account.
 export type ForReviewTransaction = {
   id: string;
   olbTxnId: string;
@@ -60,8 +60,8 @@ export type UpdatedForReviewTransaction = {
 
 // Defines the inital formatted version of a fetched 'For Review' transaction.
 export type FormattedForReviewTransaction = {
-  // ID for the 'For Review' transaction.
-  transaction_ID: string;
+  // Id for the 'For Review' transaction.
+  transaction_Id: string;
   // Name related to the transaction (AKA the payee).
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
@@ -76,8 +76,8 @@ export type FormattedForReviewTransaction = {
 
 // Defines a formatted 'For Review' transaction with its potential Classifications.
 export type ClassifiedForReviewTransaction = {
-  // ID for the 'For Review' transaction.
-  transaction_ID: string;
+  // Id for the 'For Review' transaction.
+  transaction_Id: string;
   // Name related to the transaction (AKA the payee).
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.

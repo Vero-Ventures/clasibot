@@ -4,7 +4,7 @@ import { siteConfig } from '@/site-config/site';
 import SignInButton from '@/components/inputs/sign-in-button';
 
 export default async function Page() {
-  // Check for a user session and redirect logged in users to the home page.
+  // Check for a User session and redirect logged in users to the home page.
   const session = await getServerSession();
   if (session) {
     redirect('/home');

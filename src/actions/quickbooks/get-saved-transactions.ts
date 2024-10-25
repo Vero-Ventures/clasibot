@@ -24,7 +24,7 @@ export async function getSavedTransactions(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -56,7 +56,7 @@ export async function getSavedTransactions(
       };
     };
 
-    // Query user preferences to get the Multi-Currency preference for the user.
+    // Query User preferences to get the Multi-Currency preference for the User.
     // Multi-Currency determines the name of the columnn that contains the Transaction amount.
     const preferences: PreferenceResponse = await new Promise((resolve) => {
       qbo.getPreferences((err: ErrorResponse, data: PreferenceResponse) => {
@@ -116,7 +116,7 @@ export async function getSavedTransactions(
       }[];
     };
 
-    // Used the defined parameters to fetch user Transactions from QuickBooks.
+    // Used the defined parameters to fetch User Transactions from QuickBooks.
     const response: TransactionResponse = await new Promise((resolve) => {
       qbo.reportTransactionList(
         parameters,
@@ -175,7 +175,7 @@ export async function getSavedTransactions(
 
 // Formats the response rows into Transactions.
 // Takes: the QuickBooks response rows and a results array.
-//    May also take synthetic Login Tokens and company Id for backend calls.
+//    May also take synthetic Login Tokens and Company Id for backend calls.
 // Returns: A results array containing a Query Result in the first index and the formatted Transaction objects.
 async function checkAndFormatTransactions(
   rows: {
@@ -243,14 +243,14 @@ async function checkAndFormatTransactions(
           };
 
           // Search for the Purchase related to the Transaction to get the Tax Code.
-          // Pass synthetic Login Tokens and realm Id in case backend call is needed.
+          // Pass synthetic Login Tokens and Company realm Id in case backend call is needed.
           const transactionPurchase = await findFormattedPurchase(
             String(row.ColData[idRow].id),
             loginTokens,
             companyId
           );
 
-          // Get the user Tax Codes and parse it to a Query Result and an array of Tax Code objects.
+          // Get the User Tax Codes and parse it to a Query Result and an array of Tax Code objects.
           const userTaxCodes = JSON.parse(
             await getTaxCodes(loginTokens, companyId)
           );
@@ -286,7 +286,7 @@ async function checkAndFormatTransactions(
               );
             }
           } else {
-            // If both fetches were successful, iterate through the user Tax Codes.
+            // If both fetches were successful, iterate through the User Tax Codes.
             // Skips the Query Result in the first index.
             for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {
               // Find the Tax Code that matches the one in the Puchase object for the Transaction.

@@ -12,15 +12,15 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Iterates through the Users to check subscription and call for Classificaion of their Companies.
+// Iterates through the User objects to check subscription and call for Classificaion of their Companies.
 // Uses error loggin instead of returning values.
 export async function classificationUserIteration() {
   try {
-    // Get all of the Users and Subscriptions in the database.
+    // Get all of the User and Subscription objects in the database.
     const users = await db.select().from(User);
     const subscriptions = await db.select().from(Subscription);
 
-    // Iterate over the Users and check if they have a valid Subscription.
+    // Iterate over the User objects and check if they have a valid Subscription.
     for (const currentUser of users) {
       // Look for a Stripe Subscription object connected to the User by the User Id.
       const userSubscription = subscriptions.find(

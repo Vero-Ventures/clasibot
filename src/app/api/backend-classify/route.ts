@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
     });
   } else {
     // If the call is a valid vercel cron job request,
-    // Call user iteration function to start the process of company 'For Review' transaction Classification.
+    // Call User iteration function to start the process of Company 'For Review' transaction Classification.
     classificationUserIteration();
 
-    // After starting async & concurrent Classification of 'For Review' transactions in user companies.
+    // After starting async & concurrent Classification of 'For Review' transactions in User Companies.
     // Return a response to indicate the the weekly Classification was started successful.
     return new Response('Weekly Background Classification Started.', {
       status: 200,

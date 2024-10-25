@@ -159,7 +159,7 @@ const commonColumns = [
         | Row<ClassifiedForReviewTransaction>;
     }) => row.getValue('accountName'),
     // Filter function takes the Row value and an array of Account names (filterValue).
-    //    Column ID is needed to match the expected function signature.
+    //    Column Id is needed to match the expected function signature.
     filterFn: (
       row:
         | Row<FormattedForReviewTransaction>
@@ -211,8 +211,8 @@ const commonColumns = [
 // Define the Columns for the Review Table.
 export const reviewColumns = (
   selectedCategories: Record<string, string>,
-  handleCategoryChange: (transaction_ID: string, category: string) => void,
-  handleTaxCodeChange: (transaction_ID: string, taxCode: string) => void
+  handleCategoryChange: (transaction_Id: string, category: string) => void,
+  handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void
 ): ColumnDef<ClassifiedForReviewTransaction>[] => [
   // Define the order of the Columns. Start with the select, date, type, payee, and account Columns.
   commonColumns[0],
@@ -234,9 +234,9 @@ export const reviewColumns = (
           // Use a callback function (handleCategoryChange) when the selected Category for a row changes.
           //    Updates the selected Categories for each Transaction in the Review Page.
           onChange={(e) => {
-            handleCategoryChange(row.original.transaction_ID, e.target.value);
+            handleCategoryChange(row.original.transaction_Id, e.target.value);
           }}
-          value={selectedCategories[row.original.transaction_ID]}>
+          value={selectedCategories[row.original.transaction_Id]}>
           {/* Map the Categories associated with the Transaction to a dropdown */}
           {categories.map((category) => (
             <option key={category.name} value={category.name}>
@@ -264,9 +264,9 @@ export const reviewColumns = (
           // Use a callback function (handleTaxCodeChange) when the selected Tax Code for a row changes.
           //    Updates the selected Tax Codes for each Transaction in the Review Page.
           onChange={(e) => {
-            handleTaxCodeChange(row.original.transaction_ID, e.target.value);
+            handleTaxCodeChange(row.original.transaction_Id, e.target.value);
           }}
-          value={selectedCategories[row.original.transaction_ID]}>
+          value={selectedCategories[row.original.transaction_Id]}>
           {/* Map the Tax Codes associated with the Transaction to a dropdown */}
           {categories.map((category) => (
             <option key={category.name} value={category.name}>

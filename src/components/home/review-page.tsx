@@ -128,11 +128,11 @@ export default function ReviewPage({
         // Check if each of the Classifications are present.
         // If they are, set the inital Classification of that type for the 'For Review' transaction to the value in the first index.
         if (classifications.categories) {
-          initialCategories[classifiedTransaction.transaction_ID] =
+          initialCategories[classifiedTransaction.transaction_Id] =
             classifications.categories[0].name;
         }
         if (classifications.taxCodes) {
-          initialTaxCodes[classifiedTransaction.transaction_ID] =
+          initialTaxCodes[classifiedTransaction.transaction_Id] =
             classifications.taxCodes[0].name;
         }
       });
@@ -156,18 +156,18 @@ export default function ReviewPage({
     initializeClassifications();
   }, [loadedTransactions]);
 
-  // Update the selected Categories state using a 'For Review' transaction ID and the new Category.
-  function handleCategoryChange(transactionID: string, category: string) {
+  // Update the selected Categories state using a 'For Review' transaction Id and the new Category.
+  function handleCategoryChange(transactionId: string, category: string) {
     setSelectedCategories({
       ...selectedCategories,
-      [transactionID]: category,
+      [transactionId]: category,
     });
   }
-  // Update the selected Tax Code state using a 'For Review' transaction ID and the new Tax Code.
-  function handleTaxCodeChange(transactionID: string, taxCode: string) {
+  // Update the selected Tax Code state using a 'For Review' transaction Id and the new Tax Code.
+  function handleTaxCodeChange(transactionId: string, taxCode: string) {
     setSelectedTaxCodes({
       ...selectedTaxCodes,
-      [transactionID]: taxCode,
+      [transactionId]: taxCode,
     });
   }
 
@@ -183,7 +183,7 @@ export default function ReviewPage({
       // Define an array for Transactions to be saved to the database for future Classification use.
       const newTransactions: Transaction[] = [];
 
-      // Call the list of Expense Accounts to get Account ID's from the recorded Account names.
+      // Call the list of Expense Accounts to get Account Id's from the recorded Account names.
       const accountResults = JSON.parse(await getAccounts('Expense'));
 
       // Initally set Accounts variable to be empty and update it if Accounts fetch was successful.
@@ -215,10 +215,10 @@ export default function ReviewPage({
             numericalIndex
           ][1] as ForReviewTransaction;
 
-          // Get the ID of the Transaction and use that to get its selected Classifications.
-          const transactionID = classifiedTransaction.transaction_ID;
-          const selectedCategory = selectedCategories[transactionID];
-          const selectedTaxCode = selectedTaxCodes[transactionID];
+          // Get the Id of the Transaction and use that to get its selected Classifications.
+          const transactionId = classifiedTransaction.transaction_Id;
+          const selectedCategory = selectedCategories[transactionId];
+          const selectedTaxCode = selectedTaxCodes[transactionId];
 
           // Define inital null values for the Classification Category and Tax Code.
           let category = null;
@@ -238,7 +238,7 @@ export default function ReviewPage({
             ) as ClassifiedElement;
           }
 
-          // Throw an error if the ID for that Transaction cannot be found.
+          // Throw an error if the Id for that Transaction cannot be found.
           // Occurs if the selected Classification is not present in Classified 'For Review' transaction's Classifications.
           if (!category || !taxCode) {
             throw new Error('Error saving purchase');
