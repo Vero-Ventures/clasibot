@@ -1,8 +1,9 @@
 'use server';
 import nodemailer from 'nodemailer';
 
-// Takes an email, subject, and body string.
-export async function contactAction({
+// Takes: The user email, contact subject, and email body.
+// Returns: A message object containing a success or error result message.
+export async function sendContactEmail({
   email,
   subject,
   body,
@@ -24,7 +25,7 @@ export async function contactAction({
       },
     });
 
-    // Define the email options; The sender, the receiver, the subject, and the body.
+    // Define the email elements; The sender, the receiver, the subject, and the body.
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.CONTACT_EMAIL,
@@ -38,13 +39,13 @@ export async function contactAction({
       // Return a success message.
       return { message: 'success' };
     } catch (error) {
-      // Log any errors and return an error message.
+      // Catch and log any errors sending the message, then return an error message.
       console.error('Error sending email:', error);
       return { message: 'error' };
     }
   } catch (error) {
-    // Log any errors and return an error message.
-    console.error('Error sending email:', error);
+    // Catch and log any errors creating the transporter, then return an error message.
+    console.error('Error creating transporter:', error);
     return { message: 'error' };
   }
 }

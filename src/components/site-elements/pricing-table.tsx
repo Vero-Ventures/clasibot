@@ -3,41 +3,41 @@ import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
+// Takes: Stripe Env variables used to define the pricing table.
 export default function PricingTable({
   publicKey,
-  tableID,
+  tableId,
 }: {
   publicKey: string;
-  tableID: string;
+  tableId: string;
 }) {
-  // Create use state to store and update the customer sessi  on.
+  // Define state to store and update the Customer session.
   const [customerSession, setCustomerSession] = useState('');
 
-  // Create a function to fetch the customer session.
+  // Define function to fetch and set the Customer session.
   const fetchCustomerSession = async () => {
-    // Create a user stripe customer session using the createCustomerSession function.
+    // Create a user Stripe Customer session.
     const userStripeCustomerSession = (await createCustomerSession()) as {
       customerSession: string;
     };
 
-    // Set the customer session value using the retrieved user stripe customer session.
+    // Set the Customer session state with the retrieved value.
     setCustomerSession(userStripeCustomerSession.customerSession);
   };
 
-  // Use the useEffect hook to fetch the customer session.
+  // Fetch the Customer session on change of the public key value.
   useEffect(() => {
-    // Fetch the customer session.
+    // Fetch the Customer session.
     fetchCustomerSession();
-    // Set an interval to fetch the customer session every 30 minutes.
+    // Set an interval to re-fetch the Customer session every 30 minutes.
     const interval = setInterval(
       () => {
         fetchCustomerSession();
       },
-      // 1000 milliseconds * 60 seconds * 30 minutes
       30 * 60 * 1000
     );
 
-    // Clear the interval when the component is unmounted to stop the repeated fetch.
+    // Clear the interval when the component is unmounted to stop repeated fetches.
     return () => clearInterval(interval);
   }, [publicKey]);
 
@@ -48,11 +48,10 @@ export default function PricingTable({
         src="https://js.stripe.com/v3/pricing-table.js"
         strategy="afterInteractive"
       />
-      {/* If the customer session is present (logged in user), load the table using the customer's session. */}
-      {/* Define the public and provate keys using a production check and a blank value for null env values. */}
+      {/* If the Customer session is present (logged in user), load the table using the Customer's session. */}
       {customerSession && (
         <stripe-pricing-table
-          pricing-table-id={tableID}
+          pricing-table-id={tableId}
           publishable-key={publicKey}
           customer-session-client-secret={customerSession}
         />

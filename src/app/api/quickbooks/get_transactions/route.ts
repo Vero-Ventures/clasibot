@@ -1,11 +1,10 @@
-/**
- * Defines a test API route for getting user transactions using QuickBooks API.
- */
-import { getTransactions } from '@/actions/quickbooks/get-transactions';
+import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
 
 export async function GET() {
-  // Call server action to get user accounts from the QuickBooks API.
-  const transactions = await getTransactions();
-  // Return the transactions as a JSON object.
+  // Call action to get a formatted version of the User Transactions from QuickBooks API.
+  // Returns the previously Classified and saved Transactions.
+  const transactions = await getSavedTransactions();
+
+  // Return the Transactions as a JSON object.
   return Response.json(JSON.parse(transactions));
 }

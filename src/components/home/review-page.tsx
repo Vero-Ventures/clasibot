@@ -1,170 +1,330 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { addTransactions } from '@/actions/transaction-database';
+import { signOut } from 'next-auth/react';
+import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
+import { addDatabaseTransactions } from '@/actions/db-transactions';
+import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
+import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { Button } from '@/components/ui/button';
 import { ReviewTable } from '@/components/data-table/review-table';
+import { Button } from '@/components/ui/button';
 import type { Account } from '@/types/Account';
-import type { ClassifiedCategory } from '@/types/Category';
+import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
   ForReviewTransaction,
-  CategorizedForReviewTransaction,
+  ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
 
-// Takes a list of categorized transactions, a record with the categorization results, and the company name.
+// Takes: A Company Info object and boolean indicating when the Company Info is loaded.
 export default function ReviewPage({
-  categorizedTransactions,
-  categorizationResults,
   company_info,
+  found_company_info,
 }: Readonly<{
-  categorizedTransactions: (
-    | CategorizedForReviewTransaction
-    | ForReviewTransaction
-  )[][];
-  categorizationResults: Record<string, ClassifiedCategory[]>;
   company_info: CompanyInfo;
+  found_company_info: boolean;
 }>) {
-  // Create states to track and set the important values.
-  // Selected categories for each transaction, the saving status, and the modal status, an error message, and account names.
+  // Create states to track the selected Classifications for each row.
   const [selectedCategories, setSelectedCategories] = useState<
     Record<string, string>
   >({});
+  const [selectedTaxCodes, setSelectedTaxCodes] = useState<
+    Record<string, string>
+  >({});
+
+  // Create states to track the loaded Transactions and their assosiated Accounts.
+  const [loadedTransactions, setLoadedTransactions] = useState<
+    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
+  >([]);
+  const [accounts, setAccounts] = useState<string[]>([]);
+
+  // Create states to track values indicating the state of the page.
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [accounts, setAccounts] = useState<string[]>([]);
 
-  // Updates the categorizations for each transaction when categorized transactions or categorization results change.
-  useEffect(() => {
-    // Initialize the selected categories for each transaction.
-    const initializeCategories = async () => {
-      const initialCategories: Record<string, string> = {};
-      categorizedTransactions.forEach((transaction) => {
-        const formattedTransaction =
-          transaction[0] as CategorizedForReviewTransaction;
-        // Look for the first category in the categorization results.
-        const firstCategory =
-          categorizationResults[formattedTransaction.transaction_ID]?.[0]?.name;
-        // If a category is found, add it to the initial categories record.
-        if (firstCategory) {
-          initialCategories[formattedTransaction.transaction_ID] =
-            firstCategory;
-        }
-      });
-      // Update the selected categories state with the initial categories.
-      setSelectedCategories(initialCategories);
+  // Create states to track the state of a Manual Classification call.
+  const [isClassifying, setIsClassifying] = useState(false);
+  const [manualClassificationState, setManualClassificationState] =
+    useState<string>('');
+  const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
+    useState<boolean>(false);
+
+  // Define a function to update the Manual Classification state.
+  function updateManualClassificationState(newState: string) {
+    setManualClassificationState(newState);
+  }
+
+  function handleManualClassification() {
+    // Set the Classification process to be in progress and update the state.
+    setManualClassificationState('Starting Classification ...');
+    setIsClassifying(true);
+
+    const startManualClassification = async () => {
+      // Make call to backend 'For Review' Classification function with the method to update the Classification state.
+      const success = await manualClassify(updateManualClassificationState);
+      if (success) {
+        // Update the state to indicate the Classification is finished.
+        setManualClassificationState(
+          'Finished Review, Loading Transactions ...'
+        );
+        // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
+        setLoadedTransactions(await getDatabaseTransactions());
+
+        // Update manual Classification state with a completion message.
+        setManualClassificationState('Manual Classification Complete.');
+
+        // Additional actions to perform on manual Classification completion.
+        // Completion state handling.
+        //
+        //
+        //
+      } else {
+        // Actions to preform in the event manual Classification results in an error.
+        // Failure state handling.
+        //
+        //
+        //
+      }
+
+      // Update the state to indicate Classification is no longer in progress and open a pop-up to inform the user.
+      setIsClassifying(false);
+      setOpenFinishedClassificationModal(true);
     };
 
-    // Create a set to track account names without duplicates, then add all account names to the set.
+    // Start the Manual Classification by calling the async function.
+    startManualClassification();
+  }
+
+  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
+  useEffect(() => {
+    // Load the Transactions from the database.
+    const loadForReviewTransactions = async () => {
+      setLoadedTransactions(await getDatabaseTransactions());
+    };
+    loadForReviewTransactions();
+  }, [found_company_info]);
+
+  // Updates the Classifications for each Transaction when the Classified Transactions or Classification results change.
+  useEffect(() => {
+    // Initialize the selected Classifications for each 'For Review' transaction.
+    const initializeClassifications = async () => {
+      const initialCategories: Record<string, string> = {};
+      const initialTaxCodes: Record<string, string> = {};
+      loadedTransactions.forEach((transaction) => {
+        // Assert the formatted 'For Review' transaction type and extract its Classifications.
+        const classifiedTransaction =
+          transaction[0] as ClassifiedForReviewTransaction;
+        const classifications: {
+          categories: ClassifiedElement[] | null;
+          taxCodes: ClassifiedElement[] | null;
+        } = {
+          categories: classifiedTransaction.categories,
+          taxCodes: classifiedTransaction.taxCodes,
+        };
+
+        // Check if each of the Classifications are present.
+        // If they are, set the inital Classification of that type for the 'For Review' transaction to the value in the first index.
+        if (classifications.categories) {
+          initialCategories[classifiedTransaction.transaction_Id] =
+            classifications.categories[0].name;
+        }
+        if (classifications.taxCodes) {
+          initialTaxCodes[classifiedTransaction.transaction_Id] =
+            classifications.taxCodes[0].name;
+        }
+      });
+      // Update the selected Categories and Tax Sodes state with the initial Classifications.
+      setSelectedCategories(initialCategories);
+      setSelectedTaxCodes(initialTaxCodes);
+    };
+
+    // Create a set to track Account names without duplicates, then add all Account names to the set.
     const accountNames = new Set<string>();
-    for (const transaction of categorizedTransactions) {
+    for (const transaction of loadedTransactions) {
       const formattedTransaction =
-        transaction[0] as CategorizedForReviewTransaction;
+        transaction[0] as ClassifiedForReviewTransaction;
       accountNames.add(formattedTransaction.account);
     }
 
-    // Update the accounts state with a list of unique account names.
+    // Update the list of Accounts state with a list of unique Account names from the set.
     setAccounts(Array.from(accountNames));
 
-    initializeCategories();
-  }, [categorizedTransactions, categorizationResults]);
+    // Call method to initalize the Classifications of the 'For Review' transactions.
+    initializeClassifications();
+  }, [loadedTransactions]);
 
-  // Update the selected categories state using a transaction ID and the new category.
-  function handleCategoryChange(transactionID: string, category: string) {
+  // Update the selected Categories state using a 'For Review' transaction Id and the new Category.
+  function handleCategoryChange(transactionId: string, category: string) {
     setSelectedCategories({
       ...selectedCategories,
-      [transactionID]: category,
+      [transactionId]: category,
+    });
+  }
+  // Update the selected Tax Code state using a 'For Review' transaction Id and the new Tax Code.
+  function handleTaxCodeChange(transactionId: string, taxCode: string) {
+    setSelectedTaxCodes({
+      ...selectedTaxCodes,
+      [transactionId]: taxCode,
     });
   }
 
-  // Saves the selected categories using the selected rows.
+  // Saves the selected Classification of the selected Rows.
   async function handleSave(
     selectedRows: Record<number, boolean>,
-    transactions: (CategorizedForReviewTransaction | ForReviewTransaction)[][]
+    transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) {
-    // Set the saving status to true.
+    // Set the saving in progress status to true.
     setIsSaving(true);
+
     try {
-      // Define an array for transactions to be saved to the database at the end for future classification use.
+      // Define an array for Transactions to be saved to the database for future Classification use.
       const newTransactions: Transaction[] = [];
-      // Call the list of expense accounts to get account ID's from using account names.
-      const accounts = JSON.parse(await getAccounts('Expense'));
-      // Get the selected rows in an iterable format [key: selectedRowIndex, value: true]
-      // The key is the index of the row and the value is always true for selected rows.
+
+      // Call the list of Expense Accounts to get Account Id's from the recorded Account names.
+      const accountResults = JSON.parse(await getAccounts('Expense'));
+
+      // Initally set Accounts variable to be empty and update it if Accounts fetch was successful.
+      let accounts = [];
+
+      // Check if the Accounts fetch resulted in an error.
+      if (accountResults[0].result === 'Error') {
+        // If Accounts fetch failed, log an error message and throw an error to be caught and displayed.
+        console.error('Error Fetching Accounts: ' + accountResults[0].message);
+        throw 'Accounts Fetch Failed';
+      } else {
+        // Set the Accounts variable to the Account results with the Query Result in the first index removed.
+        accounts = accountResults.slice(1);
+      }
+
+      // Get the selected Rows in an iterable format [key: selectedRowIndex, value: true]
+      // The key is the index of the Row and the value is true for selected Rows.
       const selectedRowIndices = Object.entries(selectedRows);
 
-      // Iterate through the selected rows, using only values where selected = true.
+      // Iterate through the selected Rows, using only values where selected = true.
       selectedRowIndices.forEach(async ([index, selected]) => {
         if (selected) {
-          // Get the row index as a number, as well as the catagoried and raw "for review" transaction objects.
+          // Get the Row index as a number, as well as the Classified and Raw 'For Review' transaction objects.
           const numericalIndex = Number(index);
-          const categorizedTransaction = transactions[
+          const classifiedTransaction = transactions[
             numericalIndex
-          ][0] as CategorizedForReviewTransaction;
+          ][0] as ClassifiedForReviewTransaction;
           const rawTransaction = transactions[
             numericalIndex
           ][1] as ForReviewTransaction;
-          // Get the ID of the transaction and use that to get its selected category.
-          const transactionID = categorizedTransaction.transaction_ID;
-          const selectedCategory = selectedCategories[transactionID];
-          // Get the ID related to the selected category for the transaction.
-          const accountID = categorizedTransaction.categories.find(
-            (category) => category.name === selectedCategory
-          )?.id;
 
-          // Throw an error if the ID for that transaction cannot be found.
-          // Occurs if the selected category is not present in catagorized transaction.
-          if (!accountID) {
-            throw new Error('Error saving purchase');
+          // Get the Id of the Transaction and use that to get its selected Classifications.
+          const transactionId = classifiedTransaction.transaction_Id;
+          const selectedCategory = selectedCategories[transactionId];
+          const selectedTaxCode = selectedTaxCodes[transactionId];
+
+          // Define inital null values for the Classification Category and Tax Code.
+          let category = null;
+          let taxCode = null;
+
+          if (classifiedTransaction.categories) {
+            // Get the Classified element related to the selected Category for the Transaction.
+            category = classifiedTransaction.categories.find(
+              (category) => category.name === selectedCategory
+            ) as ClassifiedElement;
+          }
+
+          if (classifiedTransaction.taxCodes) {
+            // Get the Classified element related to the selected Tax Code for the Transaction.
+            taxCode = classifiedTransaction.taxCodes.find(
+              (taxCode) => taxCode.name === selectedTaxCode
+            ) as ClassifiedElement;
+          }
+
+          // Throw an error if the Id for that Transaction cannot be found.
+          // Occurs if the selected Classification is not present in Classified 'For Review' transaction's Classifications.
+          if (!category || !taxCode) {
+            throw new Error('Error saving Purchase');
           } else {
-            // Create a new transaction object to be saved based on the selected category and catagoried transaction.
+            // Create a new Transaction object to be saved using the Classified Transaction and its Classifications.
             const newDatabaseTransaction: Transaction = {
-              name: categorizedTransaction.name,
-              amount: categorizedTransaction.amount,
+              name: classifiedTransaction.name,
+              amount: classifiedTransaction.amount,
               category: selectedCategory,
+              taxCodeName: selectedTaxCode,
             };
 
-            // Find what method was used to classify the transaction.
-            const classificationMethod = categorizedTransaction.categories.find(
-              (category) => category.name === selectedCategory
-            )?.classifiedBy;
+            // Find what method was used to Classify the Transaction.
+            const categoryClassificationMethod = category.classifiedBy;
 
-            // If the transaction was classified by LLM, it will be using the full account name.
-            if (classificationMethod === 'LLM') {
-              // Find the acount related to that categorization.
+            // If the Transaction was Classified by LLM, it still has the full Account name.
+            if (categoryClassificationMethod === 'LLM') {
+              // Find the Account related to that Category.
               const account = accounts.find(
-                (account: Account) =>
-                  account.name === newDatabaseTransaction.category
+                (account: Account) => account.name === category.name
               );
-              // If the related account exists, update the category name to use the account sub-type instead.
-              // Prevents possibility of saving user inputted account names to the database.
+
+              // If the related Account exists, update the Category to use the sub-type of the Account instead.
+              // Prevents possibility of saving user inputted Account names to the database.
               if (account) {
                 newDatabaseTransaction.category = account.account_sub_type;
+              } else {
+                // If no match is found, throw an error.
+                throw new Error('Error saving Purchase');
               }
             }
 
-            // Push the new transaction with savable info to array of transactions to be saved to the database.
+            // Push the new Transaction to the array of Transactions to be saved to the database.
             newTransactions.push(newDatabaseTransaction);
 
-            // Pass the raw transaction and account ID to add the users "for review" transaction with the updated classification.
-            // Passes the raw transaction object as it is needed for update object creation.
-            // *** NOTE: need to add tax code integration in the future. ***
-            await addForReview(rawTransaction, accountID, 'taxCode');
+            // Call backend method to add the Classified 'For Review' Transaction to QuickBooks.
+            const addResult = await addForReview(
+              rawTransaction,
+              category.id,
+              taxCode.id
+            );
+
+            // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
+            if (addResult.result === 'Error') {
+              throw addResult.message;
+            }
+
+            // Remove the related 'For Review' transaction and its connections from the database.
+            const removeResult =
+              await removeForReviewTransactions(rawTransaction);
+
+            // If removing the Transaction resulted in an error, throw the Query Result message as an error.
+            if (removeResult.result === 'Error') {
+              throw removeResult.message;
+            }
           }
         }
       });
-      // Add all the newly created savable transactions to the database and set no error message to appear.
-      await addTransactions(newTransactions);
-      setErrorMsg(null);
+
+      // Add all the newly created Transactions to the database.
+      const result = await addDatabaseTransactions(newTransactions);
+      // Check the Query Result if returned by the add Transactions function resulted in an error.
+      if (result.result === 'Error') {
+        // If the result was an error, log the message and detail and update the error message state.
+        console.error(
+          'Error saving existing Classified Transactions:',
+          result.message,
+          ', Detail: ',
+          result.detail
+        );
+        setErrorMsg('An error occurred while saving. Please try again.');
+      }
+      // If no errors occured, set the error message state to be null.
+      await setErrorMsg(null);
     } catch (error) {
-      // Catch any errors, log them, and set the error message.
-      console.error('Error saving categories:', error);
+      // Catch any errors and log them (include the error message if it is present).
+      if (error instanceof Error) {
+        console.error('Error saving existing Classified Transactions:', error);
+      } else {
+        console.error('Error saving existing Classified Transactions:', error);
+      }
+      // On error, set the error message state.
       setErrorMsg('An error occurred while saving. Please try again.');
     } finally {
-      // Once the saving process is complete, set the saving status to false and open the result modal.
+      // Once the saving process is complete,
+      // Set the saving in progress status to false and open the save result modal.
       setIsSaving(false);
       setIsModalOpen(true);
     }
@@ -175,18 +335,24 @@ export default function ReviewPage({
       <h1
         id="PageAndCompanyName"
         className="m-auto mb-4 text-center text-3xl font-bold">
-        Classification Results -{' '}
+        Classified Transactions -{' '}
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
-      {/* Populate the review table with the categorized transactions. */}
+      {/* Populate the review table with the Categorized Transactions. */}
       <ReviewTable
-        categorizedTransactions={categorizedTransactions}
+        categorizedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}
+        selectedTaxCodes={selectedTaxCodes}
         account_names={accounts}
         handleCategoryChange={handleCategoryChange}
+        handleTaxCodeChange={handleTaxCodeChange}
         handleSave={handleSave}
         isSaving={isSaving}
+        handleManualClassification={handleManualClassification}
+        isClassifying={isClassifying}
+        manualClassificationState={manualClassificationState}
       />
+
       {/* Only display result modal after an attempt to save sets 'modal open' state to true. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${isModalOpen ? '' : 'hidden'}`}>
@@ -221,15 +387,54 @@ export default function ReviewPage({
             </>
           )}
 
-          <div id="ReturnButtonContainer" className="flex justify-center">
+          {/* Define button to return with text based on the error message state. */}
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
             <Button
               id="ReturnButton"
-              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
               onClick={() => {
                 const url = window.location.origin + window.location.pathname;
                 window.location.href = url;
               }}>
-              Return to Transactions
+              <span className="whitespace-normal">
+                {errorMsg
+                  ? 'Retry Transaction Selection'
+                  : 'Review Additional Transactions'}
+              </span>
+            </Button>
+            {/* Define button to finish the session by logging the user out. */}
+            <Button
+              id="SignOutButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => signOut({ callbackUrl: '/' })}>
+              Finish Review Session
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Defines a popup to be displayed on completion of the manual Classification function call. */}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ResultTitle"
+              className="mb-4 text-center text-2xl font-bold text-green-500">
+              Success
+            </h2>
+            <p
+              id="ResultMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              Your transactions have been classified.
+            </p>
+          </>
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CloseButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => setOpenFinishedClassificationModal(false)}>
+              Continue
             </Button>
           </div>
         </div>

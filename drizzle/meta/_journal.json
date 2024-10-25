@@ -5,36 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1723837806240,
-      "tag": "0000_ancient_jazinda",
+      "when": 1729623582516,
+      "tag": "0000_dizzy_korvac",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1723842300791,
-      "tag": "0001_condemned_gamma_corps",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1724086051638,
-      "tag": "0002_robust_mephistopheles",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1727907694332,
-      "tag": "0003_giant_blue_blade",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1727907865155,
-      "tag": "0004_fuzzy_zarek",
+      "when": 1729712012714,
+      "tag": "0001_fine_natasha_romanoff",
       "breakpoints": true
     }
   ]
