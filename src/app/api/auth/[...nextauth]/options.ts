@@ -10,7 +10,7 @@ import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { createCustomerId } from '@/actions/stripe';
+import { createCustomer } from '@/actions/stripe';
 import createDatabaseCompany from '@/actions/user-company/create-company';
 
 // Export the config options to work with Next Auth.
@@ -193,7 +193,7 @@ export const options: NextAuthOptions = {
               .where(eq(User.id, newUser[0].id));
 
             // Create a stripe customerId for the User and update the database Subscription object with it.
-            const createdCustomer = await createCustomerId(newUser[0].id);
+            const createdCustomer = await createCustomer(newUser[0].id);
             const createdCustomerResult = await createdCustomer.json();
 
             // Check the result of customer create and return an error if it failed.

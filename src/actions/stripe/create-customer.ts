@@ -12,8 +12,8 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes a User Id as a string to create a Customer Id and provides a response object.
-export default async function createCustomerId(
+// Takes a User Id as a string to create a Stripe Id and provides a response object.
+export default async function createCustomer(
   userId: string
 ): Promise<Response> {
   try {
