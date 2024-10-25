@@ -159,10 +159,10 @@ export async function queryLLM(
 // Returns: An array of Classified Result objects connected to the passed 'For Review' transactions.
 export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
-  transactionClassifications: Record<string, ClassifiedElement[]>,
   classifications: Classification[],
   companyInfo: CompanyInfo,
-  type: string
+  type: string,
+  transactionClassifications: Record<string, ClassifiedElement[]> | null = null
 ): Promise<ClassifiedResult[]> {
   try {
     // Define the resultScore threshold for the Knowledge Graph API.
@@ -187,9 +187,10 @@ export async function batchQueryLLM(
       );
     } else {
       // Get the context used for Tax Code prediction.
+      // Assert that the Transaction Classificaions are present (always passed on Tax Code type calls).
       contextPromises = await taxCodeContext(
         transactions,
-        transactionClassifications,
+        transactionClassifications!,
         validClassificationNames,
         companyInfo,
         threshold

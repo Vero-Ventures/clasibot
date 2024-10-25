@@ -6,10 +6,10 @@ import {
   searchDatabaseTransactionCategories,
   searchDatabaseTransactionTaxCodes,
 } from '@/actions/db-transactions';
+import { checkSubscription } from '@/actions/stripe';
+import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/llm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
-import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/llm';
-import { checkSubscription } from '@/actions/stripe';
 import type { Account } from '@/types/Account';
 import type {
   Classification,
@@ -22,13 +22,13 @@ import type { LoginTokens } from '@/types/LoginTokens';
 import type { TaxCode } from '@/types/TaxCode';
 import type { Transaction } from '@/types/Transaction';
 
-// Takes: A list of saved Transactions a list of uncategorized 'For Review' transactions, -
-//        A set of synthetic Login Tokens, and the Company Info for Tax Codes and LLM Classification.
-// Returns: A record that connects a 'For Review' transaction Id to an array of Classified elements for bothe Categories and Tax Codes.
-//    On error, instead returns an object with field error that contains a short error message.
+// Takes: A list of saved Classified Transactions, a list of unclassified 'For Review' transactions, -
+//        A synthetic Login Token object, and the Company Info for use in LLM Classification.
+// Returns: A record that connects a 'For Review' transaction Id to an array of Classified Elements.
+//    On error, instead returns an error object with an error message.
 export async function classifyTransactions(
-  categorizedTransactions: Transaction[],
-  uncategorizedTransactions: FormattedForReviewTransaction[],
+  classifiedTransactions: Transaction[],
+  unclassifiedTransactions: FormattedForReviewTransaction[],
   companyInfo: CompanyInfo,
   loginTokens: LoginTokens,
   companyId: string
@@ -43,22 +43,22 @@ export async function classifyTransactions(
   | { error: string }
 > {
   try {
-    // Save the User saved (Classified) Transactions to the database for DB Classification.
-    const result = await addDatabaseTransactions(categorizedTransactions);
+    // Save the User Classified Transactions to the database for use in future Classification.
+    const result = await addDatabaseTransactions(classifiedTransactions);
 
-    // Check the Query Result returned by the add Transactions function resulted in an error.
-    // Return its message and detail an error Query Result is found.
+    // Check if the Query Result from saving the Transactions function resulted in an error.
     if (result.result === 'Error') {
+      // On error Query Result log an error with the message and detail, then return an error object and message.
       console.error(
-        'Error saving existing Classified User Transactions:',
+        'Error saving User Classified Transactions:',
         result.message,
         ', Detail: ',
         result.detail
       );
-      return { error: 'Error saving existing Classified Transactions.' };
+      return { error: 'Error saving User Classified Transactions.' };
     }
   } catch (error) {
-    // Catch and log any errors, include the error message if it is present.
+    // Catch and log any errors saving the transactions, include the error message if it is present.
     if (error instanceof Error) {
       console.error(
         'Error saving existing Classified Transactions: ' + error.message
@@ -73,7 +73,7 @@ export async function classifyTransactions(
   }
 
   // Check the User Subscription status using the passed Company realm Id
-  // If there is an error or the Subscription status is invalud, return an error object.
+  // If there is an error getting the SubLocation status or it is invalid, return an error object.
   const subscriptionStatus = await checkSubscription(companyId);
   if ('error' in subscriptionStatus) {
     return { error: 'Error getting User Subscription status.' };
@@ -83,8 +83,8 @@ export async function classifyTransactions(
   }
 
   try {
-    // Get valid Categories from QuickBooks (Categories present in the Companies Account) using a synthetic Login Tokens object.
-    // Fetch parsed names for DB useage. (DB saves Transactions with base names to avoid identifing User information).
+    // Get the valid Categories for Classification from QuickBooks Expense Accounts using a synthetic Login Tokens object.
+    // Pass boolean value to indicate if names will be saved to database to properly parse the Category names.
     const validDBCategories: Classification[] = await fetchValidCategories(
       true,
       loginTokens,
@@ -96,14 +96,16 @@ export async function classifyTransactions(
       companyId
     );
 
-    // Get use the location from the Company Info to get the valid Tax Codes.
+    // Get the valid Tax Codes for Classification using the Company Info location.
+    // Also returns a value indicating if Tax Code Classification is possible for the Company (Canadian Companies only).
     const [classifyTaxCodes, validTaxCodes] = await fetchValidTaxCodes(
       companyInfo,
       loginTokens,
       companyId
     );
 
-    // Create dictionaries that ties strings (Transaction Id's) to a list of Categories and a list of Tax Codes.
+    // Create records that connect a 'For Review' transaction Id to an array of its Classified Elements.
+    // Create a seperate record for tracking both Categories and Tax Codes.
     const categoryResults: Record<string, ClassifiedElement[]> = {};
     const taxCodeResults: Record<string, ClassifiedElement[]> = {};
 
@@ -111,12 +113,13 @@ export async function classifyTransactions(
     const noCategoryMatches: FormattedForReviewTransaction[] = [];
     const noTaxCodeMatches: FormattedForReviewTransaction[] = [];
 
-    // Use a helper method to create a new Fuse instance with the Categorized Transactions.
-    const fuse = createFuseInstance(categorizedTransactions);
+    // Create a new Fuse instance with the Classified Transactions.
+    // Used to match the 'For Review' transaction names to the the passed Classified Transaction objects.
+    const fuse = createFuseInstance(classifiedTransactions);
 
-    // Preform the first two levels of Category Classification with Fuse and database matching.
+    // Preform Fuse and database matching for the Category Classifications.
     await classifyWithFuse(
-      uncategorizedTransactions,
+      unclassifiedTransactions,
       fuse,
       validDBCategories,
       categoryResults,
@@ -124,11 +127,11 @@ export async function classifyTransactions(
       'category'
     );
 
-    // Check if Tax Code Classification is possible.
-    if (classifyTaxCodes) {
-      // Preform the first two levels of Tax Code Classification with Fuse and database matching.
+    // Check if Tax Code Classification is possible and valid Tax Codes were found.
+    if (classifyTaxCodes && validTaxCodes.length > 0) {
+      // Preform Fuse and database matching for the Tax Code Classifications.
       await classifyWithFuse(
-        uncategorizedTransactions,
+        unclassifiedTransactions,
         fuse,
         validTaxCodes,
         taxCodeResults,
@@ -137,9 +140,9 @@ export async function classifyTransactions(
       );
     }
 
-    // If there are 'For Review' transactions present in the noMatches array for Categories, send them to the LLM API.
-    // This Categorizes 'For Review' transactions that failed the first two Categorization methods.
+    // Check if 'For Review' transactions are present in the noMatches array for Category Classification.
     if (noCategoryMatches.length > 0) {
+      // Call the LLM to Classify the Categories of the unmatched 'For Review' transactions.
       await classifyCategoriesWithLLM(
         noCategoryMatches,
         validLLMCategories,
@@ -148,8 +151,9 @@ export async function classifyTransactions(
       );
     }
 
-    // If there were no Tax Code matches and Tax Code Classification is valid, send them to the LLM API.
+    // Check if 'For Review' transactions are present in the noMatches array for Tax Code Classification.
     if (noTaxCodeMatches.length > 0 && classifyTaxCodes) {
+      // Call the LLM to Classify the Tax Codes of the unmatched 'For Review' transactions.
       await classifyTaxCodesWithLLM(
         noTaxCodeMatches,
         categoryResults,
@@ -159,9 +163,9 @@ export async function classifyTransactions(
       );
     }
 
-    // Create an object to track the results in relation to the 'For Review' transaction Id.
-    // Nullable values allow for failed predictions or for the skipped Tax Code predictions on a non-CA User.
-    const combinedResults: Record<
+    // Create a record to track arrays of the Classified Elements for a 'For Review' transaction.
+    // Values in the record are nullable to handle failed or disallowed Classification.
+    const classificationResults: Record<
       string,
       {
         category: ClassifiedElement[] | null;
@@ -169,10 +173,11 @@ export async function classifyTransactions(
       }
     > = {};
 
-    // Iterate through the initally passed, uncategorized 'For Review' transactions.
-    for (const transaction of uncategorizedTransactions) {
-      // Define object to store results for the current 'For Review' transaction and initally set both values to null.
-      const newResults: {
+    // Iterate through the passed 'For Review' transactions.
+    for (const transaction of unclassifiedTransactions) {
+      // Define a new object ot be stored in the results array for the current 'For Review' transaction null.
+      // Values are initally set to null to account for failed or disallowed Classification.
+      const transactionResults: {
         category: ClassifiedElement[] | null;
         taxCode: ClassifiedElement[] | null;
       } = {
@@ -180,20 +185,23 @@ export async function classifyTransactions(
         taxCode: null,
       };
 
-      // Check for results in the Category and Tax Code results. Record the value to the related field in the results if present.
+      // Check the Category and Tax Code Classification records using the 'For Review' transaction Id.
+      // Updates the related Classification in the 'For Review' transaction results object.
       if (categoryResults[transaction.transaction_Id]) {
-        newResults.category = categoryResults[transaction.transaction_Id];
+        transactionResults.category =
+          categoryResults[transaction.transaction_Id];
       }
       if (taxCodeResults[transaction.transaction_Id]) {
-        newResults.taxCode = taxCodeResults[transaction.transaction_Id];
+        transactionResults.taxCode = taxCodeResults[transaction.transaction_Id];
       }
 
-      // Update the record of results with the 'For Review' transactions Classification results connected to its Id.
-      combinedResults[transaction.transaction_Id] = newResults;
+      // Set the Classification results record with the object for the current 'For Review' transaction.
+      // Connects the (possibly null) arrays of Classified Elements to the 'For Review' transaction Id.
+      classificationResults[transaction.transaction_Id] = transactionResults;
     }
 
-    // Return the results record connecting 'For Review' transaction Id's to their results objects.
-    return combinedResults;
+    // Return the Classification results record for the 'For Review' transactions.
+    return classificationResults;
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
     if (error instanceof Error) {
@@ -202,40 +210,40 @@ export async function classifyTransactions(
       console.error('Unexpected Classifying New Transactions.');
     }
     // Return an error object with an error message.
-    return { error: 'Uncexpected error classifying transaction.' };
+    return { error: 'Unexpected error Classifying Transactions.' };
   }
 }
 
-// Helper method to fetch User Categories from QuickBooks and filters to base Category if needed.
-// Takes a boolean to indicate filtering and a synthetic Login Tokens object.
-// Returns: An array of Classification objects for the catagories in the User expense Accounts.
+// Finds and uses the User Expense Acccounts to find the possible Categories a Transaction can be connected to.
+// Takes: A boolean value indicating how Account names are parsed, a synthetic Login Tokens object, and the Company realm Id.
+// Returns: An array of Classification objects for the valid Catagories from the User Expense Accounts.
 async function fetchValidCategories(
   filterToBase: boolean,
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<Classification[]> {
   try {
-    // Gets a list of valid Categories by getting the User 'Expense' type Accounts.
+    // Gets a list of valid Category Accounts from QuickBooks using the 'Expense' Accounts type.
     const validCategoriesResult = JSON.parse(
       await getAccounts('Expense', loginTokens, companyId)
     );
 
     // Check if the Account fetch Query Result resulted in an error.
     if (validCategoriesResult[0].result === 'Error') {
-      // Log an error for failure catching using the Query Result.
+      // On error Query Result log an error with the message and detail.
       console.error(
         validCategoriesResult[0].message +
           ', Detail: ' +
           validCategoriesResult[0].detail
       );
-      // On fetch error, return an empty array of Classifications.
+      // On error fetching Accounts, return an empty array of Classifications.
       return [];
     }
 
-    // Check if the Categories need to be filtered prior to being returned.
+    // Check if the Category names need to be filtered prior to being returned.
     if (filterToBase) {
-      // User info is not stored for security so the database uses only the base Category value.
-      // Therefore, filtering to the base Category is needed in database matching steps.
+      // User info is not stored for security, so only base Category names are saved to the database.
+      // Therefore the Account names are filtered before returning to methods that use database matching.
       return validCategoriesResult
         .slice(1)
         .map((category: Account): Classification => {
@@ -246,7 +254,7 @@ async function fetchValidCategories(
           };
         });
     } else {
-      // LLM data is not saved so it can use the full Category name.
+      // If database matching is not being used, return the full Account name for greater prediction accuracy.
       return validCategoriesResult
         .slice(1)
         .map((category: Account): Classification => {
@@ -269,48 +277,54 @@ async function fetchValidCategories(
   }
 }
 
-// Helper method to fetch User Tax Codes from QuickBooks and filter to the ones applicable for the Companies location.
-// Takes the Company Info for the location and a synthetic Login Tokens object.
-// Returns: An array of Classification objects for the Tax Codes in the Companies location.
+// Finds and uses the User Tax Codes to find the possible Tax Codes a Transaction can be connected to.
+// Takes: Company Info containing the Company location, a synthetic Login Tokens object, and the Company realm Id.
+// Returns: An array of Classification objects for the valid user Tax Codes for their location.
 async function fetchValidTaxCodes(
   companyInfo: CompanyInfo,
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<[boolean, Classification[]]> {
   try {
-    // Define variable to inform caller if Tax Code Classification is doable for the User.
+    // Define boolean value to track if Tax Code Classification is possible for the Company.
     let classifyTaxCode = false;
-    // Define an array to store Tax Codes to be used in Classification.
+
+    // Define an array to store Tax Codes that can be used in Classification.
     const taxCodes: Classification[] = [];
 
     // Check if Tax Code Classification is possible by locational check on Company Info.
-    // Presently only allow Canadian Companies with a valid sub-location.
+    // Presently only allow Canadian Companies with a valid Sub-location.
     if (
       companyInfo.location.Country === 'CA' &&
       companyInfo.location.SubLocation
     ) {
-      // Set Tax Codes Classification to be valid, then use the passed synthetic Login Tokens to get the User Tax Codes.
       classifyTaxCode = true;
+      // Use the synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
       const userTaxCodes = JSON.parse(
         await getTaxCodes(loginTokens, companyId)
       );
 
-      // Also fetch the valid Tax Codes for a User by their sub-location.
+      // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(
         companyInfo.location.SubLocation
       );
 
-      // Check there are valid Tax Codes (error check) and the Query Result from getting User Tax Codes was a success.
-      if (
-        validLocationalTaxCodes.length !== 0 &&
-        userTaxCodes[0].result != 'Success'
-      ) {
-        // Extract the User Tax Codes from the result by removing the Query Result
+      // Check the fetch for the Company Tax Codes was a success.
+      if (userTaxCodes[0].result === 'Error') {
+        // If an error occured fetching the Tax Codes, log the message and detail from the Query Result.
+        console.log(
+          'Error getting Tax Codes, Message: ' +
+            userTaxCodes[0].message +
+            ', Detail: ' +
+            userTaxCodes[0].detail
+        );
+      } else {
+        // Extract the Company Tax Codes from the result by removing the Query Result from the first index.
         const userTaxCodeArray = userTaxCodes[0].slice(1) as TaxCode[];
 
-        // Iterate through User Tax Codes to record valid Tax Code info.
+        // Iterate through Company Tax Codes to check for and record valid Tax Codes.
         for (const taxCode of userTaxCodeArray) {
-          // If the current Tax Code name is one of the valid locational Tax Codes, push it to the array of Tax Codes.
+          // If the current Company Tax Code name is contained in the list of valid Tax Codes, push it to the array of Tax Codes.
           if (validLocationalTaxCodes.includes(taxCode.Name)) {
             taxCodes.push({
               type: 'tax code',
@@ -319,17 +333,11 @@ async function fetchValidTaxCodes(
             });
           }
         }
-      } else {
-        // When an error occurs, log an error before containing.
-        console.log(
-          'Error getting Tax Codes, Message: ' +
-            userTaxCodes[0].message +
-            ', Detail: ' +
-            userTaxCodes[0].detail
-        );
       }
     }
-    // Return an array indicating if tax Classification is possible and a (possibly empty) array of Tax Code Classifications.
+
+    // Return if Tax Code Classification is possible and the related valid Tax Codes as an array of Classified Elements.
+    // If an error occured fetching the Tax Codes, the empty array created to store the Tax Codes will be returned instead.
     return [classifyTaxCode, taxCodes];
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
@@ -338,17 +346,18 @@ async function fetchValidTaxCodes(
     } else {
       console.error('Unexpected Error Getting Tax Code Classifications.');
     }
-    // On error, indicate Classification is not possible and return an empty array.
+    // On error, indicate Tax Code Classification is not possible and return an empty array.
     return [false, []];
   }
 }
 
-// Helper method to Classify 'For Review' transactions using fuse and database matching.
-// Takes uncategorized 'For Review' transactions, fuse object for matching 'For Review' transactions, valid Classifications, -
-// a results records, array of 'For Review' transactions with no matches, and Classification type.
-// Returns: Does not return, instead modifing the passed arrays.
+// Creates Classified 'For Review' transactions using the passed unclassified 'For Review' transactions and an array of valid Classifications.
+// Uses Fuse for matching against saved Classified Transactions and a type value to identify the Classification type.
+// Takes: An array pf 'For Review' transactions, Fuse object for matching with saved Classified Transactions, valid Classifications, -
+//        A results record to append the results to, an array for unmatched 'For Review' transactions, and the Classification type as a string.
+// Returns: Does not return, instead modifies the passed results and 'no matches' arrays.
 async function classifyWithFuse(
-  uncategorizedTransactions: FormattedForReviewTransaction[],
+  unclassifiedTransactions: FormattedForReviewTransaction[],
   fuse: Fuse<Transaction>,
   validClassifications: Classification[],
   results: Record<string, ClassifiedElement[] | null>,
@@ -356,67 +365,73 @@ async function classifyWithFuse(
   type: string
 ): Promise<void> {
   try {
-    // Iterate over the 'For Review' transactions.
-    for (const uncategorizedTransaction of uncategorizedTransactions) {
+    // Iterate over the passed 'For Review' transactions.
+    for (const unclassifiedTransaction of unclassifiedTransactions) {
       try {
-        // Use fuse to search for matches to the 'For Review' transaction's name in the list of saved transactions.
-        const matches = fuse.search(uncategorizedTransaction.name);
+        // Use Fuse to search for saved Classified Transactions matching the current 'For Review' transaction name.
+        const matches = fuse.search(unclassifiedTransaction.name);
 
-        // Create a set of for the name of valid Classification that have been found.
-        const validClassificationsSet = new Set<string>();
+        // Create a set for the name of valid Classifications that have been found.
+        const validMatchedClassificationsSet = new Set<string>();
 
-        // Create a list to track the possible Classifications.
+        // Create an array to contain the possible Classifications.
         const validMatchedClassifications: ClassifiedElement[] = [];
 
-        // Iterate through the matches found for the current 'For Review' transaction.
+        // Iterate through the Transaction matches found for the current 'For Review' transaction.
         for (const match of matches) {
-          // Define the Category name, then find its value based on the Classification type.
+          // Define the Classification name, then extract its value from the match using the Classification type.
           let classificationName;
           if (type === 'category') {
             classificationName = match.item.category;
           } else {
             classificationName = match.item.taxCodeName;
           }
-          // Check if the set of Classifications already contains that name.
-          if (!validClassificationsSet.has(classificationName)) {
-            // Check if the name is in the list of valid Classification names.
+
+          // Check if the set of Matched and Valid Classifications already contains the Classification name.
+          // Checking against the set prevents Classifications from being added multiple times by different matches.
+          if (!validMatchedClassificationsSet.has(classificationName)) {
+            // Iterate through the list of Valid Classification names to see if it contains the Classification name.
+            // Ensures that only Classifications with valid names that are not already in the Matched and Valid Set are recorded.
             for (const classification of validClassifications) {
               if (classification.name === classificationName) {
-                // Create a Classified element for the element and push it to the valid matched Classifications array.
+                // Create a Classified Element for the Classification and push it to array of Valid Matched Classifications.
+                // Record the method of Classification as 'Matching'.
                 validMatchedClassifications.push({
                   type: type,
                   id: classification.id,
                   name: classificationName,
                   classifiedBy: 'Matching',
                 });
-                // Add the name to indicate not to add the Classification again.
-                validClassificationsSet.add(classificationName);
+                // Add the name to the set of Valid and Matched Classifications to prevent the it from being added again by other matches.
+                validMatchedClassificationsSet.add(classificationName);
               }
             }
           }
         }
-
+        // If no valid Classifications are found, search for possible Classifications in the database.
         if (validMatchedClassifications.length === 0) {
-          // If no valid Classifications are found, search for possible Classifications in the database.
+          // Define the value to store the array of possibile Classification name and Id.
+          // Get the Classifications from the database depending on the Classification type
           let topClassifications;
           if (type === 'category') {
             topClassifications = await searchDatabaseTransactionCategories(
-              uncategorizedTransaction.name,
+              unclassifiedTransaction.name,
               validClassifications
             );
           } else {
             topClassifications = await searchDatabaseTransactionTaxCodes(
-              uncategorizedTransaction.name,
+              unclassifiedTransaction.name,
               validClassifications
             );
           }
 
-          // If no possible Classifications are found in the database, add the 'For Review' transaction to the noMatches array.
+          // If no Classifications were found in the database, add the 'For Review' transaction to the array of unmatched 'For Review' transactions.
           if (topClassifications.length === 0) {
-            noMatches.push(uncategorizedTransaction);
+            noMatches.push(unclassifiedTransaction);
           } else {
-            // Add the 'For Review' transaction and possible Classifications to the results, and record it was Classified by database.
-            results[uncategorizedTransaction.transaction_Id] =
+            // Add the 'For Review' transaction and its possible Classifications to the results record.
+            // Record the method of Classification as 'Database'.
+            results[unclassifiedTransaction.transaction_Id] =
               topClassifications.map((classification) => ({
                 ...classification,
                 type: type,
@@ -424,41 +439,55 @@ async function classifyWithFuse(
               }));
           }
         } else {
-          // If matches were found, order them by closest average amount.
+          // If valid matching Classifications were found, order them by closest average Transaction amount.
           const orderedClassifications = orderClassificationsByAmount(
             validMatchedClassifications,
             matches,
-            uncategorizedTransaction,
+            unclassifiedTransaction,
             type
           );
 
-          // Update the results record related to the current 'For Review' transactions Id with the ordered list of Classified Categories.
-          // The lower the index of the Classification, the better the amount matching.
-          results[uncategorizedTransaction.transaction_Id] =
+          // Set the results record for the current 'For Review' transaction to the ordered list of Classifications.
+          // The lower the index of the Classification, the better the Classification matches.
+          results[unclassifiedTransaction.transaction_Id] =
             orderedClassifications;
         }
       } catch (error) {
         // Catch any errors and log a message for the current 'For Review' transaction.
-        console.error(
-          'Error mapping uncategorized transaction:',
-          uncategorizedTransaction,
-          error,
-          '.'
-        );
+        // Include the error message if it is present.
+        if (error instanceof Error) {
+          console.error(
+            'Error mapping unclassified transaction:',
+            unclassifiedTransaction,
+            error.message,
+            '.'
+          );
+        } else {
+          console.error(
+            'Error mapping unclassified transaction:',
+            unclassifiedTransaction,
+            ', Unexpected Error.'
+          );
+        }
       }
     }
-  } catch {
-    // Catch any errors and log an error message.
-    console.error('Error loading fuse on transactions.');
+  } catch (error) {
+    // Catch and log any errors, include the error message if it is present.
+    if (error instanceof Error) {
+      console.error('Error loading Fuse on transactions: ' + error.message);
+    } else {
+      console.error('Unexpected error loading Fuse on transactions.');
+    }
   }
 }
 
-// Creates the a fuse instance on the passed Transactions to be used in matching.
-// Returns: A fuse object that can be used for Classification.
+// Creates the a Fuse instance on the passed Transactions to be used in matching.
+// Takes: An array of Saved Classified Transactions to allow matching against.
+// Returns: A Fuse object that can be used for Classification.
 function createFuseInstance(
   categorizedTransactions: Transaction[]
 ): Fuse<Transaction> {
-  // Create and return a fuse object with a set of defined parameters.
+  // Create and return a Fuse object with a set of defined parameters.
   return new Fuse(categorizedTransactions, {
     includeScore: true,
     threshold: 0.3,
@@ -466,8 +495,10 @@ function createFuseInstance(
   });
 }
 
-// Averages amount of 'For Review' transactions by their Classifications.
-// Returns: an array of Classifications and their difference ordered by closest value to real 'For Review' transaction amount.
+// Averages the Transaction amounts of 'For Review' transactions to order its Classifications.
+// Takes: An array of the possible Valid Matched Classifications, the matched Saved Classifications Transactions
+//        The formatted 'For Review' transaction, and the Classification type.
+// Returns: An array of Classified Elements ordered by the 'For Review' transaction amount.
 function orderClassificationsByAmount(
   possibleValidElements: ClassifiedElement[],
   matches: FuseResult<Transaction>[],
@@ -475,56 +506,64 @@ function orderClassificationsByAmount(
   type: string
 ): ClassifiedElement[] {
   try {
-    // Assosiate Classification name to a count of occurences and a total.
+    // Create a record to connect Classification names to a count of occurrences and a total amount.
     const classificationAverages: Record<string, [number, number]> = {};
 
-    // Initalize each Classification as [0, 0].
+    // Initalize each Classification as [0, 0] (0 Occurences, 0 Total Amount).
     for (const classification of possibleValidElements) {
       classificationAverages[classification.name] = [0, 0];
     }
 
-    // Iterate through the matches and check if they have a valid Classification.
+    // Iterate through the matched Transactions.
     matches.map((match) => {
-      // Define the match Classifications for the current match and set its value based on Classification type.
+      // Define the Classifications for the current match and set its value based on the Classification type.
       let matchClassification;
       if (type === 'category') {
         matchClassification = match.item.category;
       } else {
         matchClassification = match.item.taxCodeName;
       }
-      // Check if the match Classification matches at least one name in the list of possible valid Categories.
+
+      // Check if the match Classification is in the list of Matched Valid Classifications.
       if (
         possibleValidElements.some(
           (classification) => classification.name === matchClassification
         )
       ) {
-        // Increment the number of matches for the Classification and add the amount to the total.
+        // Increment the number of occurrences for the Classification and add the amount to the total.
         classificationAverages[matchClassification][0] += 1;
-        // Use absolute value to account for possibility of expenses being recorded as positive or negitive.
-        classificationAverages[matchClassification][1] += Math.abs(
-          match.item.amount
-        );
+        classificationAverages[matchClassification][1] += match.item.amount;
       }
     });
 
-    // Make a map of the Classifications with the count of their occurences and their total.
-    const sortedClassificationAverages = Object.entries(classificationAverages)
-      .map(([element, [count, total]]) => {
-        // Define an average based on count and total, accounting for a potential count of 0.
-        const average = count > 0 ? total / count : 0;
-        // Define the difference from the 'For Review' transaction being predicted using absolute value.
+    // Map over the Classifications to create an array of objects with a Classification and a difference value.
+    const sortedClassificationDifferences = Object.entries(
+      classificationAverages
+    )
+      // Define the Classification name and an array with [number of occurrences, total amount].
+      .map(([classification, [occurrences, total]]) => {
+        // Define an average based on occurrences and total, accounting for a potential occurrences value of 0.
+        const average = occurrences > 0 ? total / occurrences : 0;
+        // Define the difference from the 'For Review' transaction using absolute value.
         const difference = Math.abs(formattedTransaction.amount - average);
-        // Return the differences to be sorted into an array of dictionaries containing the element and the difference.
-        return { element, difference };
+        // Return Classification and its average difference from the 'For Review' transaction.
+        return { classification, difference };
       })
-      // Sort will put A before B if (A - B) is negitive, keep order if the same, and put B before A if positive.
+      // Sort all of the returned Classifications to the lowest differences are higher.
       .sort((a, b) => a.difference - b.difference);
 
-    // Create array for ordered predicted Classification and extract just the Classification values.
+    // Create array for ordered Classifications and extract just the Classification values.
     const orderedClassifications = [];
-    for (let index = 0; index < sortedClassificationAverages.length; index++) {
-      // Get the Classification name for that index and look for the matching Classification object.
-      const classificationName = sortedClassificationAverages[index].element;
+    // Iterate through the sortedClassificationAverages to get the Classification order.
+    // Order of index is the sorted order and the order they are added to the ordered Classifications array.
+    for (
+      let index = 0;
+      index < sortedClassificationDifferences.length;
+      index++
+    ) {
+      // Get the Classification name for the current index and find the matching Classification object.
+      const classificationName =
+        sortedClassificationDifferences[index].classification;
       const matchingCategory = possibleValidElements.find(
         (classification) => classification.name === classificationName
       );
@@ -533,7 +572,7 @@ function orderClassificationsByAmount(
         orderedClassifications.push(matchingCategory);
       }
     }
-
+    // Return the array of ordered Classifications
     return orderedClassifications;
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
@@ -547,9 +586,10 @@ function orderClassificationsByAmount(
   }
 }
 
-// Helper method to Classify 'For Review' transactions using the LLM API.
-// Takes the array of unmatched 'For Review' transactions, the valid Categories, the current Classification results, and the Company Info.
-// Returns: Does not return, instead modifing the passed arrays.
+// Helper method to Classify 'For Review' transaction Categories using the LLM API.
+// Takes: The array of unmatched 'For Review' transactions, the valid Categories,
+//        The current Classification results array, and the Company Info.
+// Returns: Does not return, instead modifies the passed results array.
 async function classifyCategoriesWithLLM(
   noMatches: FormattedForReviewTransaction[],
   validCategories: Classification[],
@@ -558,21 +598,20 @@ async function classifyCategoriesWithLLM(
 ): Promise<void> {
   let llmApiResponse: ClassifiedResult[];
   try {
-    // Call the LLM API with the array of matchless 'For Review' transactions, -
-    // current results, the list of valid Categories, the Company Info, and the type of Classification.
-    // The results are not used in Category Classification, but are passed due to their use in Tax Code Classification.
+    // Call the LLM API with the array of unmatched 'For Review' transactions, -
+    // The list of valid Categories, the Company Info, and the type of Classification.
     llmApiResponse = await batchQueryLLM(
       noMatches,
-      results,
       validCategories,
       companyInfo,
       'category'
     );
 
-    // If a response is received, iterate over the response data.
+    // If a response is received from the LLM, iterate over the response data.
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
-        // Add  the current LLM result to the results record for the related 'For Review'transaction and note it was Classified by LLM API .
+        // Add the LLM Category Classification for the current 'For Review' transaction to the results record.
+        // Record the method of Classification as 'LLM API'.
         results[llmResult.transaction_Id] =
           llmResult.possibleClassifications.map((category) => ({
             ...category,
@@ -593,9 +632,10 @@ async function classifyCategoriesWithLLM(
   }
 }
 
-// Helper method to Classify 'For Review' transactions using the LLM API.
-// Takes the array of unmatched 'For Review' transactions, the valid Categories, the current Classification and Tax Code results, and the Company Info.
-// Returns: Does not return, instead modifing the passed arrays.
+// Helper method to Classify 'For Review' transaction Tax Codes using the LLM API.
+// Takes: The array of unmatched 'For Review' transactions, the results of the Category Classification
+//        The valid Tax Codes, The current Classification results array, and the Company Info.
+// Returns: Does not return, instead modifies the passed results array.
 async function classifyTaxCodesWithLLM(
   noMatches: FormattedForReviewTransaction[],
   categoryResults: Record<string, ClassifiedElement[]>,
@@ -605,21 +645,22 @@ async function classifyTaxCodesWithLLM(
 ): Promise<void> {
   let llmApiResponse: ClassifiedResult[];
   try {
-    // Call the LLM API with the array of matchless 'For Review' transactions, current results, -
-    // the list of valid Categories, the Company Info, and the type of Classification.
-    // Category results are used as part of Tax Code prediction.
+    // Call the LLM API with the array of unmatched 'For Review' transactions, the list of valid Tax Codes, -
+    // The Company Info, the type of Classification, and the Category Classifications -.
+    // The Category Classifications are used as part of Tax Code prediction.
     llmApiResponse = await batchQueryLLM(
       noMatches,
-      categoryResults,
       validTaxCodes,
       companyInfo,
-      'tax code'
+      'tax code',
+      categoryResults
     );
 
-    // If a response is received, iterate over the response data.
+    // If a response is received from the LLM, iterate over the response data.
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
-        // Add  the current LLM result to the results record for the related 'For Review' transaction and note it was Classified by LLM API .
+        // Add the LLM Tax Code Classification for the current 'For Review' transaction to the results record.
+        // Record the method of Classification as 'LLM API'.
         results[llmResult.transaction_Id] =
           llmResult.possibleClassifications.map((category) => ({
             ...category,
