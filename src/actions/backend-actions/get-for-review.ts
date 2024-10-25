@@ -7,7 +7,7 @@ import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 
 // Checks a specific Account of the user for 'For Review' transactions, formats and returns them.
-// Takes the Account Id, the Id of the Company, the QBO token and a set of synthetic login tokens.
+// Takes the Account Id, the Id of the Company, the QBO token and a set of synthetic Login Tokens.
 // Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
 //    Returned transactions are an array of sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
@@ -54,7 +54,7 @@ export async function getForReview(
       detail: JSON.stringify(formattedResponse),
     };
   } catch (error) {
-    // Catch any errors and return an appropriate error Query Result based on the caught error.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',
@@ -78,7 +78,7 @@ function formatForReviewTransaction(
 ): (FormattedForReviewTransaction | ForReviewTransaction)[][] {
   const transactions = [];
   for (const transactionItem of responseData) {
-    // Only record expense Transactions (check that money left the account).
+    // Only record expense Transactions (check that money left the Account).
     if (transactionItem.amount < 0) {
       const newTransaction: FormattedForReviewTransaction = {
         transaction_ID: transactionItem.id,

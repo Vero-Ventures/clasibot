@@ -11,7 +11,7 @@ import { eq } from 'drizzle-orm';
 import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
-// Saves classified Transactions to the database for future Classification use.
+// Saves Classified Transactions to the database for future Classification use.
 // Takes: An array of saved user Transactions.
 // Returns: A Query Result object.
 export async function addTransactions(
@@ -70,9 +70,8 @@ export async function addTransactions(
       message: 'Transactions Were Saved To Database',
       detail: 'The Classified Saved User Transactions Were Saved Successfully',
     };
-
-    // Catch any errors and return an error Query Response with the error message if it is present.
   } catch (error) {
+    // Catch any errors and return an error Query Response, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',
@@ -150,7 +149,7 @@ async function handleCategoryIncrement(
       });
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       console.error(
         'Error Incremeting Count Of Transaction Categories: ' + error.message
@@ -222,7 +221,7 @@ async function handleTaxCodeIncrement(
       });
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       console.error(
         'Error Incremeting Count Of Transaction Tax Codes: ' + error.message

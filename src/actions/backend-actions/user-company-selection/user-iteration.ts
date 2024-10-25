@@ -44,8 +44,7 @@ export async function classificationUserIteration() {
       // Continue to the next User.
     }
   } catch (error) {
-    // Catch any errors and log them in a QueryResult format.
-    // Set the Query Result detail to error message if it is present.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       console.error({
         result: 'Error',

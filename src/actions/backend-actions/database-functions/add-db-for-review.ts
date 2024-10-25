@@ -27,7 +27,7 @@ export async function addForReviewTransactions(
       const classifiedTransaction =
         transaction[0] as ClassifiedForReviewTransaction;
 
-      // Find the confidence level of the predictions in the the classified 'For Review' transaction.
+      // Find the confidence level of the predictions in the the Classified 'For Review' transaction.
       const [categoryConfidence, taxCodeConfidence] = getConfidenceLevels(
         classifiedTransaction
       );
@@ -93,11 +93,11 @@ export async function addForReviewTransactions(
           );
         }
 
-        // If a Category or Tax Code connection failed, log the error.
-        if (categoryConnectionResult !== 'Success') {
+        // Check if theCategory or Tax Code connection resulted in an error and log the errors.
+        if (categoryConnectionResult === 'Error') {
           console.error(categoryConnectionResult);
         }
-        if (taxCodeConnectionResult !== 'Success') {
+        if (taxCodeConnectionResult === 'Error') {
           console.error(taxCodeConnectionResult);
         }
       }
@@ -110,7 +110,7 @@ export async function addForReviewTransactions(
         '"For Review" transactions and their connections successfully added to the database.',
     };
   } catch (error) {
-    // Catch any errors, return the message if there is one, otherwise return a custom error message.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error && error.message) {
       return {
         result: 'Error',
@@ -199,7 +199,7 @@ async function handleCategoryConnections(
     // Return a string indicating success.
     return 'Success';
   } catch (error) {
-    // Catch any errors, return an error string or the error message if it is present.
+    // Catch any errors and return an error string, include the error message if it is present.
     if (error instanceof Error && error.message) {
       return (
         'Error creating category connection for the transaction: ' +
@@ -259,7 +259,7 @@ async function handleTaxCodeConnections(
     // Return a string indicating success.
     return 'Success';
   } catch (error) {
-    // Catch any errors, return an error string or the error message if it is present.
+    // Catch any errors and return an error string, include the error message if it is present.
     if (error instanceof Error && error.message) {
       return (
         'Error creating tax code connection for the transaction: ' +

@@ -9,6 +9,6 @@ export type Purchase = {
   result_info: QueryResult;
   //  the QuickBooks internal Id.
   id: string;
-  // The tax code of the Transaction related to the Purchase.
+  // The Tax Code of the Transaction related to the Purchase.
   taxCodeId: string;
 };

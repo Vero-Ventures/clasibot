@@ -230,7 +230,7 @@ export const options: NextAuthOptions = {
           }
         }
       } catch (error) {
-        // Catch any errors from the sign in process and log them.
+        // Catch any errors and log them.
         console.error('Error during sign-in:', error);
         // Return false to indicate that the sign in process failed.
         return false;
@@ -346,7 +346,7 @@ export const backendOptions: NextAuthOptions = {
           return false;
         }
       } catch (error) {
-        // Catch any errors from the sign in process and log them.
+        // Catch any errors and log them.
         console.error('Error during sign-in:', error);
         // Return false to indicate that the sign in process failed.
         return false;

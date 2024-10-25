@@ -5,7 +5,7 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-// Checks if the current company is set connected to the synthetic account in the database.
+// Checks if the current company is set connected to the synthetic accountant in the database.
 // Returns: A string 'true/false' value for the connection state or an error message.
 // Integration: Called as part of the login pipeline
 export async function checkCompanyConnection(): Promise<string> {
@@ -34,7 +34,7 @@ export async function checkCompanyConnection(): Promise<string> {
       return 'false';
     }
   } catch (error) {
-    // Catch any errors and return an error with the error message if it is present.
+    // Catch any errors and return an error string, include the error message if it is present.
     if (error instanceof Error) {
       return 'Error: ' + error.message;
     } else {

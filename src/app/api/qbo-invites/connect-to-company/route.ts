@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     // Return a success response.
     return new Response('Company Connection Successfully Updated.');
   } catch (error) {
-    // Catch any errors, log an identifing message and return an error response.
+    // Catch any errors and log them (include the error message if it is present) and return an error response.
     if (error instanceof Error) {
       console.error('Error Adding Company Connection: ' + error.message);
     } else {

@@ -1,7 +1,7 @@
 /**
  * Defines several key objects needed for using ' For Review' transactions.
  *    The key data retruned from the Query.
- *    The full data object needed in a saving a classified 'For Review' transaction.
+ *    The full data object needed in a saving a Classified 'For Review' transaction.
  *    A formatted version of the object with the values needed in Classification.
  *    A version of the formatted object that also contains the potential Classifications.
  */
@@ -9,7 +9,7 @@
 import type { ClassifiedElement } from './Classification';
 
 // Defines the object recived when calling a 'For Review' transaction from the API.
-// Contains the values needed later when saving the 'For Review' transaction to the users account.
+// Contains the values needed later when saving the 'For Review' transaction to the users Account.
 export type ForReviewTransaction = {
   id: string;
   olbTxnId: string;
@@ -66,11 +66,11 @@ export type FormattedForReviewTransaction = {
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
-  // The account that the 'For Review' transaction was pulled from.
+  // The Account that the 'For Review' transaction was pulled from.
   account: string;
-  // The name of the above account, used as part of table filtering on frontend review page.
+  // The name of the above Account, used as part of table filtering on frontend review page.
   accountName: string;
-  // Total value of the purchase as a negative decimal.
+  // Total value of the Purchase as a negative decimal.
   amount: number;
 };
 
@@ -82,14 +82,14 @@ export type ClassifiedForReviewTransaction = {
   name: string;
   // Date as a string in the format 'YYYY-MM-DD'.
   date: string;
-  // The account that the 'For Review' transaction was pulled from.
+  // The Account that the 'For Review' transaction was pulled from.
   account: string;
-  // The name of the above account, used as part of table filtering on frontend review page.
+  // The name of the above Account, used as part of table filtering on frontend review page.
   accountName: string;
-  // Total value of the purchase as a negative decimal.
+  // Total value of the Purchase as a negative decimal.
   amount: number;
-  // An (potentially empty) array of possible categories for the transaction to be classified as.
+  // An (potentially empty) array of possible Categories for the transaction to be Classified as.
   categories: ClassifiedElement[] | null;
-  // An (potentially empty) array of possible tax codes for the transaction to be classified as.
+  // An (potentially empty) array of possible Tax Codes for the transaction to be Classified as.
   taxCodes: ClassifiedElement[] | null;
 };

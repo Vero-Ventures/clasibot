@@ -9,10 +9,10 @@ export type Account = {
   name: string;
   // Whether the Account is active.
   active: boolean;
-  // Defines the higher level classification of the Account.
+  // Defines the higher level Classification of the Account.
   // Used to identify 'Expense' Accounts.
   classification: string;
-  // 'Expense': Defines what category a transaction in that Account is classified as.
+  // 'Expense': Defines what Category a Transaction in that Account is Classified as.
   // 'Transaction': Determines if the Account may contain 'For Review' transactions.
   account_sub_type: string;
 };

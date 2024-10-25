@@ -4,7 +4,7 @@ import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get the Company name from the QuickBooks API.
-// Takes: May take synthetic login tokens and the companies realm Id.
+// Takes: May take synthetic Login Tokens and the companies realm Id.
 // Returns: The Company name as a string or 'Error: Name not found'
 export async function getCompanyName(
   loginTokens: LoginTokens | null = null,
@@ -14,7 +14,7 @@ export async function getCompanyName(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -47,14 +47,15 @@ export async function getCompanyName(
     // Return the name value from the Company Info.
     return response.QueryResponse.CompanyInfo[0].CompanyName;
   } catch (error) {
-    // Log the error and return an error string that indicates failure to find.
+    // Catch and log any errors, include the error message if it is present.
     console.error('Error finding company name:', error);
+    // On error, return the default error object that indicates failure to find.
     return 'Error: Name not found';
   }
 }
 
 // Get the Company industry from the QuickBooks API.
-// Takes: May take synthetic login tokens and the companies realm Id.
+// Takes: May take synthetic Login Tokenss and the companies realm Id.
 // Returns: The Company industry as a string or 'Error' / 'None'
 export async function getCompanyIndustry(
   loginTokens: LoginTokens | null = null,
@@ -64,7 +65,7 @@ export async function getCompanyIndustry(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -116,18 +117,18 @@ export async function getCompanyIndustry(
         return item.Value;
       }
     }
-
     // If no match was found for dictionaries that contain industry type, return 'None'.
     return 'None';
   } catch (error) {
-    // Log the error and return an error string that indicates failure to find.
+    // Catch and log any errors, include the error message if it is present.
     console.error('Error finding industry:', error);
+    // On error, return the default error object that indicates failure to find.
     return 'Error';
   }
 }
 
 // Get the company location from the QBO API, return the country and the Sub-location for Canadian companies.
-// Takes: May take synthetic login tokens and the companies realm Id.
+// Takes: May take synthetic Login Tokens and the companies realm Id.
 // Returns: A stringified object that contains the Country and Sub-location.
 export async function getCompanyLocation(
   loginTokens: LoginTokens | null = null,
@@ -137,7 +138,7 @@ export async function getCompanyLocation(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokenss and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -200,8 +201,9 @@ export async function getCompanyLocation(
       });
     }
   } catch (error) {
-    // Log the error and return an error object that indicates failure to find.
+    // Catch and log any errors, include the error message if it is present.
     console.error('Error finding company location:', error);
+    // On error, return the default error object that indicates failure to find.
     return JSON.stringify({ Country: '', SubLocation: null });
   }
 }

@@ -10,7 +10,7 @@ import { Locations } from '@/enums/taxes';
 import type { CompanyInfo } from '@/types/CompanyInfo';
 
 export default function HomePage() {
-  // Create states to track and set the company info that is passed to the Review Page.
+  // Create states to track and set the Company Info that is passed to the Review Page.
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
     name: '',
     industry: '',
@@ -21,7 +21,7 @@ export default function HomePage() {
   const [finishedLoadingCompanyInfo, setFinishedLoadingCompanyInfo] =
     useState(true);
 
-  // Gets the important company info and stores it as a Company Info object.
+  // Gets the important Company Info and stores it as a Company Info object.
   const getCompanyInfo = async () => {
     const userCompanyName = await getCompanyName();
     const userCompanyIndustry = await getCompanyIndustry();

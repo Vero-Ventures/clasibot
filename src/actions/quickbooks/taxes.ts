@@ -16,7 +16,7 @@ export async function getTaxCodes(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -83,7 +83,7 @@ export async function getTaxCodes(
     // Return the array with the Query Result and Tax Code objects as a JSON string.
     return JSON.stringify(results);
   } catch (error) {
-    // Catch any errors and return an appropriate error Query Result based on the caught error.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return JSON.stringify({
         result: 'error',
@@ -167,6 +167,6 @@ function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
 // Takes a Tax Code name and check if it currently valid for use.
 // Returns: The Tax Code validity as a boolean value.
 function checkForCurrentTaxCode(taxCodeName: string): boolean {
-  // Check the tax code name against the Enum of valid tax codes.
+  // Check the Tax Code name against the Enum of valid Tax Codes.
   return (Object.values(TaxCodes) as string[]).includes(taxCodeName);
 }

@@ -38,17 +38,20 @@ export async function classificationCompanyIteration(user: databaseUser) {
           connectedFirmName
         );
 
-        // Check that the synthetic login did not result in an error.
-        if (loginResult.result !== 'Error') {
+        // Check if the synthetic Login resulted in an error.
+        if (loginResult.result === 'Error') {
+          // If the synthetic login failed, log the error Query Result then continue to the next Company.
+          console.error(loginResult);
+        } else {
           // Classify the 'For Review' transactions for the current Company.
           // Passes the with the synthetic login values and company Id needed for backend Classificaion.
           classifyCompany(loginTokens, companyId).then((result) => {
             // Use .then() to deal with error logging while the main process continues.
             //    Allows the async Classificaion of Comapnies to be done concurrently.
 
+            // Check if the Classificaion process resulted in an error.
             if (result.result === 'Error') {
-              // If the classification process resulted in an error.
-              // Log the user and Company the error occurred on.
+              // Log the User and Company the error occurred on.
               console.error({
                 result:
                   'Error - User: ' +
@@ -67,14 +70,11 @@ export async function classificationCompanyIteration(user: databaseUser) {
                 .where(eq(Company.id, companyId));
             }
           });
-        } else {
-          // If the synthetic login failed, log the error Query Result then continue to the next Company.
-          console.error(loginResult);
         }
       }
     }
   } catch (error) {
-    // Catch and log any errors when getting user Companies.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       console.error({
         result: 'Error - User: ' + user.id,

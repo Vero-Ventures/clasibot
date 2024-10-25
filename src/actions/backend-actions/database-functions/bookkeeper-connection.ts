@@ -94,7 +94,7 @@ export async function addCompanyConnection(
       };
     }
   } catch (error) {
-    // Catch any errors and return a response with the error message if it is present.
+    // Catch any errors and return a response, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',
@@ -146,7 +146,7 @@ export async function addAccountingFirmConnection(
       };
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',
@@ -310,7 +310,7 @@ export async function addAccountingFirmCompanies(
       };
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',
@@ -365,7 +365,7 @@ export async function makeCompanyIncactive(
       };
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',

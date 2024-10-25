@@ -39,13 +39,14 @@ export async function fetchCustomSearch(
         // If no response is returned, return an empty array as the CSE context.
         return [];
       }
-      // Catch any errors that occured, log the error, and return an empty array as the CSE context.
     } catch (error) {
+      // Catch and log any errors that occured, include the error message if it is present.
       if (error instanceof Error) {
-        console.error('Error fetching Custom Search results: ' + error);
+        console.error('Error fetching Custom Search results: ' + error.message);
       } else {
         console.error('Unexpected error fetching Custom Search results.');
       }
+      // Return an empty array as the CSE context.
       return [];
     }
   }

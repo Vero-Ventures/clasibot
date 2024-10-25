@@ -119,7 +119,7 @@ export async function getDatabaseTransactions(): Promise<
         const checkedAccounts = transactionAccountsResult.slice(1);
 
         // Iterate through the Transaction Accounts to find the one matching the Account Id of the 'For Review' transaction.
-        // Needed to record its name to make the classified 'For Review' transaction (For frontend identification and selection).
+        // Needed to record its name to make the Classified 'For Review' transaction (For frontend identification and selection).
         for (const account of checkedAccounts) {
           // Check if the matching Account has been found.
           if (account.id === forReviewTransaction.accountId) {
@@ -149,7 +149,7 @@ export async function getDatabaseTransactions(): Promise<
     // Array will be empty if a valid realm ID could not be found from the session.
     return classifiedTransactions;
   } catch (error) {
-    // Catch any errors and log an error response with the error message if it present.
+    // Catch any errors and return an error object, include the error message if it is present.
     if (error instanceof Error) {
       console.error(
         'Error Getting For Review Transactions From Database: ' + error.message
@@ -231,7 +231,7 @@ async function getTransactionCategories(
     // Return the (potentially empty) array of Classified Category Elements.
     return classifiedCategories;
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it present.
+    // Catch any errors and return an error object, include the error message if it is present.
     if (error instanceof Error) {
       console.error('Error Getting Transaction Categories: ' + error.message);
     } else {
@@ -242,8 +242,8 @@ async function getTransactionCategories(
   }
 }
 
-// Takes a database 'For Review' transaction and finds its assosiated tax code classifications in the database.
-// Returns: Converts the database tax code classifications to an array of ClassifiedElements.
+// Takes a database 'For Review' transaction and finds its assosiated Tax Code Classifications in the database.
+// Returns: Converts the database Tax Code Classifications to an array of ClassifiedElements.
 async function getTransactionTaxCodes(
   forReviewTransaction: databaseForReviewTransaction,
   taxCodesResponse: TaxCode[]
@@ -292,7 +292,7 @@ async function getTransactionTaxCodes(
     // Return the (potentially empty) array of Classified Tax Code Elements.
     return classifiedTaxCodes;
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it present.
+    // Catch any errors and return an error object, include the error message if it is present.
     if (error instanceof Error) {
       console.error('Error Getting Transaction Tax Codes: ' + error.message);
     } else {

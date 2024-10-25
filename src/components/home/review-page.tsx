@@ -58,38 +58,38 @@ export default function ReviewPage({
   }
 
   function handleManualClassification() {
-    // Set the classification process to be in progress and update the state.
+    // Set the Classification process to be in progress and update the state.
     setManualClassificationState('Starting Classification ...');
     setIsClassifying(true);
 
     const startManualClassification = async () => {
-      // Make call to backend 'For Review' classification function with the method to update the classification state.
+      // Make call to backend 'For Review' Classification function with the method to update the Classification state.
       const success = await manualClassify(updateManualClassificationState);
       if (success) {
-        // Update the state to indicate the classification is finished.
+        // Update the state to indicate the Classification is finished.
         setManualClassificationState(
           'Finished Review, Loading Transactions ...'
         );
-        // Load the newly classified 'For Review' transactions from the database after the manual classification.
+        // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
         setLoadedTransactions(await getDatabaseTransactions());
 
-        // Update manual classification state with a completion message.
+        // Update manual Classification state with a completion message.
         setManualClassificationState('Manual Classification Complete.');
 
-        // Additional actions to perform on manual classification completion.
+        // Additional actions to perform on manual Classification completion.
         // Completion state handling.
         //
         //
         //
       } else {
-        // Actions to preform in the event manual classification results in an error.
+        // Actions to preform in the event manual Classification results in an error.
         // Failure state handling.
         //
         //
         //
       }
 
-      // Update the state to indicate classification is no longer in progress and open a pop-up to inform the user.
+      // Update the state to indicate Classification is no longer in progress and open a pop-up to inform the user.
       setIsClassifying(false);
       setOpenFinishedClassificationModal(true);
     };
@@ -98,7 +98,7 @@ export default function ReviewPage({
     startManualClassification();
   }
 
-  // Loads the previously classified and saved Transactions whenever Company Info loading state updates.
+  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
   useEffect(() => {
     // Load the transactions from the database.
     const loadForReviewTransactions = async () => {
@@ -180,7 +180,7 @@ export default function ReviewPage({
     setIsSaving(true);
 
     try {
-      // Define an array for Transactions to be saved to the database for future classification use.
+      // Define an array for Transactions to be saved to the database for future Classification use.
       const newTransactions: Transaction[] = [];
 
       // Call the list of Expense Accounts to get Account ID's from the recorded Account names.
@@ -189,14 +189,14 @@ export default function ReviewPage({
       // Initally set Accounts variable to be empty and update it if Accounts fetch was successful.
       let accounts = [];
 
-      // Check the result of the Accounts fetch.
-      if (accountResults[0].result !== 'Error') {
-        // Set the Accounts variable to the Account results with the Query Result in the first index removed.
-        accounts = accountResults.slice(1);
-      } else {
+      // Check if the Accounts fetch resulted in an error.
+      if (accountResults[0].result === 'Error') {
         // If Accounts fetch failed, log an error message and throw an error to be caught and displayed.
         console.error('Error Fetching Accounts: ' + accountResults[0].message);
         throw 'Accounts Fetch Failed';
+      } else {
+        // Set the Accounts variable to the Account results with the Query Result in the first index removed.
+        accounts = accountResults.slice(1);
       }
 
       // Get the selected Rows in an iterable format [key: selectedRowIndex, value: true]
@@ -254,7 +254,7 @@ export default function ReviewPage({
             // Find what method was used to Classify the Transaction.
             const categoryClassificationMethod = category.classifiedBy;
 
-            // If the Transaction was classified by LLM, it still has the full account name.
+            // If the Transaction was Classified by LLM, it still has the full Account name.
             if (categoryClassificationMethod === 'LLM') {
               // Find the Account related to that Category.
               const account = accounts.find(
@@ -281,8 +281,8 @@ export default function ReviewPage({
               taxCode.id
             );
 
-            // If adding the new Transactions is not successful, throw the Query Result message as an error.
-            if (addResult.result !== 'Success') {
+            // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
+            if (addResult.result === 'Error') {
               throw addResult.message;
             }
 
@@ -290,8 +290,8 @@ export default function ReviewPage({
             const removeResult =
               await removeForReviewTransactions(rawTransaction);
 
-            // If removing the Transaction is not successful, throw the Query Result message as an error.
-            if (removeResult.result !== 'Success') {
+            // If removing the Transaction resulted in an error, throw the Query Result message as an error.
+            if (removeResult.result === 'Error') {
               throw removeResult.message;
             }
           }
@@ -300,7 +300,7 @@ export default function ReviewPage({
 
       // Add all the newly created Transactions to the database.
       const result = await addTransactions(newTransactions);
-      // Check the Query Result returned by the add transactions function.
+      // Check the Query Result if returned by the add Transactions function resulted in an error.
       if (result.result === 'Error') {
         // If the result was an error, log the message and detail and update the error message state.
         console.error(
@@ -314,11 +314,17 @@ export default function ReviewPage({
       // If no errors occured, set the error message state to be null.
       await setErrorMsg(null);
     } catch (error) {
-      // Catch any errors, log them, and set the error message state.
-      console.error('Error saving existing classified transactions:', error);
+      // Catch any errors and log them (include the error message if it is present).
+      if (error instanceof Error) {
+        console.error('Error saving existing classified transactions:', error);
+      } else {
+        console.error('Error saving existing classified transactions:', error);
+      }
+      // On error, set the error message state.
       setErrorMsg('An error occurred while saving. Please try again.');
     } finally {
-      // Once the saving process is complete, set the saving in progress status to false and open the save result modal.
+      // Once the saving process is complete,
+      // Set the saving in progress status to false and open the save result modal.
       setIsSaving(false);
       setIsModalOpen(true);
     }
@@ -332,7 +338,7 @@ export default function ReviewPage({
         Classified Transactions -{' '}
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
-      {/* Populate the review table with the categorized transactions. */}
+      {/* Populate the review table with the Categorized Transactions. */}
       <ReviewTable
         categorizedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}
@@ -406,7 +412,7 @@ export default function ReviewPage({
         </div>
       </div>
 
-      {/* Defines a popup to be displayed on completion of the manual classification function call. */}
+      {/* Defines a popup to be displayed on completion of the manual Classification function call. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">

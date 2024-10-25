@@ -62,7 +62,7 @@ export default async function createCustomerID(
       return Response.json({ error: 'User already has stripe customerID!' });
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       return Response.json({ error: error.message });
     } else {

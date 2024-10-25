@@ -1,5 +1,6 @@
 'use server';
 import { getForReview } from '@/actions/backend-actions/get-for-review';
+import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/add-db-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
 import {
@@ -7,7 +8,6 @@ import {
   getCompanyLocation,
   getCompanyName,
 } from '@/actions/quickbooks/user-info';
-import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/add-db-for-review';
 import { classifyTransactions } from './classify';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
@@ -21,11 +21,11 @@ import type { LoginTokens } from '@/types/LoginTokens';
 import type { QueryResult } from '@/types/QueryResult';
 import type { Transaction } from '@/types/Transaction';
 
-// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company being classified.
+// Classifies and saves the 'For Review' transactions for a specific Company.
+// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
 // Manual Classification Specific:
-//        Truth value indicating it is a manual classification and a state update function for frontend updating.
-// Returns: the query result from transaction-saving or an error query result.
-// Integration: Called by weekly classification method.
+//        Boolean value for Classification method (true for frontend call) a callback function for updating frontend state.
+// Returns: The Query Result from 'For Review' transaction saving function or an error Query Result.
 export async function classifyCompany(
   loginTokens: LoginTokens,
   companyId: string,
@@ -33,51 +33,50 @@ export async function classifyCompany(
   setFrontendState: ((newState: string) => void) | null = null
 ): Promise<QueryResult> {
   try {
-    // Manual Classification: Update frontend state for 'For Review' transaction fetching with non-null assertion.
+    // Manual Classification: Update frontend state for fetching 'For Review' transactions.
     if (manualClassify) setFrontendState!('Loading New Transactions ... ');
 
-    // Get the 'For Review' transactions for all accounts related to the current company.
+    // Get the 'For Review' transactions for all Accounts related to the current Company.
     const forReviewResult = await getForReviewTransactions(
       loginTokens,
       companyId
     );
 
     // Check if the 'For Review' transaction call encountered an error.
-    // Result is only present in Query Value typing that is only returned on error.
+    // Result is only present in Query Result typing (only returned on error).
     if ('result' in forReviewResult) {
-      // Return the query result to the caller as the error handling.
+      // Return the error Query Result.
       return forReviewResult;
     }
 
-    // Define the fetched 'For Review' transactions as an array of ararys.
+    // Define the fetched 'For Review' transactions as an array of Sub-arrays.
     // Interal array format is [FormattedForReviewTransaction, ForReviewTransaction] for each 'For Review' transaction.
     const forReviewTransactions = forReviewResult as (
       | ForReviewTransaction
       | FormattedForReviewTransaction
     )[][];
 
-    // Manual Classification: Update frontend state for fetching classified transactions with non-null assertion.
+    // Manual Classification: Update frontend state for fetching saved Classified Transactions.
     if (manualClassify) setFrontendState!('Getting Transaction History ... ');
 
-    // Get the saved classified transactions from the user to use as context for prediction.
+    // Get the saved Classified Transactions from the user to use as context for prediction.
     const classifiedPastTransactions = await getClassifiedPastTransactions(
       loginTokens,
       companyId
     );
 
-    // Extract the formatted 'For Review' transactions to use in classification.
+    // Extract the formatted 'For Review' transactions to use in Classification.
     const formattedForReviewTransactions = forReviewTransactions.map(
       (subArray) => subArray[0] as FormattedForReviewTransaction
     );
 
-    // Get company info for the user, used in assisting with classification by LLM.
-    // Returned values may be error / null but that is accounted for by use in LLM.
+    // Get Company Info for the user as context during LLM predictions.
     const companyInfo = await getCompanyInfo(loginTokens, companyId);
 
-    // Manual Classification: Update frontend state to indicate start of classification with non-null assertion.
+    // Manual Classification: Update frontend state to indicate start of Classification.
     if (manualClassify) setFrontendState!('Classifying New Transactions ... ');
 
-    // Call classification on the formatted 'For Review' transactions.
+    // Call Classification function on the formatted 'For Review' transactions.
     const classificationResults:
       | Record<
           string,
@@ -94,9 +93,9 @@ export async function classifyCompany(
       companyId
     );
 
-    // Checl for error created by classification.
+    // Check for error object returned by the Classification call.
     if (classificationResults.error) {
-      // Convert the returned error object to a string then return it as the detail of an 'Error' Query Result.
+      // Return the error object as the detail of an 'Error' Query Result.
       const resultDetail = classificationResults.error as string;
       return {
         result: 'Error',
@@ -104,7 +103,7 @@ export async function classifyCompany(
         detail: resultDetail,
       };
     } else {
-      // Define the classification results format as non-error typing is checked.
+      // Define the the format of the Classification results after error check.
       const validClassificationResults = classificationResults as Record<
         string,
         {
@@ -113,29 +112,41 @@ export async function classifyCompany(
         }
       >;
 
-      // Manual Classification: Update frontend state to indicate classified 'For Review' transaction creation with non-null assertion.
+      // Manual Classification: Update frontend state to indicate Classified 'For Review' transaction creation.
       if (manualClassify) setFrontendState!('Evaluating Classifications ... ');
 
-      // Use transaction classification results to create classified 'For Review' transaction objects.
+      // Use Classification results to create Classified 'For Review' transaction objects.
       const classifiedForReviewTransactions =
         createClassifiedForReviewTransactions(
           forReviewTransactions,
           validClassificationResults
         );
 
-      // Manual Classification: Update frontend state for database saving of classified 'For Review' transactions with non-null assertion.
+      // Check if the number of Classified 'For Review' transactions is less than the number of passed 'For Review' transactions.
+      if (
+        classifiedForReviewTransactions.length < forReviewTransactions.length
+      ) {
+        // Fewer returned 'For Review' transactions means the Classified 'For Review' transaction creation process encountered an error.
+        // Return an error Query Result
+        return {
+          result: 'Error',
+          message: 'Error Creating Classified For Review Transactions',
+          detail: 'Unexpected Error',
+        };
+      }
+
+      // Manual Classification: Update frontend state to indicate saving Classified 'For Review' transactions to database.
       if (manualClassify) setFrontendState!('Saving Classifications ... ');
 
-      // Save the classified 'For Review' transactions to the database.
-      // Return the resulting Query Result created by the database saving function.
+      // Save the Classified 'For Review' transactions to the database.
+      // Return the resulting Query Result created by the save function.
       return await addForReviewTransactions(
         classifiedForReviewTransactions,
         companyId
       );
     }
-    // Catch any errors and check for an error message.
   } catch (error) {
-    // Return an appropriate message indicating an unexpected error.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',
@@ -152,8 +163,9 @@ export async function classifyCompany(
   }
 }
 
-// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company.
-// Returns: an array of sub-arrays in the format: [FormattedForReviewTransaction, ForReviewTransaction]
+// Gets the 'For Review' transactions from the Company Accounts.
+// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
+// Returns: An array of Sub-arrays in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 async function getForReviewTransactions(
   loginTokens: LoginTokens,
   companyId: string
@@ -161,54 +173,60 @@ async function getForReviewTransactions(
   (FormattedForReviewTransaction | ForReviewTransaction)[][] | QueryResult
 > {
   try {
-    // Get all accounts that may contain 'For Review' transactions.
+    // Get all Accounts that may contain 'For Review' transactions.
     const response = await getAccounts('Transaction', loginTokens, companyId);
     const result = JSON.parse(response);
 
-    // Check the result of the account fetching, the first index always contains a Query Result.
+    // Check if the Transaction fetch resulted in an error.
     if (result[0].result === 'Error') {
-      // If the fetching failed, log an error message and return an empty array.
-      // Process will continue without 'For Review' transactions from the current account.
-      console.error('Error getting user accounts: ' + result[0].detail);
-      return [];
+      // If the Accounts fetch failed, log an error message and return an error Query Result.
+      console.error(
+        'Error Getting User Accounts To Fetch Review Transactions:' +
+          result[0].message
+      );
+      return {
+        result: 'Error',
+        message: 'Error Getting User Accounts To Fetch Review Transactions',
+        detail: result[0].message,
+      };
     } else {
-      // Remove the Query Result and define the remaining values as an array of Account objects.
+      // Remove the Query Result from the returned values and define results as an array of Account objects.
       const userAccounts: Account[] = result.slice(1);
 
-      // Define an array for the found 'For Review' transactions.
+      // Define an array to contain the fetched 'For Review' transactions.
       let foundTransactions: (
         | FormattedForReviewTransaction
         | ForReviewTransaction
       )[][] = [];
 
-      // Iterate through the fetched accounts that may contain 'For Review' transactions.
+      // Iterate through the fetched Accounts that may contain 'For Review' transactions.
       for (const account of userAccounts) {
-        // Get any 'For Review' transactions from the current account.
+        // Get any 'For Review' transactions assosiated with the current Account.
         const result = await getForReview(account.id, loginTokens, companyId);
 
-        // If the fetch was successful, append the resulting detail content to array of found 'For Review' transactions.
-        if (result.result === 'Success') {
-          // Parse the result details into an array of arrays in the format [FormattedForReviewTransaction, ForReviewTransaction]
-          // Then add the results the the existing array of 'For Review' transactions.
+        // Check if the 'For Review' transaction fetch resulted in error.
+        if (result.result === 'Error') {
+          // For error Query Results, return the Query Result generated by the 'For Review' transaction fetching.
+          return result;
+        } else {
+          // If the fetch Query Result is a success, save the resulting 'For Review' transactions.
+          // Parse the detail value of the Query Result into an array of Sub-arrays ([FormattedForReviewTransaction, ForReviewTransaction]).
+          // Add the newly found 'For Review' transactions to the array of all fetched 'For Review' transactions.
           const resultTransactions: (
             | FormattedForReviewTransaction
             | ForReviewTransaction
           )[][] = JSON.parse(result.detail);
           foundTransactions = foundTransactions.concat(resultTransactions);
-        } else {
-          // Return the failure Query Result generated by the 'For Review' transaction fetching.
-          return result;
         }
       }
 
-      // Return the found array of 'For Review' transactions.
+      // Return the array of all fetched 'For Review' transactions.
       return foundTransactions;
     }
-    // Catch any errors and check for an error message.
   } catch (error) {
-    // Return an appropriate message indicating an unexpected error fetching 'For Review' transactions.
+    // Catch and log any errors, include the error message if it is present.
+    // Also retrun an error Query Result object.
     if (error instanceof Error) {
-      // First, log the error for backend logs.
       console.error('Error Getting For Review Transactions:' + error.message);
       return {
         result: 'Error',
@@ -226,16 +244,15 @@ async function getForReviewTransactions(
   }
 }
 
-// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company.
-// Gets the users companies saved and classified transactions for reference in classification prediction.
-// Returns: An array of transactions objects for the users classified transactions.
+// Gets the saved and Classified Transactions from the Company for use in LLM prediction.
+// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
+// Returns: An array of transactions objects for the users Classified transactions.
 async function getClassifiedPastTransactions(
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<Transaction[]> {
   try {
-    // Get a reference for the current date and the date 5 years ago.
-    // This is used as the range of dates to fetch saved transactions to be used as classification context.
+    // Define the range of dates to fetch Transactions from.
     const today = new Date();
     const fiveYearsAgo = new Date(
       today.getFullYear() - 5,
@@ -243,11 +260,11 @@ async function getClassifiedPastTransactions(
       today.getDate()
     );
 
-    // Convert the dates to a start date and end date strings in the format 'YYYY-MM-DD'.
+    // Convert the date range to 'start date' and 'end date' strings in the format 'YYYY-MM-DD'.
     const startDate = today.toISOString().split('T')[0];
     const endDate = fiveYearsAgo.toISOString().split('T')[0];
 
-    // Get the users saved transactions from QuickBooks for checking matches and parse the result.
+    // Get the Classified and saved Transactions from QuickBooks.
     const response = await getSavedTransactions(
       startDate,
       endDate,
@@ -256,19 +273,19 @@ async function getClassifiedPastTransactions(
     );
     const result = JSON.parse(response);
 
-    // Check the first index which is always a Query Result.
+    // Check if the Transaction fetch resulted in an error.
     if (result[0].result === 'Error') {
-      // On failure to fetch transactions, log an error and return an empty array.
-      // Process will continue without prior transactions to use as context.
+      // If Transaction fetch failed, log an error and return an empty array.
+      // Process will continue without saved Transactions to use as context.
       console.error('Error Loading Saved Transactions: ' + result[0].detail);
       return [];
     } else {
-      // Return the resulting transactions with the inital query result value removed.
+      // Remove the Query Result from the results and return the array of Transactions.
       return result.slice(1);
     }
-    // Catch any errors and check for an error message.
   } catch (error) {
-    // Return an appropriate message indicating an unexpected error fetching saved transactions.
+    // Catch and log any errors, include the error message if it is present.
+    // Return an empty array to match expected return but indicate Transaction fetch failed.
     if (error instanceof Error) {
       console.error('Error Fetching Saved Transactions: ' + error.message);
       return [];
@@ -279,15 +296,15 @@ async function getClassifiedPastTransactions(
   }
 }
 
-// Gets the info for the current company that is used in transaction classification.
-// Takes a Login Tokens object containing values from synthetic login as well as the Id of the company.
-// Returns: The relevant company info as an object.
+// Gets the Company Info that is used in Transaction Classification.
+// Takes: The tokens retrived from synthetic login and the realm ID of the Company.
+// Returns: The relevant Company Info object.
 async function getCompanyInfo(
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<CompanyInfo> {
   try {
-    // Get the key company info values from the user-info calls.
+    // Get the Company Info values from the current Company.
     const userCompanyName = await getCompanyName(loginTokens, companyId);
     const userCompanyIndustry = await getCompanyIndustry(
       loginTokens,
@@ -297,15 +314,15 @@ async function getCompanyInfo(
       loginTokens,
       companyId
     );
-    // Return the formatted company info values.
+    // Return the formatted Company Info object.
     return {
       name: userCompanyName,
       industry: userCompanyIndustry,
       location: JSON.parse(userCompanyLocation),
     };
-    // Catch any errors and check for an error message.
   } catch (error) {
-    // Log an error message and return a company info of error values.
+    // Catch and log any errors, include the error message if it is present.
+    // Also return a Company Info object with the default error values.
     if (error instanceof Error) {
       console.error('Error Fetching Company Info: ' + error.message);
       return {
@@ -324,9 +341,9 @@ async function getCompanyInfo(
   }
 }
 
-// Takes the array of formatted and raw 'For Review' transactions.
-// Also takes a record that connects a transaction ID to an array of each of its classifications.
-// Returns: The 'For Review' transaction array converted to ClassifiedForReviewTransactions and Raw 'For Review' transactions.
+// Takes: The array of Formatted and Raw 'For Review' transactions -
+//    Also takes a record of Transaction IDs to arrays of the Classifications.
+// Returns: The 'For Review' transaction array converted to Sub-arrays of [ClassifiedForReviewTransactions, ForReviewTransaction].
 function createClassifiedForReviewTransactions(
   forReviewTransactions: (
     | FormattedForReviewTransaction
@@ -341,15 +358,15 @@ function createClassifiedForReviewTransactions(
   >
 ): (ClassifiedForReviewTransaction | ForReviewTransaction)[][] {
   try {
-    // Create an array for the newly classified 'For Review' transactions.
+    // Create an array for Classified 'For Review' transactions.
     const newCategorizedTransactions: (
       | ClassifiedForReviewTransaction
       | ForReviewTransaction
     )[][] = [];
 
-    // Iterate passed 'For Review' transactions.
+    // Iterate through the passed 'For Review' transactions.
     for (const transaction of forReviewTransactions) {
-      // Create a record to track the classifications and be combined with the 'For Review' transaction later.
+      // Create a record to track the Classifications of a 'For Review' transaction by its Id.
       const nonNullResult = result as Record<
         string,
         {
@@ -358,29 +375,30 @@ function createClassifiedForReviewTransactions(
         }
       >;
 
-      // Extract the 'For Review' transactions from the sub array and define their types.
+      // Extract the 'For Review' transactions from the Sub-array and define their types.
       const formattedTransaction =
         transaction[0] as FormattedForReviewTransaction;
       const fullTransaction = transaction[1] as ForReviewTransaction;
 
-      // Define inital null values for thecategory and tax code predictions.
+      // Define inital null values for the Classifications.
       let categoryClassification = null;
       let taxCodeClassification = null;
 
-      // Extract the value from the results record assosiated with the current 'For Review' transaction.
+      // Extract the value for the current 'For Review' transaction from the passed 'For Review' transaction record.
       const transactionClassifications =
         nonNullResult[formattedTransaction.transaction_ID];
 
-      // Check if the results values for the current 'For Review' transaction are present.
+      // Check if the Classification result values for the current 'For Review' transaction are present.
       if (transactionClassifications) {
-        // Use the extracted results values to update the classifications.
+        // Use the extracted values to update the Classifications.
         categoryClassification = transactionClassifications.category;
         taxCodeClassification = transactionClassifications.taxCode;
       }
 
-      // Push the resulting ClassifiedForReviewTransaction and ForReviewTransaction in a sub-array to the new  categorized 'For Review' transactions array.
+      // Push the new ClassifiedForReviewTransaction and its related ForReviewTransaction as a Sub-array.
+      // Adds them to the array of new Categorized 'For Review' transactions.
       newCategorizedTransactions.push([
-        // Define a classified 'For Review' transaction to be added.
+        // Define a Classified 'For Review' transaction to be added.
         {
           transaction_ID: formattedTransaction.transaction_ID,
           name: formattedTransaction.name,
@@ -388,18 +406,18 @@ function createClassifiedForReviewTransactions(
           account: formattedTransaction.account,
           accountName: formattedTransaction.accountName,
           amount: formattedTransaction.amount,
-          // Adds either the inital null values or the classifications if a match was found in results.
+          // Adds either the inital null values or the Classifications found in the results.
           categories: categoryClassification,
           taxCodes: taxCodeClassification,
         },
         fullTransaction,
       ]);
     }
-    // Return the array of classified 'For Review' transactions (and their related raw transaction).
+    // Return the array of Classified 'For Review' transactions (and their related Raw 'For Review' transaction).
     return newCategorizedTransactions;
-    // Catch any errors and check for an error message.
   } catch (error) {
-    // Log an error message and return a company info of error values.
+    // Catch and log any errors, include the error message if it is present.
+    // Return an empty array to match expected return but indicate Classification failed.
     if (error instanceof Error) {
       console.error('Error Creating Classified Transactions: ' + error.message);
       return [];

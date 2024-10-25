@@ -73,7 +73,7 @@ export default async function createCustomerSession(): Promise<
       return { error: 'User is missing a stripe customer Id' };
     }
   } catch (error) {
-    // Catch any errors and return an error response with the error message if it is present.
+    // Catch any errors and return an error response, include the error message if it is present.
     if (error instanceof Error) {
       return { error: error.message };
     } else {

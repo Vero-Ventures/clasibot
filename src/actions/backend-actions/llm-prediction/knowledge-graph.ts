@@ -56,12 +56,13 @@ export async function fetchKnowledgeGraph(
       return [];
     }
   } catch (error) {
-    // Catch any errors that occured, log the error ,and return an empty array as the Knowledge Graph Result object.
+    // Catch and log any errors that occured, include the error message if it is present.
     if (error instanceof Error) {
       console.error('Error fetching Knowledge Graph search: ' + error);
     } else {
       console.error('Unexpected error fetching Knowledge Graph.');
     }
+    // On error, return an empty array as the Knowledge Graph Result object.
     return [];
   }
 }

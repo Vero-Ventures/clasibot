@@ -7,7 +7,7 @@ import type { LoginTokens } from '@/types/LoginTokens';
 
 // Get specific Accounts from the QuickBooks API depending on passed Account type.
 // Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
-// Use 'Expense' to get Accounts for transaction categorization.
+// Use 'Expense' to get Accounts for Categorization.
 // May take a synthetic login session to use instead of the regular session.
 // Returns: An array of objects starting with a Query Result, then containing Purchase objects.
 export async function getAccounts(
@@ -19,7 +19,7 @@ export async function getAccounts(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -63,7 +63,7 @@ export async function getAccounts(
     };
 
     // Define the query parameters for 'Expense' Account fetching.
-    // Fetches Accounts with Classification set to 'Expense' (Represent a possible Transaction category).
+    // Fetches Accounts with Classification set to 'Expense' (Represent a possible Transaction Category).
     let parameters = [
       {
         field: 'Classification',
@@ -136,7 +136,7 @@ export async function getAccounts(
     // Return the array of Account objects with a Query Result in the first index as a JSON string.
     return JSON.stringify(results);
   } catch (error) {
-    // Catch any errors and return an appropriate error Query Result based on the caught error.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return JSON.stringify([
         {

@@ -24,7 +24,7 @@ export async function getSavedTransactions(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -150,7 +150,7 @@ export async function getSavedTransactions(
     // Return the formatted results as a JSON string.
     return JSON.stringify(results);
   } catch (error) {
-    // Catch any errors and return an appropriate error Query Result based on the caught error.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return JSON.stringify([
         {
@@ -175,7 +175,7 @@ export async function getSavedTransactions(
 
 // Formats the response rows into Transactions.
 // Takes: the QuickBooks response rows and a results array.
-//    May also take synthetic login tokens and company Id for backend calls.
+//    May also take synthetic Login Tokens and company Id for backend calls.
 // Returns: A results array containing a Query Result in the first index and the formatted Transaction objects.
 async function checkAndFormatTransactions(
   rows: {
@@ -193,7 +193,7 @@ async function checkAndFormatTransactions(
   const accounts = await getAccounts('Expense', loginTokens, companyId);
   const accountResults = JSON.parse(accounts);
 
-  // Check if the Account fetch Query Result is an error.
+  // Check the Account fetch Query Result to see if it resulted in an error.
   if (accountResults[0].result === 'Error') {
     // Set the to contain an error Query Result with the message from the Account fetch Query Result as the detail.
     results = [
@@ -221,7 +221,7 @@ async function checkAndFormatTransactions(
       const categoryRow = 2;
       const amountRow = 3;
 
-      // Skip Transactions missing a name, category, or without a negative amount.
+      // Skip Transactions missing a name, Category, or without a negative amount.
       if (
         row.ColData[nameRow].value !== '' &&
         row.ColData[categoryRow].value !== '' &&
@@ -243,7 +243,7 @@ async function checkAndFormatTransactions(
           };
 
           // Search for the Purchase related to the Transaction to get the Tax Code.
-          // Pass synthetic login tokens and realm Id in case backend call is needed.
+          // Pass synthetic Login Tokens and realm Id in case backend call is needed.
           const transactionPurchase = await findFormattedPurchase(
             String(row.ColData[idRow].id),
             loginTokens,
@@ -260,7 +260,7 @@ async function checkAndFormatTransactions(
             transactionPurchase.result_info.result === 'Error' ||
             userTaxCodes[0].result === 'Error'
           ) {
-            // Define truth values for both the Purchase and Tax Code to indicate if that fetch failed.
+            // Define truth values for both Classificaions to indicate if that fetch resulted in an error.
             const purchaseError =
               transactionPurchase.result_info.result === 'Error';
             const taxCodeError = userTaxCodes[0].result === 'Error';

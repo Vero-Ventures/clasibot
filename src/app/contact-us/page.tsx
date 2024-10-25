@@ -89,7 +89,7 @@ export default function Page() {
         form.reset();
       }
     } catch (error) {
-      // Catch any errors, log them to the console and display an error toast.
+      // Catch any errors, log them (include the error message if it is present), and display an error toast.
       if (error instanceof Error) {
         console.error('Error Sending Message : ' + error.message);
       } else {

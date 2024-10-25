@@ -80,12 +80,13 @@ export async function getTopCategoriesForTransaction(
       return [];
     }
   } catch (error) {
-    // Catch any errors, log them, and return an empty array.
+    // Catch any errors and log them, include the error message if it is present.
     if (error instanceof Error) {
       console.log('Error Getting Categories From Database: ' + error.message);
     } else {
       console.log('Unexpected Error Getting Categories From Database.');
     }
+    // On error, return an empty array to indicate an error sorting the Classificaions.
     return [];
   }
 }
@@ -161,12 +162,13 @@ export async function getTopTaxCodesForTransaction(
       return [];
     }
   } catch (error) {
-    // Catch any errors, log them, and return an empty array.
+    // Catch any errors and log them, include the error message if it is present.
     if (error instanceof Error) {
       console.log('Error Getting Tax Codes From Database: ' + error.message);
     } else {
       console.log('Unexpected Error Getting Tax Codes From Database.');
     }
+    // On error, return an empty array to indicate no valid Tax Codes were found.
     return [];
   }
 }

@@ -59,7 +59,7 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
       expiresAt: Date.now() / 1000 + responseData.expires_in,
     } as TokenSet;
   } catch (error) {
-    // Log the error and return the original token object.
+    // Catch any errors and log them, then return the original token object.
     console.error('Error refreshing token:', error);
     return token;
   }
@@ -124,7 +124,7 @@ export async function refreshBackendToken(token: TokenSet): Promise<TokenSet> {
       expiresAt: Date.now() / 1000 + responseData.expires_in,
     } as TokenSet;
   } catch (error) {
-    // Log the error and return the original token object.
+    // Catch any errors and log them, then return the original token object.
     console.error('Error refreshing token:', error);
     return token;
   }

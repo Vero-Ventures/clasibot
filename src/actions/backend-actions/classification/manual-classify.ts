@@ -7,81 +7,83 @@ import { eq } from 'drizzle-orm';
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
 import { classifyCompany } from './classify-company';
 
-// Takes a function to update state on front end.
-// Returns: A boolean indicating if manual classification was successful.
-// Integration: Requires synthetic login and state handling on frontend.
+// Runs backend Classification on the 'For Review' transactions for the current Company.
+// Takes: A callback function to update the state on frontend.
+// Returns: A boolean indicating if Classification was successful.
 export async function manualClassify(
-  setManualClassificationState: (newState: string) => void
+  setFrontendState: (newState: string) => void
 ): Promise<boolean> {
   try {
-    // Get the current session to get the company realm Id.
+    // Get the current session for the realm Id of the currently logged in Company.
     const session = await getServerSession(options);
 
-    // Handle error logging, state update, and failure return if session is not found.
+    // If session or realm Id are not found, handle error logging, state update, and return a failure value.
     if (!session?.realmId) {
       console.error('Backend Classification: Session Not Found.');
-      setManualClassificationState('An Unexpected Error Occured');
+      setFrontendState('An Unexpected Error Occured');
       return false;
     }
 
-    // Get the current company from the database to check for a potential Firm name.
-    // Needed during synthetic login if access to company comes through an accounting Firm.
+    // Get the current Company from the database to check for a Firm name.
+    // Used in synthetic login for Companies accessed through an accounting Firm.
     const currentCompany = await db
       .select()
       .from(Company)
       .where(eq(Company.realmId, session.realmId));
 
-    // Check that a matching company was found.
+    // Check that a matching database Company object was found.
     // Handle error logging, state update, and failure return if no matching company is found.
     if (!currentCompany[0]) {
       console.error('Backend Classification: Company Not Found In Database.');
-      setManualClassificationState('An Unexpected Error Occured');
+      setFrontendState('An Unexpected Error Occured');
       return false;
     }
 
-    // Call method for synthetic login.
-    // Takes: the company realmId and potentially null Firm name string.
-    // Returns: A QueryResult, the two tokens pulled from the login response headers, and the session.
+    // Call synthetic login method with the realm Id and (possibly null) Firm name for the Company.
+    // Returns: A QueryResult and the tokens retrived from synthetic login process.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
       currentCompany[0].firmName
     );
 
-    // Check the synthetic login response to prevent any errors.
-    if (loginResult.result !== 'Error ') {
-      // Make a call to the company classification method with the retrived values and company Id.
+    // Check the synthetic login call resulted in error.
+    if (loginResult.result === 'Error ') {
+      // If the synthetic login resulted in error, Log the Query Result, update frontend state, and return a failure boolean.
+      console.error(loginResult);
+      setFrontendState('An Unexpected Error Occured');
+      return false;
+    } else {
+      // If synthetic login was success, call the Company Classification handler.
+      // Pass the synthetic Login Tokens, realm Id, manual Classification boolean, and frontend state handler
       const result = await classifyCompany(
         loginTokens,
         session.realmId,
         true,
-        setManualClassificationState
+        setFrontendState
       );
 
-      // Depending on the result of the classification call, update the manual classification state and return a success boolean value.
-      if (result.result === 'Success') {
-        setManualClassificationState('Classifications Saved.');
-        return true;
-      } else {
-        // Log the error from company classification as well as updating frontend state and reutning failure boolean value.
-        console.error('Unexpected Error, Message:' + result.message);
-        setManualClassificationState('An Unexpected Error Occured');
+      // Check if the Company Classification call resulted in error, then update the frontend state and return a success boolean.
+      if (result.result === 'Error') {
+        // On error also log an error message before returning.
+        console.error(
+          'Unexpected Error In Manual Classification :' + result.message
+        );
+        setFrontendState('An Unexpected Error Occured');
         return false;
+      } else {
+        setFrontendState('Classifications Saved.');
+        return true;
       }
-    } else {
-      // Log the Query Result from the failed synthetic login, update frontend to failure state, then return a failure boolean value.
-      console.error(loginResult);
-      setManualClassificationState('An Unexpected Error Occured');
-      return false;
     }
   } catch (error) {
-    // Catch any errors and log an error with the error message if it is present.
+    // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
       console.log('Error During Manual Classification : ' + error.message);
     } else {
       console.log('Unexpected Error During Manual Classification');
     }
-    // Update the frontend state and return a failure boolean value.
-    setManualClassificationState('An Unexpected Error Occured');
+    // Update the frontend state and return a failure boolean.
+    setFrontendState('An Unexpected Error Occured');
     return false;
   }
 }

@@ -4,7 +4,7 @@
 
 // Defines standardized 2-letter shorthand strings for Canadian locations (provinces and territories).
 //    Should be used by QuickBooks for in Canada Company locations.
-//    Used to determine which Tax Codes will apply to a Company's transactions.
+//    Used to determine which Tax Codes will apply to a Company's Transactions.
 export enum Locations {
   AB = 'AB',
   BC = 'BC',

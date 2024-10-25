@@ -11,7 +11,7 @@ import type {
 } from '@/types/ForReviewTransaction';
 import type { QueryResult } from '@/types/QueryResult';
 
-// Take a Raw 'For Review' transaction object as well as the Id's for its classificaions.
+// Take a Raw 'For Review' transaction object as well as the Id's for its Classifications.
 // Returns: A Query Result object.
 export async function addForReview(
   forReviewTransaction: ForReviewTransaction,
@@ -46,12 +46,12 @@ export async function addForReview(
       currentCompany[0].firmName
     );
 
-    // If the synthetic login process failed, return the assosiated failure Query Result.
+    // Check if the synthetic login resulted in an error and return the assosiated Query Result.
     if (loginResult.result === 'Error') {
       return loginResult;
     }
 
-    // Define the account ID for the call and the full endpoint to use.
+    // Define the Account ID for the call and the full endpoint to use.
     const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${session!.realmId}/olb/ng/batchAcceptTransactions`;
 
     // Convert the passed 'For Review' transaction to the format needed when calling the update user Transactions endpoint.
@@ -93,7 +93,7 @@ export async function addForReview(
       };
     }
   } catch (error) {
-    // Catch any errors and return an appropriate error Query Result based on the caught error.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return {
         result: 'Error',

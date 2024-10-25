@@ -88,7 +88,7 @@ export default async function checkSubscription(
       valid: subStatus === 'active' || subStatus === 'trialing',
     };
   } catch {
-    // Catch any errors and return inactive and invalid status.
+    // Catch any errors and return inactive and invalid status values.
     return {
       status: 'inactive',
       valid: false,

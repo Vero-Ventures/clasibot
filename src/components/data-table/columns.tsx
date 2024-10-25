@@ -231,8 +231,8 @@ export const reviewColumns = (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"
           onClick={(e) => e.stopPropagation()}
-          // Use a callback function (handleCategoryChange) when the selected category for a row changes.
-          //    Updates the selected categories for each Transaction in the Review Page.
+          // Use a callback function (handleCategoryChange) when the selected Category for a row changes.
+          //    Updates the selected Categories for each Transaction in the Review Page.
           onChange={(e) => {
             handleCategoryChange(row.original.transaction_ID, e.target.value);
           }}
@@ -286,7 +286,7 @@ export const reviewColumns = (
     accessorKey: 'confidence',
     header: 'Confidence',
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      // Set the inital Confidence Value and define the values for each classification method.
+      // Set the inital Confidence Value and define the values for each Classification method.
       let confidenceValue = 0;
       const LLMClassified = 1;
       const DatabaseClassified = 2;
@@ -304,7 +304,7 @@ export const reviewColumns = (
           if (category.classifiedBy === 'Database') {
             confidenceValue = DatabaseClassified;
           }
-          // If the Category is classified by matching, update the Confidence Value to 3/3.
+          // If the Category is Classified by matching, update the Confidence Value to 3/3.
           if (category.classifiedBy === 'Matching') {
             // Break the loop as no higher value is possible.
             confidenceValue = FuseClassified;

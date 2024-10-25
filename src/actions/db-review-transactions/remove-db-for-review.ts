@@ -81,7 +81,7 @@ export async function removeForReviewTransactions(
       };
     }
   } catch (error) {
-    // Catch any errors and return an error Query Result with the error message if it present.
+    // Catch any errors and return an error Query Response, include the error message if it is present.
     if (error instanceof Error && error.message) {
       return {
         result: 'Error',

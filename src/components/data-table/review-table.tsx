@@ -35,11 +35,11 @@ import type {
 
 /**
  * Takes:
- * a list of categorized transactions, a record of the selected categories,
- * a list of account names, and a value to indicate saving is in progress,
- * If manual classification is in progress and the current state of the manual classification.
+ * A list of Classified 'For Review' transactions, a record of the selected Classifications,
+ * A list of Account names, and a value to indicate saving is in progress,
+ * If manual Classification is in progress and the current state of the manual Classification.
  *
- * Callbacks: Handle category changes and a handle saving.
+ * Callbacks: Handle Classification and saving processes.
  */
 export function ReviewTable({
   categorizedTransactions,
@@ -156,7 +156,7 @@ export function ReviewTable({
 
   // Update the Account filter in the table when the selected Accounts change.
   useEffect(() => {
-    // If no Accounts are selected, set the account filter false which shows all results.
+    // If no Accounts are selected, set the Account filter false which shows all results.
     if (selectedAccounts.length === 0) {
       table.getColumn('account')?.setFilterValue(() => false);
     }
@@ -341,7 +341,7 @@ export function ReviewTable({
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        {/* Pagination buttons for the table. Each page holds the header row and 10 transaction rows. */}
+        {/* Pagination buttons for the table. Each page holds the header row and 10 Transaction rows. */}
         <div
           id="PaginationButtonsContainer"
           className="grid grid-rows-2 space-y-1 sm:grid-cols-2 sm:grid-rows-1 sm:space-x-2 sm:space-y-0">

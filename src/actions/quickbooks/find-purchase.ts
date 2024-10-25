@@ -16,7 +16,7 @@ export async function findFormattedPurchase(
     // Define the variable used to make the qbo calls.
     let qbo;
 
-    // Check if synthetic login tokens and realm Id were passed to login through backend.
+    // Check if synthetic Login Tokens and realm Id were passed to login through backend.
     if (loginTokens && companyId) {
       // If tokens were passed, preform backend login process.
       qbo = await getQBObjectWithSession(loginTokens, companyId);
@@ -95,8 +95,8 @@ export async function findFormattedPurchase(
     // Return the formatted Purchase object as a JSON string.
     return formattedResult;
   } catch (error) {
-    // Return an empty formatted Purchase object with an error Query Result in the results info.
-    // Include a detail string in the Query Result if the error message is present.
+    // Catch any errors and return an error Query Result, include the error message if it is present.
+    // Include Query Result in the result_info field of an empty Purchase to match expected return typing.
     if (error instanceof Error) {
       return {
         result_info: {
