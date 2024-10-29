@@ -15,7 +15,7 @@ export default async function Page() {
       id="LandingPageContainer"
       className="flex h-full w-full max-w-xs flex-1 flex-col items-center justify-center px-4 pb-p20 text-center sm:pb-p15 md:max-w-3xl lg:pb-p10 2xl:pb-p5">
       <h1
-        id=":andingPageTitle"
+        id="LandingPageTitle"
         className="mb-4 text-5xl font-extrabold text-gray-800 md:text-6xl">
         {siteConfig.name}
       </h1>
