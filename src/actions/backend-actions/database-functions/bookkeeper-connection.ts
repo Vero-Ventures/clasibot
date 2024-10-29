@@ -369,13 +369,13 @@ export async function makeCompanyIncactive(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured The Company Inactive',
+        message: 'An Unexpected Error Occured While Making The Company Inactive',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured Making The Company Inactive',
+        message: 'An Unexpected Error Occured While Making The Company Inactive',
         detail: 'N/A',
       };
     }
