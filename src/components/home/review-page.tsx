@@ -1,6 +1,4 @@
 'use client';
-import { getServerSession } from 'next-auth';
-import { options } from '@/app/api/auth/[...nextauth]/options';
 import { useEffect, useState } from 'react';
 import { signIn, signOut } from 'next-auth/react';
 import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
@@ -51,18 +49,8 @@ export default function ReviewPage({
 
   // Define the behavior of confirmation of the Company deactivation.
   async function deactivateCompany(switchCompany: boolean) {
-    // Get the current session to get the Company realm Id.
-    const session = await getServerSession(options);
-
-    // Check that the Company realm Id could be found.
-    if (!session) {
-      // Close the confirmation modal and open the error modal.
-      setOpenDeactivateCompanyConfirmModal(false);
-      setOpenDeactivateCompanyErrorModal(true);
-    }
-
     // Call backend action with the Company realm Id to update Company connection in the database.
-    const deactivationResult = await makeCompanyIncactive(session!.realmId!);
+    const deactivationResult = await makeCompanyIncactive();
 
     // Check for an error updating the Company connection.
     if (deactivationResult.result === 'Error') {
@@ -183,20 +171,8 @@ export default function ReviewPage({
   useEffect(() => {
     // Create a function to use async functions.
     const checkBackendClassifyErrorStatus = async () => {
-      // Get the current session to get the Company realm Id.
-      const session = await getServerSession(options);
-
-      // Check that the Company realm Id could be found.
-      if (!session) {
-        // If the session could not be found, skip checking for backend Classification errors.
-        console.error('Session Could Not Be Found.');
-        return;
-      }
-
       // Check the database Company object for a backend Classification error status.
-      const errorCheckResponse = await checkBackendClassifyError(
-        session!.realmId!
-      );
+      const errorCheckResponse = await checkBackendClassifyError();
 
       // Check for an error getting the backend Classification error status.
       if (errorCheckResponse.queryResult.result === 'Error') {
@@ -219,20 +195,8 @@ export default function ReviewPage({
   // Updates the database Company object to dismiss backend Classification error.
   // Unused: Function is marked as unused until frontend notice that allows the user to dismiss the error is implemented.
   async function _dismissBackendClassifyErrorStatus() {
-    // Get the current session to get the Company realm Id.
-    const session = await getServerSession(options);
-
-    // Check that the Company realm Id could be found.
-    if (!session) {
-      // If the session could not be found, do not dissmiss the error in the database.
-      console.error('Session Could Not Be Found.');
-      return;
-    }
-
     // Update the database Company object to dismiss the backend Classification error status.
-    const dismissErrorResponse = await dismissBackendClassifyError(
-      session!.realmId!
-    );
+    const dismissErrorResponse = await dismissBackendClassifyError();
 
     // Check for an error dismissing the backend Classification error status.
     if (dismissErrorResponse.result === 'Error') {

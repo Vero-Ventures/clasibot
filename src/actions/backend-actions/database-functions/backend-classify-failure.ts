@@ -1,21 +1,41 @@
 'use server';
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import type { QueryResult } from '@/types/QueryResult';
 
 // Checks if the backend Classification process resulted in an error for a specific Company.
-// Takes: A Company realm Id.
 // Returns: A Query Result object and the boolean value of the database Company error status.
-export async function checkBackendClassifyError(
-  realmId: string
-): Promise<{ queryResult: QueryResult; errorStatus: boolean }> {
+export async function checkBackendClassifyError(): Promise<{
+  queryResult: QueryResult;
+  errorStatus: boolean;
+}> {
   try {
+    // Get the current session to get the Company realm Id.
+    const session = await getServerSession(options);
+
+    // Check that the Company realm Id could be found.
+    if (!session?.realmId) {
+      // Return an error Query Result indicating the session could not be found.
+      // Also returns a false value for the error status presence.
+      return {
+        queryResult: {
+          result: 'Error',
+          message: 'Session could not be found.',
+          detail:
+            'The session containing the Company realm Id could not be found',
+        },
+        errorStatus: false,
+      };
+    }
+
     // Find the Company in the database with the matching Id.
     const company = await db
       .select()
       .from(Company)
-      .where(eq(Company.realmId, realmId));
+      .where(eq(Company.realmId, session.realmId));
 
     // If a Company is found, check if it has recorded a backend Classification error.
     if (company[0]) {
@@ -84,17 +104,28 @@ export async function checkBackendClassifyError(
 
 // Updates a Company in the database to dismiss the backend Classification error state.
 // Used after user has been informed of the error and wishes to dismiss the error notification.
-// Takes: A Company realm Id.
 // Returns: A Query Result object.
-export async function dismissBackendClassifyError(
-  realmId: string
-): Promise<QueryResult> {
+export async function dismissBackendClassifyError(): Promise<QueryResult> {
   try {
+    // Get the current session to get the Company realm Id.
+    const session = await getServerSession(options);
+
+    // Check that the Company realm Id could be found.
+    if (!session?.realmId) {
+      // Return an error Query Result indicating the session could not be found.
+      return {
+        result: 'Error',
+        message: 'Session could not be found.',
+        detail:
+          'The session containing the Company realm Id could not be found',
+      };
+    }
+
     // Find the Company in the database with the matching Id.
     const company = await db
       .select()
       .from(Company)
-      .where(eq(Company.realmId, realmId));
+      .where(eq(Company.realmId, session.realmId));
 
     // Check if a matching Company was found.
     if (company[0]) {
