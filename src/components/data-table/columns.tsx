@@ -284,13 +284,13 @@ export const reviewColumns = (
     },
   },
 
-  // Define the Confidence Column
+  // Define the Category Confidence Column
   {
-    accessorKey: 'confidence',
-    header: 'Confidence',
+    accessorKey: 'categoryConfidence',
+    header: 'Category Confidence',
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
       // Set the inital Confidence Value and define the values for each Classification method.
-      let confidenceValue = 0;
+      let categoryConfidenceValue = 0;
       const LLMClassified = 1;
       const DatabaseClassified = 2;
       const FuseClassified = 3;
@@ -299,16 +299,69 @@ export const reviewColumns = (
 
       // Determine the highest Confidence Value present from how the Categories were predicted.
       if (categories.length > 0) {
-        // If any category is found, the lowest possible Confidence Value is 1/3 (LLM).
-        confidenceValue = LLMClassified;
+        // If any Category is found, the lowest possible Confidence Value is 1/3 (LLM).
+        categoryConfidenceValue = LLMClassified;
         // Iterate through the Categories to determine the Confidence Value.
         for (const category of categories) {
           // For database predictions, update minimum Confidence Value to 2/3.
           if (category.classifiedBy === 'Database') {
-            confidenceValue = DatabaseClassified;
+            categoryConfidenceValue = DatabaseClassified;
           }
           // If the Category is Classified by matching, update the Confidence Value to 3/3.
           if (category.classifiedBy === 'Matching') {
+            // Break the loop as no higher value is possible.
+            categoryConfidenceValue = FuseClassified;
+            break;
+          }
+        }
+      }
+
+      // Determine the text to display on a hover card on top of the Confidence Bar.
+      let hoverText = '';
+      if (categoryConfidenceValue === 0) {
+        hoverText = 'No Classification results found.';
+      }
+      if (categoryConfidenceValue === LLMClassified) {
+        hoverText = 'Results found by LLM prediction.';
+      }
+      if (categoryConfidenceValue === DatabaseClassified) {
+        hoverText = 'Results found by database check.';
+      }
+      if (categoryConfidenceValue === FuseClassified) {
+        hoverText = 'Results found by name matching.';
+      }
+      // Create and return a Confidence Bar using the defined Confidence Value and hover text.
+      return (
+        <ConfidenceBar confidence={categoryConfidenceValue} hoverText={hoverText} />
+      );
+    },
+  },
+
+  // Define the Tax Code Confidence Column
+  {
+    accessorKey: 'taxCodeConfidence',
+    header: 'Confidence',
+    cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
+      // Set the inital Confidence Value and define the values for each Classification method.
+      let confidenceValue = 0;
+      const LLMClassified = 1;
+      const DatabaseClassified = 2;
+      const FuseClassified = 3;
+
+      const taxCodes: ClassifiedElement[] = row.getValue('taxCodes');
+
+      // Determine the highest Confidence Value present from how the Tax Codes were predicted.
+      if (taxCodes.length > 0) {
+        // If any Tax Code is found, the lowest possible Confidence Value is 1/3 (LLM).
+        confidenceValue = LLMClassified;
+        // Iterate through the Tax Codes to determine the Confidence Value.
+        for (const taxCode of taxCodes) {
+          // For database predictions, update minimum Confidence Value to 2/3.
+          if (taxCode.classifiedBy === 'Database') {
+            confidenceValue = DatabaseClassified;
+          }
+          // If the Tax Code is Classified by matching, update the Confidence Value to 3/3.
+          if (taxCode.classifiedBy === 'Matching') {
             // Break the loop as no higher value is possible.
             confidenceValue = FuseClassified;
             break;
@@ -330,6 +383,7 @@ export const reviewColumns = (
       if (confidenceValue === FuseClassified) {
         hoverText = 'Results found by name matching.';
       }
+
       // Create and return a Confidence Bar using the defined Confidence Value and hover text.
       return (
         <ConfidenceBar confidence={confidenceValue} hoverText={hoverText} />
