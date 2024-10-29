@@ -332,7 +332,10 @@ export const reviewColumns = (
       }
       // Create and return a Confidence Bar using the defined Confidence Value and hover text.
       return (
-        <ConfidenceBar confidence={categoryConfidenceValue} hoverText={hoverText} />
+        <ConfidenceBar
+          confidence={categoryConfidenceValue}
+          hoverText={hoverText}
+        />
       );
     },
   },
