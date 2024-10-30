@@ -19,7 +19,7 @@ export default async function SubscriptionPurchase() {
   return (
     <div className="container flex h-full items-center justify-center">
       <div className="h-full w-[45%]">
-        <PricingTable publicKey={publicKey} tableID={tableID} />
+        <PricingTable publicKey={publicKey} tableId={tableID} />
       </div>
       <div className="h-full w-[55%]">
             <div className="flex flex-col space-y-4">
