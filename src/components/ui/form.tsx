@@ -55,9 +55,9 @@ const useFormField = () => {
     // Throw an error if the field context is not defined.
     throw new Error('useFormField should be used within <FormField>');
   }
-  // Define an ID for the field using the item context ID.
+  // Define an Id for the field using the item context Id.
   const { id } = itemContext;
-  // Return the field ID, name, form item ID, form description ID, form message ID, and field state.
+  // Return the field Id, name, form item Id, form description Id, form message Id, and field state.
   return {
     id,
     name: fieldContext.name,
@@ -81,9 +81,9 @@ const FormItemContext = createContext<FormItemContextValue>(
 // Define the FormItem component and display name.
 const FormItem = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
-    // Define the form item context ID using react.
+    // Define the form item context Id using react.
     const id = useId();
-    // Return the form item context provider with the ID and class name.
+    // Return the form item context provider with the Id and class name.
     return (
       <FormItemContext.Provider value={useMemo(() => ({ id }), [id])}>
         <div ref={ref} className={cn('space-y-2', className)} {...props} />
@@ -99,9 +99,9 @@ const FormLabel = forwardRef<
   ElementRef<typeof Root>,
   ComponentPropsWithoutRef<typeof Root>
 >(({ className, ...props }, ref) => {
-  // Define the error and form item ID values using the form field.
+  // Define the error and form item Id values using the form field.
   const { error, formItemId } = useFormField();
-  // Return the label component with the class name, error, and form item ID.
+  // Return the label component with the class name, error, and form item Id.
   return (
     <Label
       ref={ref}
@@ -119,7 +119,7 @@ const FormControl = forwardRef<
   ElementRef<typeof Slot>,
   ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
-  // Get the error, form item ID, form description ID, and form message ID using the form field.
+  // Get the error, form item Id, form description Id, and form message Id using the form field.
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
   // Return the slot component with the values defined by the passed and values found from the form field.
@@ -147,9 +147,9 @@ const FormDescription = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
-  // Get the form description ID using the form field.
+  // Get the form description Id using the form field.
   const { formDescriptionId } = useFormField();
-  // Return the paragraph element with the class name and form description ID.
+  // Return the paragraph element with the class name and form description Id.
   return (
     <p
       ref={ref}
@@ -167,7 +167,7 @@ const FormMessage = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
-  // Get the error and form message ID using the form field.
+  // Get the error and form message Id using the form field.
   const { error, formMessageId } = useFormField();
   // Define the body using the error and children values.
   let body;
@@ -180,7 +180,7 @@ const FormMessage = forwardRef<
   if (!body) {
     return null;
   }
-  // Return the paragraph element with the reference, form message ID, class name, and body.
+  // Return the paragraph element with the reference, form message Id, class name, and body.
   return (
     <p
       ref={ref}

@@ -15,7 +15,7 @@ export function Toaster() {
   const { toasts } = useToast();
   return (
     <ToastProvider>
-      {/* Map over the toasts to get ID, title, description, action, and remaining props. */}
+      {/* Map over the toasts to get Id, title, description, action, and remaining props. */}
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           // Create a toast component using the mapped values and the toast elements.
