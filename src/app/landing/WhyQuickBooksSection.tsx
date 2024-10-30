@@ -37,7 +37,7 @@ export const WhyQuickBooksSection = () => {
             <li className="flex items-start">
               <span className="mr-2 text-green-500">
                 <svg
-                  className="h-4 w-4" 
+                  className="h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24">
@@ -93,11 +93,9 @@ export const WhyQuickBooksSection = () => {
             </li>
           </ul>
           <Button
-            className="flex transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3
-             text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800
-              focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+            className="flex transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
             onClick={() => router.push('/quickbooks-signin')}>
-            Connect with QuickBooks
+            Sign In with QuickBooks
           </Button>
         </div>
       </div>

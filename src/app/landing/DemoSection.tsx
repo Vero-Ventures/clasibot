@@ -84,7 +84,7 @@ export const DemoSection = () => {
           <Button
             className="flex transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
             onClick={() => router.push('/quickbooks-signin')}>
-            Get Started Now
+            Sign In with QuickBooks
           </Button>
         </div>
 
