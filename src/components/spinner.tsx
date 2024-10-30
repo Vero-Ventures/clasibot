@@ -26,5 +26,5 @@ const Spinner = () => {
   );
 };
 
-// Export the Spinner component.
+// Export the Spinner component used in loading elements.
 export default Spinner;

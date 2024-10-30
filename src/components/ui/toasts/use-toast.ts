@@ -64,19 +64,19 @@ interface State {
   toasts: ToasterToast[];
 }
 
-// Define a timeout constant that maps toast IDs to timeout values.
+// Define a timeout constant that maps toast Ids to timeout values.
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-// Add a toast to the remove queue using the toast ID.
+// Add a toast to the remove queue using the toast Id.
 const addToRemoveQueue = (toastId: string) => {
-  // If the toast timeouts do not have the toast ID, return.
+  // If the toast timeouts do not have the toast Id, return.
   if (toastTimeouts.has(toastId)) {
     return;
   }
 
   // Set a timeout to remove the toast after a delay.
   const timeout = setTimeout(() => {
-    // Delete the toast ID from the toast timeouts and use the remove toast action.
+    // Delete the toast Id from the toast timeouts and use the remove toast action.
     toastTimeouts.delete(toastId);
     dispatch({
       toastId,
@@ -84,7 +84,7 @@ const addToRemoveQueue = (toastId: string) => {
     });
   }, TOAST_REMOVE_DELAY);
 
-  // Set a new toast timeout using the toast ID and the new timeout.
+  // Set a new toast timeout using the toast Id and the new timeout.
   toastTimeouts.set(toastId, timeout);
 };
 
@@ -104,7 +104,7 @@ export const reducer = (state: State, action: Action): State => {
     case 'UPDATE_TOAST':
       return {
         ...state,
-        // Map over the toasts and update the toast if the toast ID matches the action toast ID.
+        // Map over the toasts and update the toast if the toast Id matches the action toast Id.
         toasts: state.toasts.map((t) => {
           if (t.id === action.toast.id) {
             return { ...t, ...action.toast };
@@ -116,21 +116,21 @@ export const reducer = (state: State, action: Action): State => {
 
     // Dismiss a toast, then return the state with the dismissed toast.
     case 'DISMISS_TOAST': {
-      // Define the toast ID using the action.
+      // Define the toast Id using the action.
       const { toastId } = action;
       // ! Side effects ! - This could be extracted into a dismissToast() action,
       // but I'll keep it here for simplicity
       if (toastId) {
-        // If the toast ID is defined, add the toast to the remove queue.
+        // If the toast Id is defined, add the toast to the remove queue.
         addToRemoveQueue(toastId);
       } else {
-        // If the toast ID is undefined, add all toasts to the remove queue.
+        // If the toast Id is undefined, add all toasts to the remove queue.
         state.toasts.forEach((removeToast) => {
           addToRemoveQueue(removeToast.id);
         });
       }
 
-      // Return the state with the toasts filtered by the toast ID.
+      // Return the state with the toasts filtered by the toast Id.
       return {
         ...state,
         toasts: state.toasts.map((t) => {
@@ -148,14 +148,14 @@ export const reducer = (state: State, action: Action): State => {
 
     // Remove a toast, then return the state with the removed toast.
     case 'REMOVE_TOAST':
-      // If the toast ID is undefined, return the state with an empty array of toasts.
+      // If the toast Id is undefined, return the state with an empty array of toasts.
       if (action.toastId === undefined) {
         return {
           ...state,
           toasts: [],
         };
       }
-      // Otherwise, return the state with the toasts filtered by the toast ID.
+      // Otherwise, return the state with the toasts filtered by the toast Id.
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
@@ -184,7 +184,7 @@ type Toast = Omit<ToasterToast, 'id'>;
 
 // Define the toast function using the toast props.
 function toast({ ...props }: Toast) {
-  // Define the toast ID using the genId function.
+  // Define the toast Id using the genId function.
   const id = genId();
 
   // Define the update function using the toast props.
@@ -193,7 +193,7 @@ function toast({ ...props }: Toast) {
       type: 'UPDATE_TOAST',
       toast: { ...updateProps, id },
     });
-  // Define the dismiss function using the toast ID.
+  // Define the dismiss function using the toast Id.
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
 
   // Dispatch the add toast action with the toast props.
@@ -213,7 +213,7 @@ function toast({ ...props }: Toast) {
     },
   });
 
-  // Return the toast ID, dismiss function, and update function.
+  // Return the toast Id, dismiss function, and update function.
   return {
     id,
     dismiss,

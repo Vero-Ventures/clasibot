@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -6,10 +8,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
 
-// Takes a date and a setDate function as arguments.
+// Takes: A nullable Date object and a setDate callback function.
 export function DatePicker({
   date,
   setDate,
@@ -20,7 +20,7 @@ export function DatePicker({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        {/* Date picker button containing a calendar icon. */}
+        {/* Date picker input containing a calendar icon. */}
         <Button
           id="DatePickerButton"
           variant={'outline'}
@@ -29,8 +29,8 @@ export function DatePicker({
             !date && 'text-muted-foreground'
           )}>
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {/* Button text either says a date, or a message indicating to pick a date. */}
-          {/* If date is not null, format the date as MM/dd/yyyy. Otherwise, display the message. */}
+          {/* Either displays a date, or a message indicating to pick one. */}
+          {/* If date is not null, format the date as MM/dd/yyyy (Capitalization is needed). Otherwise, display the message. */}
           {date !== null && format(date, 'MM/dd/yyyy')}
           {date === null && <span>Pick a date</span>}
         </Button>
@@ -43,7 +43,7 @@ export function DatePicker({
           selected={date || undefined}
           onSelect={(day: Date | null) => setDate(day ?? null)}
           className="bg-white"
-          required // Add the required prop
+          required
         />
       </PopoverContent>
     </Popover>
