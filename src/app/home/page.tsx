@@ -22,7 +22,7 @@ export default async function Page() {
     // If the user status is invalid or there is an error, go to the subscription purchase.
     return <SubscriptionPurchase />;
   } else if (!companyHasSBK) {
-    return <SBKConfirmationModal companyHasSBK={companyHasSBK}/>;
+    return <SBKConfirmationModal />;
   } else {
     // Otherwise, show the home page.
     return <HomePage />;

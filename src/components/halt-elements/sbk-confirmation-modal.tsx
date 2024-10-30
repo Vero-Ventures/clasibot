@@ -2,32 +2,20 @@
 
 import MiniSpinner from '../mini-spinner';
 import { useEffect } from 'react';
-import HomePage from '../home';
 import { useRouter } from 'next/navigation';
 
-// Define the props type
-interface SBKConfirmationModalProps {
-  companyHasSBK: boolean;
-}
 
-const SBKConfirmationModal: React.FC<SBKConfirmationModalProps> = ({
-  companyHasSBK: initialCompanyHasSBK,
-}) => {
+const SBKConfirmationModal = () => {
 
   const router = useRouter();
 
   useEffect(() => {
-    if (initialCompanyHasSBK) return;
     const timer = setTimeout(() => {
       router.push('/add-sbk-instructions');
     }, 4000);
 
     return () => clearTimeout(timer);
   });
-
-  if (initialCompanyHasSBK) {
-    return <HomePage />;
-  }
 
   return (
     <div
