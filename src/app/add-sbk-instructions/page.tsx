@@ -1,7 +1,12 @@
-'use client';
+import AddSBKInstructions from '@/components/halt-elements/add-sbk-instructions';
+import { getServerSession } from 'next-auth';
 
-import AddSBKInstructions from "@/components/halt-elements/add-sbk-instructions";
+export default async function Page() {
+  const session = await getServerSession();
+  let showCheckConnectionButton = false;
+  if (session) {
+    showCheckConnectionButton = true;
+  }
 
-export default function Page() {
-    return <AddSBKInstructions />
+  return <AddSBKInstructions showCheckConnectionButton={showCheckConnectionButton} />;
 }

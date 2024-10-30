@@ -5,7 +5,11 @@ import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import CheckConnectionButton from '../inputs/check-connection-button';
 
-export default function AddSBKInstructions() {
+interface AddSBKInstructionsProps {
+  showCheckConnectionButton: boolean | null;
+}
+
+export default function AddSBKInstructions({showCheckConnectionButton}: AddSBKInstructionsProps) {
   const [isSingleCompany, setIsSingleCompany] = useState(true);
 
   return (
@@ -113,9 +117,11 @@ export default function AddSBKInstructions() {
                   and join your company.
                 </li>
               </ol>
-              <div className="flex flex-col items-center justify-center">
-                <CheckConnectionButton />
-              </div>
+              {showCheckConnectionButton && (
+                <div className="flex flex-col items-center justify-center">
+                  <CheckConnectionButton />
+                </div>
+              )}
 
               <h4 className="mb-2 mt-6 text-lg font-semibold text-black">
                 Connection Issue Troubleshooting
@@ -227,9 +233,11 @@ export default function AddSBKInstructions() {
                 </li>
               </ol>
 
-              <div className="flex flex-col items-center justify-center">
-                <CheckConnectionButton />
-              </div>
+              {showCheckConnectionButton && (
+                <div className="flex flex-col items-center justify-center">
+                  <CheckConnectionButton />
+                </div>
+              )}
 
               <h4 className="mb-2 mt-6 text-lg font-semibold text-black">
                 Connection Issue Troubleshooting
