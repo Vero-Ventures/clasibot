@@ -1,18 +1,9 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import MiniSpinner from '../mini-spinner';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import HomePage from '../home';
-
-const functionToCheckIfSBKExists = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(Math.random() > 0.9); // Simulate the SBK being connected randomly.
-    }, 1000);
-  });
-};
+import { useRouter } from 'next/navigation';
 
 // Define the props type
 interface SBKConfirmationModalProps {
@@ -22,27 +13,21 @@ interface SBKConfirmationModalProps {
 const SBKConfirmationModal: React.FC<SBKConfirmationModalProps> = ({
   companyHasSBK: initialCompanyHasSBK,
 }) => {
-  const [companyHasSBK, setCompanyHasSBK] =
-    useState<boolean>(initialCompanyHasSBK);
 
-    useEffect(() => {
-      if (companyHasSBK) return;
+  const router = useRouter();
 
-      const intervalId = setInterval(async () => {
-        // Simulate fetching from a client-side function (must be async)
-        const sbkExists = await functionToCheckIfSBKExists(); // This would be a client-side function like fetch or axios call
-        if (sbkExists) {
-          setCompanyHasSBK(true);
-          clearInterval(intervalId); // Stop polling when condition is met
-        }
-      }, 1000);
+  useEffect(() => {
+    if (initialCompanyHasSBK) return;
+    const timer = setTimeout(() => {
+      router.push('/add-sbk-instructions');
+    }, 4000);
 
-      return () => clearInterval(intervalId);
-    }, [companyHasSBK]);
+    return () => clearTimeout(timer);
+  });
 
-    if (companyHasSBK) {
-      return <HomePage />;
-    }
+  if (initialCompanyHasSBK) {
+    return <HomePage />;
+  }
 
   return (
     <div
@@ -59,26 +44,9 @@ const SBKConfirmationModal: React.FC<SBKConfirmationModalProps> = ({
           proceed.
         </p>
         <p id="ResultMessage" className="text-center font-medium text-gray-800">
-          If you&apos;ve already followed the instructions to add Clasibot,
-          please wait—we&apos;re confirming in the background, and the screen
-          will update automatically once it&apos;s done.
+          You are being redirected to the instructions now...
         </p>
         <MiniSpinner />
-        <p
-          id="ResultMessage"
-          className="mb-6 text-center font-medium text-gray-800">
-          If you haven&apos;t added Clasibot, click &apos;Go to
-          Instructions&apos; below. Clasibot needs access to your QuickBooks
-          transactions to function properly.
-        </p>
-        <div className="flex items-center justify-center">
-          <Link
-            id="AddSBKInstructionsPageLink"
-            href="/add-sbk-instructions"
-            className="inline-block">
-            <Button>Go To Instructions</Button>
-          </Link>
-        </div>
       </div>
     </div>
   );
