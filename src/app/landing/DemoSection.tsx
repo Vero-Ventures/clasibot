@@ -1,10 +1,9 @@
 'use client';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import SignInButton from '@/components/inputs/sign-in-button';
 
 export const DemoSection = () => {
-  const router = useRouter();
+
 
   return (
     <section
@@ -81,11 +80,7 @@ export const DemoSection = () => {
             </li>
           </ul>
 
-          <Button
-            className="flex transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-            onClick={() => router.push('/quickbooks-signin')}>
-            Sign In with QuickBooks
-          </Button>
+          <SignInButton />
         </div>
 
         {/* Right Side: Embed YouTube Video with Consistent Size */}

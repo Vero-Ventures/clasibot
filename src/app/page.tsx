@@ -7,7 +7,7 @@ export default async function Page() {
   // Check for a User session and redirect logged in users to the home page.
   const session = await getServerSession();
   if (session) {
-    redirect('/home');
+    redirect('/landing');
   }
 
   return (

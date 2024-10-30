@@ -1,13 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React from 'react';
 import welcomeBackground from './welcome_background_1.jpg';
-import { Button } from '@/components/ui/button';
+import SignInButton from '@/components/inputs/sign-in-button';
 
 export const WelcomeSection = () => {
-  const router = useRouter();
-
   return (
     <section className="mb-8 transform rounded-lg bg-white px-8 py-10 text-center shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
       <div className="flex flex-col items-center rounded-lg md:flex-row md:text-left">
@@ -19,11 +16,7 @@ export const WelcomeSection = () => {
             Automate your transaction classification with ease.
           </p>
           <div className="flex flex-col items-center space-y-4">
-            <Button
-              className="flex transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-              onClick={() => router.push('/quickbooks-signin')}>
-              Sign In with QuickBooks
-            </Button>
+            <SignInButton />
           </div>
         </div>
         <div
