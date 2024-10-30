@@ -34,7 +34,7 @@ const SBKConfirmationModal = () => {
         <p id="ResultMessage" className="text-center font-medium text-gray-800">
           You are being redirected to the instructions now...
         </p>
-        <MiniSpinner />
+        <MiniSpinner sbkExists={false}/>
       </div>
     </div>
   );
