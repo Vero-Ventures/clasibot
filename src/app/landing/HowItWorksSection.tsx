@@ -37,7 +37,12 @@ interface StepProps {
   description: string;
 }
 
-const Step: React.FC<StepProps> = ({ iconColor, iconPath, title, description }) => (
+const Step: React.FC<StepProps> = ({
+  iconColor,
+  iconPath,
+  title,
+  description,
+}) => (
   <div className="flex-1 text-center">
     <div
       className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${iconColor}`}>

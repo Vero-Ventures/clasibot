@@ -1,11 +1,10 @@
 'use client'; // Mark as client-side component
 
 import React from 'react';
-import SignInButton from '@/components/inputs/sign-in-button'; 
-import quickbooks from './quickbooks.jpg'; 
+import SignInButton from '@/components/inputs/sign-in-button';
+import quickbooks from './quickbooks.jpg';
 
 export const WhyQuickBooksSection = () => {
-
   return (
     <section
       id="why-quickbooks"
