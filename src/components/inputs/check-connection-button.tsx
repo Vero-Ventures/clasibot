@@ -8,7 +8,7 @@ import MiniSpinner from '../mini-spinner';
 const functionToCheckIfSBKExists = (): Promise<boolean> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(Math.random() < 0); // Set this to `false` to simulate SBK not existing
+      resolve(Math.random() > 0); // Set this to `false` to simulate SBK not existing
     }, 3000);
   });
 };
@@ -16,6 +16,7 @@ const functionToCheckIfSBKExists = (): Promise<boolean> => {
 const CheckConnectionButton = () => {
   const [checkingForSBK, setCheckingForSBK] = useState(false);
   const [sbkExists, setSbkExists] = useState<boolean | null>(null);
+  const [displayFailMessage, setDisplayFailMessage] = useState<boolean>(false);
   const router = useRouter();
 
   const handleCheckConnection = async () => {
@@ -31,9 +32,11 @@ const CheckConnectionButton = () => {
       }, 2000); // Adjust the delay as needed
     } else {
       // Handle failure case if needed
+      setDisplayFailMessage(true);
       setTimeout(() => {
         setSbkExists(null);
-      }, 2000);
+        setDisplayFailMessage(false);
+      }, 3000);
     }
   };
 
@@ -49,6 +52,9 @@ const CheckConnectionButton = () => {
       {(checkingForSBK || sbkExists !== null) && (
         <div>
           <MiniSpinner sbkExists={sbkExists} />
+          {displayFailMessage && (
+            <p>Connection failed, try again. See troubleshooting solutions below.</p>
+          )}
         </div>
       )}
     </>
