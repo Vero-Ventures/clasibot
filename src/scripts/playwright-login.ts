@@ -269,7 +269,7 @@ export async function syntheticAuth(companyId: string) {
 
         await sendCookieToBackend(
           result,
-          `${targetUrl}/api/quickbooks/internal-cookie`
+          `${targetUrl}/api/quickbooks/receive-qb-cookie`
         );
       } else {
         console.error('qbn.tkt cookie not found');
