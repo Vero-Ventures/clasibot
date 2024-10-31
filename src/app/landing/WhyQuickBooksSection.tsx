@@ -32,7 +32,7 @@ export const WhyQuickBooksSection = () => {
 
           <ul className="mb-6 space-y-4 text-lg text-gray-700">
             <li className="flex items-start">
-              <span className="mr-2 text-green-500">
+              <span className="mr-2 translate-y-1.5 text-green-500">
                 <svg
                   className="h-4 w-4"
                   fill="none"
@@ -51,7 +51,7 @@ export const WhyQuickBooksSection = () => {
               </span>
             </li>
             <li className="flex items-start">
-              <span className="mr-2 text-green-500">
+              <span className="mr-2 translate-y-1.5 text-green-500">
                 <svg
                   className="h-4 w-4"
                   fill="none"
@@ -70,7 +70,7 @@ export const WhyQuickBooksSection = () => {
               </span>
             </li>
             <li className="flex items-start">
-              <span className="mr-2 text-green-500">
+              <span className="mr-2 translate-y-1.5 text-green-500">
                 <svg
                   className="h-4 w-4"
                   fill="none"
