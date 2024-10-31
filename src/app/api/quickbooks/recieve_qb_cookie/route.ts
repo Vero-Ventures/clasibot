@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const headersList = headers();
   const authHeader = headersList.get('authorization');
 
-  if (authHeader !== `Bearer ${process.env.TASK_SECRET}`) {
+  if (authHeader !== process.env.BACKEND_AGENT_ID) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
