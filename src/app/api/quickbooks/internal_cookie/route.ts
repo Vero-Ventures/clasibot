@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { QuickbooksToken } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 
 export async function POST(req: Request) {
@@ -21,20 +22,17 @@ export async function POST(req: Request) {
       );
     }
 
-    await db
-      .insert(QuickbooksToken)
-      .values({
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(QuickbooksToken)
+        .where(eq(QuickbooksToken.companyId, companyId));
+
+      await tx.insert(QuickbooksToken).values({
         companyId,
         tokenValue,
         expiresAt,
-      })
-      .onConflictDoUpdate({
-        target: [QuickbooksToken.companyId],
-        set: {
-          tokenValue,
-          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        },
       });
+    });
 
     return NextResponse.json({
       success: true,
