@@ -39,6 +39,9 @@ export async function manualClassify(
       return false;
     }
 
+    // Update frontend state for the start of synthetic login process.
+    setFrontendState('Synthetic Login')
+
     // Call synthetic login method with the Company realm Id and (possibly null) Firm name for the Company.
     // Returns: A QueryResult and a synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
@@ -71,7 +74,6 @@ export async function manualClassify(
         setFrontendState('Error');
         return false;
       } else {
-        setFrontendState('Classifications Saved.');
         return true;
       }
     }

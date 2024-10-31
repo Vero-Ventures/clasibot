@@ -117,34 +117,23 @@ export default function ReviewPage({
   // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
   function handleManualClassification() {
     // Set the Classification process to be in progress and update the state.
-    setManualClassificationState('Starting Classification ...');
+    setManualClassificationState('Start Classify');
     setIsClassifying(true);
 
     const startManualClassification = async () => {
       // Make call to backend 'For Review' Classification function with the method to update the Classification state.
       const success = await manualClassify(updateManualClassificationState);
+
+      // Check if the Classification was successful and update the state accordingly.
+      // State handling on error is done inside the Classification function.
       if (success) {
         // Update the state to indicate the Classification is finished.
-        setManualClassificationState(
-          'Finished Review, Loading Transactions ...'
-        );
+        setManualClassificationState('Finished Classify');
         // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
         setLoadedTransactions(await getDatabaseTransactions());
 
         // Update manual Classification state with a completion message.
-        setManualClassificationState('Manual Classification Complete.');
-
-        // Additional actions to perform on manual Classification completion.
-        // Completion state handling.
-        //
-        //
-        //
-      } else {
-        // Actions to preform in the event manual Classification results in an error.
-        // Failure state handling.
-        //
-        //
-        //
+        setManualClassificationState('Loaded New DB Transactions');
       }
 
       // Update the state to indicate Classification is no longer in progress and open a pop-up to inform the user.
@@ -155,6 +144,36 @@ export default function ReviewPage({
     // Start the Manual Classification by calling the async function.
     startManualClassification();
   }
+
+  // Define handler for different manual Classification states.
+  useEffect(() => {
+    // Use switch case to define behavior based on the state string.
+    // States are always set prior to the related action being started.
+    switch (manualClassificationState) {
+      case 'Start Classify':
+        break;
+      case 'Synthetic Login':
+        break;
+      case 'Get For Review Transactions':
+        break;
+      case 'Get Saved Transactions':
+        break;
+      case 'Classify For Review Transactions':
+        break;
+      case 'Create New Classified Transactions':
+        break;
+      case 'Create New Classified Transactions':
+        break;
+      case 'Save New Classified Transactions':
+        break;
+      case 'Finished Classify':
+        break;
+      case 'Loaded New DB Transactions':
+        break;
+      case 'Error':
+        break;
+    }
+  }, [manualClassificationState]);
 
   // Create states for checking if an error occured during backend Classification.
   // Unused: States are marked as unused until frontend notice implementation is completed.

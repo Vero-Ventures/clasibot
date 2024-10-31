@@ -34,7 +34,7 @@ export async function classifyCompany(
 ): Promise<QueryResult> {
   try {
     // Manual Classification: Update frontend state for fetching 'For Review' transactions.
-    if (manualClassify) setFrontendState!('Loading New Transactions ... ');
+    if (manualClassify) setFrontendState!('Get For Review Transactions');
 
     // Get the 'For Review' transactions for all Accounts related to the current Company.
     const forReviewResult = await getForReviewTransactions(
@@ -57,7 +57,7 @@ export async function classifyCompany(
     )[][];
 
     // Manual Classification: Update frontend state for fetching saved Classified Transactions.
-    if (manualClassify) setFrontendState!('Getting Transaction History ... ');
+    if (manualClassify) setFrontendState!('Get Saved Transactions');
 
     // Get the saved Classified Transactions from the User to use as context for prediction.
     const classifiedPastTransactions = await getClassifiedPastTransactions(
@@ -74,7 +74,7 @@ export async function classifyCompany(
     const companyInfo = await getCompanyInfo(loginTokens, companyId);
 
     // Manual Classification: Update frontend state to indicate start of Classification.
-    if (manualClassify) setFrontendState!('Classifying New Transactions ... ');
+    if (manualClassify) setFrontendState!('Classify For Review Transactions');
 
     // Call Classification function on the formatted 'For Review' transactions.
     const classificationResults:
@@ -113,7 +113,7 @@ export async function classifyCompany(
       >;
 
       // Manual Classification: Update frontend state to indicate Classified 'For Review' transaction creation.
-      if (manualClassify) setFrontendState!('Evaluating Classifications ... ');
+      if (manualClassify) setFrontendState!('Create New Classified Transactions');
 
       // Use Classification results to create Classified 'For Review' transaction objects.
       const classifiedForReviewTransactions =
@@ -136,7 +136,7 @@ export async function classifyCompany(
       }
 
       // Manual Classification: Update frontend state to indicate saving Classified 'For Review' transactions to database.
-      if (manualClassify) setFrontendState!('Saving Classifications ... ');
+      if (manualClassify) setFrontendState!('Save New Classified Transactions');
 
       // Save the Classified 'For Review' transactions to the database.
       // Return the resulting Query Result created by the save function.
