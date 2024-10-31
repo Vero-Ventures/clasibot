@@ -113,7 +113,8 @@ export async function classifyCompany(
       >;
 
       // Manual Classification: Update frontend state to indicate Classified 'For Review' transaction creation.
-      if (manualClassify) setFrontendState!('Create New Classified Transactions');
+      if (manualClassify)
+        setFrontendState!('Create New Classified Transactions');
 
       // Use Classification results to create Classified 'For Review' transaction objects.
       const classifiedForReviewTransactions =

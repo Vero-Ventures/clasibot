@@ -40,7 +40,7 @@ export async function manualClassify(
     }
 
     // Update frontend state for the start of synthetic login process.
-    setFrontendState('Synthetic Login')
+    setFrontendState('Synthetic Login');
 
     // Call synthetic login method with the Company realm Id and (possibly null) Firm name for the Company.
     // Returns: A QueryResult and a synthetic Login Tokens object.
