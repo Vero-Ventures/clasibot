@@ -174,6 +174,7 @@ async function sendCookieToBackend(tokenData: TokenData, backendUrl: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: process.env.BACKEND_AGENT_ID!,
       },
       body: JSON.stringify(tokenData),
     });
