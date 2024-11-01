@@ -6,23 +6,29 @@ import {
   uuid,
   text,
   integer,
-  serial,
   boolean,
+  serial,
   timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  firstName: text('first_name'),
-  lastName: text('last_name'),
-  email: text('email').unique(),
+  userName: text('user_name'),
+  email: text('email').unique().notNull(),
   subscriptionId: uuid('subscription_id').unique(),
 });
 
 export const UserToCompanyRelations = relations(User, ({ many }) => ({
   companies: many(Company),
 }));
+
+export const Firm = pgTable('Firm', {
+  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  name: text('name').notNull(),
+  userId: uuid('user_id').references(() => User.id, { onDelete: 'cascade' }),
+  userName: text('user_name').notNull(),
+});
 
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
@@ -34,13 +40,15 @@ export const Subscription = pgTable('Subscription', {
 });
 
 export const Company = pgTable('Company', {
-  id: uuid('id').primaryKey().defaultRandom().notNull(),
+  id: uuid('id').notNull().primaryKey().defaultRandom(),
+  realmId: text('realm_id').notNull().unique(),
   userId: uuid('user_id')
     .notNull()
     .references(() => User.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
-  industry: text('industry'),
-  connected: boolean('connected').notNull(),
+  firmName: text('firm_name'),
+  bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
+  classificationFailed: boolean('classification_failed'),
 });
 
 export const QuickbooksToken = pgTable('QuickbooksCookies', {
@@ -56,10 +64,10 @@ export const Transaction = pgTable('Transaction', {
   transactionName: text('transaction_name').unique().notNull(),
 });
 
-export const TransactionToClassificationsRelationship = relations(
+export const TransactionToCategoriesRelationship = relations(
   Transaction,
   ({ many }) => ({
-    classifications: many(Classification),
+    categories: many(Category),
   })
 );
 
@@ -70,59 +78,62 @@ export const TransactionToTaxCodesRelationship = relations(
   })
 );
 
-// For transaction classifications to be saved for later review by the user.
-export const UserTransaction = pgTable('userTransaction', {
+export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
-  qboID: text('qboID').notNull(),
-  companyId: uuid('company_id')
+  companyId: text('company_id')
     .notNull()
-    .references(() => Company.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
+    .references(() => Company.realmId, { onDelete: 'cascade' }),
+  reviewTransactionId: text('review_transaction_id').notNull(),
+  accountId: text('account_id').notNull(),
+  description: text('description').notNull(),
+  origDescription: text('orig_description').notNull(),
   date: text('date').notNull(),
-  account: text('account').notNull(),
-  amount: text('amount').notNull(),
-  approved: boolean('approved').notNull(),
+  amount: integer('amount').notNull(),
+  acceptType: text('accept_type').notNull(),
+  transactionTypeId: text('transaction_type_id').notNull(),
+  payeeNameId: text('payee_name_id'),
+  topCategoryClassification: text('top_classification').notNull(),
+  topTaxCodeClassification: text('top_classification').notNull(),
 });
 
-export const UserTransactionToClassificationsRelationship = relations(
-  UserTransaction,
+export const ForReviewTransactionToCategoriesRelationship = relations(
+  ForReviewTransaction,
   ({ many }) => ({
-    classifications: many(Classification),
+    categories: many(Category),
   })
 );
 
-export const UserTransactionToTaxCodesRelationship = relations(
-  UserTransaction,
+export const ForReviewTransactionToTaxCodesRelationship = relations(
+  ForReviewTransaction,
   ({ many }) => ({
     taxCodes: many(TaxCode),
   })
 );
 
-export const Classification = pgTable('Classification', {
+export const Category = pgTable('Category', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
-  count: integer('count').notNull(),
+  matches: integer('matches').notNull(),
 });
 
-export const ClassificationToTransactionsRelationship = relations(
-  Classification,
+export const CategoryToTransactionsRelationship = relations(
+  Category,
   ({ many }) => ({
     transactions: many(Transaction),
   })
 );
 
-export const ClassificationToUserTransactionsRelationship = relations(
-  Classification,
+export const CategoryToForReviewTransactionsRelationship = relations(
+  Category,
   ({ many }) => ({
-    transactions: many(UserTransaction),
+    reviewTransactions: many(ForReviewTransaction),
   })
 );
 
-// Tax code referes to the name of the related tax code as defined in QuickBooks.
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('taxCode').unique().notNull(),
-  count: integer('count').notNull(),
+  matches: integer('matches').notNull(),
 });
 
 export const TaxCodesToTransactionsRelationship = relations(
@@ -132,25 +143,25 @@ export const TaxCodesToTransactionsRelationship = relations(
   })
 );
 
-export const TaxCodesToUserTransactionsRelationship = relations(
+export const TaxCodesToForReviewTransactionsRelationship = relations(
   TaxCode,
   ({ many }) => ({
-    transactions: many(UserTransaction),
+    reviewTransactions: many(ForReviewTransaction),
   })
 );
 
-export const TransactionsToClassifications = pgTable(
-  'TransactionsToClassifications',
+export const TransactionsToCategories = pgTable(
+  'TransactionsToCategories',
   {
     transactionId: integer('transaction_id')
       .notNull()
       .references(() => Transaction.id),
-    classificationId: integer('classification_id')
+    categoryId: integer('category_id')
       .notNull()
-      .references(() => Classification.id),
+      .references(() => Category.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
+    pk: primaryKey({ columns: [t.transactionId, t.categoryId] }),
   })
 );
 
@@ -169,32 +180,32 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-export const UserTransactionsToClassifications = pgTable(
-  'UserTransactionsToClassifications',
+export const ForReviewTransactionToCategories = pgTable(
+  'ForReviewTransactionsToCategories',
   {
-    transactionId: uuid('transaction_id')
+    reviewTransactionId: uuid('review_transaction_id')
       .notNull()
-      .references(() => UserTransaction.id),
-    classificationId: integer('classification_id')
+      .references(() => ForReviewTransaction.id),
+    categoryId: integer('category_id')
       .notNull()
-      .references(() => Classification.id),
+      .references(() => Category.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.classificationId] }),
+    pk: primaryKey({ columns: [t.reviewTransactionId, t.categoryId] }),
   })
 );
 
-export const UserTransactionsToTaxCodes = pgTable(
-  'UserTransactionsToTaxCodes',
+export const ForReviewTransactionToTaxCodes = pgTable(
+  'ForReviewTransactionsToTaxCodes',
   {
-    transactionId: uuid('transaction_id')
+    reviewTransactionId: uuid('review_transaction_id')
       .notNull()
-      .references(() => UserTransaction.id),
+      .references(() => ForReviewTransaction.id),
     taxCodeId: integer('tax_code_id')
       .notNull()
       .references(() => TaxCode.id),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.transactionId, t.taxCodeId] }),
+    pk: primaryKey({ columns: [t.reviewTransactionId, t.taxCodeId] }),
   })
 );
