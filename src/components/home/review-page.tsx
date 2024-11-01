@@ -1,7 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
+import { makeCompanyIncactive } from '@/actions/backend-actions/database-functions/bookkeeper-connection';
+import {
+  checkBackendClassifyError,
+  dismissBackendClassifyError,
+} from '@/actions/backend-actions/database-functions/backend-classify-failure';
 import { addDatabaseTransactions } from '@/actions/db-transactions';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
@@ -26,6 +31,251 @@ export default function ReviewPage({
   company_info: CompanyInfo;
   found_company_info: boolean;
 }>) {
+  // Define states to track the modals for Company deactivation.
+  const [openDeactivateCompanyInfoModal, setOpenDeactivateCompanyInfoModal] =
+    useState<boolean>(false);
+  const [
+    openDeactivateCompanyConfirmModal,
+    setOpenDeactivateCompanyConfirmModal,
+  ] = useState<boolean>(false);
+  const [openDeactivateCompanyErrorModal, setOpenDeactivateCompanyErrorModal] =
+    useState<boolean>(false);
+
+  // Create helper function to close the deactivate information and open the confirmation modal.
+  function openDeactivateConfirmationModal() {
+    setOpenDeactivateCompanyInfoModal(false);
+    setOpenDeactivateCompanyConfirmModal(true);
+  }
+
+  // Define the behavior of confirmation of the Company deactivation.
+  async function deactivateCompany(switchCompany: boolean) {
+    // Call backend action with the Company realm Id to update Company connection in the database.
+    const deactivationResult = await makeCompanyIncactive();
+
+    // Check for an error updating the Company connection.
+    if (deactivationResult.result === 'Error') {
+      // Close the confirmation modal and open the error modal.
+      setOpenDeactivateCompanyConfirmModal(false);
+      setOpenDeactivateCompanyErrorModal(true);
+    }
+
+    // After Company deactivation, check user continuation method.
+    if (switchCompany) {
+      // Take the user to Company selection by recalling the QuickBooks sign in method.
+      // Already existing QuickBooks session will take them to Company selection.
+      signIn('quickbooks', { callbackUrl: '/home' });
+    } else {
+      // If the user did not choose to switch Company after deactivation, log them out.
+      signOut({ callbackUrl: '/' });
+    }
+  }
+
+  // Define state to track the localized time of the next backend Classification.
+  const [_nextBackendClassifyDate, setNextBackendClassifyDate] =
+    useState<string>('');
+
+  // On page load, gets the date of the next Saturday at 12 AM UTC.
+  useEffect(() => {
+    // Create a date object and get the current day of the week in the UTC time zone.
+    const date = new Date();
+    const dayOfTheWeek = date.getUTCDay();
+
+    // Determine the current number of days away from Saturday for this week.
+    let daysUntilClassify = 6 - dayOfTheWeek;
+    // Saturday and Sunday will result in a value less than one .
+    if (daysUntilClassify < 1) {
+      // Add 7 to the difference to get the number of days until next Saruday.
+      daysUntilClassify += 7;
+    }
+
+    // Use the number of days until Saturday to get the UTC date of the next Classification.
+    const nextClassifyUTC = new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate() + daysUntilClassify
+      )
+    );
+
+    // Update the state tracking the next Classification date value.
+    // Using toString() converts from the UTC time to the local time zone of the user.
+    setNextBackendClassifyDate(nextClassifyUTC.toString);
+  }, []);
+
+  // Create states to track the loaded Transactions and their assosiated Accounts.
+  const [loadedTransactions, setLoadedTransactions] = useState<
+    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
+  >([]);
+  const [accounts, setAccounts] = useState<string[]>([]);
+  const [errorLoadingTransactions, setErrorLoadingTransactions] =
+    useState<boolean>(false);
+
+  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
+  useEffect(() => {
+    // Load the Transactions from the database.
+    const loadForReviewTransactions = async () => {
+      // Load the Transactions and check the Query Result for an error.
+      const loadResult = await getDatabaseTransactions();
+      if (loadResult[0].result === 'Error') {
+        // If an error was found, open the related error modal.
+        setErrorLoadingTransactions(true);
+      }
+      // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
+      setLoadedTransactions(loadResult[1]);
+    };
+    loadForReviewTransactions();
+  }, [found_company_info]);
+
+  // Create states to track the states of a Manual Classification process.
+  const [isClassifying, setIsClassifying] = useState(false);
+  const [manualClassificationState, setManualClassificationState] =
+    useState<string>('');
+  const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
+    useState<boolean>(false);
+
+  // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
+  function handleManualClassification() {
+    // Set the Classification process to be in progress and update the state.
+    setManualClassificationState('Start Classify');
+    setIsClassifying(true);
+
+    const startManualClassification = async () => {
+      // Make call to backend 'For Review' Classification function with the method to update the Classification state.
+      const success = await manualClassify(updateManualClassificationState);
+
+      // Check if the Classification was successful and update the state accordingly.
+      // State handling on error is done inside the Classification function.
+      if (success) {
+        // Update the state to indicate the Classification is finished.
+        setManualClassificationState('Load Classified Transactions');
+        // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
+
+        // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
+        const loadResult = await getDatabaseTransactions();
+
+        // Check result of the load for an error Query Result for.
+        if (loadResult[0].result === 'Error') {
+          // If an error was found, open the related error modal and set the state to indicate an error.
+          setErrorLoadingTransactions(true);
+          setManualClassificationState('Error');
+        } else {
+          // On success, show the finished Classification modal to inform the user.
+          setOpenFinishedClassificationModal(true);
+          // Set the state to indicate completion and hiding the related frontend element.
+          setManualClassificationState('Classify Complete');
+        }
+        // Update the loaded Transactions state regardless of outcome.
+        // Returned array is set to be empty from error reutrns to prevent showing old data.
+        setLoadedTransactions(loadResult[1]);
+      } else {
+        // When Classification process returns an error, show the finished Classification modal that will inform the user.
+        setOpenFinishedClassificationModal(true);
+      }
+      // Regardless of outcome, set the Classification process to be completed.
+      setIsClassifying(false);
+    };
+
+    // Start the Manual Classification by calling the async function.
+    startManualClassification();
+  }
+  // Define a function to update the Manual Classification state.
+  function updateManualClassificationState(newState: string) {
+    setManualClassificationState(newState);
+  }
+
+  // Define handler for different manual Classification states.
+  useEffect(() => {
+    // Use switch case to define behavior based on the state string.
+    // States are always set prior to the related action being started.
+    switch (manualClassificationState) {
+      case 'Start Classify':
+        // Called before beggining the Classification process - Set frontend element to be shown.
+        break;
+      case 'Synthetic Login':
+        // Called before starting the synthetic login process used to access the User Account.
+        break;
+      case 'Get For Review Transactions':
+        // Called before getting the 'For Reivew' transactions to be classified.
+        break;
+      case 'Get Saved Transactions':
+        // Called before getting the saved and Classified Transactions from QuickBooks for prediction use.
+        break;
+      case 'Classify For Review Transactions':
+        // Called before starting the process to create the Transaction Classifications.
+        break;
+      case 'Create New Classified Transactions':
+        // Called before using predictions to create Classified 'For Review' transactions.
+        break;
+      case 'Save New Classified Transactions':
+        // Called before saving the newly Classified 'For Review' transactions to the database.
+        break;
+      case 'Load New Classified Transactions':
+        // Called before loading the newly Classified transactions from the database to be displayed.
+        break;
+      case 'Classify Complete':
+        // Completion Case - Handled by modal, hide the frontend element.
+        break;
+      case 'Error':
+        // Completion Case - Handled by modal, hide the frontend element.
+        break;
+    }
+  }, [manualClassificationState]);
+
+  // Create states for checking if an error occured during backend Classification.
+  // Unused: States are marked as unused until frontend notice implementation is completed.
+  const [_backendClassifyError, setBackendClassifyError] =
+    useState<boolean>(false);
+  const [
+    _showBackendClassifyErrorNotification,
+    setShowBackendClassifyErrorNotification,
+  ] = useState<boolean>(false);
+  const [_dismissResultMessage, setDismissResultMessage] = useState<string>('');
+
+  // Check for an error whenever Company Info load state updates.
+  // Done at the same time as loading the Saved and Classified Transactions and the database 'For Review' transactions.
+  useEffect(() => {
+    // Create a function to use async functions.
+    const checkBackendClassifyErrorStatus = async () => {
+      // Check the database Company object for a backend Classification error status.
+      const errorCheckResponse = await checkBackendClassifyError();
+
+      // Check for an error getting the backend Classification error status.
+      if (errorCheckResponse.queryResult.result === 'Error') {
+        // If check failed, assume no error status was logged.
+        console.error(errorCheckResponse.queryResult.message);
+        return;
+      }
+
+      // Check if an backend Classification error staus was recorded.
+      if (errorCheckResponse.errorStatus) {
+        // Update the error state and display the frontend element to inform the user.
+        setBackendClassifyError(true);
+        setShowBackendClassifyErrorNotification(true);
+      }
+    };
+    // Call the helper function to check for backend Classification failure.
+    checkBackendClassifyErrorStatus();
+  }, [found_company_info]);
+
+  // Updates the database Company object to dismiss backend Classification error.
+  // Unused: Function is marked as unused until frontend notice that allows the user to dismiss the error is implemented.
+  async function _dismissBackendClassifyErrorStatus() {
+    // Update the database Company object to dismiss the backend Classification error status.
+    const dismissErrorResponse = await dismissBackendClassifyError();
+
+    // Check for an error dismissing the backend Classification error status.
+    if (dismissErrorResponse.result === 'Error') {
+      // If check failed, assume the error was not dismissed.
+      setDismissResultMessage('Error');
+      console.error(dismissErrorResponse.message);
+    } else {
+      // If the error status was dismissed successfuly, update the error status check states.
+      setBackendClassifyError(false);
+      setShowBackendClassifyErrorNotification(false);
+      setDismissResultMessage('Success');
+    }
+  }
+
   // Create states to track the selected Classifications for each row.
   const [selectedCategories, setSelectedCategories] = useState<
     Record<string, string>
@@ -33,79 +283,6 @@ export default function ReviewPage({
   const [selectedTaxCodes, setSelectedTaxCodes] = useState<
     Record<string, string>
   >({});
-
-  // Create states to track the loaded Transactions and their assosiated Accounts.
-  const [loadedTransactions, setLoadedTransactions] = useState<
-    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
-  >([]);
-  const [accounts, setAccounts] = useState<string[]>([]);
-
-  // Create states to track values indicating the state of the page.
-  const [isSaving, setIsSaving] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Create states to track the state of a Manual Classification call.
-  const [isClassifying, setIsClassifying] = useState(false);
-  const [manualClassificationState, setManualClassificationState] =
-    useState<string>('');
-  const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
-    useState<boolean>(false);
-
-  // Define a function to update the Manual Classification state.
-  function updateManualClassificationState(newState: string) {
-    setManualClassificationState(newState);
-  }
-
-  function handleManualClassification() {
-    // Set the Classification process to be in progress and update the state.
-    setManualClassificationState('Starting Classification ...');
-    setIsClassifying(true);
-
-    const startManualClassification = async () => {
-      // Make call to backend 'For Review' Classification function with the method to update the Classification state.
-      const success = await manualClassify(updateManualClassificationState);
-      if (success) {
-        // Update the state to indicate the Classification is finished.
-        setManualClassificationState(
-          'Finished Review, Loading Transactions ...'
-        );
-        // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
-        setLoadedTransactions(await getDatabaseTransactions());
-
-        // Update manual Classification state with a completion message.
-        setManualClassificationState('Manual Classification Complete.');
-
-        // Additional actions to perform on manual Classification completion.
-        // Completion state handling.
-        //
-        //
-        //
-      } else {
-        // Actions to preform in the event manual Classification results in an error.
-        // Failure state handling.
-        //
-        //
-        //
-      }
-
-      // Update the state to indicate Classification is no longer in progress and open a pop-up to inform the user.
-      setIsClassifying(false);
-      setOpenFinishedClassificationModal(true);
-    };
-
-    // Start the Manual Classification by calling the async function.
-    startManualClassification();
-  }
-
-  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
-  useEffect(() => {
-    // Load the Transactions from the database.
-    const loadForReviewTransactions = async () => {
-      setLoadedTransactions(await getDatabaseTransactions());
-    };
-    loadForReviewTransactions();
-  }, [found_company_info]);
 
   // Updates the Classifications for each Transaction when the Classified Transactions or Classification results change.
   useEffect(() => {
@@ -170,6 +347,11 @@ export default function ReviewPage({
       [transactionId]: taxCode,
     });
   }
+
+  // Create states to track states of the transaction saving process indicating the state of the page.
+  const [isSaving, setIsSaving] = useState(false);
+  const [openSaveModal, setOpenSaveModal] = useState(false);
+  const [savingErrorMessage, setSavingErrorMessage] = useState<string>('');
 
   // Saves the selected Classification of the selected Rows.
   async function handleSave(
@@ -309,10 +491,12 @@ export default function ReviewPage({
           ', Detail: ',
           result.detail
         );
-        setErrorMsg('An error occurred while saving. Please try again.');
+        setSavingErrorMessage(
+          'An error occurred while saving. Please try again.'
+        );
       }
       // If no errors occured, set the error message state to be null.
-      await setErrorMsg(null);
+      await setSavingErrorMessage('');
     } catch (error) {
       // Catch any errors and log them (include the error message if it is present).
       if (error instanceof Error) {
@@ -321,12 +505,14 @@ export default function ReviewPage({
         console.error('Error saving existing Classified Transactions:', error);
       }
       // On error, set the error message state.
-      setErrorMsg('An error occurred while saving. Please try again.');
+      setSavingErrorMessage(
+        'An error occurred while saving. Please try again.'
+      );
     } finally {
       // Once the saving process is complete,
       // Set the saving in progress status to false and open the save result modal.
       setIsSaving(false);
-      setIsModalOpen(true);
+      setOpenSaveModal(true);
     }
   }
 
@@ -353,12 +539,40 @@ export default function ReviewPage({
         manualClassificationState={manualClassificationState}
       />
 
-      {/* Only display result modal after an attempt to save sets 'modal open' state to true. */}
+      {/* Defines the modal to be displayed if an attempt to load classified Transactions fails. */}
       <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${isModalOpen ? '' : 'hidden'}`}>
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${errorLoadingTransactions ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ResultTitle"
+              className="mb-4 text-center text-2xl font-bold text-green-500">
+              Error
+            </h2>
+            <p
+              id="ResultMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              An error while loading your classified transactions. Refresh the
+              page to try again or contact us if the issue persists.
+            </p>
+          </>
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CloseButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => setErrorLoadingTransactions(false)}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Defines a modal to be displayed on completion of the saving the Classified 'For Review' transactions. */}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openSaveModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
           {/* If an error is present, display an error message in the modal. */}
-          {errorMsg ? (
+          {savingErrorMessage !== '' ? (
             <>
               <h2
                 id="ResultTitle"
@@ -368,7 +582,7 @@ export default function ReviewPage({
               <p
                 id="ResultMessage"
                 className="mb-6 text-center font-medium text-gray-800">
-                {errorMsg}
+                {savingErrorMessage}
               </p>
             </>
           ) : (
@@ -397,7 +611,7 @@ export default function ReviewPage({
                 window.location.href = url;
               }}>
               <span className="whitespace-normal">
-                {errorMsg
+                {savingErrorMessage !== ''
                   ? 'Retry Transaction Selection'
                   : 'Review Additional Transactions'}
               </span>
@@ -413,7 +627,7 @@ export default function ReviewPage({
         </div>
       </div>
 
-      {/* Defines a popup to be displayed on completion of the manual Classification function call. */}
+      {/* Defines the modal to be displayed on completion of the manual Classification function call. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
@@ -421,12 +635,14 @@ export default function ReviewPage({
             <h2
               id="ResultTitle"
               className="mb-4 text-center text-2xl font-bold text-green-500">
-              Success
+              {manualClassificationState === 'Error' ? 'Error' : 'Complete'}
             </h2>
             <p
               id="ResultMessage"
               className="mb-6 text-center font-medium text-gray-800">
-              Your transactions have been classified.
+              {manualClassificationState === 'Error'
+                ? 'An error occured during the classification process. Please try again later or contact us if the issue persists.'
+                : 'Your transactions are classified and ready for review.'}
             </p>
           </>
           <div id="ReturnButtonContainer" className="flex justify-center gap-4">
@@ -434,7 +650,131 @@ export default function ReviewPage({
               id="CloseButton"
               className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
               onClick={() => setOpenFinishedClassificationModal(false)}>
+              {manualClassificationState === 'Error' ? 'Close' : 'Continue'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Defines the information modal to be shown on clicking the deactivate Company button.*/}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyInfoModal ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ResultTitle"
+              className="mb-4 text-center text-2xl font-bold text-red-500">
+              Deactive Company
+            </h2>
+            <p
+              id="InfoMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              Deactivating your company will cause Clasibot to mark the
+              company&apos;s connection as inactive. This will prevent Clasibot
+              from accessing your company through QuickBooks online and stop any
+              future transaction classification.
+            </p>
+
+            <p
+              id="InstructionMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              When deactivating your company in Clasibot, it is recommended that
+              you also remove the Clasibot bookkeeper from the company in
+              QuickBooks Online. Clasibot cease accessing your company
+              regardless, but doing so will make it easier to reactivate the
+              company&apos;s connection in the future.
+            </p>
+
+            <p
+              id="EndingMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              Deactivation can be done at any time without affecting your
+              subscription or any other companies you have connected to
+              Clasibot. To later reactivate your company, ensure the connection
+              has been removed in QuickBooks Online, then follow the connection
+              steps shown when logging in.
+            </p>
+          </>
+
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CancelButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
+              onClick={() => setOpenDeactivateCompanyInfoModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              id="ConntinueButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => openDeactivateConfirmationModal()}>
               Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Defines the confirmation modal to be after users continue from Company deactivation modal. */}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyConfirmModal ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ResultTitle"
+              className="mb-4 text-center text-2xl font-bold text-green-500">
+              Confirm Deactivation
+            </h2>
+            <p
+              id="ResultMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              Are you sure you want to deactive the connection to this company?
+            </p>
+          </>
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CancelButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
+              onClick={() => setOpenDeactivateCompanyConfirmModal(false)}>
+              Cancel
+            </Button>
+            {/* Boolean value in deactivation function indicates if the user should be taken to Company selection instead of logged out. */}
+            <Button
+              id="ConfirmSwitchButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => deactivateCompany(false)}>
+              Confirm (Sign Out)
+            </Button>
+            <Button
+              id="ConfirmLogOutButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => deactivateCompany(true)}>
+              Confirm (Switch Company)
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Defines the modal to be displayed on if an error occurs during Company deactivation. */}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyErrorModal ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ErrorTitle"
+              className="mb-4 text-center text-2xl font-bold text-green-500">
+              Error
+            </h2>
+            <p
+              id="ErrorMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              An error occured while updating the company connection status.
+            </p>
+          </>
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CloseButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => setOpenDeactivateCompanyErrorModal(false)}>
+              Close
             </Button>
           </div>
         </div>

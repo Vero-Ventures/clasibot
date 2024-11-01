@@ -18,12 +18,13 @@ import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
+import type { QueryResult } from '@/types/QueryResult';
 import type { TaxCode } from '@/types/TaxCode';
 
 // Gets the 'For Review' transactions saved to the database for the current User.
 // Returns: An array of Sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]
 export async function getDatabaseTransactions(): Promise<
-  (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
+  [QueryResult, (ClassifiedForReviewTransaction | ForReviewTransaction)[][]]
 > {
   try {
     // Get the current session to extract the Company realm Id.
@@ -46,22 +47,29 @@ export async function getDatabaseTransactions(): Promise<
       transactionAccountsResult[0].result === 'Error' ||
       expenseAccountsResult[0].result === 'Error'
     ) {
-      // Log the message and detail for both fetches.
-      console.error(
-        'Transaction Account Fetch Results: ' +
-          transactionAccountsResult[0].message +
-          ', Detail: ' +
-          transactionAccountsResult[0].detail
-      );
-      console.error(
-        'Expense Account Fetch Results: ' +
-          expenseAccountsResult[0].message +
-          ', Detail: ' +
-          expenseAccountsResult[0].detail
-      );
+      // Define the Account fetch error Query Result.
+      const errorResult: QueryResult = {
+        result: 'Error',
+        message: 'Error Loading User Accounts',
+        detail: '',
+      };
 
-      // Return an empty array on error, as the Account fetch process failed.
-      return [];
+      // Add the error detail for the Transaction and Expense Account queries if present.
+      if (transactionAccountsResult[0].result === 'Error') {
+        errorResult.detail =
+          'Transaction Account Error, Detail:' +
+          transactionAccountsResult[0].detail +
+          '\n';
+      }
+      if (expenseAccountsResult[0].result === 'Error') {
+        errorResult.detail =
+          errorResult.detail +
+          'Expense Account Error, Detail:' +
+          expenseAccountsResult[0].detail;
+      }
+
+      // Return the error Query Result and an empty array of Classified 'For Review' Transactions.
+      return [errorResult, []];
     }
 
     // Get the list of Tax Codes for the User.
@@ -69,15 +77,15 @@ export async function getDatabaseTransactions(): Promise<
 
     // Check if the Tax Code fetch resulted in an error.
     if (taxCodesResponse[0].result === 'Error') {
-      // Log the message and detail for the Tax Code fetch.
-      console.error(
-        'Tax Code Fetch Error: ' +
-          taxCodesResponse[0].message +
-          ', Detail: ' +
-          taxCodesResponse[0].detail
-      );
-      // Return an empty array on error, as the Tax Code fetch process failed.
-      return [];
+      // Return the error Query Result and an empty array of Classified 'For Review' Transactions.
+      return [
+        {
+          result: 'Error',
+          message: 'Error Loading User Tax Codes',
+          detail: taxCodesResponse[0].detail,
+        },
+        [],
+      ];
     }
 
     // If the Company realm Id is present, fetch all database 'For Review' transactions for that Company.
@@ -147,21 +155,39 @@ export async function getDatabaseTransactions(): Promise<
     }
     // Return the array of Classified and Raw 'For Review' transactions.
     // Array will be empty if a valid realm Id could not be found from the session.
-    return classifiedTransactions;
+    return [
+      {
+        result: 'Success',
+        message: 'Retrived Classified Transactions',
+        detail:
+          'Successfully Retrived Classified "For Review" Transactions From The Database',
+      },
+      classifiedTransactions,
+    ];
   } catch (error) {
-    // Catch any errors and return an error object, include the error message if it is present.
-    if (error instanceof Error) {
-      console.error(
-        'Error Getting "For Review" Transactions From Database: ' +
-          error.message
-      );
-    } else {
-      console.error(
-        'Unexpected Error Getting "For Review" Transactions From Database.'
-      );
-    }
+    // Catch any errors and create an error Query Result object, include the error message if it is present.
     // Return an empty array on error, as the database fetch failed.
-    return [];
+    if (error instanceof Error) {
+      return [
+        {
+          result: 'Error',
+          message:
+            'Error Getting Classified "For Review" Transactions From Database',
+          detail: error.message,
+        },
+        [],
+      ];
+    } else {
+      return [
+        {
+          result: 'Error',
+          message:
+            'Error Getting Classified "For Review" Transactions From Database',
+          detail: 'Unexpected Error',
+        },
+        [],
+      ];
+    }
   }
 }
 

@@ -20,7 +20,7 @@ export async function manualClassify(
     // If session or Company realm Id are not found, handle error logging, state update, and return a failure value.
     if (!session?.realmId) {
       console.error('Backend Classification: Session Not Found.');
-      setFrontendState('An Unexpected Error Occured');
+      setFrontendState('Error');
       return false;
     }
 
@@ -35,9 +35,12 @@ export async function manualClassify(
     // Handle error logging, state update, and failure return if no matching Company is found.
     if (!currentCompany[0]) {
       console.error('Backend Classification: Company Not Found In Database.');
-      setFrontendState('An Unexpected Error Occured');
+      setFrontendState('Error');
       return false;
     }
+
+    // Update frontend state for the start of synthetic login process.
+    setFrontendState('Synthetic Login');
 
     // Call synthetic login method with the Company realm Id and (possibly null) Firm name for the Company.
     // Returns: A QueryResult and a synthetic Login Tokens object.
@@ -50,7 +53,7 @@ export async function manualClassify(
     if (loginResult.result === 'Error ') {
       // If the synthetic login resulted in error, Log the Query Result, update frontend state, and return a failure boolean.
       console.error(loginResult);
-      setFrontendState('An Unexpected Error Occured');
+      setFrontendState('Error');
       return false;
     } else {
       // If synthetic login was success, call the Company Classification handler.
@@ -68,10 +71,9 @@ export async function manualClassify(
         console.error(
           'Unexpected Error In Manual Classification :' + result.message
         );
-        setFrontendState('An Unexpected Error Occured');
+        setFrontendState('Error');
         return false;
       } else {
-        setFrontendState('Classifications Saved.');
         return true;
       }
     }
@@ -83,7 +85,7 @@ export async function manualClassify(
       console.log('Unexpected Error During Manual Classification');
     }
     // Update the frontend state and return a failure boolean.
-    setFrontendState('An Unexpected Error Occured');
+    setFrontendState('Error');
     return false;
   }
 }
