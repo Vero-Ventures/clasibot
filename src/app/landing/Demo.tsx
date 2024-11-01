@@ -2,7 +2,7 @@
 import React from 'react';
 import SignInButton from '@/components/inputs/sign-in-button';
 
-export const DemoSection = () => {
+export const Demo = () => {
   return (
     <section
       id="demo"

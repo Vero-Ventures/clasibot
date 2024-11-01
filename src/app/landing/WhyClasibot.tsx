@@ -4,7 +4,7 @@ import React from 'react';
 import SignInButton from '@/components/inputs/sign-in-button';
 import quickbooks from './quickbooks.jpg';
 
-export const WhyQuickBooksSection = () => {
+export const WhyClasibot = () => {
   return (
     <section
       id="why-quickbooks"
@@ -20,12 +20,12 @@ export const WhyQuickBooksSection = () => {
           }}></div>
 
         {/* Right Side: Content */}
-        <div className="flex flex-col items-center justify-center p-4 md:w-1/2">
+        <div className="flex flex-col items-center justify-center p-4 pl-8 md:w-1/2">
           <h2 className="mb-4 text-3xl font-bold text-gray-800">
             Why QuickBooks
           </h2>
           <p className="mb-6 text-lg text-gray-700">
-            Clasibot simplifies transaction classification, saving you time and
+            Clasibot simplifies transaction classification, saving you time by
             automating routine tasks. By integrating with QuickBooks, you get
             seamless, weekly updates to your transactions.
           </p>

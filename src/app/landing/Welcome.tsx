@@ -4,7 +4,7 @@ import React from 'react';
 import welcomeBackground from './welcome_background_1.jpg';
 import SignInButton from '@/components/inputs/sign-in-button';
 
-export const WelcomeSection = () => {
+export const Welcome = () => {
   return (
     <section className="mb-8 transform rounded-lg bg-white px-8 py-10 text-center shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
       <div className="flex flex-col items-center rounded-lg md:flex-row md:text-left">

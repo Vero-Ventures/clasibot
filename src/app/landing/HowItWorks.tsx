@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const HowItWorksSection = () => (
+export const HowItWorks = () => (
   <section
     id="how-it-works"
     className="mb-8 transform rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
