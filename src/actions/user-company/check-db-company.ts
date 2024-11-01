@@ -7,7 +7,10 @@ import { eq } from 'drizzle-orm';
 
 // Checks if the current Company is set connected to the synthetic bookkeeper in the database.
 // Returns: A string 'true / false' value for the connection state or an error message string.
-export async function checkCompanyConnection(): Promise<string> {
+export async function checkCompanyConnection(): Promise<{
+  result: boolean;
+  message: string;
+}> {
   try {
     // Get the current session and use it to get the Company realm Id.
     const session = await getServerSession(options);
@@ -23,21 +26,36 @@ export async function checkCompanyConnection(): Promise<string> {
 
       // Return the connection status for the Company as a string ('true' or 'false').
       if (currentCompany.length > 0) {
-        return String(currentCompany[0].bookkeeperConnected);
+        return {
+          result: currentCompany[0].bookkeeperConnected,
+          message: 'Checked Successfully',
+        };
       } else {
         // If no Company could be found, the connection is considered false.
-        return 'false';
+        return {
+          result: false,
+          message: 'No Company Found',
+        };
       }
     } else {
       // If realm Id could not be found from the session, the connection is considered false.
-      return 'false';
+      return {
+        result: false,
+        message: 'No Realm Id Found In Session',
+      };
     }
   } catch (error) {
     // Catch any errors and return an error string, include the error message if it is present.
     if (error instanceof Error) {
-      return 'Error: ' + error.message;
+      return {
+        result: false,
+        message: 'Error: ' + error.message,
+      };
     } else {
-      return 'Error: ' + 'Unidentified Error.';
+      return {
+        result: false,
+        message: 'Unexpected Error',
+      };
     }
   }
 }
