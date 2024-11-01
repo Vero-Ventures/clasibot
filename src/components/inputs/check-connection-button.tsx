@@ -51,7 +51,9 @@ const CheckConnectionButton = () => {
         <div>
           <MiniSpinner sbkExists={sbkExists} />
           {displayFailMessage && (
-            <p>Connection failed, try again. See troubleshooting solutions below.</p>
+            <p>
+              Connection failed, try again. See troubleshooting solutions below.
+            </p>
           )}
         </div>
       )}

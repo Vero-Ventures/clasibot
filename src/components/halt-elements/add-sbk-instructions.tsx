@@ -9,7 +9,9 @@ interface AddSBKInstructionsProps {
   showCheckConnectionButton: boolean | null;
 }
 
-export default function AddSBKInstructions({showCheckConnectionButton}: AddSBKInstructionsProps) {
+export default function AddSBKInstructions({
+  showCheckConnectionButton,
+}: AddSBKInstructionsProps) {
   const [isSingleCompany, setIsSingleCompany] = useState(true);
 
   return (

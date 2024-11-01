@@ -4,9 +4,7 @@ import MiniSpinner from '../mini-spinner';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-
 const SBKConfirmationModal = () => {
-
   const router = useRouter();
 
   useEffect(() => {
@@ -34,7 +32,7 @@ const SBKConfirmationModal = () => {
         <p id="ResultMessage" className="text-center font-medium text-gray-800">
           You are being redirected to the instructions now...
         </p>
-        <MiniSpinner sbkExists={false}/>
+        <MiniSpinner sbkExists={false} />
       </div>
     </div>
   );

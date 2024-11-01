@@ -23,7 +23,7 @@ export const siteConfig = {
     },
     {
       label: 'Bookkeeper Instructions',
-      href: '/add-sbk-instructions'
-    }
+      href: '/add-sbk-instructions',
+    },
   ],
 };
