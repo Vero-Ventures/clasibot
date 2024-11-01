@@ -78,7 +78,7 @@ const Navbar = async () => {
           />
         </>
       ) : (
-        <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:w-full md:pl-4 lg:pr-12 xl:pr-24">
+        <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:pl-4 lg:pr-12 xl:pr-24">
           <a
             href="#how-it-works"
             className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
