@@ -6,7 +6,7 @@ import MiniSpinner from '../mini-spinner';
 const functionToCheckIfSBKExists = (): Promise<boolean> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(Math.random() > 0); // Set this to `false` to simulate SBK not existing
+      resolve(Math.random() > 0.5); // Set this to `false` to simulate SBK not existing
     }, 3000);
   });
 };
