@@ -102,17 +102,36 @@ export default function ReviewPage({
     setNextBackendClassifyDate(nextClassifyUTC.toString);
   }, []);
 
+  // Create states to track the loaded Transactions and their assosiated Accounts.
+  const [loadedTransactions, setLoadedTransactions] = useState<
+    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
+  >([]);
+  const [accounts, setAccounts] = useState<string[]>([]);
+  const [errorLoadingTransactions, setErrorLoadingTransactions] =
+    useState<boolean>(false);
+
+  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
+  useEffect(() => {
+    // Load the Transactions from the database.
+    const loadForReviewTransactions = async () => {
+      // Load the Transactions and check the Query Result for an error.
+      const loadResult = await getDatabaseTransactions();
+      if (loadResult[0].result === 'Error') {
+        // If an error was found, open the related error modal.
+        setErrorLoadingTransactions(true);
+      }
+      // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
+      setLoadedTransactions(loadResult[1]);
+    };
+    loadForReviewTransactions();
+  }, [found_company_info]);
+
   // Create states to track the states of a Manual Classification process.
   const [isClassifying, setIsClassifying] = useState(false);
   const [manualClassificationState, setManualClassificationState] =
     useState<string>('');
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
-
-  // Define a function to update the Manual Classification state.
-  function updateManualClassificationState(newState: string) {
-    setManualClassificationState(newState);
-  }
 
   // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
   function handleManualClassification() {
@@ -128,21 +147,40 @@ export default function ReviewPage({
       // State handling on error is done inside the Classification function.
       if (success) {
         // Update the state to indicate the Classification is finished.
-        setManualClassificationState('Finished Classify');
+        setManualClassificationState('Load Classified Transactions');
         // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
-        setLoadedTransactions(await getDatabaseTransactions());
 
-        // Update manual Classification state with a completion message.
-        setManualClassificationState('Loaded New DB Transactions');
+        // Load the newly Classified 'For Review' transactions from the database after the manual Classification.
+        const loadResult = await getDatabaseTransactions();
+
+        // Check result of the load for an error Query Result for.
+        if (loadResult[0].result === 'Error') {
+          // If an error was found, open the related error modal and set the state to indicate an error.
+          setErrorLoadingTransactions(true);
+          setManualClassificationState('Error');
+        } else {
+          // On success, show the finished Classification modal to inform the user.
+          setOpenFinishedClassificationModal(true);
+          // Set the state to indicate completion and hiding the related frontend element.
+          setManualClassificationState('Classify Complete');
+        }
+        // Update the loaded Transactions state regardless of outcome.
+        // Returned array is set to be empty from error reutrns to prevent showing old data.
+        setLoadedTransactions(loadResult[1]);
+      } else {
+        // When Classification process returns an error, show the finished Classification modal that will inform the user.
+        setOpenFinishedClassificationModal(true);
       }
-
-      // Update the state to indicate Classification is no longer in progress and open a pop-up to inform the user.
+      // Regardless of outcome, set the Classification process to be completed.
       setIsClassifying(false);
-      setOpenFinishedClassificationModal(true);
     };
 
     // Start the Manual Classification by calling the async function.
     startManualClassification();
+  }
+  // Define a function to update the Manual Classification state.
+  function updateManualClassificationState(newState: string) {
+    setManualClassificationState(newState);
   }
 
   // Define handler for different manual Classification states.
@@ -151,26 +189,34 @@ export default function ReviewPage({
     // States are always set prior to the related action being started.
     switch (manualClassificationState) {
       case 'Start Classify':
+        // Called before beggining the Classification process - Set frontend element to be shown.
         break;
       case 'Synthetic Login':
+        // Called before starting the synthetic login process used to access the User Account.
         break;
       case 'Get For Review Transactions':
+        // Called before getting the 'For Reivew' transactions to be classified.
         break;
       case 'Get Saved Transactions':
+        // Called before getting the saved and Classified Transactions from QuickBooks for prediction use.
         break;
       case 'Classify For Review Transactions':
+        // Called before starting the process to create the Transaction Classifications.
         break;
       case 'Create New Classified Transactions':
-        break;
-      case 'Create New Classified Transactions':
+        // Called before using predictions to create Classified 'For Review' transactions.
         break;
       case 'Save New Classified Transactions':
+        // Called before saving the newly Classified 'For Review' transactions to the database.
         break;
-      case 'Finished Classify':
+      case 'Load New Classified Transactions':
+        // Called before loading the newly Classified transactions from the database to be displayed.
         break;
-      case 'Loaded New DB Transactions':
+      case 'Classify Complete':
+        // Completion Case - Handled by modal, hide the frontend element.
         break;
       case 'Error':
+        // Completion Case - Handled by modal, hide the frontend element.
         break;
     }
   }, [manualClassificationState]);
@@ -230,20 +276,13 @@ export default function ReviewPage({
     }
   }
 
-  // Create states to track the loaded Transactions and their assosiated Accounts.
-  const [loadedTransactions, setLoadedTransactions] = useState<
-    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
-  >([]);
-  const [accounts, setAccounts] = useState<string[]>([]);
-
-  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
-  useEffect(() => {
-    // Load the Transactions from the database.
-    const loadForReviewTransactions = async () => {
-      setLoadedTransactions(await getDatabaseTransactions());
-    };
-    loadForReviewTransactions();
-  }, [found_company_info]);
+  // Create states to track the selected Classifications for each row.
+  const [selectedCategories, setSelectedCategories] = useState<
+    Record<string, string>
+  >({});
+  const [selectedTaxCodes, setSelectedTaxCodes] = useState<
+    Record<string, string>
+  >({});
 
   // Updates the Classifications for each Transaction when the Classified Transactions or Classification results change.
   useEffect(() => {
@@ -293,14 +332,6 @@ export default function ReviewPage({
     // Call method to initalize the Classifications of the 'For Review' transactions.
     initializeClassifications();
   }, [loadedTransactions]);
-
-  // Create states to track the selected Classifications for each row.
-  const [selectedCategories, setSelectedCategories] = useState<
-    Record<string, string>
-  >({});
-  const [selectedTaxCodes, setSelectedTaxCodes] = useState<
-    Record<string, string>
-  >({});
 
   // Update the selected Categories state using a 'For Review' transaction Id and the new Category.
   function handleCategoryChange(transactionId: string, category: string) {
@@ -508,7 +539,35 @@ export default function ReviewPage({
         manualClassificationState={manualClassificationState}
       />
 
-      {/* Defines a popup to be displayed on completion of the saving the Classified 'For Review' transactions. */}
+      {/* Defines the modal to be displayed if an attempt to load classified Transactions fails. */}
+      <div
+        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${errorLoadingTransactions ? '' : 'hidden'}`}>
+        <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <>
+            <h2
+              id="ResultTitle"
+              className="mb-4 text-center text-2xl font-bold text-green-500">
+              Error
+            </h2>
+            <p
+              id="ResultMessage"
+              className="mb-6 text-center font-medium text-gray-800">
+              An error while loading your classified transactions. Refresh the
+              page to try again or contact us if the issue persists.
+            </p>
+          </>
+          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
+            <Button
+              id="CloseButton"
+              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+              onClick={() => setErrorLoadingTransactions(false)}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Defines a modal to be displayed on completion of the saving the Classified 'For Review' transactions. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openSaveModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
@@ -568,7 +627,7 @@ export default function ReviewPage({
         </div>
       </div>
 
-      {/* Defines the popup to be displayed on completion of the manual Classification function call. */}
+      {/* Defines the modal to be displayed on completion of the manual Classification function call. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
@@ -576,13 +635,13 @@ export default function ReviewPage({
             <h2
               id="ResultTitle"
               className="mb-4 text-center text-2xl font-bold text-green-500">
-              {manualClassificationState === 'Error' ? 'Error' : 'Success'}
+              {manualClassificationState === 'Error' ? 'Error' : 'Complete'}
             </h2>
             <p
               id="ResultMessage"
               className="mb-6 text-center font-medium text-gray-800">
               {manualClassificationState === 'Error'
-                ? 'An error occured during the classification process.'
+                ? 'An error occured during the classification process. Please try again later or contact us if the issue persists.'
                 : 'Your transactions are classified and ready for review.'}
             </p>
           </>
@@ -597,7 +656,7 @@ export default function ReviewPage({
         </div>
       </div>
 
-      {/* Defines the information popup to be shown on clicking the deactivate Company button.*/}
+      {/* Defines the information modal to be shown on clicking the deactivate Company button.*/}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyInfoModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
@@ -654,7 +713,7 @@ export default function ReviewPage({
         </div>
       </div>
 
-      {/* Defines the confirmation popup to be after users continue from Company deactivation modal. */}
+      {/* Defines the confirmation modal to be after users continue from Company deactivation modal. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyConfirmModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
@@ -694,7 +753,7 @@ export default function ReviewPage({
         </div>
       </div>
 
-      {/* Defines the popup to be displayed on if an error occurs during Company deactivation. */}
+      {/* Defines the modal to be displayed on if an error occurs during Company deactivation. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyErrorModal ? '' : 'hidden'}`}>
         <div className="mx-4 w-96 rounded-lg bg-white p-6">
