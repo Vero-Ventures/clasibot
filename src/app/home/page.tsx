@@ -6,7 +6,7 @@ import HomePage from '@/components/home';
 const functionToCheckIfSBKExists = (): Promise<boolean> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(true);
+      resolve(false);
     }, 1000);
   });
 };
