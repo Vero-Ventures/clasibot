@@ -16,7 +16,7 @@ const CheckConnectionButton = () => {
     setSbkExists(sbkExists.connected);
     setCheckingForSBK(false);
 
-    if (sbkExists) {
+    if (sbkExists.connected) {
       // Optional: Wait for the animation to complete before redirecting
       setTimeout(() => {
         router.push('/home');
