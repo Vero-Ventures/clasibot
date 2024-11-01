@@ -20,11 +20,11 @@ export const WhyClasibot = () => {
           }}></div>
 
         {/* Right Side: Content */}
-        <div className="flex flex-col items-center justify-center p-4 pl-8 md:w-1/2">
-          <h2 className="mb-4 text-3xl font-bold text-gray-800">
+        <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-8">
+          <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
             Why QuickBooks
           </h2>
-          <p className="mb-6 text-lg text-gray-700">
+          <p className="mb-6 text-center text-lg text-gray-700">
             Clasibot simplifies transaction classification, saving you time by
             automating routine tasks. By integrating with QuickBooks, you get
             seamless, weekly updates to your transactions.
