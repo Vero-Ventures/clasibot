@@ -2,14 +2,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import MiniSpinner from '../mini-spinner';
-
-const functionToCheckIfSBKExists = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(Math.random() > 0.5); // Set this to `false` to simulate SBK not existing
-    }, 3000);
-  });
-};
+import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
 
 const CheckConnectionButton = () => {
   const [checkingForSBK, setCheckingForSBK] = useState(false);
@@ -19,8 +12,8 @@ const CheckConnectionButton = () => {
 
   const handleCheckConnection = async () => {
     setCheckingForSBK(true);
-    const sbkExists = await functionToCheckIfSBKExists();
-    setSbkExists(sbkExists);
+    const sbkExists = await checkCompanyConnection();
+    setSbkExists(sbkExists.connected);
     setCheckingForSBK(false);
 
     if (sbkExists) {
