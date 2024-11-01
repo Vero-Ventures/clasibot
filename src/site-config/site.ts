@@ -21,5 +21,9 @@ export const siteConfig = {
       label: 'Contact Us',
       href: '/contact-us',
     },
+    {
+      label: 'Bookkeeper Instructions',
+      href: '/add-sbk-instructions',
+    },
   ],
 };
