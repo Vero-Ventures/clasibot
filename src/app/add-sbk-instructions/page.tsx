@@ -8,5 +8,7 @@ export default async function Page() {
     showCheckConnectionButton = true;
   }
 
-  return <AddSBKInstructions showCheckConnectionButton={showCheckConnectionButton} />;
+  return (
+    <AddSBKInstructions showCheckConnectionButton={showCheckConnectionButton} />
+  );
 }

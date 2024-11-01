@@ -3,7 +3,6 @@
 import { CheckIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-
 interface MiniSpinnerProps {
   sbkExists: boolean | null;
 }
@@ -49,14 +48,14 @@ const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
       {animationState === 'success' && (
         <div
           id="SuccessCircle"
-          className="animate-successAnimation flex h-10 w-10 items-center justify-center rounded-full bg-green-500">
+          className="flex h-10 w-10 animate-successAnimation items-center justify-center rounded-full bg-green-500">
           <CheckIcon className="h-6 w-6 text-white" />
         </div>
       )}
       {animationState === 'failure' && (
         <div
           id="FailureCircle"
-          className="animate-failureAnimation flex h-10 w-10 items-center justify-center rounded-full bg-red-500">
+          className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
           <XIcon className="h-6 w-6 text-white" />
         </div>
       )}

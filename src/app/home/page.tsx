@@ -12,7 +12,6 @@ const functionToCheckIfSBKExists = (): Promise<boolean> => {
 };
 
 export default async function Page() {
-
   // Get user subscription and check their status.
   const subscriptionStatus = await checkSubscription();
   // Check if the Synthetic BookKeeper is connected to the account.
@@ -27,4 +26,4 @@ export default async function Page() {
     // Otherwise, show the home page.
     return <HomePage />;
   }
- }
+}
