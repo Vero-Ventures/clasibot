@@ -1,0 +1,20 @@
+{
+    "name": "quickbooks-fargate-task",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+      "@aws-sdk/client-sqs": "latest",
+      "imap": "^0.8.19",
+      "mailparser": "^3.7.1",
+      "jsdom": "^25.0.1",
+      "playwright": "^1.48.2",
+      "stream": "^0.0.3"
+    },
+    "devDependencies": {
+      "@types/imap": "^0.8.42",
+      "@types/mailparser": "^3.4.5",
+      "@types/jsdom": "^21.1.7",
+      "bun-types": "latest",
+      "typescript": "^5.6.3"
+    }
+   }
