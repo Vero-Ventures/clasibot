@@ -27,3 +27,15 @@ export async function syntheticAuth(
     await browser.close();
   }
 }
+
+const realmId = process.env.TARGET_REALM_ID!;
+const firmName = process.env.FIRM_NAME ?? null;
+
+console.log(`Starting QuickBooks authentication for realmId: ${realmId}`);
+if (firmName) {
+  console.log(`Using firm name: ${firmName}`);
+} else {
+  console.log('Using default firm');
+}
+
+syntheticAuth(realmId, firmName);
