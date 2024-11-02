@@ -6,7 +6,7 @@ export async function syntheticAuth(
   realmId: string,
   firmName: string | null = null
 ): Promise<void> {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
 

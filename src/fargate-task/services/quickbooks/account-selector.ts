@@ -1,6 +1,6 @@
 import type { Page } from 'playwright';
 import { CONFIG } from '../../config';
-import type { QBOFirmClientResponse } from '@/browser-automation/types';
+import type { QBOFirmClientResponse } from '@/fargate-task/types';
 
 export class AccountSelector {
   constructor(private page: Page) {}
@@ -128,6 +128,7 @@ export class AccountSelector {
     const count = await options.count();
 
     console.log(`Found ${count} matching companies`);
+    // TODO - find better solution for conflicting client names
     await options.first().click();
   }
 }
