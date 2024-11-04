@@ -12,7 +12,7 @@ interface AddSBKInstructionsProps {
 export default function AddSBKInstructions({
   showCheckConnectionButton,
 }: AddSBKInstructionsProps) {
-  const [isSingleCompany, setIsSingleCompany] = useState(false);
+  const [isSingleCompany, setIsSingleCompany] = useState(true);
 
   return (
     <section className="m-8 transform rounded-lg bg-white px-4 py-10 shadow-lg mb:px-6 sm:px-8 md:px-12">
@@ -69,7 +69,7 @@ export default function AddSBKInstructions({
                   <span className="inline-block">as a company accountant.</span>
                 </span>
               </p>
-              <h3 className="mb-2 mt-6 text-center text-xl font-semibold text-black">
+              <h3 className="mb-2 mt-6 text-center text-xl font-semibold text-black sm:mt-8">
                 Invite To Your Company
               </h3>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -97,7 +97,7 @@ export default function AddSBKInstructions({
                 </li>
               </ol>
 
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black">
+              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Add Clasibot As First Accountant
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -125,7 +125,7 @@ export default function AddSBKInstructions({
                 </li>
               </ol>
 
-              <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black">
+              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Add Clasibot To Existing Accountant&apos;s
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -140,18 +140,18 @@ export default function AddSBKInstructions({
                   Enter the email of the Clasibot bookkeeper:&nbsp;
                   <strong>bookkeeper@clasibot.com</strong>
                 </li>
-                <li className="mb-6">
+                <li className="mb-4">
                   Send the invite and wait for the Clasibot accountant to accept
                   and join your company.
                 </li>
               </ol>
               {showCheckConnectionButton && (
-                <div className="flex flex-col items-center justify-center">
+                <div className="mx-auto flex flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
               )}
 
-              <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black">
+              <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black sm:mb-4 md:mt-12">
                 Connection Troubleshooting
               </h4>
               <p className="mb-4 text-gray-700">
@@ -184,7 +184,7 @@ export default function AddSBKInstructions({
                   </span>
                 </span>
               </p>
-              <h3 className="mb-2 mt-6 text-center text-xl font-semibold text-black">
+              <h3 className="mb-2 mt-6 text-center text-xl font-semibold text-black sm:mt-8">
                 Invite To Accountant Company
               </h3>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -210,7 +210,7 @@ export default function AddSBKInstructions({
                 </li>
               </ol>
 
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black">
+              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Invite To Your Accountant Company
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -240,7 +240,7 @@ export default function AddSBKInstructions({
                 </li>
               </ol>
 
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black">
+              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Check If The Invite Was Accepted
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -269,7 +269,7 @@ export default function AddSBKInstructions({
                 </li>
               </ol>
 
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black">
+              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Grant Access To Client Companies
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -291,20 +291,20 @@ export default function AddSBKInstructions({
                   Select the client you are presently logged in as to grant the
                   Clasibot bookkeeper access.
                 </li>
-                <li className="mb-6">
+                <li className="mb-4">
                   Click save changes and wait for the Clasibot bookkeeper to
                   update its connection to your client&apos;s company.
                 </li>
               </ol>
 
               {showCheckConnectionButton && (
-                <div className="flex flex-col items-center justify-center">
+                <div className="mx-auto flex flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
               )}
 
               <div className="px-4 md:px-0">
-                <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black">
+                <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black sm:mb-4 md:mt-12">
                   Connection Troubleshooting
                 </h4>
                 <p className="mb-4 text-gray-700">
@@ -313,7 +313,7 @@ export default function AddSBKInstructions({
                   companies that have not been authenticated through logging
                   into the Clasibot application.
                 </p>
-                <p className="mb-4 ml-6 mr-4 text-center text-sm text-gray-700">
+                <p className="mb-6 ml-6 mr-4 text-center text-sm text-gray-700 sm:mb-10">
                   If access has already been granted, simply edit the Clasibot
                   bookkeeper to remove the access, log in to the client company,
                   then grant the client access again.
