@@ -18,7 +18,7 @@ export default async function SubscriptionPurchase() {
   return (
     <div className="container md:pb-[5%] lg:pb-[0%]">
       <div className="flex flex-col justify-between lg:flex-row xl:justify-evenly">
-        <div className="content-center lg:w-[55%] md:pb-4 xl:w-[40%]">
+        <div className="content-center md:pb-4 lg:w-[55%] xl:w-[40%]">
           <div className="flex flex-col space-y-4 pt-8 lg:pt-0">
             <h2
               id="ResultTitle"
