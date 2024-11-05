@@ -5,7 +5,8 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-src/app/email-monitoring/lambda-function/node_modules
+src/app/email-monitoring/email-monitor-lambda/package
+src/app/email-monitoring/email-monitor-lambda/.idea
 
 # testing
 /coverage
