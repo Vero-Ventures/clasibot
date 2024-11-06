@@ -1,17 +1,28 @@
 import React from 'react';
-import { CheckIcon } from 'lucide-react'; // Make sure you have lucide-react installed
+import { CheckIcon, XIcon } from 'lucide-react'; // Make sure you have lucide-react installed
 
 interface ProgressBarProps {
   completedChunks: number;
   maxChunks: number;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ completedChunks, maxChunks }) => {
-
-  
+const ProgressBar: React.FC<ProgressBarProps> = ({
+  completedChunks,
+  maxChunks,
+}) => {
   const isCompleted = completedChunks === maxChunks;
 
   const circleCommonClasses = 'h-4 w-4 rounded-full m-1';
+
+  if (completedChunks < 0) {
+    return (
+      <div className="flex items-center justify-center space-x-2 pt-4">
+        <div className="flex h-12 w-12 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
+          <XIcon className="h-6 w-6 text-white" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center space-x-2 pt-4">
