@@ -82,8 +82,8 @@ const Navbar = async () => {
           <a
             href="#how-it-works"
             className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
-            How It
-            <span className="mb:block sm:inline-block">&nbsp;Works</span>
+            How It&nbsp;
+            <span className="mb:block sm:inline-block">Works</span>
           </a>
           <a
             href="#why-quickbooks"

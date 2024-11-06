@@ -13,7 +13,11 @@ export default async function Page() {
   if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
     // If the user status is invalid or there is an error, go to the subscription purchase.
     return <SubscriptionPurchase />;
-  } else if (!companyHasSBK.connected) {
+  } else if (
+    !companyHasSBK.connected &&
+    process.env.APP_CONFIG === 'production'
+  ) {
+    // Only perform check if in production mode.
     console.log(`${companyHasSBK.result}: ${companyHasSBK.message}`);
     return <SBKConfirmationModal />;
   } else {

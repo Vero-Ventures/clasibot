@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     // Extract the Firm name and User name from the request body.
     const firmName: string = body.firmName;
     const userName: string = body.userName;
+    const _invite_link: string = body.inviteLink;
 
     // Check if valid Firm name and User name were passed.
     // Log error responses for the missing values.
