@@ -125,7 +125,7 @@ const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
       <div className="flex flex-col items-center space-y-4 mb:my-2 mb:w-full mb:flex-row mb:justify-evenly mb:space-y-0 md:justify-start">
         <div
           id="UserName"
-          className="text-center text-white mb:mx-4 mb:ml-6 mb:w-48 md:ml-4 md:w-fit md:min-w-28">
+          className="text-center text-white mb:mx-4 mb:ml-6 mb:w-48 md:ml-4 md:w-fit md:min-w-28 lg:text-lg xl:text-xl">
           Welcome,
           <span className="block xl:hidden">{name}</span>
           <span className="hidden xl:inline"> {name}</span>
