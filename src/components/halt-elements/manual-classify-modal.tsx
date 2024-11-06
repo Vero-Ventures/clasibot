@@ -19,7 +19,7 @@ const ManualClassifyModal = ({
         <p id="ResultMessage" className="text-center font-medium text-base text-gray-800">
           {progressMessage}
         </p>
-        {completedChunks < maxChunks && (
+        {completedChunks < maxChunks && completedChunks >= 0 && (
           <p className="text-center text-sm text-gray-800">
             Working through process {completedChunks + 1} of {maxChunks}...
           </p>
