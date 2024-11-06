@@ -138,7 +138,7 @@ const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
             {userStatus}
           </span>
         </div>
-        <DeactivationButton status={!userStatus} className="flex " />
+        <DeactivationButton status={userStatus}/>
       </div>
 
       <Button asChild id="ManageAccountButton" variant="link">
