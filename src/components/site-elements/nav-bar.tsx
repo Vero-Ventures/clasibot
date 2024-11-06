@@ -8,6 +8,7 @@ import logo from '@/public/logo.svg';
 import { Button } from '@/components/ui/button';
 import SignOutButton from '@/components/inputs/sign-out-button';
 import ChangeCompanyButton from '@/components/inputs/change-company-button';
+import DeactivationButton from '@/components/site-elements/deactivation-button';
 
 const Navbar = async () => {
   // Check the user's Subscription status.
@@ -67,6 +68,9 @@ const Navbar = async () => {
         <>
           <div className="mb-4 mt-6">
             <ChangeCompanyButton />
+          </div>
+          <div className="mb-4 mt-6">
+            <DeactivationButton />
           </div>
           {/* Display user session information: Name and Subscription Status. */}
           {/* Also contains the Manage Account & Sign Out Buttons. */}
