@@ -12,41 +12,29 @@ interface DeactivationButtonProps {
 const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
   const isInactive = status === 'Inactive';
 
-  // Define states to track the modals for Company deactivation.
-  const [openDeactivateCompanyInfoModal, setOpenDeactivateCompanyInfoModal] =
-    useState<boolean>(false);
-  const [
-    openDeactivateCompanyConfirmModal,
-    setOpenDeactivateCompanyConfirmModal,
-  ] = useState<boolean>(false);
-  const [openDeactivateCompanyErrorModal, setOpenDeactivateCompanyErrorModal] =
-    useState<boolean>(false);
+  // Modal state management
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
 
-  // Create helper function to close the deactivate information and open the confirmation modal.
-  function openDeactivateConfirmationModal() {
-    setOpenDeactivateCompanyInfoModal(false);
-    setOpenDeactivateCompanyConfirmModal(true);
+  // Open confirmation modal
+  function openConfirmationModal() {
+    setInfoModalOpen(false);
+    setConfirmModalOpen(true);
   }
 
-  // Define the behavior of confirmation of the Company deactivation.
+  // Deactivate company function
   async function deactivateCompany(switchCompany: boolean) {
-    // Call backend action with the Company realm Id to update Company connection in the database.
     const deactivationResult = await makeCompanyIncactive();
 
-    // Check for an error updating the Company connection.
     if (deactivationResult.result === 'Error') {
-      // Close the confirmation modal and open the error modal.
-      setOpenDeactivateCompanyConfirmModal(false);
-      setOpenDeactivateCompanyErrorModal(true);
+      setConfirmModalOpen(false);
+      setErrorModalOpen(true);
     }
 
-    // After Company deactivation, check user continuation method.
     if (switchCompany) {
-      // Take the user to Company selection by recalling the QuickBooks sign in method.
-      // Already existing QuickBooks session will take them to Company selection.
       signIn('quickbooks', { callbackUrl: '/home' });
     } else {
-      // If the user did not choose to switch Company after deactivation, log them out.
       signOut({ callbackUrl: '/' });
     }
   }
@@ -57,29 +45,25 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
       {!isInactive && (
         <button
           id="DeactivateCompanyButton"
-          className="mb-2 flex transform items-center justify-center rounded bg-gradient-to-r from-red-500 to-red-700 px-2 py-1 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
-          onClick={() => setOpenDeactivateCompanyInfoModal(true)}>
-          <span id="ButtonText" className="text-sm">
-            Deactivate
-          </span>
+          className="flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
+          onClick={() => setInfoModalOpen(true)}>
+          <span className="text-sm font-medium">Deactivate</span>
         </button>
       )}
 
-      {/* Modals */}
-      <div className="absolute">
-        {/* Information modal */}
-        <div
-          className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyInfoModal ? '' : 'hidden'}`}>
-          <div className="mx-4 w-96 rounded-lg bg-white p-6">
-            <>
-              <h2
-                id="ResultTitle"
-                className="mb-4 text-center text-2xl font-bold text-red-500">
-                Deactivate Company
-              </h2>
+      {/* Information Modal */}
+      {infoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="relative mx-4 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-2xl">
+            <h2
+              id="ResultTitle"
+              className="mb-6 text-center text-3xl font-extrabold text-red-600">
+              Deactivate Company
+            </h2>
+            <div className="space-y-4 text-gray-700">
               <p
                 id="InfoMessage"
-                className="mb-6 text-center font-medium text-gray-800">
+                className="text-center text-lg leading-relaxed">
                 Deactivating your company will cause Clasibot to mark the
                 company&apos;s connection as inactive. This will prevent
                 Clasibot from accessing your company through QuickBooks online
@@ -88,7 +72,7 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
 
               <p
                 id="InstructionMessage"
-                className="mb-6 text-center font-medium text-gray-800">
+                className="text-center text-lg leading-relaxed">
                 When deactivating your company in Clasibot, it is recommended
                 that you also remove the Clasibot bookkeeper from the company in
                 QuickBooks Online. Clasibot cease accessing your company
@@ -98,109 +82,98 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
 
               <p
                 id="EndingMessage"
-                className="mb-6 text-center font-medium text-gray-800">
+                className="text-center text-lg leading-relaxed">
                 Deactivation can be done at any time without affecting your
                 subscription or any other companies you have connected to
                 Clasibot. To later reactivate your company, ensure the
                 connection has been removed in QuickBooks Online, then follow
                 the connection steps shown when logging in.
               </p>
-            </>
-
-            <div
-              id="ReturnButtonContainer"
-              className="flex justify-center gap-4">
+            </div>
+            <div className="mt-8 flex justify-end space-x-4">
               <Button
                 id="CancelButton"
-                className="h-10 w-32 rounded bg-blue-500 px-4 py-2 text-center font-bold text-white hover:bg-blue-600"
-                onClick={() => setOpenDeactivateCompanyInfoModal(false)}>
+                className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+                onClick={() => setInfoModalOpen(false)}>
                 Cancel
               </Button>
               <Button
                 id="ConntinueButton"
-                className="h-10 w-32 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-                onClick={() => openDeactivateConfirmationModal()}>
+                className="rounded-md bg-red-600 px-4 py-2 text-white shadow-md hover:bg-red-700"
+                onClick={openConfirmationModal}>
                 Continue
               </Button>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Confirmation modal */}
-        <div
-          className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyConfirmModal ? '' : 'hidden'}`}>
-          <div className="w-200l mx-4 max-w-lg rounded-lg bg-white p-6">
-            <>
-              <h2
-                id="ResultTitle"
-                className="mb-4 text-center text-2xl font-bold text-green-500">
-                Confirm Deactivation
-              </h2>
-              <p
-                id="ResultMessage"
-                className="mb-6 text-center font-medium text-gray-800">
-                Are you sure you want to deactivate the connection to this
-                company?
-              </p>
-            </>
-            <div
-              id="ReturnButtonContainer"
-              className="flex justify-center gap-4">
+      {/* Confirmation Modal */}
+      {confirmModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="relative mx-4 w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
+            <h2
+              id="ResultTitle"
+              className="mb-6 text-center text-3xl font-extrabold text-red-600">
+              Confirm Deactivation
+            </h2>
+            <p
+              id="ResultMessage"
+              className="mb-8 text-center text-lg text-gray-700">
+              Are you sure you want to deactivate the connection to this
+              company?
+            </p>
+            <div className="flex flex-row flex-wrap justify-center gap-4">
               <Button
                 id="CancelButton"
-                className="h-10 w-32 rounded bg-gray-500 px-4 py-2 text-center font-bold text-white hover:bg-gray-600"
-                onClick={() => setOpenDeactivateCompanyConfirmModal(false)}>
+                className="w-full max-w-xs rounded-md bg-gray-200 px-6 py-2 text-gray-700 hover:bg-gray-300"
+                onClick={() => setConfirmModalOpen(false)}>
                 Cancel
               </Button>
-              {/* Boolean value in deactivation function indicates if the user should be taken to Company selection instead of logged out. */}
               <Button
                 id="ConfirmSwitchButton"
-                className="h-10 w-36 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600"
+                className="w-full max-w-xs rounded-md bg-red-600 px-6 py-2 text-white shadow-md hover:bg-red-700"
                 onClick={() => deactivateCompany(false)}>
                 Confirm (Sign Out)
               </Button>
               <Button
                 id="ConfirmLogOutButton"
-                className="h-10 w-36 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-600"
+                className="w-full max-w-xs rounded-md bg-red-600 px-6 py-2 text-white shadow-md hover:bg-red-700"
                 onClick={() => deactivateCompany(true)}>
                 Confirm (Switch Company)
               </Button>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Error modal */}
-        <div
-          className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openDeactivateCompanyErrorModal ? '' : 'hidden'}`}>
-          <div className="mx-4 w-96 rounded-lg bg-white p-6">
-            <>
-              <h2
-                id="ErrorTitle"
-                className="mb-4 text-center text-2xl font-bold text-green-500">
-                Error
-              </h2>
-              <p
-                id="ErrorMessage"
-                className="mb-6 text-center font-medium text-gray-800">
-                An error occurred while updating the company connection status.
-              </p>
-            </>
-            <div
-              id="ReturnButtonContainer"
-              className="flex justify-center gap-4">
+      {/* Error Modal */}
+      {errorModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+            <h2
+              id="ErrorTitle"
+              className="mb-6 text-center text-3xl font-extrabold text-red-600">
+              Error
+            </h2>
+            <p
+              id="ErrorMessage"
+              className="mb-8 text-center text-lg text-gray-700">
+              An error occurred while updating the company connection status.
+            </p>
+            <div className="flex justify-end">
               <Button
                 id="CloseButton"
-                className="h-10 w-32 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-                onClick={() => setOpenDeactivateCompanyErrorModal(false)}>
+                className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+                onClick={() => setErrorModalOpen(false)}>
                 Close
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
 
-// Export the DeactivationButton component.
 export default DeactivationButton;
