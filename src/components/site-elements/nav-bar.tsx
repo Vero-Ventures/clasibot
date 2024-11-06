@@ -69,9 +69,7 @@ const Navbar = async () => {
           <div className="mb-4 mt-6">
             <ChangeCompanyButton />
           </div>
-          <div className="mb-4 mt-6">
-            <DeactivationButton />
-          </div>
+
           {/* Display user session information: Name and Subscription Status. */}
           {/* Also contains the Manage Account & Sign Out Buttons. */}
           <UserSessionInfo
@@ -129,9 +127,20 @@ const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
         <span className="block xl:hidden">{name}</span>
         <span className="hidden xl:inline"> {name}</span>
       </div>
-      <div id="UserStatus" className="text-white">
-        Status: <span className={`font-bold ${statusColor}`}>{userStatus}</span>
+      <div
+        id="UserStatus"
+        className="flex items-center space-x-3 rounded-lg p-3 text-white shadow-md"
+        role="status"
+        aria-live="polite">
+        <div className="flex items-center space-x-1">
+          <span className="text-sm font-medium">Status:</span>
+          <span className={`font-bold ${statusColor} text-lg`}>
+            {userStatus}
+          </span>
+        </div>
+        <DeactivationButton status={!userStatus} className="flex " />
       </div>
+
       <Button asChild id="ManageAccountButton" variant="link">
         <Link
           className="!mb-1 bg-gray-700 text-white underline underline-offset-4 hover:bg-gray-500 md:!mb-0 md:!ml-6 lg:!ml-8"
