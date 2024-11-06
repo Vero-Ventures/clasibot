@@ -42,12 +42,12 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
   return (
     <>
       {/* Button to open the Deactivate Company modal */}
-      {!isInactive && (
+      {isInactive && (
         <button
           id="DeactivateCompanyButton"
-          className="flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
+          className="flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 md:ml-8 md:px-6"
           onClick={() => setInfoModalOpen(true)}>
-          <span className="text-sm font-medium">Deactivate</span>
+          <span className="text-base font-semibold">Deactivate</span>
         </button>
       )}
 

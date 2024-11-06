@@ -38,48 +38,50 @@ const Navbar = async () => {
   const stripePortalUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
-    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md md:flex-row">
-      <div id="GeneralNavBarContent" className="flex items-center space-x-4">
-        <Link href="/">
-          <Image
-            id="LogoImage"
-            src={logo}
-            width={40}
-            height={40}
-            className="h-auto w-12"
-            alt={siteConfig.name}
-          />
-        </Link>
-        <Link href="/">
-          <div id="SiteInfoContainer" className="flex flex-col">
-            <div className="text-2xl font-bold text-white">
-              <span id="SiteName" className="text-green-400">
-                {siteConfig.name}
-              </span>
+    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md lg:px-[10%]">
+      <div className="flex flex-col items-center justify-between shadow-md mb:w-full mb:flex-row mb:justify-evenly md:justify-between md:px-12">
+        <div id="GeneralNavBarContent" className="flex items-center space-x-4">
+          <Link href="/">
+            <Image
+              id="LogoImage"
+              src={logo}
+              width={40}
+              height={40}
+              className="h-auto w-12"
+              alt={siteConfig.name}
+            />
+          </Link>
+          <Link href="/">
+            <div id="SiteInfoContainer" className="flex flex-col">
+              <div className="text-2xl font-bold text-white">
+                <span id="SiteName" className="text-green-400">
+                  {siteConfig.name}
+                </span>
+              </div>
+              <div id="SiteDescription" className="text-sm text-gray-400">
+                Transaction Classifier
+              </div>
             </div>
-            <div id="SiteDescription" className="text-sm text-gray-400">
-              Transaction Classifier
-            </div>
-          </div>
-        </Link>
+          </Link>
+        </div>
+        <div className={`mb-2 mt-6 w-fit ${session?.user ? '' : 'hidden'}`}>
+          <ChangeCompanyButton />
+        </div>
       </div>
-      {/* Display information only show if the user is logged in. */}
-      {session?.user ? (
-        <>
-          <div className="mb-4 mt-6">
-            <ChangeCompanyButton />
-          </div>
-
-          {/* Display user session information: Name and Subscription Status. */}
-          {/* Also contains the Manage Account & Sign Out Buttons. */}
+      <div id="SessionNavBarContent" className="w-full">
+        {/* Display user session information: Name and Subscription Status. */}
+        {/* Also contains the Manage Account & Sign Out Buttons. */}
+        <div className={`${session?.user ? '' : 'hidden'}`}>
           <UserSessionInfo
             name={name}
             statusColor={statusColor}
             userStatus={userStatus}
             stripePortalUrl={stripePortalUrl}
           />
-        </>
-      ) : (
+        </div>
+      </div>
+      {/* Display information only show if the user is logged in. */}
+      {!session?.user && (
         <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:pl-4 lg:pr-12 xl:pr-24">
           <a
             href="#how-it-works"
@@ -119,36 +121,39 @@ const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
   stripePortalUrl,
 }) => {
   return (
-    <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-      <div
-        id="UserName"
-        className="text-center text-white md:mb-0 md:mr-4 md:mt-2 md:text-left lg:mt-1 xl:mt-0">
-        Welcome,
-        <span className="block xl:hidden">{name}</span>
-        <span className="hidden xl:inline"> {name}</span>
-      </div>
-      <div
-        id="UserStatus"
-        className="flex items-center space-x-3 rounded-lg p-3 text-white shadow-md"
-        role="status"
-        aria-live="polite">
-        <div className="flex items-center space-x-1">
-          <span className="text-sm font-medium">Status:</span>
-          <span className={`font-bold ${statusColor} text-lg`}>
-            {userStatus}
-          </span>
+    <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col items-center space-y-4 mb:my-2 mb:w-full mb:flex-row mb:justify-evenly mb:space-y-0 md:justify-start">
+        <div
+          id="UserName"
+          className="text-center text-white mb:mx-4 mb:ml-6 mb:w-48 md:ml-4 md:w-fit md:min-w-28">
+          Welcome,
+          <span className="block xl:hidden">{name}</span>
+          <span className="hidden xl:inline"> {name}</span>
         </div>
-        <DeactivationButton status={userStatus}/>
+        <div
+          id="UserStatus"
+          className="flex items-center space-x-3 rounded-lg py-2 text-white shadow-md mb:pr-2 md:ml-4 md:mr-auto lg:ml-8"
+          role="status"
+          aria-live="polite">
+          <div className="flex items-center space-x-1 md:mr-2">
+            <span className="text-sm font-medium">Status:</span>
+            <span className={`font-bold ${statusColor} text-lg`}>
+              {userStatus}
+            </span>
+          </div>
+          <DeactivationButton status={userStatus} />
+        </div>
       </div>
-
-      <Button asChild id="ManageAccountButton" variant="link">
-        <Link
-          className="!mb-1 bg-gray-700 text-white underline underline-offset-4 hover:bg-gray-500 md:!mb-0 md:!ml-6 lg:!ml-8"
-          href={stripePortalUrl}>
-          <span className="font-bold">Manage Account</span>
-        </Link>
-      </Button>
-      <SignOutButton />
+      <div className="mt-2 flex justify-evenly mb:mt-4 md:mx-4 md:translate-x-2 md:space-x-4 lg:mx-4 lg:-translate-x-8 xl:-translate-x-14">
+        <Button asChild id="ManageAccountButton" variant="link">
+          <Link
+            className="!mb-1 bg-gray-700 text-white hover:bg-gray-500 md:!mb-0"
+            href={stripePortalUrl}>
+            <span className="font-bold">Manage Account</span>
+          </Link>
+        </Button>
+        <SignOutButton />
+      </div>
     </div>
   );
 };
