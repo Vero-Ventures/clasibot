@@ -132,7 +132,7 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
               </Button>
               <Button
                 id="ConfirmSwitchButton"
-                className="w-full max-w-xs rounded-md bg-red-600 px-6 py-2 text-white shadow-md hover:bg-red-700"
+                className="w-full max-w-xs rounded-md bg-red-500 px-6 py-2 text-white shadow-md hover:bg-red-600"
                 onClick={() => deactivateCompany(false)}>
                 Confirm (Sign Out)
               </Button>
