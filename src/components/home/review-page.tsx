@@ -22,6 +22,7 @@ import type {
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
+import ManualClassifyModal from '../halt-elements/manual-classify-modal';
 
 // Takes: A Company Info object and boolean indicating when the Company Info is loaded.
 export default function ReviewPage({
@@ -132,6 +133,13 @@ export default function ReviewPage({
     useState<string>('');
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
+  const [openManualClassificationModal, setOpenManualClassificationModal] = useState<boolean>(false);
+  const [
+    manualClassificationModalMessage,
+    setManualClassificationModalMessage,
+  ] = useState<string>('');
+  const [numCompletedProcesses, setNumCompletedProcesses] = useState<number>(0);
+  const numManualClassificationStates = 9;
 
   // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
   function handleManualClassification() {
@@ -190,33 +198,56 @@ export default function ReviewPage({
     switch (manualClassificationState) {
       case 'Start Classify':
         // Called before beggining the Classification process - Set frontend element to be shown.
+        setManualClassificationModalMessage('1');
+        setOpenManualClassificationModal(true);
         break;
       case 'Synthetic Login':
         // Called before starting the synthetic login process used to access the User Account.
+        setManualClassificationModalMessage('2');
+        setNumCompletedProcesses(1);
         break;
       case 'Get For Review Transactions':
         // Called before getting the 'For Reivew' transactions to be classified.
+        setManualClassificationModalMessage('3');
+        setNumCompletedProcesses(2);
         break;
       case 'Get Saved Transactions':
         // Called before getting the saved and Classified Transactions from QuickBooks for prediction use.
+        setManualClassificationModalMessage('4');
+        setNumCompletedProcesses(3);
         break;
       case 'Classify For Review Transactions':
         // Called before starting the process to create the Transaction Classifications.
+        setManualClassificationModalMessage('5');
+        setNumCompletedProcesses(4);
         break;
       case 'Create New Classified Transactions':
         // Called before using predictions to create Classified 'For Review' transactions.
+        setManualClassificationModalMessage('6');
+        setNumCompletedProcesses(5);
         break;
       case 'Save New Classified Transactions':
         // Called before saving the newly Classified 'For Review' transactions to the database.
+        setManualClassificationModalMessage('7');
+        setNumCompletedProcesses(6);
         break;
       case 'Load New Classified Transactions':
         // Called before loading the newly Classified transactions from the database to be displayed.
+        setManualClassificationModalMessage('8');
+        setNumCompletedProcesses(7);
         break;
       case 'Classify Complete':
         // Completion Case - Handled by modal, hide the frontend element.
+        setManualClassificationModalMessage('9');
+        setNumCompletedProcesses(8);
+
+        setTimeout(() => {
+          setOpenManualClassificationModal(false);
+        }, 1000);
         break;
       case 'Error':
         // Completion Case - Handled by modal, hide the frontend element.
+        setOpenManualClassificationModal(false);
         break;
     }
   }, [manualClassificationState]);
@@ -779,6 +810,9 @@ export default function ReviewPage({
           </div>
         </div>
       </div>
+      {openManualClassificationModal && (
+        <ManualClassifyModal progressMessage={manualClassificationModalMessage} completedChunks={numCompletedProcesses} maxChunks={numManualClassificationStates} />
+      )}
     </>
   );
 }
