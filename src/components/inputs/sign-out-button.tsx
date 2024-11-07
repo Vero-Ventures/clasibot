@@ -7,7 +7,7 @@ const SignOutButton = () => {
     <Button
       id="SignOut"
       variant="link"
-      className="md:!min-w-30 !mb-1 w-36 bg-gray-700 font-bold text-white hover:bg-gray-500 mb:translate-x-3 md:!mb-0 md:translate-x-0"
+      className="mb-1 bg-gray-700 font-bold text-white hover:bg-gray-500 mb:min-w-40 mb:text-lg md:p-6"
       onClick={() => signOut({ callbackUrl: '/' })}>
       Sign Out
     </Button>

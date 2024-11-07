@@ -6,12 +6,12 @@ import { makeCompanyIncactive } from '@/actions/backend-actions/database-functio
 import { Button } from '@/components/ui/button';
 
 interface DeactivationButtonProps {
-  status: string;
+  connectionStatus: { connected: boolean; result: string; message: string };
 }
 
-const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
-  const isInactive = status === 'Inactive';
-
+const DeactivationButton: React.FC<DeactivationButtonProps> = ({
+  connectionStatus,
+}) => {
   // Modal state management
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -42,12 +42,14 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({ status }) => {
   return (
     <>
       {/* Button to open the Deactivate Company modal */}
-      {isInactive && (
+      {!connectionStatus.connected && (
         <button
           id="DeactivateCompanyButton"
-          className="flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 md:ml-8 md:px-6"
+          className="mb-2 flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-red-500 to-red-700 px-4 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 lg:w-full lg:min-w-0"
           onClick={() => setInfoModalOpen(true)}>
-          <span className="text-base font-semibold">Deactivate</span>
+          <span id="ButtonText" className="text-lg font-semibold md:text-2xl">
+            Deactivate Company
+          </span>
         </button>
       )}
 

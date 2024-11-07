@@ -2,7 +2,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 import Image from 'next/image';
-import { checkSubscription } from '@/actions/stripe';
+import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
 import { siteConfig } from '@/site-config/site';
 import logo from '@/public/logo.svg';
 import { Button } from '@/components/ui/button';
@@ -12,35 +12,21 @@ import DeactivationButton from '@/components/site-elements/deactivation-button';
 
 const Navbar = async () => {
   // Check the user's Subscription status.
-  const subscriptionStatus = await checkSubscription();
-
-  // Define values to be used in the user Session info elements.
-  let userStatus;
-  let statusColor;
-
-  // Check if the subsciption status returned an error or if the valid state is false.
-  if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
-    // Set user status to inactive and text color to red.
-    statusColor = 'text-red-400';
-    userStatus = 'Inactive';
-  } else {
-    // Otherwise, set the user status to active.
-    statusColor = 'text-green-400';
-    userStatus = 'Active';
-  }
+  const connectionStatus = await checkCompanyConnection();
 
   // Get get the server session and extract the user name and email.
   const session = await getServerSession(options);
-  const name = session?.user?.name ?? '';
   const userEmail = session?.user?.email ?? '';
 
   // Define the Stripe portal URL using the user's email. Takes user to a profile management page.
   const stripePortalUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
-    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md lg:px-[10%]">
-      <div className="flex flex-col items-center justify-between shadow-md mb:w-full mb:flex-row mb:justify-evenly md:justify-between md:px-12">
-        <div id="GeneralNavBarContent" className="flex items-center space-x-4">
+    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md lg:flex-row lg:px-8 xl:px-24">
+      <div className="mt-2 flex w-full flex-col items-center justify-between shadow-md md:flex-row md:justify-between">
+        <div
+          id="GeneralNavBarContent"
+          className="flex items-center space-x-4 md:mx-8 md:min-w-48 lg:mx-0">
           <Link href="/">
             <Image
               id="LogoImage"
@@ -64,20 +50,20 @@ const Navbar = async () => {
             </div>
           </Link>
         </div>
-        <div className={`mb-2 mt-6 w-fit ${session?.user ? '' : 'hidden'}`}>
-          <ChangeCompanyButton />
+        <div
+          id="SessionNavBarContent"
+          className={`w-full ${session?.user ? '' : 'hidden'} lg:mx-8 xl:mx-12`}>
+          <UserSessionButtons stripePortalUrl={stripePortalUrl} />
         </div>
       </div>
-      <div id="SessionNavBarContent" className="w-full">
-        {/* Display user session information: Name and Subscription Status. */}
-        {/* Also contains the Manage Account & Sign Out Buttons. */}
-        <div className={`${session?.user ? '' : 'hidden'}`}>
-          <UserSessionInfo
-            name={name}
-            statusColor={statusColor}
-            userStatus={userStatus}
-            stripePortalUrl={stripePortalUrl}
-          />
+      <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
+        <div className={`mt-4 w-fit mb:mr-2 ${session?.user ? '' : 'hidden'}`}>
+          <ChangeCompanyButton />
+        </div>
+        <div
+          id="DeactivateCompany"
+          className={`mt-4 w-fit mb:ml-2 ${session?.user ? '' : 'hidden'}`}>
+          <DeactivationButton connectionStatus={connectionStatus} />
         </div>
       </div>
       {/* Display information only show if the user is logged in. */}
@@ -106,50 +92,22 @@ const Navbar = async () => {
 };
 
 // Define interface for data used in the user session info elements.
-interface UserSessionInfoProps {
-  name: string;
-  userStatus: string;
-  statusColor: string;
+interface UserSessionButtonsProps {
   stripePortalUrl: string;
 }
 
-// Takes a name, user status, and Stripe portal URL as arguments.
-const UserSessionInfo: React.FC<UserSessionInfoProps> = ({
-  name,
-  userStatus,
-  statusColor,
+// Takes a name, Company connection status, and Stripe portal URL as arguments.
+const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
   stripePortalUrl,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row">
-      <div className="flex flex-col items-center space-y-4 mb:my-2 mb:w-full mb:flex-row mb:justify-evenly mb:space-y-0 md:justify-start">
-        <div
-          id="UserName"
-          className="text-center text-white mb:mx-4 mb:ml-6 mb:w-48 md:ml-4 md:w-fit md:min-w-28 lg:text-lg xl:text-xl">
-          Welcome,
-          <span className="block xl:hidden">{name}</span>
-          <span className="hidden xl:inline"> {name}</span>
-        </div>
-        <div
-          id="UserStatus"
-          className="flex items-center space-x-3 rounded-lg py-2 text-white shadow-md mb:pr-2 md:ml-4 md:mr-auto lg:ml-8"
-          role="status"
-          aria-live="polite">
-          <div className="flex items-center space-x-1 md:mr-2">
-            <span className="text-sm font-medium">Status:</span>
-            <span className={`font-bold ${statusColor} text-lg`}>
-              {userStatus}
-            </span>
-          </div>
-          <DeactivationButton status={userStatus} />
-        </div>
-      </div>
-      <div className="mt-2 flex justify-evenly mb:mt-4 md:mx-4 md:translate-x-2 md:space-x-4 lg:mx-4 lg:-translate-x-8 xl:-translate-x-14">
+    <div className="mt-4 flex w-full flex-col md:mt-0 md:w-full md:flex-row md:justify-center">
+      <div className="mt-2 flex justify-evenly mb:mt-4 mb:gap-x-8 md:mt-1 md:w-full md:justify-evenly">
         <Button asChild id="ManageAccountButton" variant="link">
           <Link
-            className="!mb-1 bg-gray-700 text-white hover:bg-gray-500 md:!mb-0"
+            className="!mb-1 bg-gray-700 text-white hover:bg-gray-500 mb:max-w-44 md:!mb-0 md:p-6"
             href={stripePortalUrl}>
-            <span className="font-bold">Manage Account</span>
+            <span className="font-bold mb:text-lg">Manage Account</span>
           </Link>
         </Button>
         <SignOutButton />
