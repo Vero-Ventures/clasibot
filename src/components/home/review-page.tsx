@@ -133,7 +133,8 @@ export default function ReviewPage({
     useState<string>('');
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
-  const [openManualClassificationModal, setOpenManualClassificationModal] = useState<boolean>(false);
+  const [openManualClassificationModal, setOpenManualClassificationModal] =
+    useState<boolean>(false);
   const [
     manualClassificationModalMessage,
     setManualClassificationModalMessage,
@@ -208,7 +209,9 @@ export default function ReviewPage({
         break;
       case 'Get For Review Transactions':
         // Called before getting the 'For Reivew' transactions to be classified.
-        setManualClassificationModalMessage('Fetching \'For Review\' transactions...');
+        setManualClassificationModalMessage(
+          "Fetching 'For Review' transactions..."
+        );
         setNumCompletedProcesses(2);
         break;
       case 'Get Saved Transactions':
@@ -220,12 +223,16 @@ export default function ReviewPage({
         break;
       case 'Classify For Review Transactions':
         // Called before starting the process to create the Transaction Classifications.
-        setManualClassificationModalMessage('Evaluating \'For Review\' transactions...');
+        setManualClassificationModalMessage(
+          "Evaluating 'For Review' transactions..."
+        );
         setNumCompletedProcesses(4);
         break;
       case 'Create New Classified Transactions':
         // Called before using predictions to create Classified 'For Review' transactions.
-        setManualClassificationModalMessage('Predicting \'For Review\' transactions...');
+        setManualClassificationModalMessage(
+          "Predicting 'For Review' transactions..."
+        );
         setNumCompletedProcesses(5);
         break;
       case 'Save New Classified Transactions':
@@ -252,14 +259,14 @@ export default function ReviewPage({
           setNumCompletedProcesses(0);
         }, 2000);
         break;
-        case 'Error':
-          // Completion Case - Handled by modal, hide the frontend element.
-          setManualClassificationModalMessage('Error');
-          setNumCompletedProcesses(-1);
-          setTimeout(()=> {
-            setOpenManualClassificationModal(false);
-            setNumCompletedProcesses(0);
-          }, 2000)
+      case 'Error':
+        // Completion Case - Handled by modal, hide the frontend element.
+        setManualClassificationModalMessage('Error');
+        setNumCompletedProcesses(-1);
+        setTimeout(() => {
+          setOpenManualClassificationModal(false);
+          setNumCompletedProcesses(0);
+        }, 2000);
         break;
     }
   }, [manualClassificationState]);
@@ -670,6 +677,15 @@ export default function ReviewPage({
         </div>
       </div>
 
+      {/* Defines the modal to be displayed during the manual Classification process. */}
+      {openManualClassificationModal && (
+        <ManualClassifyModal
+          progressMessage={manualClassificationModalMessage}
+          completedChunks={numCompletedProcesses}
+          maxChunks={numManualClassificationStates}
+        />
+      )}
+
       {/* Defines the modal to be displayed on completion of the manual Classification function call. */}
       <div
         className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
@@ -822,9 +838,6 @@ export default function ReviewPage({
           </div>
         </div>
       </div>
-      {openManualClassificationModal && (
-        <ManualClassifyModal progressMessage={manualClassificationModalMessage} completedChunks={numCompletedProcesses} maxChunks={numManualClassificationStates} />
-      )}
     </>
   );
 }
