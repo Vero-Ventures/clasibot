@@ -638,8 +638,8 @@ export default function ReviewPage({
       {/* Defines the modal to be displayed during the manual Classification process. */}
       {openManualClassificationModal && (
         <ManualClassifyModal
-          progressMessage={manualClassificationModalMessage}
-          completedChunks={numCompletedProcesses}
+          _progressMessage={manualClassificationModalMessage}
+          _completedChunks={numCompletedProcesses}
           maxChunks={numManualClassificationStates}
         />
       )}

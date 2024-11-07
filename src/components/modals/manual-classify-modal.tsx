@@ -4,13 +4,13 @@ import ProgressBar from '@/components/progress-bar';
 
 interface ManualClassifyModalProps {
   _progressMessage: string;
-  completedChunks: number;
+  _completedChunks: number;
   maxChunks: number;
 }
 
 const ManualClassifyModal = ({
   _progressMessage,
-  completedChunks,
+  _completedChunks,
   maxChunks, // Completion state that hide the modal after a brief delay.
 }: ManualClassifyModalProps) => {
   const [testProgressMessage, setTestProgressMessage] =
