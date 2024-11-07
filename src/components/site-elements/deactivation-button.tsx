@@ -55,11 +55,11 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
       {/* Information Modal */}
       {infoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="relative mx-4 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+          <div className="relative mx-4 max-h-[80%] w-full max-w-2xl overflow-auto rounded-2xl bg-white p-6 shadow-2xl">
             <h2
               id="ResultTitle"
-              className="mb-6 text-center text-3xl font-extrabold text-red-600">
+              className="mb-4 text-center text-3xl font-extrabold text-red-600">
               Deactivate Company
             </h2>
             <div className="space-y-4 text-gray-700">
@@ -74,7 +74,7 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
               <p
                 id="InstructionMessage"
-                className="text-center text-lg leading-relaxed">
+                className="overflow-hidden text-center text-lg leading-relaxed">
                 When deactivating your company in Clasibot, it is recommended
                 that you also remove the Clasibot bookkeeper from the company in
                 QuickBooks Online. Clasibot cease accessing your company
@@ -92,16 +92,16 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
                 the connection steps shown when logging in.
               </p>
             </div>
-            <div className="mt-8 flex justify-end space-x-4">
+            <div className="mt-6 flex justify-evenly">
               <Button
                 id="CancelButton"
-                className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+                className="text-md min-w-24 space-x-4 rounded-md bg-gray-200 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-300 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => setInfoModalOpen(false)}>
                 Cancel
               </Button>
               <Button
                 id="ConntinueButton"
-                className="rounded-md bg-red-600 px-4 py-2 text-white shadow-md hover:bg-red-700"
+                className="text-md min-w-24 space-x-4 rounded-md bg-red-600 px-4 py-2 font-semibold text-white shadow-md hover:bg-red-700 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={openConfirmationModal}>
                 Continue
               </Button>
@@ -112,37 +112,41 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
       {/* Confirmation Modal */}
       {confirmModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
           <div className="relative mx-4 w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
             <h2
               id="ResultTitle"
-              className="mb-6 text-center text-3xl font-extrabold text-red-600">
+              className="mb-4 text-center text-3xl font-extrabold text-red-600">
               Confirm Deactivation
             </h2>
             <p
               id="ResultMessage"
-              className="mb-8 text-center text-lg text-gray-700">
-              Are you sure you want to deactivate the connection to this
-              company?
+              className="mb-6 text-center text-lg font-semibold text-gray-700">
+              Are you sure you want to deactivate&nbsp;
+              <span className="inline-block">
+                the connection to this company?
+              </span>
             </p>
-            <div className="flex flex-row flex-wrap justify-center gap-4">
+            <div className="flex flex-col flex-wrap justify-center gap-4">
+              <div className="mx-auto mb-4 flex w-fit flex-col gap-4 mb:w-full mb:flex-row mb:justify-evenly mb:gap-6">
+                <Button
+                  id="ConfirmSwitchButton"
+                  className="text-md flex h-fit w-44 flex-col text-wrap rounded-md bg-red-600 px-8 py-2 font-semibold text-white shadow-md hover:bg-red-700"
+                  onClick={() => deactivateCompany(false)}>
+                  Confirm <span className="inline-block">(Sign Out)</span>
+                </Button>
+                <Button
+                  id="ConfirmLogOutButton"
+                  className="text-md flex h-fit w-44 flex-col text-wrap rounded-md bg-red-600 px-4 py-2 font-semibold text-white shadow-md hover:bg-red-700"
+                  onClick={() => deactivateCompany(true)}>
+                  Confirm <span className="inline-block">(Switch Company)</span>
+                </Button>
+              </div>
               <Button
                 id="CancelButton"
-                className="w-full max-w-xs rounded-md bg-gray-200 px-6 py-2 text-gray-700 hover:bg-gray-300"
+                className="text-md mx-auto w-full max-w-36 rounded-md bg-gray-200 px-6 py-2 font-semibold text-gray-700 hover:bg-gray-300 mb:max-w-48"
                 onClick={() => setConfirmModalOpen(false)}>
                 Cancel
-              </Button>
-              <Button
-                id="ConfirmSwitchButton"
-                className="w-full max-w-xs rounded-md bg-red-500 px-6 py-2 text-white shadow-md hover:bg-red-600"
-                onClick={() => deactivateCompany(false)}>
-                Confirm (Sign Out)
-              </Button>
-              <Button
-                id="ConfirmLogOutButton"
-                className="w-full max-w-xs rounded-md bg-red-600 px-6 py-2 text-white shadow-md hover:bg-red-700"
-                onClick={() => deactivateCompany(true)}>
-                Confirm (Switch Company)
               </Button>
             </div>
           </div>
