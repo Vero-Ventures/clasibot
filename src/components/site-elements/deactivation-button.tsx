@@ -15,7 +15,7 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   // Modal state trackers.
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(true);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
 
   // Define function to switch from info to confirmation modal.
   function openConfirmationModal() {
