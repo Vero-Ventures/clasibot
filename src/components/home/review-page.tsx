@@ -12,6 +12,7 @@ import { removeForReviewTransactions } from '@/actions/db-review-transactions/re
 import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { ReviewTable } from '@/components/data-table/review-table';
+import ManualClassifyModal from '@/components/modals/manual-classify-modal';
 import { Button } from '@/components/ui/button';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
@@ -21,7 +22,6 @@ import type {
   ClassifiedForReviewTransaction,
 } from '@/types/ForReviewTransaction';
 import type { Transaction } from '@/types/Transaction';
-import ManualClassifyModal from '../halt-elements/manual-classify-modal';
 
 // Takes: A Company Info object and boolean indicating when the Company Info is loaded.
 export default function ReviewPage({
@@ -94,7 +94,7 @@ export default function ReviewPage({
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
   const [openManualClassificationModal, setOpenManualClassificationModal] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [
     manualClassificationModalMessage,
     setManualClassificationModalMessage,
@@ -157,70 +157,68 @@ export default function ReviewPage({
     // Use switch case to define behavior based on the state string.
     // States are always set prior to the related action being started.
     switch (manualClassificationState) {
+      // State handlers define when to show and hide the manual Classification state modal.
+      // Also defines what is currently being done in the manual Classification and the number of completed steps.
       case 'Start Classify':
-        // Called before beggining the Classification process - Set frontend element to be shown.
-        setManualClassificationModalMessage('Starting classification...');
+        // Defines the start of the process and shows the state tracker modal.
+        setManualClassificationModalMessage(
+          'Starting classification process...'
+        );
         setOpenManualClassificationModal(true);
         break;
       case 'Synthetic Login':
-        // Called before starting the synthetic login process used to access the User Account.
-        setManualClassificationModalMessage('Clasibot logging in...');
+        setManualClassificationModalMessage(
+          'Clasibot bookkeeper logging in...'
+        );
         setNumCompletedProcesses(1);
         break;
       case 'Get For Review Transactions':
-        // Called before getting the 'For Reivew' transactions to be classified.
         setManualClassificationModalMessage(
-          "Fetching 'For Review' transactions..."
+          'Fetching new transactions for review...'
         );
         setNumCompletedProcesses(2);
         break;
       case 'Get Saved Transactions':
-        // Called before getting the saved and Classified Transactions from QuickBooks for prediction use.
         setManualClassificationModalMessage(
-          'Fetching previously classified transactions...'
+          'Checking previously classified transactions...'
         );
         setNumCompletedProcesses(3);
         break;
       case 'Classify For Review Transactions':
-        // Called before starting the process to create the Transaction Classifications.
         setManualClassificationModalMessage(
-          "Evaluating 'For Review' transactions..."
+          'Classifying the new transactions...'
         );
         setNumCompletedProcesses(4);
         break;
       case 'Create New Classified Transactions':
-        // Called before using predictions to create Classified 'For Review' transactions.
         setManualClassificationModalMessage(
-          "Predicting 'For Review' transactions..."
+          'Creating the new classified transactions...'
         );
         setNumCompletedProcesses(5);
         break;
       case 'Save New Classified Transactions':
-        // Called before saving the newly Classified 'For Review' transactions to the database.
         setManualClassificationModalMessage(
-          'Saving the newly classified transactions...'
+          'Saving your newly classified transactions...'
         );
         setNumCompletedProcesses(6);
         break;
       case 'Load New Classified Transactions':
-        // Called before loading the newly Classified transactions from the database to be displayed.
         setManualClassificationModalMessage(
-          'Loading the newly classified transactions...'
+          'Loading your transaction review table...'
         );
         setNumCompletedProcesses(7);
         break;
       case 'Classify Complete':
-        // Completion Case - Handled by modal, hide the frontend element.
+        // Completion state that hide the modal after a brief delay.
         setManualClassificationModalMessage('Classification Complete!');
         setNumCompletedProcesses(8);
-
         setTimeout(() => {
           setOpenManualClassificationModal(false);
           setNumCompletedProcesses(0);
         }, 2000);
         break;
       case 'Error':
-        // Completion Case - Handled by modal, hide the frontend element.
+        // Error state that hide the modal after a brief delay.
         setManualClassificationModalMessage('Error');
         setNumCompletedProcesses(-1);
         setTimeout(() => {
