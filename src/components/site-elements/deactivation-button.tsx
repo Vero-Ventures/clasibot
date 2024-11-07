@@ -12,18 +12,18 @@ interface DeactivationButtonProps {
 const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   connectionStatus,
 }) => {
-  // Modal state management
+  // Modal state trackers.
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(true);
 
-  // Open confirmation modal
+  // Define function to switch from info to confirmation modal.
   function openConfirmationModal() {
     setInfoModalOpen(false);
     setConfirmModalOpen(true);
   }
 
-  // Deactivate company function
+  // Deactivate database Company object handler.
   async function deactivateCompany(switchCompany: boolean) {
     const deactivationResult = await makeCompanyIncactive();
 
