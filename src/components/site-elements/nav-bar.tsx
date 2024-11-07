@@ -96,7 +96,7 @@ interface UserSessionButtonsProps {
   stripePortalUrl: string;
 }
 
-// Takes a name, Company connection status, and Stripe portal URL as arguments.
+// Takes the Stripe portal URL.
 const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
   stripePortalUrl,
 }) => {
