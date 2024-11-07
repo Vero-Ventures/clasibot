@@ -94,7 +94,7 @@ export default function ReviewPage({
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
   const [openManualClassificationModal, setOpenManualClassificationModal] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const [
     manualClassificationModalMessage,
     setManualClassificationModalMessage,
@@ -161,50 +161,46 @@ export default function ReviewPage({
       // Also defines what is currently being done in the manual Classification and the number of completed steps.
       case 'Start Classify':
         // Defines the start of the process and shows the state tracker modal.
-        setManualClassificationModalMessage(
-          'Starting classification process...'
-        );
+        setManualClassificationModalMessage('Starting classification process.');
         setOpenManualClassificationModal(true);
         break;
       case 'Synthetic Login':
-        setManualClassificationModalMessage(
-          'Clasibot bookkeeper logging in...'
-        );
+        setManualClassificationModalMessage('Clasibot bookkeeper logging in.');
         setNumCompletedProcesses(1);
         break;
       case 'Get For Review Transactions':
         setManualClassificationModalMessage(
-          'Fetching new transactions for review...'
+          'Fetching new transactions for review.'
         );
         setNumCompletedProcesses(2);
         break;
       case 'Get Saved Transactions':
         setManualClassificationModalMessage(
-          'Checking previously classified transactions...'
+          'Checking previously classified transactions.'
         );
         setNumCompletedProcesses(3);
         break;
       case 'Classify For Review Transactions':
         setManualClassificationModalMessage(
-          'Classifying the new transactions...'
+          'Classifying the new transactions.'
         );
         setNumCompletedProcesses(4);
         break;
       case 'Create New Classified Transactions':
         setManualClassificationModalMessage(
-          'Creating the new classified transactions...'
+          'Creating the new classified transactions.'
         );
         setNumCompletedProcesses(5);
         break;
       case 'Save New Classified Transactions':
         setManualClassificationModalMessage(
-          'Saving your newly classified transactions...'
+          'Saving your newly classified transactions.'
         );
         setNumCompletedProcesses(6);
         break;
       case 'Load New Classified Transactions':
         setManualClassificationModalMessage(
-          'Loading your transaction review table...'
+          'Loading your transaction review table.'
         );
         setNumCompletedProcesses(7);
         break;
@@ -219,7 +215,7 @@ export default function ReviewPage({
         break;
       case 'Error':
         // Error state that hide the modal after a brief delay.
-        setManualClassificationModalMessage('Error');
+        setManualClassificationModalMessage('An Unexpected Error Occured');
         setNumCompletedProcesses(-1);
         setTimeout(() => {
           setOpenManualClassificationModal(false);
@@ -638,8 +634,8 @@ export default function ReviewPage({
       {/* Defines the modal to be displayed during the manual Classification process. */}
       {openManualClassificationModal && (
         <ManualClassifyModal
-          _progressMessage={manualClassificationModalMessage}
-          _completedChunks={numCompletedProcesses}
+          progressMessage={manualClassificationModalMessage}
+          completedChunks={numCompletedProcesses}
           maxChunks={numManualClassificationStates}
         />
       )}
