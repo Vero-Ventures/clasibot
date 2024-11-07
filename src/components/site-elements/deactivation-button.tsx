@@ -15,7 +15,7 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   // Modal state management
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(true);
 
   // Open confirmation modal
   function openConfirmationModal() {
@@ -156,21 +156,22 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
       {/* Error Modal */}
       {errorModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+          <div className="relative mx-4 w-full max-w-96 rounded-2xl bg-white p-4 shadow-2xl">
             <h2
               id="ErrorTitle"
-              className="mb-6 text-center text-3xl font-extrabold text-red-600">
+              className="mb-4 text-center text-3xl font-extrabold text-red-600">
               Error
             </h2>
             <p
               id="ErrorMessage"
-              className="mb-8 text-center text-lg text-gray-700">
-              An error occurred while updating the company connection status.
+              className="mb-4 text-center text-lg font-semibold text-gray-700">
+              An error occurred while updating&nbsp;
+              <span className="block">the company connection status.</span>
             </p>
-            <div className="flex justify-end">
+            <div className="flex justify-center">
               <Button
                 id="CloseButton"
-                className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+                className="rounded-md bg-gray-200 px-12 py-2 text-lg font-semibold text-gray-700 hover:bg-gray-300"
                 onClick={() => setErrorModalOpen(false)}>
                 Close
               </Button>
