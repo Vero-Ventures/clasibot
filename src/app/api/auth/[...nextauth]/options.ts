@@ -10,7 +10,6 @@ import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { createDatabaseCompany } from '@/actions/user-company/index';
 import { createCustomer } from '@/actions/stripe';
 
 // Export the config options to work with Next Auth.
@@ -170,12 +169,17 @@ export const options: NextAuthOptions = {
               .returning();
 
             // Create a Company object that is assosaited with the new User.
-            const companyData = await createDatabaseCompany(
-              newUser[0].id,
-              companyId
-            );
+            const newCompany = {
+              realmId: companyId,
+              userId: newUser[0].id,
+              name: 'unset',
+              industry: '',
+              bookkeeperConnected: false,
+              firmName: null,
+            };
+
             // Insert the newly created Company object into the database.
-            await db.insert(Company).values(JSON.parse(companyData));
+            await db.insert(Company).values(newCompany);
 
             // Create a blank Subscription in the database for the new User object.
             const newSubscription = await db
@@ -221,12 +225,17 @@ export const options: NextAuthOptions = {
           if (!companies.some((company) => company.realmId === companyId)) {
             // If there is no assosaited database User object for the current Company realm Id -
             // Create a new Company object that is assosaited with the new User.
-            const companyData = await createDatabaseCompany(
-              userData[0].id,
-              companyId
-            );
+            const newCompany = {
+              realmId: companyId,
+              userId: userData[0].id,
+              name: 'unset',
+              industry: '',
+              bookkeeperConnected: false,
+              firmName: null,
+            };
+
             // Insert the newly created Company object into the database.
-            await db.insert(Company).values(JSON.parse(companyData));
+            await db.insert(Company).values(newCompany);
           }
         }
       } catch (error) {

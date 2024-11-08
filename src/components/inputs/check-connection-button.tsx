@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MiniSpinner } from '@/components/loading/index';
-import { checkCompanyConnection } from '@/actions/user-company/index';
+import { checkCompanyConnection } from '@/actions/check-db-company';
 
 export const CheckConnectionButton = () => {
   const [checkingForSBK, setCheckingForSBK] = useState(false);

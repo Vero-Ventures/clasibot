@@ -2,7 +2,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 import Image from 'next/image';
-import { checkCompanyConnection } from '@/actions/user-company/index';
+import { checkCompanyConnection } from '@/actions/check-db-company';
 import { siteConfig } from '@/site-config/site';
 import logo from '@/public/logo.svg';
 import { Button } from '@/components/ui/button';

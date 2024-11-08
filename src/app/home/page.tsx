@@ -1,5 +1,5 @@
 import { checkSubscription } from '@/actions/stripe';
-import { checkCompanyConnection } from '@/actions/user-company/index';
+import { checkCompanyConnection } from '@/actions/check-db-company';
 import { SBKConfirmationModal } from '@/components/modals/index';
 import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
 import HomePage from '@/components/home';
