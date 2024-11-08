@@ -12,7 +12,7 @@ import {
   DeactivationButton,
 } from '@/components/inputs/index';
 
-export const Navbar = async () => {
+export async function Navbar() {
   // Check the user's Subscription status.
   const connectionStatus = await checkCompanyConnection();
 
@@ -91,7 +91,7 @@ export const Navbar = async () => {
       )}
     </nav>
   );
-};
+}
 
 // Define interface for data used in the user session info elements.
 interface UserSessionButtonsProps {

@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 import {
   checkBackendClassifyErrorStatus,
