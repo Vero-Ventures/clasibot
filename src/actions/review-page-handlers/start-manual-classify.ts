@@ -1,6 +1,6 @@
 'use server';
-import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
-import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
+import { manualClassify } from '@/actions/backend-actions/classification/index';
+import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,

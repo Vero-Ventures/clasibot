@@ -10,8 +10,8 @@ import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { createDatabaseCompany } from '@/actions/user-company/index';
 import { createCustomer } from '@/actions/stripe';
-import createDatabaseCompany from '@/actions/user-company/create-company';
 
 // Export the config options to work with Next Auth.
 export const config = {

@@ -5,7 +5,7 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
-import { classifyCompany } from './classify-company';
+import { classifyCompany } from './index';
 
 // Runs backend Classification on the 'For Review' transactions for the current Company.
 // Takes: A callback function to update the state on frontend.

@@ -1,6 +1,6 @@
 'use server';
+import { checkFaultProperty, createQueryResult } from './index';
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
-import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { TaxCodes, LocationsToTaxCodes } from '@/enums/taxes';
 import type { Locations } from '@/enums/taxes';
 import type { ErrorResponse, TaxCode, LoginTokens } from '@/types/index';

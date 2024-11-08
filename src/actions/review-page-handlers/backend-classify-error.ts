@@ -2,7 +2,7 @@
 import {
   checkBackendClassifyError,
   dismissBackendClassifyError,
-} from '@/actions/backend-actions/database-functions/backend-classify-failure';
+} from '@/actions/backend-actions/database-functions/index';
 
 // Checks if the user has a backend Classification error logged in the database and updates the related frontend UI element states.
 // Takes: State update methods for if a backend Classification error was found and for showing the related UI element.

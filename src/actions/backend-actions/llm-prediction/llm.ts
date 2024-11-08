@@ -2,8 +2,7 @@
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
-import { fetchCustomSearch } from './custom-search';
-import { fetchKnowledgeGraph } from './knowledge-graph';
+import { fetchCustomSearch, fetchKnowledgeGraph } from './index';
 import type {
   Classification,
   ClassifiedElement,

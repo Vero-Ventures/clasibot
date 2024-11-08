@@ -7,9 +7,12 @@ import {
   searchDatabaseTransactionTaxCodes,
 } from '@/actions/db-transactions';
 import { checkSubscription } from '@/actions/stripe';
-import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/llm';
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
+import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/index';
+import {
+  getAccounts,
+  getTaxCodes,
+  getTaxCodesByLocation,
+} from '@/actions/quickbooks/index';
 import type {
   Account,
   Classification,

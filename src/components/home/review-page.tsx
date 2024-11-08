@@ -1,18 +1,16 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db-for-review';
+import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 import {
   checkBackendClassifyErrorStatus,
   dismissBackendClassifyErrorStatus,
-} from '@/actions/review-page-handlers/backend-classify-error';
-import { getNextReviewDate } from '@/actions/review-page-handlers/next-review-date';
-import { initalizeLoadedTransactions } from '@/actions/review-page-handlers/initalize-transactions';
-import { saveSelectedTransactions } from '@/actions/review-page-handlers/save-transactions';
-import {
+  getNextReviewDate,
+  initalizeLoadedTransactions,
+  saveSelectedTransactions,
   startManualClassification,
   changeManualClassificationState,
-} from '@/actions/review-page-handlers/start-manual-classify';
+} from '@/actions/review-page-handlers/index';
 
 import { ReviewTable } from '@/components/data-table/review-table';
 import {

@@ -1,5 +1,5 @@
 'use server';
-import { checkFaultProperty, createQueryResult } from './query-helpers';
+import { checkFaultProperty, createQueryResult } from './index';
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import type { Account, ErrorResponse, LoginTokens } from '@/types/index';
 

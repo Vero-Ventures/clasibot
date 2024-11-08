@@ -5,7 +5,7 @@ import {
   getCompanyName,
   getCompanyIndustry,
   getCompanyLocation,
-} from '@/actions/quickbooks/user-info';
+} from '@/actions/quickbooks/index';
 import { Locations } from '@/enums/taxes';
 import type { CompanyInfo } from '@/types/index';
 

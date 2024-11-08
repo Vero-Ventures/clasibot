@@ -1,14 +1,14 @@
 'use server';
-import { getForReview } from '@/actions/backend-actions/get-for-review';
-import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/add-db-for-review';
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
+import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
 import {
+  getAccounts,
+  getForReview,
+  getSavedTransactions,
   getCompanyIndustry,
   getCompanyLocation,
   getCompanyName,
-} from '@/actions/quickbooks/user-info';
-import { classifyTransactions } from './classify';
+} from '@/actions/quickbooks/index';
+import { classifyTransactions } from './index';
 import type {
   Account,
   ClassifiedElement,

@@ -2,7 +2,7 @@
 
 // Takes: A database User object Id as well as the related Company realm Id.
 // Returns: A stringified object that can be used to create a database Company object.
-export default async function createDatabaseCompany(
+export async function createDatabaseCompany(
   userId: string,
   realmId: string
 ): Promise<string> {

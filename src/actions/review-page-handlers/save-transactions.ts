@@ -1,8 +1,7 @@
 'use server';
 import { addDatabaseTransactions } from '@/actions/db-transactions';
-import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
-import { addForReview } from '@/actions/quickbooks/add-for-review';
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
+import { removeForReviewTransactions } from '@/actions/db-review-transactions/index';
+import { addForReview, getAccounts } from '@/actions/quickbooks/index';
 import type {
   Account,
   ClassifiedElement,

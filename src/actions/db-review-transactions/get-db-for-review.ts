@@ -10,8 +10,7 @@ import {
   TaxCode as DatabaseTaxCode,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { getTaxCodes } from '@/actions/quickbooks/taxes';
+import { getAccounts, getTaxCodes } from '@/actions/quickbooks/index';
 import type {
   Account,
   ClassifiedElement,
