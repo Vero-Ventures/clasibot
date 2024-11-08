@@ -3,13 +3,13 @@ import { addDatabaseTransactions } from '@/actions/db-transactions';
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/remove-db-for-review';
 import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import type { Account } from '@/types/Account';
-import type { ClassifiedElement } from '@/types/Classification';
 import type {
+  Account,
+  ClassifiedElement,
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { Transaction } from '@/types/Transaction';
+  Transaction,
+} from '@/types/index';
 
 // Preforms the nessasary steps to save selected Classified 'For Review' transactions.
 // Determines the Classifications for each 'For Review' transaction based on the selection values from the table,

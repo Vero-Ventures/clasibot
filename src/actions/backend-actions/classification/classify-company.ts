@@ -9,17 +9,17 @@ import {
   getCompanyName,
 } from '@/actions/quickbooks/user-info';
 import { classifyTransactions } from './classify';
-import type { Account } from '@/types/Account';
-import type { ClassifiedElement } from '@/types/Classification';
-import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
+  Account,
+  ClassifiedElement,
+  CompanyInfo,
   ForReviewTransaction,
   FormattedForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { LoginTokens } from '@/types/LoginTokens';
-import type { QueryResult } from '@/types/QueryResult';
-import type { Transaction } from '@/types/Transaction';
+  LoginTokens,
+  QueryResult,
+  Transaction,
+} from '@/types/index';
 
 // Classifies and saves the 'For Review' transactions for a specific Company.
 // Takes: A set of synthetic Login Tokens and the realm Id of the Company.

@@ -4,7 +4,7 @@ import { getDatabaseTransactions } from '@/actions/db-review-transactions/get-db
 import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+} from '@/types/index';
 
 // Starts the manual Classification process and tracks the progress for frontend.
 // Takes: State update methods to update frontend on the Classification process.

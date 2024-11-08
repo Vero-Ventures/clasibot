@@ -10,17 +10,17 @@ import { checkSubscription } from '@/actions/stripe';
 import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/llm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getTaxCodes, getTaxCodesByLocation } from '@/actions/quickbooks/taxes';
-import type { Account } from '@/types/Account';
 import type {
+  Account,
   Classification,
   ClassifiedElement,
   ClassifiedResult,
-} from '@/types/Classification';
-import type { CompanyInfo } from '@/types/CompanyInfo';
-import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
-import type { LoginTokens } from '@/types/LoginTokens';
-import type { TaxCode } from '@/types/TaxCode';
-import type { Transaction } from '@/types/Transaction';
+  CompanyInfo,
+  FormattedForReviewTransaction,
+  LoginTokens,
+  TaxCode,
+  Transaction,
+} from '@/types/index';
 
 // Takes: A list of saved Classified Transactions, a list of unclassified 'For Review' transactions, -
 //        A synthetic Login Token object, and the Company Info for use in LLM Classification.

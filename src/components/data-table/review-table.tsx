@@ -31,7 +31,7 @@ import { reviewColumns } from './columns';
 import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+} from '@/types/index';
 
 /**
  * Takes (Variables):

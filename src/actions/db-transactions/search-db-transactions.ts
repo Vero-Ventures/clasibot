@@ -8,7 +8,7 @@ import {
   TransactionsToTaxCodes,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { Classification } from '@/types/Classification';
+import type { Classification } from '@/types/index';
 
 // Search the database for potential Categories that match a passed Transaction name.
 // Takes: The name of the Transaction and the valid Categories for Classification.

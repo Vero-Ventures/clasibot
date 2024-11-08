@@ -8,10 +8,9 @@ import type {
   Classification,
   ClassifiedElement,
   ClassifiedResult,
-} from '@/types/Classification';
-import type { CompanyInfo } from '@/types/CompanyInfo';
-import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
-
+  CompanyInfo,
+  FormattedForReviewTransaction,
+} from '@/types/index';
 // Define the AI provider and model to use.
 const provider = process.env.AI_PROVIDER;
 

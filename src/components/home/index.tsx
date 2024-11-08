@@ -7,7 +7,7 @@ import {
   getCompanyLocation,
 } from '@/actions/quickbooks/user-info';
 import { Locations } from '@/enums/taxes';
-import type { CompanyInfo } from '@/types/CompanyInfo';
+import type { CompanyInfo } from '@/types/index';
 
 export default function HomePage() {
   // Create states to track and set the Company Info that is passed to the Review Page.

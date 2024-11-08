@@ -12,14 +12,14 @@ import {
 import { eq } from 'drizzle-orm';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { getTaxCodes } from '@/actions/quickbooks/taxes';
-import type { Account } from '@/types/Account';
-import type { ClassifiedElement } from '@/types/Classification';
 import type {
+  Account,
+  ClassifiedElement,
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { QueryResult } from '@/types/QueryResult';
-import type { TaxCode } from '@/types/TaxCode';
+  QueryResult,
+  TaxCode,
+} from '@/types/index';
 
 // Gets the 'For Review' transactions saved to the database for the current User.
 // Returns: An array of Sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]

@@ -3,9 +3,7 @@ import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { TaxCodes, LocationsToTaxCodes } from '@/enums/taxes';
 import type { Locations } from '@/enums/taxes';
-import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { TaxCode } from '@/types/TaxCode';
-import type { LoginTokens } from '@/types/LoginTokens';
+import type { ErrorResponse, TaxCode, LoginTokens } from '@/types/index';
 
 // Get all valid Canadian Tax Codes for a User location.
 // Takes: An optional set of Login Tokens and a Company realm Id.

@@ -24,11 +24,11 @@ import {
   SaveClassifiedTransactionsModal,
 } from '@/components/modals/transaction-modals';
 
-import type { CompanyInfo } from '@/types/CompanyInfo';
 import type {
+  CompanyInfo,
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+} from '@/types/index';
 
 // Takes: A Company Info object and boolean indicating when the Company Info is loaded.
 export default function ReviewPage({

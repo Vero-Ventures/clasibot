@@ -1,7 +1,7 @@
 'use server';
 import { checkFaultProperty } from './query-helpers';
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
-import type { LoginTokens } from '@/types/LoginTokens';
+import type { LoginTokens } from '@/types/index';
 
 // Get the Company name from the QuickBooks API.
 // Takes: May take synthetic Login Tokens and the Company realm Id.

@@ -2,9 +2,9 @@
 import type {
   ForReviewTransaction,
   FormattedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { LoginTokens } from '@/types/LoginTokens';
-import type { QueryResult } from '@/types/QueryResult';
+  LoginTokens,
+  QueryResult,
+} from '@/types/index';
 
 // Checks a specific Account of the User for 'For Review' transactions, formats and returns them.
 // Takes: The Id of Account to check, a set of synthetic Login Tokens, and the Company realm Id.

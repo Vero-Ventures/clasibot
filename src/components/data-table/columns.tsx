@@ -4,11 +4,12 @@ import type { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
 import { ConfidenceBar } from '@/components/confidence-bar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { Classification, ClassifiedElement } from '@/types/Classification';
 import type {
+  Classification,
+  ClassifiedElement,
   FormattedForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+} from '@/types/index';
 
 // Define button format for a sortable Column header.
 const sortableHeader = (

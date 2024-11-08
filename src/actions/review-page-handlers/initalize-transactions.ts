@@ -1,9 +1,9 @@
 'use server';
-import type { ClassifiedElement } from '@/types/Classification';
 import type {
+  ClassifiedElement,
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+} from '@/types/index';
 
 // Takes a set of loaded 'For Review' transactions either from inital page load or finishing manual Classification.
 // Initalizes the inital selected Category and Tax Code for each 'For Review' transaction.

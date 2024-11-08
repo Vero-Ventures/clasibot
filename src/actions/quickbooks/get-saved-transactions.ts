@@ -4,12 +4,14 @@ import { findFormattedPurchase } from './find-purchase';
 import { checkFaultProperty, createQueryResult } from './query-helpers';
 import { getTaxCodes } from './taxes';
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
-import type { Account } from '@/types/Account';
-import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { LoginTokens } from '@/types/LoginTokens';
-import type { QueryResult } from '@/types/QueryResult';
-import type { TaxCode } from '@/types/TaxCode';
-import type { Transaction } from '@/types/Transaction';
+import type {
+  Account,
+  ErrorResponse,
+  LoginTokens,
+  QueryResult,
+  TaxCode,
+  Transaction,
+} from '@/types/index';
 
 // Get all past saved Transaction from the QuickBooks API.
 // Takes: Optional values for a start date, end date, synthetic Login Tokens and Company realm Id.
