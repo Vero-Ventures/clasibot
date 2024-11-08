@@ -1,5 +1,4 @@
-// MiniSpinner.tsx
-
+'use client';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
