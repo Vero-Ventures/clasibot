@@ -1,6 +1,6 @@
 import { checkSubscription } from '@/actions/stripe';
 import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
-import SBKConfirmationModal from '@/components/halt-elements/sbk-confirmation-modal';
+import SBKConfirmationModal from '@/components/modals/sbk-confirmation-modal';
 import SubscriptionPurchase from '@/components/halt-elements/subscription-purchase';
 import HomePage from '@/components/home';
 
