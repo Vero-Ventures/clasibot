@@ -7,13 +7,13 @@ import {
   DeactivateInfoModal,
   DeactivateConfirmModal,
   DeactivateErrorModal,
-} from '../modals/deactivate-company-modals';
+} from '@/components/modals/index';
 
 interface DeactivationButtonProps {
   connectionStatus: { connected: boolean; result: string; message: string };
 }
 
-const DeactivationButton: React.FC<DeactivationButtonProps> = ({
+export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   connectionStatus,
 }) => {
   // Modal state trackers.
@@ -82,5 +82,3 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
     </>
   );
 };
-
-export default DeactivationButton;

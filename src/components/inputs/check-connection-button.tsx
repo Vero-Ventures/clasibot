@@ -1,10 +1,10 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import MiniSpinner from '../mini-spinner';
+import { MiniSpinner } from '@/components/loading/index';
 import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
 
-const CheckConnectionButton = () => {
+export const CheckConnectionButton = () => {
   const [checkingForSBK, setCheckingForSBK] = useState(false);
   const [sbkExists, setSbkExists] = useState<boolean | null>(null);
   const [displayFailMessage, setDisplayFailMessage] = useState<boolean>(false);
@@ -53,5 +53,3 @@ const CheckConnectionButton = () => {
     </>
   );
 };
-
-export default CheckConnectionButton;

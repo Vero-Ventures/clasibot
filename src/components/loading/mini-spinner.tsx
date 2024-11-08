@@ -7,7 +7,7 @@ interface MiniSpinnerProps {
   sbkExists: boolean | null;
 }
 
-const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
+export const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
   const [animationState, setAnimationState] = useState('loading'); // 'loading' | 'success'
 
   useEffect(() => {
@@ -62,5 +62,3 @@ const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
     </div>
   );
 };
-
-export default MiniSpinner;

@@ -1,7 +1,7 @@
 'use client'; // Mark as client-side component
 
 import React from 'react';
-import SignInButton from '@/components/inputs/sign-in-button';
+import { SignInButton } from '@/components/inputs/index';
 import quickbooks from './quickbooks.jpg';
 
 export const WhyClasibot = () => {

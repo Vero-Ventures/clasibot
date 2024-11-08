@@ -18,11 +18,9 @@ import { ReviewTable } from '@/components/data-table/review-table';
 import {
   ManualClassifyProgessModal,
   ManualClassifyCompleteModal,
-} from '@/components/modals/manual-classify-modals';
-import {
   ErrorLoadingTransactionsModal,
   SaveClassifiedTransactionsModal,
-} from '@/components/modals/transaction-modals';
+} from '@/components/modals/index';
 
 import type {
   CompanyInfo,

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import welcomeBackground from './welcome_background_1.jpg';
-import SignInButton from '@/components/inputs/sign-in-button';
+import { SignInButton } from '@/components/inputs/index';
 
 export const Welcome = () => {
   return (

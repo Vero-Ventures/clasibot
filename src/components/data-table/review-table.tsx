@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
-import { DatePicker } from '@/components/inputs/date-picker';
+import { DatePicker } from '@/components/inputs/index';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

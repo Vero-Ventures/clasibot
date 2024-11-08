@@ -1,4 +1,4 @@
-import PricingTable from '@/components/site-elements/pricing-table';
+import { PricingTable } from '@/components/site-elements/index';
 
 export default async function SubscriptionPurchase() {
   let publicKey = '';

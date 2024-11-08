@@ -8,7 +8,7 @@ interface DeactivateInfoProps {
   switchToInfoModal: () => void;
 }
 
-const DeactivateInfoModal: React.FC<DeactivateInfoProps> = ({
+export const DeactivateInfoModal: React.FC<DeactivateInfoProps> = ({
   displayState,
   setDisplayState,
   switchToInfoModal,
@@ -80,7 +80,7 @@ interface DeactivateConfirmProps {
   deactivateCompany: (switchCompany: boolean) => void;
 }
 
-const DeactivateConfirmModal: React.FC<DeactivateConfirmProps> = ({
+export const DeactivateConfirmModal: React.FC<DeactivateConfirmProps> = ({
   displayState,
   setDisplayState,
   deactivateCompany,
@@ -137,7 +137,7 @@ interface DeactivateErrorProps {
   setDisplayState: (displayState: boolean) => void;
 }
 
-const DeactivateErrorModal: React.FC<DeactivateErrorProps> = ({
+export const DeactivateErrorModal: React.FC<DeactivateErrorProps> = ({
   displayState,
   setDisplayState,
 }) => {
@@ -171,5 +171,3 @@ const DeactivateErrorModal: React.FC<DeactivateErrorProps> = ({
     </>
   );
 };
-
-export { DeactivateInfoModal, DeactivateConfirmModal, DeactivateErrorModal };

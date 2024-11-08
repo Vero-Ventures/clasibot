@@ -6,7 +6,7 @@ interface ErrorLoadingTransactionsProps {
   setDisplayState: (newState: boolean) => void;
 }
 
-const ErrorLoadingTransactionsModal: React.FC<
+export const ErrorLoadingTransactionsModal: React.FC<
   ErrorLoadingTransactionsProps
 > = ({ displayState, setDisplayState }: ErrorLoadingTransactionsProps) => {
   return (
@@ -50,7 +50,7 @@ interface SaveClassifiedTransactionsProps {
   errorMessage: string;
 }
 
-const SaveClassifiedTransactionsModal: React.FC<
+export const SaveClassifiedTransactionsModal: React.FC<
   SaveClassifiedTransactionsProps
 > = ({ displayState, errorMessage }: SaveClassifiedTransactionsProps) => {
   return (
@@ -120,5 +120,3 @@ const SaveClassifiedTransactionsModal: React.FC<
     </>
   );
 };
-
-export { ErrorLoadingTransactionsModal, SaveClassifiedTransactionsModal };

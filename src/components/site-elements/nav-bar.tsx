@@ -6,11 +6,13 @@ import { checkCompanyConnection } from '@/actions/user-company/check-db-company'
 import { siteConfig } from '@/site-config/site';
 import logo from '@/public/logo.svg';
 import { Button } from '@/components/ui/button';
-import SignOutButton from '@/components/inputs/sign-out-button';
-import ChangeCompanyButton from '@/components/inputs/change-company-button';
-import DeactivationButton from '@/components/site-elements/deactivation-button';
+import {
+  SignOutButton,
+  ChangeCompanyButton,
+  DeactivationButton,
+} from '@/components/inputs/index';
 
-const Navbar = async () => {
+export const Navbar = async () => {
   // Check the user's Subscription status.
   const connectionStatus = await checkCompanyConnection();
 
@@ -115,6 +117,3 @@ const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
     </div>
   );
 };
-
-// Export the Navbar component.
-export default Navbar;

@@ -1,7 +1,7 @@
 import { ArrowUpDown } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
-import { ConfidenceBar } from '@/components/confidence-bar';
+import { ConfidenceBar } from '@/components/site-elements/index';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import type {

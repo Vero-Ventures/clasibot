@@ -1,4 +1,4 @@
-import ProgressBar from '@/components/progress-bar';
+import { ProgressBar } from '@/components/loading/index';
 import { Button } from '@/components/ui/button';
 
 interface ManualClassifyProgressProps {
@@ -8,7 +8,9 @@ interface ManualClassifyProgressProps {
   maxChunks: number;
 }
 
-const ManualClassifyProgessModal: React.FC<ManualClassifyProgressProps> = ({
+export const ManualClassifyProgessModal: React.FC<
+  ManualClassifyProgressProps
+> = ({
   displayState,
   progressMessage,
   completedChunks,
@@ -47,7 +49,9 @@ interface ManualClassifyCompleteProps {
   manualClassificationState: string;
 }
 
-const ManualClassifyCompleteModal: React.FC<ManualClassifyCompleteProps> = ({
+export const ManualClassifyCompleteModal: React.FC<
+  ManualClassifyCompleteProps
+> = ({
   displayState,
   setDisplayState,
   manualClassificationState,
@@ -88,5 +92,3 @@ const ManualClassifyCompleteModal: React.FC<ManualClassifyCompleteProps> = ({
     </>
   );
 };
-
-export { ManualClassifyProgessModal, ManualClassifyCompleteModal };

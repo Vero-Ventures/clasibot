@@ -6,7 +6,7 @@ interface ProgressBarProps {
   maxChunks: number;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({
+export const ProgressBar: React.FC<ProgressBarProps> = ({
   completedChunks,
   maxChunks,
 }) => {
@@ -51,5 +51,3 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     </div>
   );
 };
-
-export default ProgressBar;

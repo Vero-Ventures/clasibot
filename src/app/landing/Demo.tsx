@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import SignInButton from '@/components/inputs/sign-in-button';
+import { SignInButton } from '@/components/inputs/index';
 
 export const Demo = () => {
   return (

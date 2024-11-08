@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
 // Takes: Stripe Env variables used to define the pricing table.
-export default function PricingTable({
+export function PricingTable({
   publicKey,
   tableId,
 }: {

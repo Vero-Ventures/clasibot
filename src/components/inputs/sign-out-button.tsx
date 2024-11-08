@@ -2,7 +2,7 @@
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 
-const SignOutButton = () => {
+export const SignOutButton = () => {
   return (
     <Button
       id="SignOut"
@@ -13,6 +13,3 @@ const SignOutButton = () => {
     </Button>
   );
 };
-
-// Export the SignOutButton component.
-export default SignOutButton;
