@@ -1,4 +1,3 @@
-'use server';
 import type { ErrorResponse, QueryResult } from '@/types/index';
 
 // Check for the 'Fault' property in error objects returned from QuickBooks calls.
