@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { signOut } from 'next-auth/react';
+
 import { manualClassify } from '@/actions/backend-actions/classification/manual-classify';
 import {
   checkBackendClassifyError,
@@ -12,8 +12,14 @@ import { removeForReviewTransactions } from '@/actions/db-review-transactions/re
 import { addForReview } from '@/actions/quickbooks/add-for-review';
 import { getAccounts } from '@/actions/quickbooks/get-accounts';
 import { ReviewTable } from '@/components/data-table/review-table';
-import ManualClassifyModal from '@/components/modals/manual-classify-modal';
-import { Button } from '@/components/ui/button';
+import {
+  ManualClassifyProgessModal,
+  ManualClassifyCompleteModal,
+} from '@/components/modals/manual-classify-modals';
+import {
+  ErrorLoadingTransactionsModal,
+  SaveClassifiedTransactionsModal,
+} from '../modals/transaction-modals';
 import type { Account } from '@/types/Account';
 import type { ClassifiedElement } from '@/types/Classification';
 import type { CompanyInfo } from '@/types/CompanyInfo';
@@ -544,130 +550,39 @@ export default function ReviewPage({
       />
 
       {/* Defines the modal to be displayed if an attempt to load classified Transactions fails. */}
-      <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${errorLoadingTransactions ? '' : 'hidden'}`}>
-        <div className="mx-4 w-96 rounded-lg bg-white p-6">
-          <>
-            <h2
-              id="ResultTitle"
-              className="mb-4 text-center text-2xl font-bold text-green-500">
-              Error
-            </h2>
-            <p
-              id="ResultMessage"
-              className="mb-6 text-center font-medium text-gray-800">
-              An error while loading your classified transactions. Refresh the
-              page to try again or contact us if the issue persists.
-            </p>
-          </>
-          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
-            <Button
-              id="CloseButton"
-              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-              onClick={() => setErrorLoadingTransactions(false)}>
-              Close
-            </Button>
-          </div>
-        </div>
-      </div>
+      {
+        <ErrorLoadingTransactionsModal
+          displayState={errorLoadingTransactions}
+          setDisplayState={setErrorLoadingTransactions}
+        />
+      }
 
       {/* Defines a modal to be displayed on completion of the saving the Classified 'For Review' transactions. */}
-      <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openSaveModal ? '' : 'hidden'}`}>
-        <div className="mx-4 w-96 rounded-lg bg-white p-6">
-          {/* If an error is present, display an error message in the modal. */}
-          {savingErrorMessage !== '' ? (
-            <>
-              <h2
-                id="ResultTitle"
-                className="mb-4 text-center text-2xl font-bold text-red-500">
-                Error
-              </h2>
-              <p
-                id="ResultMessage"
-                className="mb-6 text-center font-medium text-gray-800">
-                {savingErrorMessage}
-              </p>
-            </>
-          ) : (
-            // If no error is present, display a success message in the modal instead.
-            <>
-              <h2
-                id="ResultTitle"
-                className="mb-4 text-center text-2xl font-bold text-green-500">
-                Success
-              </h2>
-              <p
-                id="ResultMessage"
-                className="mb-6 text-center font-medium text-gray-800">
-                Transactions have been saved.
-              </p>
-            </>
-          )}
-
-          {/* Define button to return with text based on the error message state. */}
-          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
-            <Button
-              id="ReturnButton"
-              className="h-12 w-40 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
-              onClick={() => {
-                const url = window.location.origin + window.location.pathname;
-                window.location.href = url;
-              }}>
-              <span className="whitespace-normal">
-                {savingErrorMessage !== ''
-                  ? 'Retry Transaction Selection'
-                  : 'Review Additional Transactions'}
-              </span>
-            </Button>
-            {/* Define button to finish the session by logging the user out. */}
-            <Button
-              id="SignOutButton"
-              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-              onClick={() => signOut({ callbackUrl: '/' })}>
-              Finish Review Session
-            </Button>
-          </div>
-        </div>
-      </div>
+      {
+        <SaveClassifiedTransactionsModal
+          displayState={openSaveModal}
+          errorMessage={savingErrorMessage}
+        />
+      }
 
       {/* Defines the modal to be displayed during the manual Classification process. */}
-      {openManualClassificationModal && (
-        <ManualClassifyModal
+      {
+        <ManualClassifyProgessModal
+          displayState={openManualClassificationModal}
           progressMessage={manualClassificationModalMessage}
           completedChunks={numCompletedProcesses}
           maxChunks={numManualClassificationStates}
         />
-      )}
+      }
 
       {/* Defines the modal to be displayed on completion of the manual Classification function call. */}
-      <div
-        className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${openFinishedClassificationModal ? '' : 'hidden'}`}>
-        <div className="mx-4 w-96 rounded-lg bg-white p-6">
-          <>
-            <h2
-              id="ResultTitle"
-              className="mb-4 text-center text-2xl font-bold text-green-500">
-              {manualClassificationState === 'Error' ? 'Error' : 'Complete'}
-            </h2>
-            <p
-              id="ResultMessage"
-              className="mb-6 text-center font-medium text-gray-800">
-              {manualClassificationState === 'Error'
-                ? 'An error occured during the classification process. Please try again later or contact us if the issue persists.'
-                : 'Your transactions are classified and ready for review.'}
-            </p>
-          </>
-          <div id="ReturnButtonContainer" className="flex justify-center gap-4">
-            <Button
-              id="CloseButton"
-              className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-              onClick={() => setOpenFinishedClassificationModal(false)}>
-              {manualClassificationState === 'Error' ? 'Close' : 'Continue'}
-            </Button>
-          </div>
-        </div>
-      </div>
+      {
+        <ManualClassifyCompleteModal
+          displayState={openFinishedClassificationModal}
+          setDisplayState={setOpenFinishedClassificationModal}
+          manualClassificationState={manualClassificationState}
+        />
+      }
     </>
   );
 }

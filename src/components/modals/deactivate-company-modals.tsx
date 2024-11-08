@@ -2,13 +2,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
-interface InfoModalProps {
+interface DeactivateInfoProps {
   displayState: boolean;
   setDisplayState: (displayState: boolean) => void;
   switchToInfoModal: () => void;
 }
 
-const DeactivateInfoModal: React.FC<InfoModalProps> = ({
+const DeactivateInfoModal: React.FC<DeactivateInfoProps> = ({
   displayState,
   setDisplayState,
   switchToInfoModal,
@@ -74,13 +74,13 @@ const DeactivateInfoModal: React.FC<InfoModalProps> = ({
   );
 };
 
-interface ConfirmModalProps {
+interface DeactivateConfirmProps {
   displayState: boolean;
   setDisplayState: (displayState: boolean) => void;
   deactivateCompany: (switchCompany: boolean) => void;
 }
 
-const DeactivateConfirmModal: React.FC<ConfirmModalProps> = ({
+const DeactivateConfirmModal: React.FC<DeactivateConfirmProps> = ({
   displayState,
   setDisplayState,
   deactivateCompany,
@@ -132,12 +132,12 @@ const DeactivateConfirmModal: React.FC<ConfirmModalProps> = ({
   );
 };
 
-interface ErrorModalProps {
+interface DeactivateErrorProps {
   displayState: boolean;
   setDisplayState: (displayState: boolean) => void;
 }
 
-const DeactivateErrorModal: React.FC<ErrorModalProps> = ({
+const DeactivateErrorModal: React.FC<DeactivateErrorProps> = ({
   displayState,
   setDisplayState,
 }) => {
