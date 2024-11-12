@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
 import Link from 'next/link';
