@@ -145,7 +145,7 @@ export default function AddSBKInstructions({
                 </li>
               </ol>
               {showCheckConnectionButton && (
-                <div className="mx-auto flex flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
+                <div className="mx-auto flex min-w-80 flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
               )}
@@ -158,9 +158,9 @@ export default function AddSBKInstructions({
                 Clasibot bookkeeper will not be able to connect to that company,
                 even if it still has client access through QuickBooks.
               </p>
-              <p className="mb-4 ml-6 mr-4 text-center text-sm text-gray-700">
+              <p className="text-md mb-4 ml-6 mr-4 text-center text-gray-500">
                 Simply delete the Clasibot bookkeeper then invite it back to
-                have the Clasibot bookkeeper{' '}
+                have the Clasibot bookkeeper&nbsp;
                 <span className="inline-block">re-activate</span> its
                 connection.
               </p>
@@ -312,7 +312,7 @@ export default function AddSBKInstructions({
                   companies that have not been authenticated through logging
                   into the Clasibot application.
                 </p>
-                <p className="mb-6 ml-6 mr-4 text-center text-sm text-gray-700 sm:mb-10">
+                <p className="text-md mb-6 ml-6 mr-4 text-center text-gray-500 sm:mb-10">
                   If access has already been granted, simply edit the Clasibot
                   bookkeeper to remove the access, log in to the client company,
                   then grant the client access again.
@@ -323,7 +323,7 @@ export default function AddSBKInstructions({
                   company, even if it still has client access through
                   QuickBooks.
                 </p>
-                <p className="ml-6 mr-4 text-center text-sm text-gray-700">
+                <p className="text-md ml-6 mr-4 text-center text-gray-500">
                   Simply edit the Clasibot bookkeeper to remove the access then
                   grant it again to have the Clasibot bookkeeper&nbsp;
                   <span className="inline-block">re-activate</span> its

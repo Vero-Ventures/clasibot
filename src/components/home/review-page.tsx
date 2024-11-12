@@ -192,7 +192,7 @@ export default function ReviewPage({
       <h1
         id="PageAndCompanyName"
         className="m-auto mb-4 text-center text-3xl font-bold">
-        Classified Transactions -{' '}
+        Classified Transactions -&nbps;
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
       {/* Populate the review table with the Categorized Transactions. */}

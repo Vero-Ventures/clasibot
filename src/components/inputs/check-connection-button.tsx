@@ -13,11 +13,11 @@ export const CheckConnectionButton = () => {
 
   const handleCheckConnection = async () => {
     setCheckingForSBK(true);
-    const sbkExists = await checkCompanyConnection();
-    setSbkExists(sbkExists.connected);
+    const sbkCheck = await checkCompanyConnection();
+    setSbkExists(sbkCheck.connected);
     setCheckingForSBK(false);
 
-    if (sbkExists.connected) {
+    if (sbkExists) {
       // Optional: Wait for the animation to complete before redirecting
       setTimeout(() => {
         router.push('/home');
@@ -36,18 +36,20 @@ export const CheckConnectionButton = () => {
     <>
       <Button
         id="CheckConnection"
-        className="w-full transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 text-white shadow-md transition-transform duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-800"
+        className="text-md w-full transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 font-semibold text-white shadow-md transition-transform duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-800"
         onClick={handleCheckConnection}
         disabled={checkingForSBK}>
         Check Connection
       </Button>
       {(checkingForSBK || sbkExists !== null) && (
-        <div>
+        <div className="mx-auto mt-2">
           <MiniSpinner sbkExists={sbkExists} />
           {displayFailMessage && (
-            <p>
-              Connection failed, try again. See troubleshooting solutions below.
-            </p>
+            <div className="text-md mt-4 text-center font-semibold mb:min-w-80 sm:text-lg">
+              <p>Connection failed, please try again.</p>
+              <p className="pb-1 pt-2">OR</p>
+              <p>View troubleshooting solutions below.</p>
+            </div>
           )}
         </div>
       )}

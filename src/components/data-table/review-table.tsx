@@ -341,7 +341,7 @@ export function ReviewTable({
         <div
           id="SelectedAndCurrentRowsInfo"
           className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredSelectedRowModel().rows.length} of&nbps;
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         {/* Pagination buttons for the table. Each page holds the header row and 10 Transaction rows. */}
