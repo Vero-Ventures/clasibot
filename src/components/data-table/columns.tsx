@@ -150,7 +150,7 @@ const commonColumns = [
   // Define the Account Column.
   // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
   {
-    accessorKey: 'accountName',
+    accessorKey: 'account',
     header: 'Account',
     cell: ({
       row,
@@ -158,7 +158,7 @@ const commonColumns = [
       row:
         | Row<FormattedForReviewTransaction>
         | Row<ClassifiedForReviewTransaction>;
-    }) => row.getValue('accountName'),
+    }) => row.getValue('account'),
     // Filter function takes the Row value and an array of Account names (filterValue).
     //    Column Id is needed to match the expected function signature.
     filterFn: (
@@ -175,7 +175,7 @@ const commonColumns = [
       }
       // Check if the Account name is included the array of selected Account names.
       // Return the result as a boolean value to determine Row filtering.
-      return filterValue.includes(row.getValue('accountName'));
+      return filterValue.includes(row.getValue('account'));
     },
   },
 

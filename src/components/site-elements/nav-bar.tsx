@@ -1,4 +1,6 @@
+'use server'
 import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 import Link from 'next/link';
 import Image from 'next/image';
 import { checkCompanyConnection } from '@/actions/check-db-company';
@@ -16,7 +18,7 @@ export async function Navbar() {
   const connectionStatus = await checkCompanyConnection();
 
   // Get get the server session and extract the user name and email.
-  const session = await getServerSession();
+  const session = await getServerSession(options);
   const userEmail = session?.user?.email ?? '';
 
   // Define the Stripe portal URL using the user's email. Takes user to a profile management page.

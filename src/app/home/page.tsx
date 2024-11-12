@@ -10,7 +10,7 @@ export default async function Page() {
   // Check if the Synthetic BookKeeper is connected to the account.
   const companyHasSBK = await checkCompanyConnection();
 
-  if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
+  if ('error' in subscriptionStatus || subscriptionStatus.valid) {
     // If the user status is invalid or there is an error, go to the subscription purchase.
     return <SubscriptionPurchase />;
   } else if (
