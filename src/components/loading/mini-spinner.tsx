@@ -1,5 +1,4 @@
-// MiniSpinner.tsx
-
+'use client';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -7,8 +6,8 @@ interface MiniSpinnerProps {
   sbkExists: boolean | null;
 }
 
-const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
-  const [animationState, setAnimationState] = useState('loading'); // 'loading' | 'success'
+export const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
+  const [animationState, setAnimationState] = useState('loading');
 
   useEffect(() => {
     if (sbkExists === true) {
@@ -62,5 +61,3 @@ const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
     </div>
   );
 };
-
-export default MiniSpinner;

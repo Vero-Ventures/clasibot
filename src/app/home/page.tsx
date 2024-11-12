@@ -1,7 +1,7 @@
 import { checkSubscription } from '@/actions/stripe';
-import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
-import SBKConfirmationModal from '@/components/halt-elements/sbk-confirmation-modal';
-import SubscriptionPurchase from '@/components/halt-elements/subscription-purchase';
+import { checkCompanyConnection } from '@/actions/check-db-company';
+import { SBKConfirmationModal } from '@/components/modals/index';
+import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
 import HomePage from '@/components/home';
 
 export default async function Page() {

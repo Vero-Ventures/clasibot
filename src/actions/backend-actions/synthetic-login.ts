@@ -1,6 +1,5 @@
 'use server';
-import type { LoginTokens } from '@/types/LoginTokens';
-import type { QueryResult } from '@/types/QueryResult';
+import type { LoginTokens, QueryResult } from '@/types/index';
 
 // Logs into the backend Clasibot app as the synthetic bookkeeper and selects a specific Company.
 // Takes: The Company realm Id and (possibly null) and the Firm name of a Company.

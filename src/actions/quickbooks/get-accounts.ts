@@ -1,9 +1,7 @@
 'use server';
-import { checkFaultProperty, createQueryResult } from './query-helpers';
+import { checkFaultProperty, createQueryResult } from './index';
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
-import type { Account } from '@/types/Account';
-import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { LoginTokens } from '@/types/LoginTokens';
+import type { Account, ErrorResponse, LoginTokens } from '@/types/index';
 
 // Get specific Accounts from the QuickBooks API depending on passed Account type.
 // Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.

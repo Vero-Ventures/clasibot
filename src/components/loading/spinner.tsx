@@ -1,4 +1,4 @@
-const Spinner = () => {
+export const Spinner = () => {
   // Common classes for the circles
   const circleCommonClasses = 'h-5 w-5 bg-blue-500 rounded-full m-1';
 
@@ -25,6 +25,3 @@ const Spinner = () => {
     </div>
   );
 };
-
-// Export the Spinner component used in loading elements.
-export default Spinner;

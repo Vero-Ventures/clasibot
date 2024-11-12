@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
-const SBKConfirmationModal = () => {
+export const SBKConfirmationModal = () => {
   const router = useRouter();
 
   useEffect(() => {
@@ -42,5 +42,3 @@ const SBKConfirmationModal = () => {
     </div>
   );
 };
-
-export default SBKConfirmationModal;

@@ -1,7 +1,7 @@
 'use client';
 import { signIn } from 'next-auth/react';
 
-const ChangeCompanyButton = () => {
+export const ChangeCompanyButton = () => {
   return (
     <button
       id="ChangeCompanyButton"
@@ -14,6 +14,3 @@ const ChangeCompanyButton = () => {
     </button>
   );
 };
-
-// Export the ChangeCompanyButton component.
-export default ChangeCompanyButton;

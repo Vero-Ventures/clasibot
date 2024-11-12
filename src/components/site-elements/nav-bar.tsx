@@ -1,16 +1,19 @@
-import { options } from '@/app/api/auth/[...nextauth]/options';
+'use server';
 import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 import Link from 'next/link';
 import Image from 'next/image';
-import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
+import { checkCompanyConnection } from '@/actions/check-db-company';
 import { siteConfig } from '@/site-config/site';
 import logo from '@/public/logo.svg';
 import { Button } from '@/components/ui/button';
-import SignOutButton from '@/components/inputs/sign-out-button';
-import ChangeCompanyButton from '@/components/inputs/change-company-button';
-import DeactivationButton from '@/components/site-elements/deactivation-button';
+import {
+  SignOutButton,
+  ChangeCompanyButton,
+  DeactivationButton,
+} from '@/components/inputs/index';
 
-const Navbar = async () => {
+export async function Navbar() {
   // Check the user's Subscription status.
   const connectionStatus = await checkCompanyConnection();
 
@@ -89,7 +92,7 @@ const Navbar = async () => {
       )}
     </nav>
   );
-};
+}
 
 // Define interface for data used in the user session info elements.
 interface UserSessionButtonsProps {
@@ -115,6 +118,3 @@ const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
     </div>
   );
 };
-
-// Export the Navbar component.
-export default Navbar;

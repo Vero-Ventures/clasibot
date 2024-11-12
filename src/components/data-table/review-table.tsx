@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
-import { DatePicker } from '@/components/inputs/date-picker';
+import { DatePicker } from '@/components/inputs/index';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -31,7 +31,7 @@ import { reviewColumns } from './columns';
 import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
+} from '@/types/index';
 
 /**
  * Takes (Variables):
@@ -341,7 +341,7 @@ export function ReviewTable({
         <div
           id="SelectedAndCurrentRowsInfo"
           className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredSelectedRowModel().rows.length} of&nbps;
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         {/* Pagination buttons for the table. Each page holds the header row and 10 Transaction rows. */}

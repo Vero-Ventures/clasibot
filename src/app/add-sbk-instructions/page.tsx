@@ -1,4 +1,4 @@
-import AddSBKInstructions from '@/components/halt-elements/add-sbk-instructions';
+import AddSBKInstructions from '@/components/check-pages/add-sbk-instructions';
 import { getServerSession } from 'next-auth';
 
 export default async function Page() {

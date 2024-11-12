@@ -4,7 +4,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import { db } from '@/db/index';
 import { Company, User, Firm, Subscription } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { QueryResult } from '@/types/QueryResult';
+import type { QueryResult } from '@/types/index';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.

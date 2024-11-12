@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import SignInButton from '@/components/inputs/sign-in-button';
+import { SignInButton } from '@/components/inputs/index';
 
 export const Demo = () => {
   return (
@@ -35,10 +35,7 @@ export const Demo = () => {
                     />
                   </svg>
                 </span>
-                <span className="text-base">
-                  {' '}
-                  Quick and easy setup process.
-                </span>
+                <span className="text-base">Quick and easy setup process.</span>
               </li>
               <li className="flex items-start">
                 <span className="mr-2 translate-y-1.5 text-blue-500">
@@ -56,7 +53,6 @@ export const Demo = () => {
                   </svg>
                 </span>
                 <span className="text-base">
-                  {' '}
                   Automated classification with high accuracy.
                 </span>
               </li>
@@ -76,7 +72,6 @@ export const Demo = () => {
                   </svg>
                 </span>
                 <span className="text-base">
-                  {' '}
                   Real-time updates and seamless QuickBooks integration.
                 </span>
               </li>

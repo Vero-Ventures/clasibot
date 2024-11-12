@@ -1,60 +1,21 @@
 'use client';
-
-import React, { useState } from 'react';
-import { signIn, signOut } from 'next-auth/react';
-import { makeCompanyIncactive } from '@/actions/backend-actions/database-functions/bookkeeper-connection';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 
-interface DeactivationButtonProps {
-  connectionStatus: { connected: boolean; result: string; message: string };
+interface DeactivateInfoProps {
+  displayState: boolean;
+  setDisplayState: (displayState: boolean) => void;
+  switchToInfoModal: () => void;
 }
 
-const DeactivationButton: React.FC<DeactivationButtonProps> = ({
-  connectionStatus,
+export const DeactivateInfoModal: React.FC<DeactivateInfoProps> = ({
+  displayState,
+  setDisplayState,
+  switchToInfoModal,
 }) => {
-  // Modal state trackers.
-  const [infoModalOpen, setInfoModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-
-  // Define function to switch from info to confirmation modal.
-  function openConfirmationModal() {
-    setInfoModalOpen(false);
-    setConfirmModalOpen(true);
-  }
-
-  // Deactivate database Company object handler.
-  async function deactivateCompany(switchCompany: boolean) {
-    const deactivationResult = await makeCompanyIncactive();
-
-    if (deactivationResult.result === 'Error') {
-      setConfirmModalOpen(false);
-      setErrorModalOpen(true);
-    }
-
-    if (switchCompany) {
-      signIn('quickbooks', { callbackUrl: '/home' });
-    } else {
-      signOut({ callbackUrl: '/' });
-    }
-  }
-
   return (
     <>
-      {/* Button to open the Deactivate Company modal */}
-      {!connectionStatus.connected && (
-        <button
-          id="DeactivateCompanyButton"
-          className="mb-2 flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-red-500 to-red-700 px-4 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 lg:w-full lg:min-w-0"
-          onClick={() => setInfoModalOpen(true)}>
-          <span id="ButtonText" className="text-lg font-semibold md:text-2xl">
-            Deactivate Company
-          </span>
-        </button>
-      )}
-
-      {/* Information Modal */}
-      {infoModalOpen && (
+      {displayState && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
           <div className="relative mx-4 max-h-[80%] w-full max-w-2xl overflow-auto rounded-2xl bg-white p-6 shadow-2xl">
             <h2
@@ -96,22 +57,37 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
               <Button
                 id="CancelButton"
                 className="text-md min-w-24 space-x-4 rounded-md bg-gray-200 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-300 mb:min-w-32 sm:min-w-40 sm:text-lg"
-                onClick={() => setInfoModalOpen(false)}>
+                onClick={() => setDisplayState(false)}>
                 Cancel
               </Button>
               <Button
                 id="ConntinueButton"
                 className="text-md min-w-24 space-x-4 rounded-md bg-red-600 px-4 py-2 font-semibold text-white shadow-md hover:bg-red-700 mb:min-w-32 sm:min-w-40 sm:text-lg"
-                onClick={openConfirmationModal}>
+                onClick={switchToInfoModal}>
                 Continue
               </Button>
             </div>
           </div>
         </div>
       )}
+    </>
+  );
+};
 
-      {/* Confirmation Modal */}
-      {confirmModalOpen && (
+interface DeactivateConfirmProps {
+  displayState: boolean;
+  setDisplayState: (displayState: boolean) => void;
+  deactivateCompany: (switchCompany: boolean) => void;
+}
+
+export const DeactivateConfirmModal: React.FC<DeactivateConfirmProps> = ({
+  displayState,
+  setDisplayState,
+  deactivateCompany,
+}) => {
+  return (
+    <>
+      {displayState && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
           <div className="relative mx-4 w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
             <h2
@@ -145,16 +121,29 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
               <Button
                 id="CancelButton"
                 className="text-md mx-auto w-full max-w-36 rounded-md bg-gray-200 px-6 py-2 font-semibold text-gray-700 hover:bg-gray-300 mb:max-w-48"
-                onClick={() => setConfirmModalOpen(false)}>
+                onClick={() => setDisplayState(false)}>
                 Cancel
               </Button>
             </div>
           </div>
         </div>
       )}
+    </>
+  );
+};
 
-      {/* Error Modal */}
-      {errorModalOpen && (
+interface DeactivateErrorProps {
+  displayState: boolean;
+  setDisplayState: (displayState: boolean) => void;
+}
+
+export const DeactivateErrorModal: React.FC<DeactivateErrorProps> = ({
+  displayState,
+  setDisplayState,
+}) => {
+  return (
+    <>
+      {displayState && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="relative mx-4 w-full max-w-96 rounded-2xl bg-white p-4 shadow-2xl">
             <h2
@@ -172,7 +161,7 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
               <Button
                 id="CloseButton"
                 className="rounded-md bg-gray-200 px-12 py-2 text-lg font-semibold text-gray-700 hover:bg-gray-300"
-                onClick={() => setErrorModalOpen(false)}>
+                onClick={() => setDisplayState(false)}>
                 Close
               </Button>
             </div>
@@ -182,5 +171,3 @@ const DeactivationButton: React.FC<DeactivationButtonProps> = ({
     </>
   );
 };
-
-export default DeactivationButton;

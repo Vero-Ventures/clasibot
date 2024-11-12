@@ -2,8 +2,7 @@ import './globals.css';
 import { siteConfig } from '@/site-config/site';
 import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from '@/components/ui/toasts/toaster';
-import Footer from '@/components/site-elements/footer';
-import Navbar from '@/components/site-elements/nav-bar';
+import { Footer, Navbar } from '@/components/site-elements/index';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

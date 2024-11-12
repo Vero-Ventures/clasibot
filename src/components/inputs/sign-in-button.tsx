@@ -2,7 +2,7 @@
 import { signIn } from 'next-auth/react';
 import { FaArrowRight } from 'react-icons/fa';
 
-const SignInButton = () => {
+export const SignInButton = () => {
   return (
     <button
       id="QuickBooksSignIn"
@@ -13,6 +13,3 @@ const SignInButton = () => {
     </button>
   );
 };
-
-// Export the SignInButton component.
-export default SignInButton;
