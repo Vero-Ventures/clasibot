@@ -8,17 +8,14 @@ import type {
 // Takes a set of loaded 'For Review' transactions either from inital page load or finishing manual Classification.
 // Initalizes the inital selected Category and Tax Code for each 'For Review' transaction.
 // Also creates a set of Account names from within the passed 'For Review' transactions.
-// Takes: The loaded 'For Review' transactions, state updaters for the Classification types and for the set of Account names.
-// Returns: None, uses state updaters to pass result frontend.
+// Takes: The loaded 'For Review' transactions.
+// Returns: The record of selected Classifications as well as the list of unique Account names.
 export async function initalizeLoadedTransactions(
   loadedTransactions: (
     | ForReviewTransaction
     | ClassifiedForReviewTransaction
-  )[][],
-  setSelectedCategories: (newState: Record<string, string>) => void,
-  setSelectedTaxCodes: (newState: Record<string, string>) => void,
-  setAccounts: (newState: string[]) => void
-) {
+  )[][]
+): Promise<[Record<string, string>, Record<string, string>, string[]]> {
   // Create a set to track Account names without duplicates, then add all Account names to the set.
   const accountNames = new Set<string>();
   for (const transaction of loadedTransactions) {
@@ -27,8 +24,8 @@ export async function initalizeLoadedTransactions(
     accountNames.add(formattedTransaction.account);
   }
 
-  // Update the list of Accounts state with a list of unique Account names from the set.
-  setAccounts(Array.from(accountNames));
+  // Define the list of Accounts state with a list of unique Account names from the set.
+  const foundAccounts = Array.from(accountNames);
 
   // Initialize the selected Classifications for each 'For Review' transaction.
   const initialCategories: Record<string, string> = {};
@@ -56,7 +53,7 @@ export async function initalizeLoadedTransactions(
         classifications.taxCodes[0].name;
     }
   });
-  // Update the selected Categories and Tax Sodes state with the initial Classifications.
-  setSelectedCategories(initialCategories);
-  setSelectedTaxCodes(initialTaxCodes);
+
+  // Return the Classification selections as well as the list of Account names.
+  return [initialCategories, initialTaxCodes, foundAccounts];
 }

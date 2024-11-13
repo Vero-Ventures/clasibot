@@ -1,11 +1,8 @@
 'use server';
 
 // Finds the time the next backend Classification will occurr and converts it to a local string.
-// Takes: State update method to record the date string.
-// Returns: None, uses state updaters to pass result frontend.
-export async function getNextReviewDate(
-  setNextBackendClassifyDate: (newState: string) => void
-) {
+// Returns: The time and date as a localized string.
+export async function getNextReviewDate(): Promise<string> {
   // Create a date object and get the current day of the week in the UTC time zone.
   const date = new Date();
   const dayOfTheWeek = date.getUTCDay();
@@ -27,7 +24,7 @@ export async function getNextReviewDate(
     )
   );
 
-  // Update the state tracking the next Classification date value.
+  // Return the next Classification date value.
   // Using toString() converts from the UTC time to the local time zone of the user.
-  setNextBackendClassifyDate(nextClassifyUTC.toString());
+  return nextClassifyUTC.toString();
 }
