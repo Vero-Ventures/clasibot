@@ -1,25 +1,25 @@
 'use server';
-import { getForReview } from '@/actions/backend-actions/get-for-review';
-import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/add-db-for-review';
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
-import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
+import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
 import {
+  getAccounts,
+  getForReview,
+  getSavedTransactions,
   getCompanyIndustry,
   getCompanyLocation,
   getCompanyName,
-} from '@/actions/quickbooks/user-info';
-import { classifyTransactions } from './classify';
-import type { Account } from '@/types/Account';
-import type { ClassifiedElement } from '@/types/Classification';
-import type { CompanyInfo } from '@/types/CompanyInfo';
+} from '@/actions/quickbooks/index';
+import { classifyTransactions } from './index';
 import type {
+  Account,
+  ClassifiedElement,
+  CompanyInfo,
   ForReviewTransaction,
   FormattedForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { LoginTokens } from '@/types/LoginTokens';
-import type { QueryResult } from '@/types/QueryResult';
-import type { Transaction } from '@/types/Transaction';
+  LoginTokens,
+  QueryResult,
+  Transaction,
+} from '@/types/index';
 
 // Classifies and saves the 'For Review' transactions for a specific Company.
 // Takes: A set of synthetic Login Tokens and the realm Id of the Company.
@@ -34,7 +34,7 @@ export async function classifyCompany(
 ): Promise<QueryResult> {
   try {
     // Manual Classification: Update frontend state for fetching 'For Review' transactions.
-    if (manualClassify) setFrontendState!('Loading New Transactions ... ');
+    if (manualClassify) setFrontendState!('Get For Review Transactions');
 
     // Get the 'For Review' transactions for all Accounts related to the current Company.
     const forReviewResult = await getForReviewTransactions(
@@ -57,7 +57,7 @@ export async function classifyCompany(
     )[][];
 
     // Manual Classification: Update frontend state for fetching saved Classified Transactions.
-    if (manualClassify) setFrontendState!('Getting Transaction History ... ');
+    if (manualClassify) setFrontendState!('Get Saved Transactions');
 
     // Get the saved Classified Transactions from the User to use as context for prediction.
     const classifiedPastTransactions = await getClassifiedPastTransactions(
@@ -74,7 +74,7 @@ export async function classifyCompany(
     const companyInfo = await getCompanyInfo(loginTokens, companyId);
 
     // Manual Classification: Update frontend state to indicate start of Classification.
-    if (manualClassify) setFrontendState!('Classifying New Transactions ... ');
+    if (manualClassify) setFrontendState!('Classify For Review Transactions');
 
     // Call Classification function on the formatted 'For Review' transactions.
     const classificationResults:
@@ -113,7 +113,8 @@ export async function classifyCompany(
       >;
 
       // Manual Classification: Update frontend state to indicate Classified 'For Review' transaction creation.
-      if (manualClassify) setFrontendState!('Evaluating Classifications ... ');
+      if (manualClassify)
+        setFrontendState!('Create New Classified Transactions');
 
       // Use Classification results to create Classified 'For Review' transaction objects.
       const classifiedForReviewTransactions =
@@ -136,7 +137,7 @@ export async function classifyCompany(
       }
 
       // Manual Classification: Update frontend state to indicate saving Classified 'For Review' transactions to database.
-      if (manualClassify) setFrontendState!('Saving Classifications ... ');
+      if (manualClassify) setFrontendState!('Save New Classified Transactions');
 
       // Save the Classified 'For Review' transactions to the database.
       // Return the resulting Query Result created by the save function.

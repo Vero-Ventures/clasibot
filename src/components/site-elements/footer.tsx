@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { siteConfig } from '@/site-config/site';
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="mt-auto bg-gray-800 p-8">
       <div
@@ -25,6 +25,3 @@ const Footer = () => {
     </footer>
   );
 };
-
-// Export the Footer component.
-export default Footer;

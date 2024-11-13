@@ -6,12 +6,12 @@ import {
   TaxCode,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { ClassifiedElement } from '@/types/Classification';
 import type {
+  ClassifiedElement,
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { QueryResult } from '@/types/QueryResult';
+  QueryResult,
+} from '@/types/index';
 
 // Adds newly Classified 'For Review' transactions to the database to be pulled and shown to User for review on the frontend.
 // Takes: An array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a Company realm Id.

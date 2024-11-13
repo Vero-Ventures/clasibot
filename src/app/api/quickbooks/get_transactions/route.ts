@@ -1,4 +1,4 @@
-import { getSavedTransactions } from '@/actions/quickbooks/get-saved-transactions';
+import { getSavedTransactions } from '@/actions/quickbooks/index';
 
 export async function GET() {
   // Call action to get a formatted version of the User Transactions from QuickBooks API.

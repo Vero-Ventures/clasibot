@@ -1,8 +1,10 @@
 'use server';
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 import { db } from '@/db/index';
 import { Company, User, Firm, Subscription } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { QueryResult } from '@/types/QueryResult';
+import type { QueryResult } from '@/types/index';
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
@@ -331,17 +333,28 @@ export async function addAccountingFirmCompanies(
 
 // Updates a database Company object to be set as disconnected from the synthetic bookkeeper.
 //    Done to prevent us from continuing to access that Company.
-// Takes: A Company realm Id.
 // Returns: A Query Result object.
-export async function makeCompanyIncactive(
-  realmId: string
-): Promise<QueryResult> {
+export async function makeCompanyIncactive(): Promise<QueryResult> {
   try {
+    // Get the current session to get the Company realm Id.
+    const session = await getServerSession(options);
+
+    // Check that the Company realm Id could be found.
+    if (!session?.realmId) {
+      // Return an error Query Result indicating the session could not be found.
+      return {
+        result: 'Error',
+        message: 'Session could not be found.',
+        detail:
+          'The session containing the Company realm Id could not be found',
+      };
+    }
+
     // Find the Company in the database with the matching Id.
     const company = await db
       .select()
       .from(Company)
-      .where(eq(Company.realmId, realmId));
+      .where(eq(Company.realmId, session.realmId));
 
     // If a Company is found, set its connection status to false.
     if (company[0]) {
@@ -369,13 +382,15 @@ export async function makeCompanyIncactive(
     if (error instanceof Error) {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured The Company Inactive',
+        message:
+          'An Unexpected Error Occured While Making The Company Inactive',
         detail: error.message,
       };
     } else {
       return {
         result: 'Error',
-        message: 'An Unexpected Error Occured Making The Company Inactive',
+        message:
+          'An Unexpected Error Occured While Making The Company Inactive',
         detail: 'N/A',
       };
     }

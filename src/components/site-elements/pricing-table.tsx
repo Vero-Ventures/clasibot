@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
 // Takes: Stripe Env variables used to define the pricing table.
-export default function PricingTable({
+export function PricingTable({
   publicKey,
   tableId,
 }: {
@@ -42,7 +42,7 @@ export default function PricingTable({
   }, [publicKey]);
 
   return (
-    <div className="pt-20">
+    <div className="mx-auto my-6 w-fit rounded-lg border-4 border-gray-400 border-opacity-80 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl sm:px-6">
       <Script
         id="StripePricingTableScript"
         src="https://js.stripe.com/v3/pricing-table.js"
