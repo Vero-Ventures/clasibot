@@ -85,8 +85,8 @@ export default function Page() {
     <div className="flex min-h-full items-center justify-center bg-gray-100 px-4 py-6">
       <section
         id="contact-us"
-        className="w-full max-w-2xl transform overflow-auto rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl"
-        style={{ maxHeight: '90vh' }}>
+        className="w-full max-w-4xl transform overflow-auto rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl"
+        style={{ maxHeight: '90vh', width: '40vw', maxWidth: 'none' }}>
         <h1 className="mb-6 text-center text-4xl font-extrabold tracking-tight text-gray-800">
           Contact Us
         </h1>
