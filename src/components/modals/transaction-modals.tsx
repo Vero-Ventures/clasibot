@@ -1,6 +1,6 @@
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { XIcon } from 'lucide-react';
+import { CheckIcon, XIcon } from 'lucide-react';
 
 interface ErrorLoadingTransactionsProps {
   displayState: boolean;
@@ -17,7 +17,7 @@ export const ErrorLoadingTransactionsModal: React.FC<
           className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${displayState ? '' : 'hidden'}`}>
           <div className="mx-4 w-96 rounded-lg bg-white p-6">
             <>
-              <div className="flex items-center justify-center text-center space-x-4 p-2">
+              <div className="mb-2 flex items-center justify-center space-x-4 p-2 text-center">
                 <h2
                   id="ResultTitle"
                   className="text-center text-2xl font-bold text-red-500">
@@ -29,7 +29,7 @@ export const ErrorLoadingTransactionsModal: React.FC<
               </div>
               <p
                 id="ResultMessage"
-                className="mb-6 text-center font-medium text-gray-800">
+                className="mb-6 mt-3 text-center font-medium text-gray-800">
                 An error occured while loading your classified transactions.
                 Refresh the page to try again or contact us if the issue
                 persists.
@@ -69,56 +69,64 @@ export const SaveClassifiedTransactionsModal: React.FC<
             {/* If an error is present, display an error message in the modal. */}
             {errorMessage !== '' ? (
               <>
-                <h2
-                  id="ResultTitle"
-                  className="mb-4 text-center text-2xl font-bold text-red-500">
-                  Error
-                </h2>
+                <div className="flex items-center justify-center space-x-4 p-2 text-center">
+                  <h2
+                    id="ResultTitle"
+                    className="text-center text-2xl font-bold text-red-500">
+                    Error
+                  </h2>
+                  <div className="flex h-12 w-12 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
+                    <XIcon className="h-6 w-6 text-white" />
+                  </div>
+                </div>
                 <p
                   id="ResultMessage"
-                  className="mb-6 text-center font-medium text-gray-800">
+                  className="mb-6 mt-3 mx-6 text-center font-medium text-gray-800">
                   {errorMessage}
                 </p>
               </>
             ) : (
               // If no error is present, display a success message in the modal instead.
               <>
-                <h2
-                  id="ResultTitle"
-                  className="mb-4 text-center text-2xl font-bold text-green-500">
-                  Success
-                </h2>
+                <div className="flex items-center justify-center space-x-4 p-2 text-center">
+                  <h2
+                    id="ResultTitle"
+                    className="text-center text-2xl font-bold text-green-500">
+                    Success
+                  </h2>
+                  <div className="flex h-12 w-12 animate-successAnimation items-center justify-center rounded-full bg-green-500">
+                    <CheckIcon className="h-8 w-8 text-white" />
+                  </div>
+                </div>
                 <p
                   id="ResultMessage"
-                  className="mb-6 text-center font-medium text-gray-800">
+                  className="mb-6 mt-3 text-center font-medium text-gray-800">
                   Transactions have been saved.
                 </p>
               </>
             )}
 
             {/* Define button to return with text based on the error message state. */}
-            <div
-              id="ReturnButtonContainer"
-              className="flex justify-center gap-4">
+            <div className="flex justify-evenly">
               <Button
                 id="ReturnButton"
-                className="h-12 w-40 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
+                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500"
                 onClick={() => {
                   const url = window.location.origin + window.location.pathname;
                   window.location.href = url;
                 }}>
-                <span className="whitespace-normal">
-                  {errorMessage !== ''
-                    ? 'Retry Transaction Selection'
-                    : 'Review Additional Transactions'}
-                </span>
+                {errorMessage !== ''
+                  ? 'Retry Selection'
+                  : 'Continue'}
               </Button>
+
               {/* Define button to finish the session by logging the user out. */}
+
               <Button
                 id="SignOutButton"
-                className="h-12 w-40 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500"
                 onClick={() => signOut({ callbackUrl: '/' })}>
-                Finish Review Session
+                Sign Out
               </Button>
             </div>
           </div>
