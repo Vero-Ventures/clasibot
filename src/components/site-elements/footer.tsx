@@ -3,18 +3,13 @@ import { siteConfig } from '@/site-config/site';
 
 export const Footer = () => {
   return (
-    <footer className="mt-auto bg-gray-800 p-8">
-      <div
-        id="FooterContentGrid"
-        className="grid grid-cols-2 items-center pr-12 text-white popout:grid-cols-3 popout:pr-0">
-        <p id="AppCopyright" className="mr-6 text-center md:text-left">
-          &copy; {siteConfig.name}.
-          <span className="block">All Rights Reserved.</span>
+    <footer className="mt-auto bg-gray-900 p-6 text-white">
+      <div className="flex flex-col items-center space-y-4 md:flex-row md:justify-between md:space-y-0">
+        <p className="text-center text-sm md:text-base">
+          &copy; {new Date().getFullYear()} {siteConfig.name}. All Rights
+          Reserved.
         </p>
-        <div
-          id="FooterLinkContainer"
-          className="flex flex-col justify-center space-y-2 text-center mb:mr-6 popout:ml-6 popout:mr-0 md:flex-row md:space-x-4 md:space-y-0 lg:text-left">
-          {/* Iterates through footer items in the site content and populates links using the href values. */}
+        <div className="flex flex-wrap justify-center space-x-4">
           {siteConfig.footerItems.map((item) => (
             <Link key={item.href} href={item.href} className="hover:underline">
               {item.label}
@@ -25,3 +20,5 @@ export const Footer = () => {
     </footer>
   );
 };
+
+export default Footer;
