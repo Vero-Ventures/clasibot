@@ -14,20 +14,20 @@ export const Footer = () => {
             Setup Instructions
           </Link>
           <Link
-            key={'/add-sbk-instructions'}
-            href={'/add-sbk-instructions'}
+            key={'/contact-us'}
+            href={'/contact-us'}
             className="text-center text-lg font-semibold hover:underline">
             Contact Us
           </Link>
           <Link
-            key={'/add-sbk-instructions'}
-            href={'/add-sbk-instructions'}
+            key={'/terms-of-service'}
+            href={'/terms-of-service'}
             className="text-center hover:underline">
             Terms of Service
           </Link>
           <Link
-            key={'/add-sbk-instructions'}
-            href={'/add-sbk-instructions'}
+            key={'/privacy-policy'}
+            href={'/privacy-policy'}
             className="text-center hover:underline">
             Privacy Policy
           </Link>
