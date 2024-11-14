@@ -105,7 +105,7 @@ export async function classifyCompany(
 
       // Use Classification results to create Classified 'For Review' transaction objects.
       const classifiedForReviewTransactions =
-        createClassifiedForReviewTransactions(
+        await createClassifiedForReviewTransactions(
           forReviewTransactions,
           validClassificationResults
         );
@@ -335,7 +335,7 @@ export async function getCompanyInfo(
 // Takes: The array of Formatted and Raw 'For Review' transactions -
 //        And a record of Transaction Id to the Classification arrays.
 // Returns: The 'For Review' transaction array converted to Sub-arrays of [ClassifiedForReviewTransactions, ForReviewTransaction].
-export function createClassifiedForReviewTransactions(
+export async function createClassifiedForReviewTransactions(
   forReviewTransactions: (
     | FormattedForReviewTransaction
     | ForReviewTransaction
@@ -347,7 +347,7 @@ export function createClassifiedForReviewTransactions(
       taxCode: ClassifiedElement[] | null;
     }
   >
-): (ClassifiedForReviewTransaction | ForReviewTransaction)[][] {
+): Promise<(ClassifiedForReviewTransaction | ForReviewTransaction)[][]> {
   try {
     // Create an array for Classified 'For Review' transactions.
     const newCategorizedTransactions: (

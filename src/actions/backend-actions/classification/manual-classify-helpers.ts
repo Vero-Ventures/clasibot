@@ -290,7 +290,7 @@ export async function createClassifiedTransactions(
   try {
     // Use Classification results to create Classified 'For Review' transaction objects.
     const classifiedForReviewTransactions =
-      createClassifiedForReviewTransactions(
+      await createClassifiedForReviewTransactions(
         forReviewTransactions,
         validClassificationResults
       );
