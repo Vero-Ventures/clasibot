@@ -1,9 +1,12 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import type { QueryResult } from '@/types/index';
 
 // Checks if the backend Classification process resulted in an error for a specific Company.

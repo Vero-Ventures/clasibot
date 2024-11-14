@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import welcomeBackground from './welcome_background_1.jpg';
+
 import { SignInButton } from '@/components/inputs/index';
+
+import welcomeBackground from './welcome_background_1.jpg';
 
 export const Welcome = () => {
   return (

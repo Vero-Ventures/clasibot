@@ -1,4 +1,5 @@
 'use server';
+
 import type { LoginTokens, QueryResult } from '@/types/index';
 
 // Logs into the backend Clasibot app as the synthetic bookkeeper and selects a specific Company.

@@ -1,6 +1,8 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import {
   ForReviewTransaction as DatabaseForReviewTransaction,
@@ -10,7 +12,9 @@ import {
   TaxCode as DatabaseTaxCode,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import { getAccounts, getTaxCodes } from '@/actions/quickbooks/index';
+
 import type {
   Account,
   ClassifiedElement,
@@ -22,9 +26,10 @@ import type {
 
 // Gets the 'For Review' transactions saved to the database for the current User.
 // Returns: An array of Sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]
-export async function getDatabaseTransactions(): Promise<
-  [QueryResult, (ClassifiedForReviewTransaction | ForReviewTransaction)[][]]
-> {
+export async function getDatabaseTransactions(): Promise<{
+  queryResult: QueryResult;
+  transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][];
+}> {
   try {
     // Get the current session to extract the Company realm Id.
     const session = await getServerSession(options);
@@ -68,7 +73,7 @@ export async function getDatabaseTransactions(): Promise<
       }
 
       // Return the error Query Result and an empty array of Classified 'For Review' Transactions.
-      return [errorResult, []];
+      return { queryResult: errorResult, transactions: [] };
     }
 
     // Get the list of Tax Codes for the User.
@@ -77,14 +82,14 @@ export async function getDatabaseTransactions(): Promise<
     // Check if the Tax Code fetch resulted in an error.
     if (taxCodesResponse[0].result === 'Error') {
       // Return the error Query Result and an empty array of Classified 'For Review' Transactions.
-      return [
-        {
+      return {
+        queryResult: {
           result: 'Error',
           message: 'Error Loading User Tax Codes',
           detail: taxCodesResponse[0].detail,
         },
-        [],
-      ];
+        transactions: [],
+      };
     }
 
     // If the Company realm Id is present, fetch all database 'For Review' transactions for that Company.
@@ -154,38 +159,38 @@ export async function getDatabaseTransactions(): Promise<
     }
     // Return the array of Classified and Raw 'For Review' transactions.
     // Array will be empty if a valid realm Id could not be found from the session.
-    return [
-      {
+    return {
+      queryResult: {
         result: 'Success',
         message: 'Retrived Classified Transactions',
         detail:
           'Successfully Retrived Classified "For Review" Transactions From The Database',
       },
-      classifiedTransactions,
-    ];
+      transactions: classifiedTransactions,
+    };
   } catch (error) {
     // Catch any errors and create an error Query Result object, include the error message if it is present.
     // Return an empty array on error, as the database fetch failed.
     if (error instanceof Error) {
-      return [
-        {
+      return {
+        queryResult: {
           result: 'Error',
           message:
             'Error Getting Classified "For Review" Transactions From Database',
           detail: error.message,
         },
-        [],
-      ];
+        transactions: [],
+      };
     } else {
-      return [
-        {
+      return {
+        queryResult: {
           result: 'Error',
           message:
             'Error Getting Classified "For Review" Transactions From Database',
           detail: 'Unexpected Error',
         },
-        [],
-      ];
+        transactions: [],
+      };
     }
   }
 }

@@ -1,7 +1,11 @@
 'use client';
+
 import { useState } from 'react';
+
 import { CheckConnectionButton } from '@/components/inputs/index';
+
 import { Button } from '@/components/ui/button';
+
 import clsx from 'clsx';
 
 interface AddSBKInstructionsProps {

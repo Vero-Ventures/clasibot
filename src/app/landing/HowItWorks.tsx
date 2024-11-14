@@ -10,7 +10,7 @@ export const HowItWorks = () => (
     <div className="flex flex-col space-y-8 sm:flex-row sm:space-x-6 sm:space-y-0">
       <Step
         iconColor="bg-blue-500"
-        iconPath="M10 4a6 6 0 100 12 6 6 0 000-12zm8 8l-4.35-4.35"
+        iconPath="M10 4a6 6 0 100 12 6 6 0 000-12zm9 14l-4.35-4.35"
         title="Analyze Past Transactions"
         description="Clasibot reviews past transactions to find matches, predicting classifications to reduce manual input."
       />

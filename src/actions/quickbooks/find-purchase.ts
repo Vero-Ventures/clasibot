@@ -1,6 +1,9 @@
 'use server';
+
 import { checkFaultProperty, createQueryResult } from './index';
+
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+
 import type { ErrorResponse, LoginTokens, Purchase } from '@/types/index';
 
 // Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.

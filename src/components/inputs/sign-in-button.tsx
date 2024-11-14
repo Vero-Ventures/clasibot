@@ -1,5 +1,7 @@
 'use client';
+
 import { signIn } from 'next-auth/react';
+
 import { FaArrowRight } from 'react-icons/fa';
 
 export const SignInButton = () => {

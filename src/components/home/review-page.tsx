@@ -1,17 +1,21 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+
+import { changeManualClassificationState } from '@/actions/backend-actions/classification/index';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
+
 import {
   checkBackendClassifyErrorStatus,
   dismissBackendClassifyErrorStatus,
   getNextReviewDate,
+  handleStateForManualClassify,
   initalizeLoadedTransactions,
   saveSelectedTransactions,
-  startManualClassification,
-  changeManualClassificationState,
 } from '@/actions/review-page-handlers/index';
 
 import { ReviewTable } from '@/components/data-table/review-table';
+
 import {
   ManualClassifyProgessModal,
   ManualClassifyCompleteModal,
@@ -39,7 +43,11 @@ export default function ReviewPage({
 
   // On page load, gets the date of the next Saturday at 12 AM UTC.
   useEffect(() => {
-    getNextReviewDate(setNextBackendClassifyDate);
+    // Calls the handler method to await and set state with the date value.
+    const handleBackendClassifyDateCall = async () => {
+      setNextBackendClassifyDate(await getNextReviewDate());
+    };
+    handleBackendClassifyDateCall();
   }, []);
 
   // Create states to track the loaded Transactions and their assosiated Accounts.
@@ -56,12 +64,12 @@ export default function ReviewPage({
     const loadForReviewTransactions = async () => {
       // Load the Transactions and check the Query Result for an error.
       const loadResult = await getDatabaseTransactions();
-      if (loadResult[0].result === 'Error') {
+      if (loadResult.queryResult.result === 'Error') {
         // If an error was found, open the related error modal.
         setErrorLoadingTransactions(true);
       }
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
-      setLoadedTransactions(loadResult[1]);
+      setLoadedTransactions(loadResult.transactions);
     };
     loadForReviewTransactions();
   }, [found_company_info]);
@@ -81,26 +89,59 @@ export default function ReviewPage({
 
   // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
   function handleManualClassification() {
-    // Start the Manual Classification by calling the async handler action.
-    startManualClassification(
-      setManualClassificationState,
-      setIsClassifying,
-      setErrorLoadingTransactions,
-      setOpenFinishedClassificationModal,
-      setLoadedTransactions
-    );
+    // Start the manual Classification process.
+    setIsClassifying(true);
+
+    // Calls the handler method to await and set state with the manual Classification results.
+    const handleCall = async () => {
+      const classificationResults = await handleStateForManualClassify(
+        setManualClassificationState
+      );
+
+      // Check if the manual Classification failed on loading Classified 'For Review' transactions.
+      if (classificationResults.loadFailure) {
+        // If failure to load occurred, show the error loading modal.
+        setErrorLoadingTransactions(true);
+      } else {
+        // Otherwise the completion modal (success or failure) is shown.
+        setOpenFinishedClassificationModal(true);
+      }
+
+      // Update the Classified 'For Review' transaction states with returned values (or empty array on error).
+      setLoadedTransactions(classificationResults.loadedTransactions);
+
+      // Complete process by setting isClassifying state to false.
+      setIsClassifying(false);
+    };
+    handleCall();
   }
 
   const [numCompletedProcesses, setNumCompletedProcesses] = useState<number>(0);
   const numManualClassificationStates = 8;
   // Define handler for different manual Classification states.
   useEffect(() => {
-    changeManualClassificationState(
-      manualClassificationState,
-      setManualClassificationModalMessage,
-      setOpenManualClassificationModal,
-      setNumCompletedProcesses
-    );
+    const handleManualClassificationChangeCall = async () => {
+      // Calls the handler method to await the new state values.
+      const processStates = await changeManualClassificationState(
+        manualClassificationState
+      );
+
+      // Set states with the manual Classification process values.
+      setManualClassificationModalMessage(processStates.displayValue);
+      setNumCompletedProcesses(processStates.currentProcess);
+
+      // For end states (-1 / 8), update states to close the modal and reset the progess value.
+      if (
+        processStates.currentProcess === -1 ||
+        processStates.currentProcess === 8
+      ) {
+        setTimeout(() => {
+          setOpenManualClassificationModal(false);
+          setNumCompletedProcesses(0);
+        }, 2000);
+      }
+    };
+    handleManualClassificationChangeCall();
   }, [manualClassificationState]);
 
   // Create states for checking if an error occured during backend Classification.
@@ -117,20 +158,33 @@ export default function ReviewPage({
   // Done at the same time as loading the Saved and Classified Transactions and the database 'For Review' transactions.
   useEffect(() => {
     // Call the helper function to check for backend Classification failure.
-    checkBackendClassifyErrorStatus(
-      setBackendClassifyError,
-      setShowBackendClassifyErrorNotification
-    );
+    const handleCheckBackendErrorCall = async () => {
+      const foundError = await checkBackendClassifyErrorStatus();
+      // Set the found error and display error notice state based on the found error value.
+      setBackendClassifyError(foundError);
+      setShowBackendClassifyErrorNotification(foundError);
+    };
+    handleCheckBackendErrorCall();
   }, [found_company_info]);
 
   // Updates the database Company object to dismiss backend Classification error.
   // Unused: Function is marked as unused until frontend notice that allows the user to dismiss the error is implemented.
   async function _dismissBackendClassifyErrorStatus() {
-    dismissBackendClassifyErrorStatus(
-      setDismissResultMessage,
-      setBackendClassifyError,
-      setShowBackendClassifyErrorNotification
-    );
+    // Calls the handler method to await the new state values.
+    const handleDismissBackendErrorCall = async () => {
+      const dissmissResult = await dismissBackendClassifyErrorStatus();
+      // Set the display message and error tracking states based on the dismissal result.
+      if (dissmissResult) {
+        // Set to be display to hidden on success and sets the found error state to false.
+        setDismissResultMessage('Success');
+        setBackendClassifyError(false);
+        setShowBackendClassifyErrorNotification(false);
+      } else {
+        // On error, update indicator state and leave other states unchanged.
+        setDismissResultMessage('Error');
+      }
+    };
+    handleDismissBackendErrorCall();
   }
 
   // Create states to track the selected Classifications for each row.
@@ -143,12 +197,15 @@ export default function ReviewPage({
 
   // Updates the Classifications for each Transaction when the Classified Transactions or Classification results change.
   useEffect(() => {
-    initalizeLoadedTransactions(
-      loadedTransactions,
-      setSelectedCategories,
-      setSelectedTaxCodes,
-      setAccounts
-    );
+    // Call the helper function to initalize the Classifications for the 'For Review' transactions.
+    const handleInitalizeTransactionsCall = async () => {
+      const initalizeResults =
+        await initalizeLoadedTransactions(loadedTransactions);
+      setSelectedCategories(initalizeResults.categoryRecord);
+      setSelectedTaxCodes(initalizeResults.taxCodeRecord);
+      setAccounts(initalizeResults.accountsList);
+    };
+    handleInitalizeTransactionsCall();
   }, [loadedTransactions]);
 
   // Update the selected Categories state using a 'For Review' transaction Id and the new Category.
@@ -176,15 +233,30 @@ export default function ReviewPage({
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) {
-    saveSelectedTransactions(
+    // Set saving state to be true to lock review table actions.
+    setIsSaving(true);
+
+    // Call the save 'For Review' transactions function and track the returned success value.
+    const savingResult = await saveSelectedTransactions(
       selectedRows,
       transactions,
       selectedCategories,
-      selectedTaxCodes,
-      setIsSaving,
-      setSavingErrorMessage,
-      setOpenSaveModal
+      selectedTaxCodes
     );
+
+    // If the returned result was untrue, log an error message.
+    if (!savingResult) {
+      setSavingErrorMessage(
+        'An error occurred while saving. Please try again.'
+      );
+    } else {
+      // If saving was successful, set error message to be blank to overwrite any existing error messages.
+      setSavingErrorMessage('');
+    }
+
+    // Update saving state on completion and show the saving completion modal.
+    setIsSaving(false);
+    setOpenSaveModal(true);
   }
 
   return (
@@ -192,7 +264,7 @@ export default function ReviewPage({
       <h1
         id="PageAndCompanyName"
         className="m-auto mb-4 text-center text-3xl font-bold">
-        Classified Transactions -&nbps;
+        Classified Transactions -{' '}
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
       {/* Populate the review table with the Categorized Transactions. */}
