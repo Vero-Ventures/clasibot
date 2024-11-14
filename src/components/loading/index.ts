@@ -3,5 +3,7 @@
  */
 
 export { MiniSpinner } from './mini-spinner';
+
 export { ProgressBar } from './progress-bar';
+
 export { Spinner } from './spinner';

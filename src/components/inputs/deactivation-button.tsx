@@ -1,7 +1,10 @@
 'use client';
+
 import React, { useState } from 'react';
 import { signIn, signOut } from 'next-auth/react';
+
 import { makeCompanyIncactive } from '@/actions/backend-actions/database-functions/index';
+
 import {
   DeactivateInfoModal,
   DeactivateConfirmModal,

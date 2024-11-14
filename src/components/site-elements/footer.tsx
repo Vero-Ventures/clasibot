@@ -1,4 +1,5 @@
 import Link from 'next/link';
+
 import { siteConfig } from '@/site-config/site';
 
 export const Footer = () => {

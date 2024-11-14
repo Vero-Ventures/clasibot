@@ -1,4 +1,5 @@
 'use server';
+
 import { google } from 'googleapis';
 
 // Define an interface for the found and returned Knowledge Graph results.

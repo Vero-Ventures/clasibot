@@ -3,13 +3,17 @@
  */
 
 export { addForReviewTransactions } from './add-db-for-review';
+
 export {
   checkBackendClassifyError,
   dismissBackendClassifyError,
 } from './backend-classify-failure';
+
 export {
   addCompanyConnection,
   addAccountingFirmConnection,
   addAccountingFirmCompanies,
   makeCompanyIncactive,
 } from './bookkeeper-connection';
+
+export { checkCompanyConnection } from './check-db-company';

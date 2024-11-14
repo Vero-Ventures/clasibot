@@ -3,7 +3,9 @@
  */
 
 export { classifyCompany } from './classify-company';
+
 export { classifyTransactions } from './classify-transactions';
+
 export {
   startManualClassification,
   preformSyntheticLogin,

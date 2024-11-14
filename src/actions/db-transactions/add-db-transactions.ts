@@ -1,4 +1,5 @@
 'use server';
+
 import { db } from '@/db/index';
 import {
   Transaction as DrizzleTransaction,
@@ -8,6 +9,7 @@ import {
   TransactionsToTaxCodes,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import type { QueryResult, Transaction } from '@/types/index';
 
 // Saves Classified User Transactions to the database for future Classification use.
