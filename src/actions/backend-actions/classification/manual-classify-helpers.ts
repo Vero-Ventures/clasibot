@@ -328,7 +328,7 @@ export async function createClassifiedTransactions(
 // Returns: The frontend message and the number of finished processes.
 export async function changeManualClassificationState(
   manualClassificationState: string
-): Promise<[string, number]> {
+): Promise<{ displayValue: string; currentProcess: number }> {
   // Define the base states of the manual Classification process values.
   let processMessage = '';
   let completedProcesses = 0;
@@ -379,5 +379,5 @@ export async function changeManualClassificationState(
       completedProcesses = -1;
       break;
   }
-  return [processMessage, completedProcesses];
+  return { displayValue: processMessage, currentProcess: completedProcesses };
 }

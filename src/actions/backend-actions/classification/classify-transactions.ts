@@ -47,16 +47,18 @@ export async function classifyTransactions(
 > {
   try {
     // Save the User Classified Transactions to the database for use in future Classification.
-    const result = await addDatabaseTransactions(classifiedTransactions);
+    const addTransactionsResult = await addDatabaseTransactions(
+      classifiedTransactions
+    );
 
     // Check if the Query Result from saving the Transactions function resulted in an error.
-    if (result.result === 'Error') {
+    if (addTransactionsResult.result === 'Error') {
       // On error Query Result log an error with the message and detail, then return an error object and message.
       console.error(
         'Error saving User Classified Transactions:',
-        result.message,
+        addTransactionsResult.message,
         ', Detail: ',
-        result.detail
+        addTransactionsResult.detail
       );
       return { error: 'Error saving User Classified Transactions.' };
     }

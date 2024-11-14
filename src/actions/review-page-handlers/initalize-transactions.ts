@@ -15,7 +15,11 @@ export async function initalizeLoadedTransactions(
     | ForReviewTransaction
     | ClassifiedForReviewTransaction
   )[][]
-): Promise<[Record<string, string>, Record<string, string>, string[]]> {
+): Promise<{
+  categoryRecord: Record<string, string>;
+  taxCodeRecord: Record<string, string>;
+  accountsList: string[];
+}> {
   // Create a set to track Account names without duplicates, then add all Account names to the set.
   const accountNames = new Set<string>();
   for (const transaction of loadedTransactions) {
@@ -55,5 +59,9 @@ export async function initalizeLoadedTransactions(
   });
 
   // Return the Classification selections as well as the list of Account names.
-  return [initialCategories, initialTaxCodes, foundAccounts];
+  return {
+    categoryRecord: initialCategories,
+    taxCodeRecord: initialTaxCodes,
+    accountsList: foundAccounts,
+  };
 }

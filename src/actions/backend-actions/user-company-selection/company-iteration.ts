@@ -45,12 +45,12 @@ export async function classificationCompanyIteration(user: databaseUser) {
         } else {
           // Classify the 'For Review' transactions for the current Company.
           // Passes the the synthetic Login Tokens and Company realm Id needed for backend Classificaion.
-          classifyCompany(loginTokens, companyId).then((result) => {
+          classifyCompany(loginTokens, companyId).then((classifyResult) => {
             // Use .then() to deal with error logging while the main process continues.
             //    Allows the async Classificaion of Comapnies to be done concurrently.
 
             // Check if the Classificaion process resulted in an error.
-            if (result.result === 'Error') {
+            if (classifyResult.result === 'Error') {
               // Log the User and Company the error occurred on.
               console.error({
                 result:
@@ -59,8 +59,8 @@ export async function classificationCompanyIteration(user: databaseUser) {
                   ', Company: ' +
                   currentCompany.id,
                 // Include the message and detail from the returned Query Result.
-                message: result.message,
-                detail: result.detail,
+                message: classifyResult.message,
+                detail: classifyResult.detail,
               });
 
               // Update the database Company object.

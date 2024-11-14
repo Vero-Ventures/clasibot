@@ -64,12 +64,12 @@ export default function ReviewPage({
     const loadForReviewTransactions = async () => {
       // Load the Transactions and check the Query Result for an error.
       const loadResult = await getDatabaseTransactions();
-      if (loadResult[0].result === 'Error') {
+      if (loadResult.queryResult.result === 'Error') {
         // If an error was found, open the related error modal.
         setErrorLoadingTransactions(true);
       }
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
-      setLoadedTransactions(loadResult[1]);
+      setLoadedTransactions(loadResult.transactions);
     };
     loadForReviewTransactions();
   }, [found_company_info]);
@@ -127,11 +127,14 @@ export default function ReviewPage({
       );
 
       // Set states with the manual Classification process values.
-      setManualClassificationModalMessage(processStates[0]);
-      setNumCompletedProcesses(processStates[1]);
+      setManualClassificationModalMessage(processStates.displayValue);
+      setNumCompletedProcesses(processStates.currentProcess);
 
       // For end states (-1 / 8), update states to close the modal and reset the progess value.
-      if (processStates[1] === -1 || processStates[1] === 8) {
+      if (
+        processStates.currentProcess === -1 ||
+        processStates.currentProcess === 8
+      ) {
         setTimeout(() => {
           setOpenManualClassificationModal(false);
           setNumCompletedProcesses(0);
@@ -194,12 +197,13 @@ export default function ReviewPage({
 
   // Updates the Classifications for each Transaction when the Classified Transactions or Classification results change.
   useEffect(() => {
+    // Call the helper function to initalize the Classifications for the 'For Review' transactions.
     const handleInitalizeTransactionsCall = async () => {
       const initalizeResults =
         await initalizeLoadedTransactions(loadedTransactions);
-      setSelectedCategories(initalizeResults[0]);
-      setSelectedTaxCodes(initalizeResults[1]);
-      setAccounts(initalizeResults[2]);
+      setSelectedCategories(initalizeResults.categoryRecord);
+      setSelectedTaxCodes(initalizeResults.taxCodeRecord);
+      setAccounts(initalizeResults.accountsList);
     };
     handleInitalizeTransactionsCall();
   }, [loadedTransactions]);
@@ -229,15 +233,30 @@ export default function ReviewPage({
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) {
-    saveSelectedTransactions(
+    // Set saving state to be true to lock review table actions.
+    setIsSaving(true);
+
+    // Call the save 'For Review' transactions function and track the returned success value.
+    const savingResult = await saveSelectedTransactions(
       selectedRows,
       transactions,
       selectedCategories,
-      selectedTaxCodes,
-      setIsSaving,
-      setSavingErrorMessage,
-      setOpenSaveModal
+      selectedTaxCodes
     );
+
+    // If the returned result was untrue, log an error message.
+    if (!savingResult) {
+      setSavingErrorMessage(
+        'An error occurred while saving. Please try again.'
+      );
+    } else {
+      // If saving was successful, set error message to be blank to overwrite any existing error messages.
+      setSavingErrorMessage('');
+    }
+
+    // Update saving state on completion and show the saving completion modal.
+    setIsSaving(false);
+    setOpenSaveModal(true);
   }
 
   return (
