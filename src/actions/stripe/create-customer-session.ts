@@ -1,9 +1,11 @@
 'use server';
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { User, Subscription } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getServerSession } from 'next-auth';
-import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
@@ -16,7 +18,7 @@ const stripe = new Stripe(
 
 // Use the current session to create a Stripe session.
 // Returns: An object containing either the Customer session or an error.
-export default async function createCustomerSession(): Promise<
+export async function createCustomerSession(): Promise<
   { customerSession: string } | { error: string }
 > {
   try {

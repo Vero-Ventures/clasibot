@@ -1,11 +1,15 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { Company, User, Firm, Subscription } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { QueryResult } from '@/types/index';
+
 import { Stripe } from 'stripe';
+
+import type { QueryResult } from '@/types/index';
 
 // Create a new Stripe object with the private key.
 // Used to check the User Subscription before updating database.
@@ -16,26 +20,26 @@ const stripe = new Stripe(
 );
 
 // Takes info from a QuickBooks Company invite email and updates the related database Company object.
-// Takes: The User email and Company name from a QBO Company invite.
+// Takes: The User and Company name from a QBO Company invite.
 // Returns: A Query Result object for finding and updating the Comapany in the database.
 export async function addCompanyConnection(
-  userEmail: string,
+  userName: string,
   companyName: string
 ): Promise<QueryResult> {
   try {
     // Use the passed User email to find the related User from the database.
-    const databaseUser = await db
+    const databaseUsers = await db
       .select()
       .from(User)
-      .where(eq(User.email, userEmail));
+      .where(eq(User.userName, userName));
 
-    // Check that a related database User object was found.
-    if (databaseUser) {
+    // Iterate through the database Users to check their Subscription status and Companies.
+    for (const user of databaseUsers) {
       // Find the User Subscription in the database from the User Id.
       const userSubscription = await db
         .select()
         .from(Subscription)
-        .where(eq(Subscription.userId, databaseUser[0].id));
+        .where(eq(Subscription.userId, user.id));
 
       // Get the Subscription status from Stripe by checking for Customers with matching Id.
       const subscription = await stripe.subscriptions.list({
@@ -47,54 +51,39 @@ export async function addCompanyConnection(
 
       // Continue if a valid Subscription is found.
       if (subStatus) {
-        // Check for Companies in the database related to the found User and have the passed Company name.
-        const databaseCompanies = await db
+        // Get all the Companies assosiated with the user.
+        const userCompanies = await db
           .select()
           .from(Company)
-          .where(
-            eq(Company.userId, databaseUser[0].id) &&
-              eq(Company.name, companyName)
-          );
+          .where(eq(Company.userId, user.id));
 
-        if (databaseCompanies) {
-          // Update all the User Companies in the database with that name and return a success message.
-          for (const company of databaseCompanies) {
+        // Iterate through the user Companies for the assosiated one.
+        for (const company of userCompanies) {
+          // Check if the Company name matches the passed name.
+          if (company.name === companyName) {
+            // If a match is found, update the company and return a success Query Result.
             await db
               .update(Company)
               .set({ bookkeeperConnected: true })
               .where(eq(Company.id, company.id));
+
+            return {
+              result: 'Success',
+              message: 'Bookkeeper connected.',
+              detail: 'Bookkeeper connection to Company set to true.',
+            };
           }
-          return {
-            result: 'Success',
-            message: 'Bookkeeper connected.',
-            detail: 'Bookkeeper connection to Company set to true.',
-          };
-        } else {
-          // If no matching Companies could be found, return an error message.
-          return {
-            result: 'Error',
-            message: 'Company could not be found.',
-            detail:
-              'No Companies with that name were found belonging to the User with that email.',
-          };
         }
-      } else {
-        // If the User was found, but had an invalid Subscription, return an error message.
-        return {
-          result: 'Error',
-          message: 'User Subscription was invalid.',
-          detail:
-            'User Subscription either did not exist or is not presently active.',
-        };
       }
-    } else {
-      // If no matching User could be found, return an error message.
-      return {
-        result: 'Error',
-        message: 'User could not be found.',
-        detail: 'No Users in the database with that email could be found.',
-      };
     }
+
+    // If no matching User could be found, return an error message.
+    return {
+      result: 'Error',
+      message: 'User or Company could not be found.',
+      detail:
+        'No valid Users in the database with that name were connected to a Company with that name.',
+    };
   } catch (error) {
     // Catch any errors and return a response, include the error message if it is present.
     if (error instanceof Error) {

@@ -3,5 +3,15 @@
  */
 
 export { classifyCompany } from './classify-company';
+
 export { classifyTransactions } from './classify-transactions';
-export { manualClassify } from './manual-classify';
+
+export {
+  startManualClassification,
+  preformSyntheticLogin,
+  fetchTransactionsToClassify,
+  fetchPredictionContext,
+  startTransactionClassification,
+  createClassifiedTransactions,
+  changeManualClassificationState,
+} from './manual-classify-helpers';

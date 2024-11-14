@@ -1,7 +1,11 @@
 'use server';
+
 import { addDatabaseTransactions } from '@/actions/db-transactions';
+
 import { removeForReviewTransactions } from '@/actions/db-review-transactions/index';
+
 import { addForReview, getAccounts } from '@/actions/quickbooks/index';
+
 import type {
   Account,
   ClassifiedElement,
@@ -16,19 +20,13 @@ import type {
 // Takes: The selected rows from the table, the list of 'For Review' transactions from the table,
 //        The record of selected Categories and Tax Codes,
 //        Also takes state update methods for: Saving, Saving Error Message, and Opening the Save Complete modal.
-// Returns: None, uses state updaters to pass result frontend.
+// Returns: A boolean value indicating save falure used to set the error message on the frontend.
 export async function saveSelectedTransactions(
   selectedRows: Record<number, boolean>,
   transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][],
   selectedCategories: Record<string, string>,
-  selectedTaxCodes: Record<string, string>,
-  setIsSaving: (newState: boolean) => void,
-  setSavingErrorMessage: (newState: string) => void,
-  setOpenSaveModal: (newState: boolean) => void
-) {
-  // Set the saving in progress status to true.
-  setIsSaving(true);
-
+  selectedTaxCodes: Record<string, string>
+): Promise<boolean> {
   try {
     // Define an array for Transactions to be saved to the database for future Classification use.
     const newTransactions: Transaction[] = [];
@@ -43,7 +41,7 @@ export async function saveSelectedTransactions(
     if (accountResults[0].result === 'Error') {
       // If Accounts fetch failed, log an error message and throw an error to be caught and displayed.
       console.error('Error Fetching Accounts: ' + accountResults[0].message);
-      throw 'Accounts Fetch Failed';
+      throw new Error('Accounts Fetch Failed');
     } else {
       // Set the Accounts variable to the Account results with the Query Result in the first index removed.
       accounts = accountResults.slice(1);
@@ -133,7 +131,7 @@ export async function saveSelectedTransactions(
 
           // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
           if (addResult.result === 'Error') {
-            throw addResult.message;
+            throw new Error(addResult.message);
           }
 
           // Remove the related 'For Review' transaction and its connections from the database.
@@ -142,29 +140,29 @@ export async function saveSelectedTransactions(
 
           // If removing the Transaction resulted in an error, throw the Query Result message as an error.
           if (removeResult.result === 'Error') {
-            throw removeResult.message;
+            throw new Error(removeResult.message);
           }
         }
       }
     });
 
     // Add all the newly created Transactions to the database.
-    const result = await addDatabaseTransactions(newTransactions);
+    const addTransactionsResult =
+      await addDatabaseTransactions(newTransactions);
     // Check the Query Result if returned by the add Transactions function resulted in an error.
-    if (result.result === 'Error') {
-      // If the result was an error, log the message and detail and update the error message state.
+    if (addTransactionsResult.result === 'Error') {
+      // If the result was an error, log the message and detail.
       console.error(
         'Error saving existing Classified Transactions:',
-        result.message,
+        addTransactionsResult.message,
         ', Detail: ',
-        result.detail
+        addTransactionsResult.detail
       );
-      setSavingErrorMessage(
-        'An error occurred while saving. Please try again.'
-      );
+      // Return a failure result.
+      return false;
     }
-    // If no errors occured, set the error message state to be null.
-    await setSavingErrorMessage('');
+    // If no errors occured, return a truth value to set an empty error message.
+    return true;
   } catch (error) {
     // Catch any errors and log them (include the error message if it is present).
     if (error instanceof Error) {
@@ -172,12 +170,7 @@ export async function saveSelectedTransactions(
     } else {
       console.error('Error saving existing Classified Transactions:', error);
     }
-    // On error, set the error message state.
-    setSavingErrorMessage('An error occurred while saving. Please try again.');
-  } finally {
-    // Once the saving process is complete,
-    // Set the saving in progress status to false and open the save result modal.
-    setIsSaving(false);
-    setOpenSaveModal(true);
+    // On error, return a failure result.
+    return false;
   }
 }

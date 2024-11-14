@@ -1,17 +1,24 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { checkCompanyConnection } from '@/actions/check-db-company';
+
+import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+
 import { siteConfig } from '@/site-config/site';
+
 import logo from '@/public/logo.svg';
-import { Button } from '@/components/ui/button';
+
 import {
   SignOutButton,
   ChangeCompanyButton,
   DeactivationButton,
 } from '@/components/inputs/index';
+
+import { Button } from '@/components/ui/button';
 
 export async function Navbar() {
   // Check the user's Subscription status.

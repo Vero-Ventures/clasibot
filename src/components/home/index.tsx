@@ -1,12 +1,17 @@
 'use client';
+
 import { useState, useEffect } from 'react';
+
 import ReviewPage from '@/components/home/review-page';
+
 import {
   getCompanyName,
   getCompanyIndustry,
   getCompanyLocation,
 } from '@/actions/quickbooks/index';
+
 import { Locations } from '@/enums/taxes';
+
 import type { CompanyInfo } from '@/types/index';
 
 export default function HomePage() {

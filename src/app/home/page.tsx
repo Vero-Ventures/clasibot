@@ -1,7 +1,11 @@
 import { checkSubscription } from '@/actions/stripe';
-import { checkCompanyConnection } from '@/actions/check-db-company';
+
+import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+
 import { SBKConfirmationModal } from '@/components/modals/index';
+
 import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
+
 import HomePage from '@/components/home';
 
 export default async function Page() {

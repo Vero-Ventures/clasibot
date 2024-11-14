@@ -1,4 +1,5 @@
 'use server';
+
 import nodemailer from 'nodemailer';
 
 // Takes: The user email, contact subject, and email body.

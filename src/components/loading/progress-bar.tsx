@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { CheckIcon, XIcon } from 'lucide-react'; // Make sure you have lucide-react installed
 
 interface ProgressBarProps {

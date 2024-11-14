@@ -1,9 +1,14 @@
 import './globals.css';
-import { siteConfig } from '@/site-config/site';
-import { Analytics } from '@vercel/analytics/react';
-import { Toaster } from '@/components/ui/toasts/toaster';
-import { Footer, Navbar } from '@/components/site-elements/index';
+
 import type { Metadata } from 'next';
+
+import { Analytics } from '@vercel/analytics/react';
+
+import { Toaster } from '@/components/ui/toasts/toaster';
+
+import { Footer, Navbar } from '@/components/site-elements/index';
+
+import { siteConfig } from '@/site-config/site';
 
 export const metadata: Metadata = {
   title: siteConfig.name,

@@ -1,5 +1,7 @@
 'use client';
+
 import { useState, useEffect } from 'react';
+
 import {
   flexRender,
   getCoreRowModel,
@@ -9,16 +11,19 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+
 import { ChevronDown } from 'lucide-react';
+
 import { DatePicker } from '@/components/inputs/index';
+
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -27,7 +32,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+
 import { reviewColumns } from './columns';
+
 import type {
   ForReviewTransaction,
   ClassifiedForReviewTransaction,
