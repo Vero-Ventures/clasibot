@@ -27,10 +27,8 @@ def decode_email():
 
     :returns: the email body decoded
     """
-    # Read the email content as bytes
     with open("email-invite-company", 'rb') as f:
         email_content_bytes = f.read()
-        # Decode the quoted-printable encoding
         decoded_content_bytes = quopri.decodestring(email_content_bytes)
         try:
             decoded_content = decoded_content_bytes.decode('utf-8')
@@ -115,7 +113,6 @@ def extract_company_names_from_email(soup):
     company_names = []
     for strong_tag in soup.find_all('strong'):
         if "Granted access" in strong_tag.text:
-            # Find all <em> tags following the "Granted access" <strong> tag
             for sibling in strong_tag.find_next_siblings():
                 if sibling.name != 'em':
                     break
