@@ -1,7 +1,10 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+
 import { changeManualClassificationState } from '@/actions/backend-actions/classification/index';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
+
 import {
   checkBackendClassifyErrorStatus,
   dismissBackendClassifyErrorStatus,
@@ -12,6 +15,7 @@ import {
 } from '@/actions/review-page-handlers/index';
 
 import { ReviewTable } from '@/components/data-table/review-table';
+
 import {
   ManualClassifyProgessModal,
   ManualClassifyCompleteModal,
