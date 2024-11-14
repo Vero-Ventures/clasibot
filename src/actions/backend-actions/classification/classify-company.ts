@@ -1,5 +1,7 @@
 'use server';
+
 import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
+
 import {
   getAccounts,
   getForReview,
@@ -8,7 +10,9 @@ import {
   getCompanyLocation,
   getCompanyName,
 } from '@/actions/quickbooks/index';
+
 import { classifyTransactions } from './index';
+
 import type {
   Account,
   ClassifiedElement,
@@ -23,19 +27,12 @@ import type {
 
 // Classifies and saves the 'For Review' transactions for a specific Company.
 // Takes: A set of synthetic Login Tokens and the realm Id of the Company.
-//    Manual Classification Specific:
-//        Boolean value for Classification method (true for frontend call) a callback function for updating frontend state.
 // Returns: The Query Result from 'For Review' transaction saving function or an error Query Result.
 export async function classifyCompany(
   loginTokens: LoginTokens,
-  companyId: string,
-  manualClassify: boolean = false,
-  setFrontendState: ((newState: string) => void) | null = null
+  companyId: string
 ): Promise<QueryResult> {
   try {
-    // Manual Classification: Update frontend state for fetching 'For Review' transactions.
-    if (manualClassify) setFrontendState!('Get For Review Transactions');
-
     // Get the 'For Review' transactions for all Accounts related to the current Company.
     const forReviewResult = await getForReviewTransactions(
       loginTokens,
@@ -56,9 +53,6 @@ export async function classifyCompany(
       | FormattedForReviewTransaction
     )[][];
 
-    // Manual Classification: Update frontend state for fetching saved Classified Transactions.
-    if (manualClassify) setFrontendState!('Get Saved Transactions');
-
     // Get the saved Classified Transactions from the User to use as context for prediction.
     const classifiedPastTransactions = await getClassifiedPastTransactions(
       loginTokens,
@@ -72,9 +66,6 @@ export async function classifyCompany(
 
     // Get Company Info for the User as context during LLM predictions.
     const companyInfo = await getCompanyInfo(loginTokens, companyId);
-
-    // Manual Classification: Update frontend state to indicate start of Classification.
-    if (manualClassify) setFrontendState!('Classify For Review Transactions');
 
     // Call Classification function on the formatted 'For Review' transactions.
     const classificationResults:
@@ -112,10 +103,6 @@ export async function classifyCompany(
         }
       >;
 
-      // Manual Classification: Update frontend state to indicate Classified 'For Review' transaction creation.
-      if (manualClassify)
-        setFrontendState!('Create New Classified Transactions');
-
       // Use Classification results to create Classified 'For Review' transaction objects.
       const classifiedForReviewTransactions =
         createClassifiedForReviewTransactions(
@@ -135,9 +122,6 @@ export async function classifyCompany(
           detail: 'Unexpected Error',
         };
       }
-
-      // Manual Classification: Update frontend state to indicate saving Classified 'For Review' transactions to database.
-      if (manualClassify) setFrontendState!('Save New Classified Transactions');
 
       // Save the Classified 'For Review' transactions to the database.
       // Return the resulting Query Result created by the save function.
@@ -167,7 +151,7 @@ export async function classifyCompany(
 // Gets the 'For Review' transactions from the Company Accounts.
 // Takes: The set of synthetic Login Tokens and the realm Id of the Company.
 // Returns: An array of Sub-arrays for the 'For Review' transactions in the format: [FormattedForReviewTransaction, ForReviewTransaction]
-async function getForReviewTransactions(
+export async function getForReviewTransactions(
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<
@@ -250,7 +234,7 @@ async function getForReviewTransactions(
 // Gets the saved and Classified Transactions from the Company for use in LLM prediction.
 // Takes: The set of synthetic Login Tokens and the realm Id of the Company.
 // Returns: An array of Transactions objects for the User Classified Transactions.
-async function getClassifiedPastTransactions(
+export async function getClassifiedPastTransactions(
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<Transaction[]> {
@@ -302,7 +286,7 @@ async function getClassifiedPastTransactions(
 // Gets the Company Info that is used in Transaction Classification.
 // Takes: The set of synthetic Login Tokens and the realm Id of the Company.
 // Returns: The relevant Company Info object.
-async function getCompanyInfo(
+export async function getCompanyInfo(
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<CompanyInfo> {
@@ -347,7 +331,7 @@ async function getCompanyInfo(
 // Takes: The array of Formatted and Raw 'For Review' transactions -
 //        And a record of Transaction Id to the Classification arrays.
 // Returns: The 'For Review' transaction array converted to Sub-arrays of [ClassifiedForReviewTransactions, ForReviewTransaction].
-function createClassifiedForReviewTransactions(
+export function createClassifiedForReviewTransactions(
   forReviewTransactions: (
     | FormattedForReviewTransaction
     | ForReviewTransaction
