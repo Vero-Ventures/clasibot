@@ -47,7 +47,7 @@ export async function handleStateForManualClassify(
     const loadResult = await getDatabaseTransactions();
 
     // Check the loading Query Result for an error.
-    if (loadResult[0].result === 'Error') {
+    if (loadResult.queryResult.result === 'Error') {
       // Update the manual Classification state to indicate an error.
       setManualClassificationState('Error');
 
@@ -65,7 +65,7 @@ export async function handleStateForManualClassify(
       // Also return the array of loaded Classified 'For Review' transactions.
       return {
         loadFailure: false,
-        loadedTransactions: loadResult[1],
+        loadedTransactions: loadResult.transactions,
       };
     }
   }
