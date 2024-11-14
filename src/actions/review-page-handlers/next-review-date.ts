@@ -24,7 +24,19 @@ export async function getNextReviewDate(): Promise<string> {
     )
   );
 
+  // Format the next Classification date into the local time zone.
+  // Uses the format wanted for the frontend display : "Jan 01, 12:00 PM"
+  const formattedDate = nextClassifyUTC.toLocaleString('en-US', {
+    month: 'short', // 'Jan'
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true, // 'AM/PM'
+  });
+
+  // Change the comma in the string to an @ symbol before returning to be displayed.
+  const displayDate = formattedDate.replace(',', ' @');
+
   // Return the next Classification date value.
-  // Using toString() converts from the UTC time to the local time zone of the user.
-  return nextClassifyUTC.toString();
+  return displayDate;
 }

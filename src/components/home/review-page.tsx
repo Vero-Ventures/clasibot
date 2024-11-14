@@ -38,7 +38,7 @@ export default function ReviewPage({
   found_company_info: boolean;
 }>) {
   // Define state to track the localized time of the next backend Classification.
-  const [_nextBackendClassifyDate, setNextBackendClassifyDate] =
+  const [nextBackendClassifyDate, setNextBackendClassifyDate] =
     useState<string>('');
 
   // On page load, gets the date of the next Saturday at 12 AM UTC.
@@ -263,10 +263,18 @@ export default function ReviewPage({
     <>
       <h1
         id="PageAndCompanyName"
-        className="m-auto mb-4 text-center text-3xl font-bold">
+        className="mx-auto mb-4 text-center text-3xl font-bold">
         Classified Transactions -{' '}
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
+
+      <h2 className="pb-4 text-center text-lg font-semibold">
+        Next Scheduled Auto-Review: &nbsp;
+        <span className="inline-block px-2 font-bold">
+          {nextBackendClassifyDate}
+        </span>
+      </h2>
+
       {/* Populate the review table with the Categorized Transactions. */}
       <ReviewTable
         categorizedTransactions={loadedTransactions}
