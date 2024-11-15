@@ -6,15 +6,18 @@ import { changeManualClassificationState } from '@/actions/backend-actions/class
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 
 import {
-  checkBackendClassifyErrorStatus,
-  dismissBackendClassifyErrorStatus,
+  checkBackendClassifyError,
+  dismissBackendClassifyError,
+} from '@/actions/backend-actions/database-functions/index';
+
+import {
   getNextReviewDate,
   handleStateForManualClassify,
   initalizeLoadedTransactions,
   saveSelectedTransactions,
 } from '@/actions/review-page-handlers/index';
 
-import { ReviewTable } from '@/components/data-table/review-table';
+import { ReviewTable } from '@/components/review-elements/review-table';
 
 import {
   ManualClassifyProgessModal,
@@ -32,10 +35,8 @@ import type {
 // Takes: A Company Info object and boolean indicating when the Company Info is loaded.
 export default function ReviewPage({
   company_info,
-  found_company_info,
 }: Readonly<{
   company_info: CompanyInfo;
-  found_company_info: boolean;
 }>) {
   // Define state to track the localized time of the next backend Classification.
   const [nextBackendClassifyDate, setNextBackendClassifyDate] =
@@ -72,7 +73,7 @@ export default function ReviewPage({
       setLoadedTransactions(loadResult.transactions);
     };
     loadForReviewTransactions();
-  }, [found_company_info]);
+  }, []);
 
   // Create states to track the states of a Manual Classification process.
   const [isClassifying, setIsClassifying] = useState(false);
@@ -159,29 +160,26 @@ export default function ReviewPage({
   useEffect(() => {
     // Call the helper function to check for backend Classification failure.
     const handleCheckBackendErrorCall = async () => {
-      const foundError = await checkBackendClassifyErrorStatus();
+      const foundError = await checkBackendClassifyError();
       // Set the found error and display error notice state based on the found error value.
-      setBackendClassifyError(foundError);
-      setShowBackendClassifyErrorNotification(foundError);
+      setBackendClassifyError(foundError.errorStatus);
+      setShowBackendClassifyErrorNotification(foundError.errorStatus);
     };
     handleCheckBackendErrorCall();
-  }, [found_company_info]);
+  }, []);
 
   // Updates the database Company object to dismiss backend Classification error.
   // Unused: Function is marked as unused until frontend notice that allows the user to dismiss the error is implemented.
   async function _dismissBackendClassifyErrorStatus() {
     // Calls the handler method to await the new state values.
     const handleDismissBackendErrorCall = async () => {
-      const dissmissResult = await dismissBackendClassifyErrorStatus();
-      // Set the display message and error tracking states based on the dismissal result.
-      if (dissmissResult) {
-        // Set to be display to hidden on success and sets the found error state to false.
-        setDismissResultMessage('Success');
+      const dissmissResult = await dismissBackendClassifyError();
+      // Set the dismissal message using the dismissal Query Result.
+      setDismissResultMessage(dissmissResult.result);
+      // On success, set to be display to hidden and the found error state to false.
+      if (dissmissResult.result === 'Success') {
         setBackendClassifyError(false);
         setShowBackendClassifyErrorNotification(false);
-      } else {
-        // On error, update indicator state and leave other states unchanged.
-        setDismissResultMessage('Error');
       }
     };
     handleDismissBackendErrorCall();

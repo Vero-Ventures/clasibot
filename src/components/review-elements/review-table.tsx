@@ -33,7 +33,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { reviewColumns } from './columns';
+import { reviewColumns } from '@/components/review-components/columns';
 
 import type {
   ForReviewTransaction,
@@ -184,6 +184,7 @@ export function ReviewTable({
           Test Manual Classification
         </Button>
       </div>
+
       <div
         id="TopFiltersContainer"
         className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
@@ -341,6 +342,7 @@ export function ReviewTable({
           </TableBody>
         </Table>
       </div>
+
       <div
         id="ReviewTableOptionsContainer"
         className="flex items-center justify-between py-2">
