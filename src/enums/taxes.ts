@@ -1,8 +1,10 @@
 /**
- * Define static naming relevant for tax code identification
+ * Define static strings relevant for Tax Code identification.
  */
 
-// Defines standardized shorthand strings for Canada locations (provinces and territories).
+// Defines standardized 2-letter shorthand strings for Canadian locations (provinces and territories).
+//    Should be used by QuickBooks for in Canada Company locations.
+//    Used to determine which Tax Codes will apply to a Company's Transactions.
 export enum Locations {
   AB = 'AB',
   BC = 'BC',
@@ -19,8 +21,9 @@ export enum Locations {
   YT = 'YT',
 }
 
-// Defines a list of the current tax codes for Canada.
-// Links typescript variable style names to full tax code names (same names for frontend and API).
+// Defines a list of the current Tax Codes for Canada.
+//    Links variable style names to full Tax Code names
+//    QuickBooks Tax Codes use the same names for frontend and backend.
 export enum TaxCodes {
   Exempt = 'Exempt',
   ZeroRated = 'Zero-rated',
@@ -40,3 +43,21 @@ export enum TaxCodes {
   HstNL = 'HST NL 2016',
   HstPE = 'HST PE 2016',
 }
+
+export const LocationsToTaxCodes: Record<string, string[]> = {
+  Canada: [
+    TaxCodes.Exempt,
+    TaxCodes.ZeroRated,
+    TaxCodes.OutOfScope,
+    TaxCodes.Gst,
+  ],
+  BC: [TaxCodes.GstPstBC, TaxCodes.PstBC],
+  MB: [TaxCodes.GstPstMB, TaxCodes.PstMB],
+  SK: [TaxCodes.GstPstSK, TaxCodes.PstSk],
+  QC: [TaxCodes.GstQstQC, TaxCodes.QstQC],
+  NS: [TaxCodes.HstNS],
+  ON: [TaxCodes.HstON],
+  NB: [TaxCodes.HstNB],
+  NL: [TaxCodes.HstNL],
+  PE: [TaxCodes.HstPE],
+};

@@ -4,7 +4,6 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 const config = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
@@ -29,13 +28,13 @@ const config = {
       },
     },
     extend: {
-      // Define custom spacing for tailwind rules.
+      // Define custom spacing for tailwind elements.
       spacing: {
         120: '460px',
       },
-      // Add custom border width sizing.
+      // Add custom border sizing for 3 px width.
       borderWidth: {
-        '3': '3px', // Custom border width of 3px
+        '3': '3px',
       },
       // Custom padding sizes based on percentages of container.
       padding: {
@@ -45,7 +44,7 @@ const config = {
         p5: '5%',
       },
       // Defines a custom sizing based on the bug report button.
-      // Defines the size the button expands from an icon to include text.
+      // Defines the screen size the button should expand from an icon to include text.
       screens: {
         popout: '600px',
       },
@@ -98,10 +97,22 @@ const config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        successAnimation: {
+          '0%': { transform: 'scale(0)', opacity: '0' },
+          '70%': { transform: 'scale(1.2)', opacity: '1' },
+          '100%': { transform: 'scale(1)' },
+        },
+        failureAnimation: {
+          '0%': { transform: 'scale(0)', opacity: '0' },
+          '70%': { transform: 'scale(1.2)', opacity: '1' },
+          '100%': { transform: 'scale(1)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        successAnimation: 'successAnimation 0.5s ease-in-out forwards',
+        failureAnimation: 'failureAnimation 0.5s ease-in-out forwards',
       },
     },
   },

@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 const SignOutButton = () => {
   return (
     <Button
-      id="SignOutButton"
+      id="SignOut"
       variant="link"
-      className="!mb-1 bg-gray-700 font-bold text-white underline underline-offset-4 hover:bg-gray-500 md:!mb-0"
+      className="mb-1 bg-gray-700 font-bold text-white hover:bg-gray-500 mb:min-w-40 mb:text-lg md:p-6"
       onClick={() => signOut({ callbackUrl: '/' })}>
       Sign Out
     </Button>

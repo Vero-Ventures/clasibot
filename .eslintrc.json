@@ -27,7 +27,8 @@
     ".vscode",
     "public",
     "drizzle",
-    "*.toml"
+    "*.toml",
+    "*.lockb"
     // Add other file types you want to ignore
   ]
 }

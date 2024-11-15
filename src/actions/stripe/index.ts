@@ -1,9 +1,9 @@
 /**
- * Define and export all the stripe related actions here.
+ * Define and export all the Stripe related actions here.
  */
 
-import createCustomerID from './create-customer-ID';
+import createCustomer from './create-customer';
 import checkSubscription from './check-subscription';
 import createCustomerSession from './create-customer-session';
 
-export { createCustomerID, checkSubscription, createCustomerSession };
+export { createCustomer, checkSubscription, createCustomerSession };

@@ -1,8 +1,15 @@
 /**
- * Defines a formatted version of a "for review" transaction returned from the API.
+ * Defines several key objects needed for using ' For Review' transactions.
+ *    The key data retruned from the Query.
+ *    The full data object needed in a saving a Classified 'For Review' transaction.
+ *    A formatted version of the object with the values needed in Classification.
+ *    A version of the formatted object that also contains the potential Classifications.
  */
-import type { ClassifiedCategory } from './Category';
 
+import type { ClassifiedElement } from './Classification';
+
+// Defines the object recived when calling a 'For Review' transaction from the API.
+// Contains the values needed later when saving the 'For Review' transaction to the User Account.
 export type ForReviewTransaction = {
   id: string;
   olbTxnId: string;
@@ -14,40 +21,11 @@ export type ForReviewTransaction = {
   acceptType: string;
   addAsQboTxn: {
     txnTypeId: string;
-    txnFdmName: string;
     nameId: string | null;
   };
 };
 
-export type FormattedForReviewTransaction = {
-  // ID for the "For Review" transaction.
-  transaction_ID: string;
-  // Name related to the transaction (e.g. the payee).
-  name: string;
-  // date: Date as a string in the format 'YYYY-MM-DD'.
-  date: string;
-  // The account that the for review transaction was pulled from.
-  account: string;
-  // Total negative decimal value of the purchase.
-  amount: number;
-};
-
-export type CategorizedForReviewTransaction = {
-  // ID for the "For Review" transaction.
-  transaction_ID: string;
-  // Name related to the transaction (e.g. the payee).
-  name: string;
-  // date: Date as a string in the format 'YYYY-MM-DD'.
-  date: string;
-  // The account that the for review transaction was pulled from.
-  account: string;
-  // Total negative decimal value of the purchase.
-  amount: number;
-  // An array of possible categories for the transaction to be classified as.
-  categories: ClassifiedCategory[];
-};
-
-// Defines the full object needed to classify a for review transaction through the API call.
+// Defines the full object needed to save a 'For Review' transaction through an API call.
 export type UpdatedForReviewTransaction = {
   txnList: {
     olbTxns: [
@@ -78,4 +56,40 @@ export type UpdatedForReviewTransaction = {
     nextTransactionIndex: number;
     reviewState: string;
   };
+};
+
+// Defines the inital formatted version of a fetched 'For Review' transaction.
+export type FormattedForReviewTransaction = {
+  // Id for the 'For Review' transaction.
+  transaction_Id: string;
+  // Name related to the 'For Review' transaction (AKA the payee).
+  name: string;
+  // Date as a string in the format 'YYYY-MM-DD'.
+  date: string;
+  // The Account that the 'For Review' transaction was pulled from.
+  account: string;
+  // The name of the above Account, used as part of table filtering on frontend review page.
+  accountName: string;
+  // Total value of the Purchase as a negative decimal.
+  amount: number;
+};
+
+// Defines a formatted 'For Review' transaction with its potential Classifications.
+export type ClassifiedForReviewTransaction = {
+  // Id for the 'For Review' transaction.
+  transaction_Id: string;
+  // Name related to the 'For Review' transaction (AKA the payee).
+  name: string;
+  // Date as a string in the format 'YYYY-MM-DD'.
+  date: string;
+  // The Account that the 'For Review' transaction was pulled from.
+  account: string;
+  // The name of the above Account, used as part of table filtering on frontend review page.
+  accountName: string;
+  // Total value of the Purchase as a negative decimal.
+  amount: number;
+  // An (potentially empty) array of possible Categories for the 'For Review' transaction to be Classified as.
+  categories: ClassifiedElement[] | null;
+  // An (potentially empty) array of possible Tax Codes for the 'For Review' transaction to be Classified as.
+  taxCodes: ClassifiedElement[] | null;
 };
