@@ -17,7 +17,7 @@ import {
   saveSelectedTransactions,
 } from '@/actions/review-page-handlers/index';
 
-import { ReviewTable } from '@/components/review-elements/review-table';
+import { ReviewTable } from '@/components/review-page/review-table';
 
 import { ManualReviewButton } from '@/components/inputs/manual-review-button';
 
@@ -141,9 +141,6 @@ export default function ReviewPage({
   }, [manualClassificationState]);
 
   // Create states for checking if an error occured during backend Classification.
-  // Unused: States are marked as unused until frontend notice implementation is completed.
-  const [_backendClassifyError, setBackendClassifyError] =
-    useState<boolean>(false);
   const [
     _showBackendClassifyErrorNotification,
     setShowBackendClassifyErrorNotification,
@@ -157,7 +154,6 @@ export default function ReviewPage({
     const handleCheckBackendErrorCall = async () => {
       const foundError = await checkBackendClassifyError();
       // Set the found error and display error notice state based on the found error value.
-      setBackendClassifyError(foundError.errorStatus);
       setShowBackendClassifyErrorNotification(foundError.errorStatus);
     };
     handleCheckBackendErrorCall();
@@ -173,7 +169,6 @@ export default function ReviewPage({
       setDismissResultMessage(dissmissResult.result);
       // On success, set to be display to hidden and the found error state to false.
       if (dissmissResult.result === 'Success') {
-        setBackendClassifyError(false);
         setShowBackendClassifyErrorNotification(false);
       }
     };

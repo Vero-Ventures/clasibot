@@ -6,7 +6,7 @@ import { SBKConfirmationModal } from '@/components/modals/index';
 
 import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
 
-import ReviewPage from '@/components/review-elements/review-page';
+import ReviewPage from '@/components/review-page/review-page';
 
 import {
   getCompanyName,

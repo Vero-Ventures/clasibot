@@ -16,7 +16,7 @@ import {
   ReviewTableFilters,
   TablePaginationAndSave,
   ReviewTableDisplay,
-} from '@/components/review-components/index';
+} from '@/components/review-page-components/index';
 
 import type {
   ForReviewTransaction,

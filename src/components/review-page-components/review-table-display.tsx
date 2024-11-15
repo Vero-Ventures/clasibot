@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { ReviewColumns } from '@/components/review-components/index';
+import { ReviewColumns } from '@/components/review-page-components/index';
 
 import type { ClassifiedForReviewTransaction } from '@/types/index';
 
