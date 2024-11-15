@@ -174,7 +174,6 @@ export function ReviewTable({
 
   return (
     <div className="w-full">
-
       <div
         id="TopFiltersContainer"
         className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
