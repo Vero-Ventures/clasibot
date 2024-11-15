@@ -217,7 +217,7 @@ const commonColumns = [
 // Define the Columns for the Review Table.
 // Takes: A record of the Classifications and handlers for updating the selected Classification for a specific Row.
 // Returns: The definition for the Columns to display in the review Table.
-export const reviewColumns = (
+export const ReviewColumns = (
   selectedCategories: Record<string, string>,
   selectedTaxCodes: Record<string, string>,
   handleCategoryChange: (transaction_Id: string, category: string) => void,

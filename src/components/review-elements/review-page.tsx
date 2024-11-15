@@ -36,9 +36,9 @@ import type {
 
 // Takes: A Company Info object and boolean indicating when the Company Info is loaded.
 export default function ReviewPage({
-  company_info,
+  companyInfo,
 }: Readonly<{
-  company_info: CompanyInfo;
+  companyInfo: CompanyInfo;
 }>) {
   // Define state to track the localized time of the next backend Classification.
   const [nextBackendClassifyDate, setNextBackendClassifyDate] =
@@ -78,23 +78,19 @@ export default function ReviewPage({
   }, []);
 
   // Create states to track the states of a Manual Classification process.
-  const [isClassifying, setIsClassifying] = useState(false);
   const [manualClassificationState, setManualClassificationState] =
     useState<string>('');
-  const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
-    useState<boolean>(false);
   const [openManualClassificationModal, setOpenManualClassificationModal] =
     useState<boolean>(false);
   const [
     manualClassificationModalMessage,
     setManualClassificationModalMessage,
   ] = useState<string>('');
+  const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
+    useState<boolean>(false);
 
   // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
   function handleManualClassification() {
-    // Start the manual Classification process.
-    setIsClassifying(true);
-
     // Calls the handler method to await and set state with the manual Classification results.
     const handleCall = async () => {
       const classificationResults = await handleStateForManualClassify(
@@ -112,9 +108,6 @@ export default function ReviewPage({
 
       // Update the Classified 'For Review' transaction states with returned values (or empty array on error).
       setLoadedTransactions(classificationResults.loadedTransactions);
-
-      // Complete process by setting isClassifying state to false.
-      setIsClassifying(false);
     };
     handleCall();
   }
@@ -265,7 +258,7 @@ export default function ReviewPage({
         id="PageAndCompanyName"
         className="mx-auto mb-4 text-center text-3xl font-bold">
         Classified Transactions -{' '}
-        <span className="text-blue-900">{company_info.name}</span>
+        <span className="text-blue-900">{companyInfo.name}</span>
       </h1>
 
       <ManualReviewButton handleManualReview={handleManualClassification} />
@@ -279,16 +272,14 @@ export default function ReviewPage({
 
       {/* Populate the review table with the Categorized Transactions. */}
       <ReviewTable
+        accountNames={accounts}
         categorizedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}
         selectedTaxCodes={selectedTaxCodes}
-        account_names={accounts}
         handleCategoryChange={handleCategoryChange}
         handleTaxCodeChange={handleTaxCodeChange}
-        handleSave={handleSave}
         isSaving={isSaving}
-        isClassifying={isClassifying}
-        manualClassificationState={manualClassificationState}
+        handleSave={handleSave}
       />
 
       {/* Defines the modal to be displayed if an attempt to load classified Transactions fails. */}
