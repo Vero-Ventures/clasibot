@@ -19,6 +19,8 @@ import {
 
 import { ReviewTable } from '@/components/review-elements/review-table';
 
+import { ManualReviewButton } from '@/components/inputs/manual-review-button';
+
 import {
   ManualClassifyProgessModal,
   ManualClassifyCompleteModal,
@@ -266,6 +268,8 @@ export default function ReviewPage({
         <span className="text-blue-900">{company_info.name}</span>
       </h1>
 
+      <ManualReviewButton handleManualReview={handleManualClassification} />
+
       <h2 className="pb-4 text-center text-lg font-semibold">
         Next Scheduled Auto-Review: &nbsp;
         <span className="inline-block px-2 font-bold">
@@ -283,7 +287,6 @@ export default function ReviewPage({
         handleTaxCodeChange={handleTaxCodeChange}
         handleSave={handleSave}
         isSaving={isSaving}
-        handleManualClassification={handleManualClassification}
         isClassifying={isClassifying}
         manualClassificationState={manualClassificationState}
       />

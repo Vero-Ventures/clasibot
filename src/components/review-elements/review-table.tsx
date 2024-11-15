@@ -57,7 +57,6 @@ export function ReviewTable({
   handleTaxCodeChange,
   handleSave,
   isSaving,
-  handleManualClassification,
   isClassifying,
   manualClassificationState,
 }: Readonly<{
@@ -75,7 +74,6 @@ export function ReviewTable({
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) => void;
   isSaving: boolean;
-  handleManualClassification: () => void;
   manualClassificationState: string;
   isClassifying: boolean;
 }>) {
@@ -176,14 +174,6 @@ export function ReviewTable({
 
   return (
     <div className="w-full">
-      <div className="mx-auto w-fit">
-        <Button
-          id="TestManualClassification"
-          className="h-12 w-40 self-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-          onClick={() => handleManualClassification()}>
-          Test Manual Classification
-        </Button>
-      </div>
 
       <div
         id="TopFiltersContainer"
