@@ -40,11 +40,8 @@ export function ReviewTableFilters({
 }>) {
   return (
     <div>
-      <div
-        id="TopFiltersContainer"
-        className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
+      <div className="mt-6 grid w-full grid-rows-2 md:grid-cols-2 md:grid-rows-1">
         <Input
-          id="NameFilterInput"
           placeholder="Filter by name..."
           // Set the input value to the name filter value from the table (or an empty string).
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -54,9 +51,7 @@ export function ReviewTableFilters({
           }
           className="mr-2 w-2/3 max-w-xs popout:mr-4 popout:w-1/2 md:mr-6 md:w-2/3"
         />
-        <div
-          id="DateSelectionContainer"
-          className="mx-auto flex w-11/12 items-center md:w-5/6">
+        <div className="mx-auto flex w-11/12 items-center md:w-5/6">
           <div className="mt-2 grid w-full grid-cols-2 gap-x-6 px-2 mb:gap-x-12 sm:gap-x-16 md:mt-0 md:gap-x-6">
             <DatePicker date={startDate} setDate={changeStartDate} />
             <DatePicker date={endDate} setDate={changeEndDate} />
@@ -64,19 +59,13 @@ export function ReviewTableFilters({
         </div>
       </div>
 
-      <div
-        id="BottomFiltersContainer"
-        className="mx-auto mt-8 grid grid-cols-2 gap-x-4 px-4 popout:gap-x-6 md:gap-x-12 md:px-6 lg:gap-x-20 lg:px-8 xl:gap-x-24 xl:px-10">
-        <div
-          id="AccountFilter"
-          className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
+      <div className="mx-auto mt-8 grid grid-cols-2 gap-x-4 px-4 popout:gap-x-6 md:gap-x-12 md:px-6 lg:gap-x-20 lg:px-8 xl:gap-x-24 xl:px-10">
+        <div className="ml-2 max-w-48 popout:ml-4 popout:w-1/4 md:ml-6 md:w-1/3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                id="AccountsDropdownButton"
                 variant="outline"
                 className="w-full bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
-                {/* Chevron down acts a down arrow icon */}
                 Accounts <ChevronDown className="ml-2 mt-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -100,10 +89,8 @@ export function ReviewTableFilters({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              id="ColumnFilterButton"
               variant="outline"
               className="bg-blue-500 text-white hover:bg-blue-800 hover:text-white">
-              {/* Chevron down acts a down arrow icon */}
               Columns <ChevronDown className="ml-2 mt-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

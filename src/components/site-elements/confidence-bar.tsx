@@ -31,9 +31,7 @@ export function ConfidenceBar({
     segmentThreeFormatting = 'w-8 h-6 m-1 mr-2 bg-green-400 rounded-r-lg';
   }
   return (
-    // Define the Confidence Bar component container.
     <div className="relative flex w-fit">
-      {/* Define the inner elements of the Confidence Bar using the defined segments and the Hover Card components. */}
       <HoverCard>
         <HoverCardContent>{hoverText}</HoverCardContent>
         <div className="relative h-8 w-36 -translate-y-0.5 pb-2">

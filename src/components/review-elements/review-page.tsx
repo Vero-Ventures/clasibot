@@ -254,9 +254,7 @@ export default function ReviewPage({
 
   return (
     <>
-      <h1
-        id="PageAndCompanyName"
-        className="mx-auto mb-4 text-center text-3xl font-bold">
+      <h1 className="mx-auto mb-4 text-center text-3xl font-bold">
         Classified Transactions -{' '}
         <span className="text-blue-900">{companyInfo.name}</span>
       </h1>
@@ -270,7 +268,6 @@ export default function ReviewPage({
         </span>
       </h2>
 
-      {/* Populate the review table with the Categorized Transactions. */}
       <ReviewTable
         accountNames={accounts}
         categorizedTransactions={loadedTransactions}
@@ -282,7 +279,6 @@ export default function ReviewPage({
         handleSave={handleSave}
       />
 
-      {/* Defines the modal to be displayed if an attempt to load classified Transactions fails. */}
       {
         <ErrorLoadingTransactionsModal
           displayState={errorLoadingTransactions}
@@ -290,7 +286,6 @@ export default function ReviewPage({
         />
       }
 
-      {/* Defines a modal to be displayed on completion of the saving the Classified 'For Review' transactions. */}
       {
         <SaveClassifiedTransactionsModal
           displayState={openSaveModal}
@@ -298,7 +293,6 @@ export default function ReviewPage({
         />
       }
 
-      {/* Defines the modal to be displayed during the manual Classification process. */}
       {
         <ManualClassifyProgessModal
           displayState={openManualClassificationModal}
@@ -308,7 +302,6 @@ export default function ReviewPage({
         />
       }
 
-      {/* Defines the modal to be displayed on completion of the manual Classification function call. */}
       {
         <ManualClassifyCompleteModal
           displayState={openFinishedClassificationModal}

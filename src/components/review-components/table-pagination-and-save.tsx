@@ -29,23 +29,15 @@ export function TablePaginationAndSave({
   ) => void;
 }>) {
   return (
-    <div
-      id="ReviewTableOptionsContainer"
-      className="flex items-center justify-between py-2">
-      {/* Inform the user of the current Rows displayed compared to the total Rows fetched. */}
-      <div
-        id="SelectedAndCurrentRowsInfo"
-        className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
+    <div className="flex items-center justify-between py-2">
+      <div className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{' '}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
-      {/* Pagination buttons for the table. Each page holds the header row and 10 Transaction rows. */}
-      <div
-        id="PaginationButtonsContainer"
-        className="grid grid-rows-2 space-y-1 sm:grid-cols-2 sm:grid-rows-1 sm:space-x-2 sm:space-y-0">
+
+      <div className="grid grid-rows-2 space-y-1 sm:grid-cols-2 sm:grid-rows-1 sm:space-x-2 sm:space-y-0">
         <div>
           <Button
-            id="PreviousPageButton"
             variant="outline"
             className="w-20 translate-y-12 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:translate-y-0"
             size="sm"
@@ -56,7 +48,6 @@ export function TablePaginationAndSave({
         </div>
         <div>
           <Button
-            id="NextPageButton"
             variant="outline"
             size="sm"
             className="absolute w-20 -translate-y-10 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:relative sm:translate-y-0"
@@ -68,7 +59,6 @@ export function TablePaginationAndSave({
       </div>
       <div className="ml-2">
         <Button
-          id="SaveButton"
           onClick={() => handleSave(rowSelection, categorizedTransactions)}
           disabled={
             isSaving || table.getFilteredSelectedRowModel().rows.length === 0

@@ -22,9 +22,8 @@ export function ReviewTableDisplay({
   table: Table<ClassifiedForReviewTransaction>;
 }>) {
   return (
-    <div id="TableContainer" className="mt-2 rounded border-2 border-gray-300">
+    <div className="mt-2 rounded border-2 border-gray-300">
       <DisplayTable>
-        {/* Define the top row of the Table with the Column labels. */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

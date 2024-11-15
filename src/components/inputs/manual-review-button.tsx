@@ -10,7 +10,6 @@ export function ManualReviewButton({
   return (
     <div className="mx-auto w-fit">
       <Button
-        id="ManualReviewButton"
         className="h-12 w-40 self-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
         onClick={() => handleManualReview()}>
         Start Direct Review

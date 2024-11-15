@@ -45,7 +45,7 @@ export default async function Page() {
   } else {
     // Otherwise, show the review page.
     return (
-      <div id="TableContainer" className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         <ReviewPage companyInfo={companyInfo} />
       </div>
     );

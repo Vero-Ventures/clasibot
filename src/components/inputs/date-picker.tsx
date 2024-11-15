@@ -25,23 +25,19 @@ export function DatePicker({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        {/* Date picker input containing a calendar icon. */}
         <Button
-          id="DatePickerButton"
           variant={'outline'}
           className={cn(
             'w-full justify-center border-2 border-gray-300 pr-4 text-center font-normal mb:pr-6',
             !date && 'text-muted-foreground'
           )}>
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {/* Either displays a date, or a message indicating to pick one. */}
-          {/* If date is not null, format the date as MM/dd/yyyy (Capitalization is needed). Otherwise, display the message. */}
+          {/* Either displays a formatted date, or a message indicating to pick one. */}
           {date !== null && format(date, 'MM/dd/yyyy')}
           {date === null && <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        {/* Date starts unselected. When selected, the setDate function is called. */}
         <Calendar
           id="DatePickerDropdownCalendar"
           mode="single"

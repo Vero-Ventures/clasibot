@@ -47,19 +47,16 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
   return (
     <>
-      {/* Button to open the Deactivate Company modal */}
       {!connectionStatus.connected && (
         <button
-          id="DeactivateCompanyButton"
           className="mb-2 flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-red-500 to-red-700 px-4 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 lg:w-full lg:min-w-0"
           onClick={() => setInfoModalOpen(true)}>
-          <span id="ButtonText" className="text-lg font-semibold md:text-2xl">
+          <span className="text-lg font-semibold md:text-2xl">
             Deactivate Company
           </span>
         </button>
       )}
 
-      {/* Information Modal */}
       {
         <DeactivateInfoModal
           displayState={infoModalOpen}
@@ -67,7 +64,6 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
           switchToInfoModal={openConfirmationModal}></DeactivateInfoModal>
       }
 
-      {/* Confirmation Modal */}
       {
         <DeactivateConfirmModal
           displayState={confirmModalOpen}
@@ -75,7 +71,6 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
           deactivateCompany={deactivateCompany}></DeactivateConfirmModal>
       }
 
-      {/* Error Modal */}
       {
         <DeactivateErrorModal
           displayState={errorModalOpen}
