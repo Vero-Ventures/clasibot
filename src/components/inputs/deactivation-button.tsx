@@ -18,12 +18,12 @@ interface DeactivationButtonProps {
 export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   connectionStatus,
 }) => {
-  // Modal state trackers.
+  // State trackers to indicate which modals should be displayed to the user.
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
 
-  // Define function to switch from info to confirmation modal.
+  // Helper function to allow buttons to switch from info to confirmation modal through single call.
   function openConfirmationModal() {
     setInfoModalOpen(false);
     setConfirmModalOpen(true);
@@ -31,16 +31,20 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
   // Deactivate database Company object handler.
   async function deactivateCompany(switchCompany: boolean) {
+    // Get the deactivation result and check for an error.
     const deactivationResult = await makeCompanyIncactive();
 
     if (deactivationResult.result === 'Error') {
+      // Close the confirmation modal and open the error modal.
       setConfirmModalOpen(false);
       setErrorModalOpen(true);
     }
 
+    // If the switch Company option was selected, redirect the user to Company selection.
     if (switchCompany) {
       signIn('quickbooks', { callbackUrl: '/home' });
     } else {
+      // Otherwise, sign the user out.
       signOut({ callbackUrl: '/' });
     }
   }

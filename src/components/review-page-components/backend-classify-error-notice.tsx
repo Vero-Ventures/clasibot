@@ -3,15 +3,33 @@
 import { Button } from '@/components/ui/button';
 
 export function BackendClassifyErrorNotice({
-  showErrorNotification,
+  showErrorNotice,
   dismissalMessage,
-  dismissBackendClassifyErrorStatus,
-  setShowErrorNotification,
+  dismissErrorStatus,
+  setShowErrorNotice,
 }: Readonly<{
-  showErrorNotification: boolean;
+  showErrorNotice: boolean;
   dismissalMessage: string;
-  dismissBackendClassifyErrorStatus: () => void;
-  setShowErrorNotification: (newState: boolean) => void;
+  dismissErrorStatus: () => void;
+  setShowErrorNotice: (newState: boolean) => void;
 }>) {
-  return <div className=""></div>;
+  // Test value setting.
+  showErrorNotice = true;
+  dismissalMessage = '';
+
+  return (
+    <div className={`${showErrorNotice ? '' : 'hidden'}`}>
+      <div className="">
+        <p className="">Inital Message</p>
+        <p className="">Secondary Message</p>
+      </div>
+      <h3 className={`${dismissalMessage !== '' ? '' : 'hidden'}`}>
+        {dismissalMessage}
+      </h3>
+      <div className="">
+        <Button onClick={() => setShowErrorNotice(false)} className=""></Button>
+        <Button onClick={() => dismissErrorStatus()} className=""></Button>
+      </div>
+    </div>
+  );
 }

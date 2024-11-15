@@ -133,7 +133,7 @@ const commonColumns = [
     },
   },
 
-  // Define the Payee / Name Column
+  // Define the Name Column
   {
     accessorKey: 'name',
     header: ({
@@ -142,7 +142,7 @@ const commonColumns = [
       column:
         | Column<FormattedForReviewTransaction>
         | Column<ClassifiedForReviewTransaction>;
-    }) => sortableHeader(column, 'Payee'),
+    }) => sortableHeader(column, 'Name'),
     cell: ({
       row,
     }: {

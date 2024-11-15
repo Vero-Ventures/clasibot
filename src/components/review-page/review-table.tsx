@@ -64,7 +64,7 @@ export function ReviewTable({
   const [startDate, setStartDate] = useState<Date | null>(twoYearsAgo);
   const [endDate, setEndDate] = useState<Date | null>(currentDate);
 
-  // Define functions to handle change to the date selection and update the Table filtering.
+  // Define helper functions to handle change to the date selection and update the filters.
   function changeStartDate(date: Date | null) {
     table.getColumn('date')?.setFilterValue(`${date} to ${endDate}`);
     setStartDate(date);
@@ -116,10 +116,10 @@ export function ReviewTable({
     },
   });
 
-  // Define account selection tracking state.
+  // Define account selection tracking state and its related functions.
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
-  // Update the Account selection state for Account based filtering.
+  // A callback function to update the Account selection state for Account based filtering.
   function updateAccountSelection(account: string) {
     // Check if the Account is being added or removed from the filter.
     if (selectedAccounts.includes(account)) {
@@ -133,12 +133,12 @@ export function ReviewTable({
     }
   }
 
-  // Update the selected Accounts list whenever there is a change to the list of Account names.
+  // Whenever there is a change to the list of Account names, resets the selected Accounts.
   useEffect(() => {
     setSelectedAccounts(accountNames);
   }, [accountNames]);
 
-  // Update the Account filter in the table when the selected Accounts change.
+  // Whenever the selected Account or table changes, updates the Account based filtering.
   useEffect(() => {
     // If no Accounts are selected, set the Account filter false which shows all results.
     if (selectedAccounts.length === 0) {

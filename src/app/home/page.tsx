@@ -22,10 +22,12 @@ export default async function Page() {
   // Check if the Synthetic BookKeeper is connected to the account.
   const companyHasSBK = await checkCompanyConnection();
 
-  // Get the Company Info from the user info functions and record it as a Company Info object
+  // Get the Company Info from the QuickBooks functions.
   const userCompanyName = await getCompanyName();
   const userCompanyIndustry = await getCompanyIndustry();
   const userCompanyLocation = JSON.parse(await getCompanyLocation());
+
+  // Record the collected Company Info as an object to be passed to the review page.
   const companyInfo: CompanyInfo = {
     name: userCompanyName,
     industry: userCompanyIndustry,

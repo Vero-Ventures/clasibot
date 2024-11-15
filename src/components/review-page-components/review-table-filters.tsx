@@ -100,12 +100,7 @@ export function ReviewTableFilters({
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
-                // Get the name of the column using the Column Id.
-                let field = column.id;
-                // Rename 'name' Column to 'Payee'.
-                if (column.id === 'name') {
-                  field = 'Payee';
-                }
+                const field = column.id;
                 return (
                   // Create a checkbox item for each Column that can be hidden.
                   <DropdownMenuCheckboxItem

@@ -17,6 +17,7 @@ import {
   saveSelectedTransactions,
 } from '@/actions/review-page-handlers/index';
 
+import { BackendClassifyErrorNotice } from '@/components/review-page-components/index';
 import { ReviewTable } from '@/components/review-page/review-table';
 
 import { ManualReviewButton } from '@/components/inputs/manual-review-button';
@@ -61,7 +62,7 @@ export default function ReviewPage({
   const [errorLoadingTransactions, setErrorLoadingTransactions] =
     useState<boolean>(false);
 
-  // Loads the previously Classified and saved Transactions whenever Company Info loading state updates.
+  // On page load, gets the previously Classified and saved Transactions whenever Company Info loading state updates.
   useEffect(() => {
     // Load the Transactions from the database.
     const loadForReviewTransactions = async () => {
@@ -82,14 +83,11 @@ export default function ReviewPage({
     useState<string>('');
   const [openManualClassificationModal, setOpenManualClassificationModal] =
     useState<boolean>(false);
-  const [
-    manualClassificationModalMessage,
-    setManualClassificationModalMessage,
-  ] = useState<string>('');
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
 
-  // Starts the manual Classification process, handles the intial and end states, and modal display on finish.
+  // Define the helper function to start the manual Classification process.
+  // Also handles the intial and end state setting and displays a modal on completion.
   function handleManualClassification() {
     // Calls the handler method to await and set state with the manual Classification results.
     const handleCall = async () => {
@@ -112,9 +110,15 @@ export default function ReviewPage({
     handleCall();
   }
 
+  // Create states used in the frontend display of the manual Classification state.
+  const [
+    manualClassificationModalMessage,
+    setManualClassificationModalMessage,
+  ] = useState<string>('');
   const [numCompletedProcesses, setNumCompletedProcesses] = useState<number>(0);
   const numManualClassificationStates = 8;
-  // Define handler for different manual Classification states.
+
+  // Defines a handler for changes to the manual Classification state.
   useEffect(() => {
     const handleManualClassificationChangeCall = async () => {
       // Calls the handler method to await the new state values.
@@ -141,35 +145,31 @@ export default function ReviewPage({
   }, [manualClassificationState]);
 
   // Create states for checking if an error occured during backend Classification.
-  const [
-    _showBackendClassifyErrorNotification,
-    setShowBackendClassifyErrorNotification,
-  ] = useState<boolean>(false);
-  const [_dismissResultMessage, setDismissResultMessage] = useState<string>('');
+  const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false);
+  const [dismissErrorNoticeMessage, setDismissErrorNoticeMessage] =
+    useState<string>('');
 
-  // Check for an error whenever Company Info load state updates.
-  // Done at the same time as loading the Saved and Classified Transactions and the database 'For Review' transactions.
+  // On page load, check the database for an error notice from backend Classification.
   useEffect(() => {
     // Call the helper function to check for backend Classification failure.
     const handleCheckBackendErrorCall = async () => {
       const foundError = await checkBackendClassifyError();
-      // Set the found error and display error notice state based on the found error value.
-      setShowBackendClassifyErrorNotification(foundError.errorStatus);
+      // Set the found error state based on the found error value.
+      setShowErrorNotice(foundError.errorStatus);
     };
     handleCheckBackendErrorCall();
   }, []);
 
-  // Updates the database Company object to dismiss backend Classification error.
-  // Unused: Function is marked as unused until frontend notice that allows the user to dismiss the error is implemented.
-  async function _dismissBackendClassifyErrorStatus() {
+  // Defines a callback to dismiss backend Classification error from the database.
+  async function dismissErrorStatus() {
     // Calls the handler method to await the new state values.
     const handleDismissBackendErrorCall = async () => {
       const dissmissResult = await dismissBackendClassifyError();
       // Set the dismissal message using the dismissal Query Result.
-      setDismissResultMessage(dissmissResult.result);
+      setDismissErrorNoticeMessage(dissmissResult.result);
       // On success, set to be display to hidden and the found error state to false.
       if (dissmissResult.result === 'Success') {
-        setShowBackendClassifyErrorNotification(false);
+        setShowErrorNotice(false);
       }
     };
     handleDismissBackendErrorCall();
@@ -183,7 +183,7 @@ export default function ReviewPage({
     Record<string, string>
   >({});
 
-  // Updates the Classifications for each Transaction when the Classified Transactions or Classification results change.
+  // Whenever the loaded 'For Review' transactions are updated, also update the Classifications for each Transaction.
   useEffect(() => {
     // Call the helper function to initalize the Classifications for the 'For Review' transactions.
     const handleInitalizeTransactionsCall = async () => {
@@ -216,7 +216,7 @@ export default function ReviewPage({
   const [openSaveModal, setOpenSaveModal] = useState(false);
   const [savingErrorMessage, setSavingErrorMessage] = useState<string>('');
 
-  // Saves the selected Classification of the selected Rows.
+  // Define a callback to handle saving the selected Classification of the selected Rows.
   async function handleSave(
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
@@ -262,6 +262,13 @@ export default function ReviewPage({
           {nextBackendClassifyDate}
         </span>
       </h2>
+
+      <BackendClassifyErrorNotice
+        showErrorNotice={showErrorNotice}
+        dismissalMessage={dismissErrorNoticeMessage}
+        dismissErrorStatus={dismissErrorStatus}
+        setShowErrorNotice={setShowErrorNotice}
+      />
 
       <ReviewTable
         accountNames={accounts}

@@ -30,7 +30,7 @@ export function ReviewTableDisplay({
               {/* Map over the Columns (header groups) inside the react Table header row. */}
               {headerGroup.headers.map((header) => {
                 return (
-                  // Create a Table head object using the current header id and Column header.
+                  // Create a Table head object using the current header Id and Column header.
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
@@ -50,7 +50,7 @@ export function ReviewTableDisplay({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                // Set the Row's background color depending on the selected state.
+                // Sets the Row's background color depending on the selected state.
                 className={`relative ${row.getIsSelected() ? 'bg-blue-100' : ''} hover:bg-blue-100`}
                 onClick={() => row.toggleSelected(!row.getIsSelected())}
                 style={{ cursor: 'pointer' }}>
@@ -63,7 +63,6 @@ export function ReviewTableDisplay({
               </TableRow>
             ))
           ) : (
-            // If the Table is empty (no Tows), display a message to indicate there are no results.
             <TableRow id="EmptyTable">
               <TableCell
                 colSpan={ReviewColumns.length}

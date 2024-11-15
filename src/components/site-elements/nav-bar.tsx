@@ -69,7 +69,6 @@ export async function Navbar() {
           <DeactivationButton connectionStatus={connectionStatus} />
         </div>
       </div>
-
       {!session?.user && (
         <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:pl-4 lg:pr-12 xl:pr-24">
           <a
