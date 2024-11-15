@@ -146,8 +146,6 @@ export default function ReviewPage({
 
   // Create states for checking if an error occured during backend Classification.
   const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false);
-  const [dismissErrorNoticeMessage, setDismissErrorNoticeMessage] =
-    useState<string>('');
 
   // On page load, check the database for an error notice from backend Classification.
   useEffect(() => {
@@ -160,17 +158,12 @@ export default function ReviewPage({
     handleCheckBackendErrorCall();
   }, []);
 
-  // Defines a callback to dismiss backend Classification error from the database.
+  // Defines a callback to dismiss backend Classification error the database and hide the error notice.
   async function dismissErrorStatus() {
-    // Calls the handler method to await the new state values.
     const handleDismissBackendErrorCall = async () => {
-      const dissmissResult = await dismissBackendClassifyError();
-      // Set the dismissal message using the dismissal Query Result.
-      setDismissErrorNoticeMessage(dissmissResult.result);
-      // On success, set to be display to hidden and the found error state to false.
-      if (dissmissResult.result === 'Success') {
-        setShowErrorNotice(false);
-      }
+      // Close the frontend element, then dismiss the error from the database Company object.
+      await dismissBackendClassifyError();
+      setShowErrorNotice(false);
     };
     handleDismissBackendErrorCall();
   }
@@ -256,19 +249,19 @@ export default function ReviewPage({
 
       <ManualReviewButton handleManualReview={handleManualClassification} />
 
-      <h2 className="pb-4 text-center text-lg font-semibold">
+      <h2 className="py-4 text-center text-lg font-semibold">
         Next Scheduled Auto-Review: &nbsp;
         <span className="inline-block px-2 font-bold">
           {nextBackendClassifyDate}
         </span>
       </h2>
 
-      <BackendClassifyErrorNotice
-        showErrorNotice={showErrorNotice}
-        dismissalMessage={dismissErrorNoticeMessage}
-        dismissErrorStatus={dismissErrorStatus}
-        setShowErrorNotice={setShowErrorNotice}
-      />
+      <div className="mx-auto w-fit">
+        <BackendClassifyErrorNotice
+          showErrorNotice={showErrorNotice}
+          dismissErrorStatus={dismissErrorStatus}
+        />
+      </div>
 
       <ReviewTable
         accountNames={accounts}

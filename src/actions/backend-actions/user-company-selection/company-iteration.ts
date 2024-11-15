@@ -71,6 +71,11 @@ export async function classificationCompanyIteration(user: databaseUser) {
               db.update(Company)
                 .set({ classificationFailed: true })
                 .where(eq(Company.id, companyId));
+            } else {
+              // Otherwise, clear any existing Classificaion error logs from the database Company object.
+              db.update(Company)
+                .set({ classificationFailed: false })
+                .where(eq(Company.id, companyId));
             }
           });
         }
