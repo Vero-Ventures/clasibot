@@ -1,8 +1,13 @@
 'use client';
+
 import { useRouter } from 'next/navigation';
+
 import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
+
 import { MiniSpinner } from '@/components/loading/index';
+
 import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
 
 export const CheckConnectionButton = () => {
