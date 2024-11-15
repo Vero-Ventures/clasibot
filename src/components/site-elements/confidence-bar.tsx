@@ -20,7 +20,7 @@ export function ConfidenceBar({
   let segmentTwoFormatting = 'z-0 w-8 h-6 m-1 bg-gray-200';
   let segmentThreeFormatting = 'z-0 w-8 h-6 m-1 mr-2 bg-gray-200 rounded-r-lg';
 
-  // Update the highlighted segments based on the Confidence value.
+  // Update the number of highlighted segments based on the Confidence value.
   if (confidence >= 1) {
     segmentOneFormatting = 'w-8 h-6 m-1 ml-2 bg-green-400 rounded-l-lg';
   }
@@ -30,10 +30,9 @@ export function ConfidenceBar({
   if (confidence >= 3) {
     segmentThreeFormatting = 'w-8 h-6 m-1 mr-2 bg-green-400 rounded-r-lg';
   }
+
   return (
-    // Define the Confidence Bar component container.
     <div className="relative flex w-fit">
-      {/* Define the inner elements of the Confidence Bar using the defined segments and the Hover Card components. */}
       <HoverCard>
         <HoverCardContent>{hoverText}</HoverCardContent>
         <div className="relative h-8 w-36 -translate-y-0.5 pb-2">

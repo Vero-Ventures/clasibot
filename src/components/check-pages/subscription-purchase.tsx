@@ -20,9 +20,7 @@ export default async function SubscriptionPurchase() {
       <div className="flex flex-col justify-between lg:flex-row xl:justify-evenly">
         <div className="content-center md:pb-4 lg:w-[55%] xl:w-[40%]">
           <div className="flex flex-col space-y-4 pt-8 lg:pt-0">
-            <h2
-              id="ResultTitle"
-              className="mb-4 text-center text-2xl font-bold text-red-500 md:text-3xl">
+            <h2 className="mb-4 text-center text-2xl font-bold text-red-500 md:text-3xl">
               Your account does not have a valid subscription.
             </h2>
             <div className="space-y-2">

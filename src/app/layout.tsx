@@ -25,13 +25,9 @@ export default function RootLayout({
   // Also defines two  unseen elements: the toaster and vercel analytics handlers.
   return (
     <html lang="en">
-      <body
-        id="PageLayoutContainer"
-        className="flex min-h-screen flex-col bg-gray-100">
+      <body className="flex min-h-screen flex-col bg-gray-100">
         <Navbar />
-        <main
-          id="PageContent"
-          className="flex flex-grow flex-col items-center justify-center">
+        <main className="flex flex-grow flex-col items-center justify-center">
           {children}
         </main>
         <Footer />

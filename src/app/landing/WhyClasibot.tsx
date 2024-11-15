@@ -8,11 +8,8 @@ import quickbooks from './quickbooks.jpg';
 
 export const WhyClasibot = () => {
   return (
-    <section
-      id="why-quickbooks"
-      className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+    <section className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
       <div className="flex flex-col items-center md:flex-row">
-        {/* Left Side: Background Image */}
         <div
           className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
           style={{
@@ -21,7 +18,6 @@ export const WhyClasibot = () => {
             backgroundPosition: 'center',
           }}></div>
 
-        {/* Right Side: Content */}
         <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-8">
           <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
             Why QuickBooks

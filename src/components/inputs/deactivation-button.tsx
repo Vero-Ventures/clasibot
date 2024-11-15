@@ -18,12 +18,12 @@ interface DeactivationButtonProps {
 export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   connectionStatus,
 }) => {
-  // Modal state trackers.
+  // State trackers to indicate which modals should be displayed to the user.
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
 
-  // Define function to switch from info to confirmation modal.
+  // Helper function to allow buttons to switch from info to confirmation modal through single call.
   function openConfirmationModal() {
     setInfoModalOpen(false);
     setConfirmModalOpen(true);
@@ -31,35 +31,36 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
   // Deactivate database Company object handler.
   async function deactivateCompany(switchCompany: boolean) {
+    // Get the deactivation result and check for an error.
     const deactivationResult = await makeCompanyIncactive();
 
     if (deactivationResult.result === 'Error') {
+      // Close the confirmation modal and open the error modal.
       setConfirmModalOpen(false);
       setErrorModalOpen(true);
     }
 
+    // If the switch Company option was selected, redirect the user to Company selection.
     if (switchCompany) {
       signIn('quickbooks', { callbackUrl: '/home' });
     } else {
+      // Otherwise, sign the user out.
       signOut({ callbackUrl: '/' });
     }
   }
 
   return (
     <>
-      {/* Button to open the Deactivate Company modal */}
       {!connectionStatus.connected && (
         <button
-          id="DeactivateCompanyButton"
           className="mb-2 flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-red-500 to-red-700 px-4 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 lg:w-full lg:min-w-0"
           onClick={() => setInfoModalOpen(true)}>
-          <span id="ButtonText" className="text-lg font-semibold md:text-2xl">
+          <span className="text-lg font-semibold md:text-2xl">
             Deactivate Company
           </span>
         </button>
       )}
 
-      {/* Information Modal */}
       {
         <DeactivateInfoModal
           displayState={infoModalOpen}
@@ -67,7 +68,6 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
           switchToInfoModal={openConfirmationModal}></DeactivateInfoModal>
       }
 
-      {/* Confirmation Modal */}
       {
         <DeactivateConfirmModal
           displayState={confirmModalOpen}
@@ -75,7 +75,6 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
           deactivateCompany={deactivateCompany}></DeactivateConfirmModal>
       }
 
-      {/* Error Modal */}
       {
         <DeactivateErrorModal
           displayState={errorModalOpen}
