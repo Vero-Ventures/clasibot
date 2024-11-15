@@ -1,49 +1,68 @@
 Return-Path: <bookkeeper@clasibot.com>
 Received: from out-02.smtp.spacemail.com (out-02.smtp.spacemail.com [63.250.43.87])
- by inbound-smtp.us-west-2.amazonaws.com with SMTP id 5du3qvd44n51r3350134841tvkeb66sd990t5r01
- for mail@auto-mail.mho879.com;
- Wed, 13 Nov 2024 21:11:21 +0000 (UTC)
+ by inbound-smtp.us-west-2.amazonaws.com with SMTP id dm1q05no49ela8onvohogap9rct9adilr5kfnh81
+ for mail@invite.clasibot.com;
+ Thu, 14 Nov 2024 21:51:08 +0000 (UTC)
+X-SES-Spam-Verdict: PASS
+X-SES-Virus-Verdict: PASS
 Received-SPF: pass (spfCheck: domain of clasibot.com designates 63.250.43.87 as permitted sender) client-ip=63.250.43.87; envelope-from=bookkeeper@clasibot.com; helo=out-02.smtp.spacemail.com;
 Authentication-Results: amazonses.com;
  spf=pass (spfCheck: domain of clasibot.com designates 63.250.43.87 as permitted sender) client-ip=63.250.43.87; envelope-from=bookkeeper@clasibot.com; helo=out-02.smtp.spacemail.com;
  dkim=pass header.i=@clasibot.com;
  dmarc=none header.from=clasibot.com;
-X-SES-RECEIPT: AEFBQUFBQUFBQUFIRmgzSUpxNU5JaW9jYlBHN2hLOCtpQlc2YXRNcldjclphanZiUVNKRmR3SnFnVFk0ZmVNeUkycWNSOHozbjh3dnN4UWlXaThYaXRlSTVwelBqR2cyRlhqMW1ra2lJeW4xeHVZYTdCT3EwSm95QVZhcnpzSGdKVFJRTklIbjc5ZytiTFAwU1poWGlkYzFVK2NwQTNSb0IzMXIxdWlUZnowSzhrS0JzTE54TzNGajNqVE4weHFyWlFUN2thR1VhMUdJOER5cmZkMFpJY04vQ0JtWkM1dTkzMmYxMWtZVzVEQmp4M3FlL0FiSDRielNjWFliRkNCaXJjM3FCbHVsMm1zUUVudjR0Y1ptc0RvcWcrSEwrOU5FWnRXZzk0YlVYMmIxN3A4WmlpZkdYSGlrdHFWbFlPR0xMMXhlcWN2Tk9ST0E9
-X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=EFtg9Rx4+J1UkeqZSBHoEwdZFxUGPW2Bsx+EpDNDPmnJL24o6qyYY9wubGDZKn81cGER02YpyfQujf3eiE4geqJLKaVt9Hv7PLI5mbR08phrMyO7xMG/g+kzkVOUzBQgZyQIgmVULKm7X9Bf+QTmjZiHMu5VsY6gJxLVBZxDVQA=; c=relaxed/simple; s=7v7vs6w47njt4pimodk5mmttbegzsi6n; d=amazonses.com; t=1731532282; v=1; bh=79A4SR5d77rtw2O9d9dgRFhKagJvFr99V2J69+krDk4=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFFWEdMc3ptWlpDTUF3ckxYam1ubXVtRkVxRlgyM01jN2lzN1ExVUkxMUFxeGdxbVJ1c3VCZFdndXo5NGcwRFJFWnc4K0p0QUF4QmFzaVNXRWE2QVV4MFpSOHFhc01KaW5NRm93bWNpQWtGME1zdnB3TXVxT2ZEVUZqSUpTZVJJa2c5aHdXc3U2WVJzVXd5bStaL0gzcEZRTU1RNVRzMUdWZTVzM2FiNVZIc2VvZ3QyRXEzc2xiR2ZFMGpLRWppbE84aDFWMGgzSGMvaUplNDZPWTh3amhsRGFGOUd1OGVmZDllS0psTnI5Vm1qZlJjYmpmdlJsREdFdmFSdHF2NVRib1pGV3cvQ3hZT25Ka0FGbFB3QUI2NGd2UXJUcmdpSDFVdnljdVlOaGZsTXc9PQ==
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=Lz3tukug1ipssdb+xPZSWHt0s5V1/GynrbCxai/+/di+blxaFxEDougwxT78YfoNzLGtMhKpCii142JMkDES/cVCdxHnoQbBQBLlUsOroPvu9RmSvXGnihnBHaCXmSABD5cRsuhVYnw1G9kN3HidXX7oW9Cjta3y7fWipksMNek=; c=relaxed/simple; s=7v7vs6w47njt4pimodk5mmttbegzsi6n; d=amazonses.com; t=1731621069; v=1; bh=5iUsieXshvL+fiKVyjwoh5FonWNaTExw6Sml+HdkFmA=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
 Received: from prod-lbout-phx.jellyfish.systems (unknown [198.177.122.3])
-	by smtp.spacemail.com (Postfix) with ESMTPA id 4XpbYh4BFzz4wcK
-	for <mail@auto-mail.mho879.com>; Wed, 13 Nov 2024 21:11:20 +0000 (UTC)
-Received: from mailcore-77bf78b779-xkzzv (ec2-54-190-129-225.us-west-2.compute.amazonaws.com [54.190.129.225])
+	by smtp.spacemail.com (Postfix) with ESMTPA id 4XqDP66JKRz4wkw
+	for <mail@invite.clasibot.com>; Thu, 14 Nov 2024 21:51:06 +0000 (UTC)
+Received: from mailcore-5f69f7fcd9-jkhzs (ec2-54-190-129-225.us-west-2.compute.amazonaws.com [54.190.129.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.spacemail.com (Postfix) with ESMTPSA id 4XpbYb1MtVz8sWN
-	for <mail@auto-mail.mho879.com>; Wed, 13 Nov 2024 21:11:15 +0000 (UTC)
+	by smtp.spacemail.com (Postfix) with ESMTPSA id 4XqDP13KXPz8sWN
+	for <mail@invite.clasibot.com>; Thu, 14 Nov 2024 21:51:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=clasibot.com;
-	s=spacemail; t=1731532275;
-	bh=79A4SR5d77rtw2O9d9dgRFhKagJvFr99V2J69+krDk4=;
+	s=spacemail; t=1731621061;
+	bh=5iUsieXshvL+fiKVyjwoh5FonWNaTExw6Sml+HdkFmA=;
 	h=From:Date:Subject:To:References:From;
-	b=QsPQcLoDg/Ol5Long9bHhoBeW1f6I6JjrvTmcpyP60jGb8CSL9EIis07tv3ELZLqQ
-	 TvV6v/tGI+7worL06CBBQ2NYaeDQ/2JkljAWHOxkpbH1VZ9KAY03OaCSfsXQjd3ORX
-	 pDZcBqC4bZyq676JcNXimOdqe9QGf8ZRhE6F+xKGTw++uTIPPVZsCD07Sa7sBhwiUJ
-	 sg1xoyIPZj/yS+Wb1XtbK4wK40ke+Ggn60BCUedFOXVM5Juhd3bpN5E87zIB04nKx6
-	 2tVZm+MD5pkiZTRdqZJSyhEozaJsd6bgZbDKVsxuWlqQeU6Ia97voiVEOkUeJYh2H0
-	 Z/I3V2BsAagSA==
+	b=Tq2j3qWcJjW7wGLZvIpeGv1msd73dwHV83O+KpxzdJJG1nZesWX2cnYMG08zV4rox
+	 Qzh/LJ40wgkdy5TT+UGZTYCO3ej8ahSw9Y3zV+RRcOC+NJsRAux8Ow0+ZVOZPUfQtg
+	 9pvuI0WMU0QyXcE1XTMNbikC6/g0fJXPB0vSsH2ZqrFgFU7R5jKKaKt4rgCribj0wr
+	 GGwN2haPz3j4S/ofpoJyK1O8ZVJ5y2EG9CUk9rmj8mh3dJsjViNxkksIMwJlcaNw3a
+	 7aiH/cW4ltcXxPgYxiUQRwFW/mYUT6E7iKHtvhdzgUL40UZnd2L6+JYK7d8Ro212GL
+	 NAq1xVP5pbONA==
 From: bookkeeper <bookkeeper@clasibot.com>
-Date: Wed, 13 Nov 2024 21:11:14 +0000
+Date: Thu, 14 Nov 2024 21:51:00 +0000
 Subject: Your client access at Clasibot Synthetic Bookkeeper has changed
-Message-Id: <MAH0IIS2MOU4.QB8K3RIOT88M1@mailcore-77bf78b779-xkzzv>
-To: mail@auto-mail.mho879.com
+Message-Id: <ZJC94E4EMOU4.C04F8HOQTBOQ@mailcore-5f69f7fcd9-jkhzs>
+To: mail@invite.clasibot.com
 References: <ohS4yJD-Sn-dvTsDJeHFJw@geopod-ismtpd-1>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="=-0S9dulBUPaJnddegh/5DMg=="
+Content-Type: multipart/alternative; boundary="=-BVA8n4if0W3aJUPeQh7LCQ=="
 
---=-0S9dulBUPaJnddegh/5DMg==
+--=-BVA8n4if0W3aJUPeQh7LCQ==
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-QuickBooks Online Accountant Hi Braden Rogers, QuickBooks has changed your access at Clasibot Synthetic Bookkeeper: Granted access to 1169911 BC Ltd. See all access changes in QuickBooks Online Accountant. Go to QuickBooks Online Accountant This message was sent to you to inform you of a critical matter. Please note if you have chosen not to receive marketing messages from Intuit, that choice applies only to promotional materials. You will continue to receive critical notifications that are legally required or that could affect your service or software. Intuit respects your privacy. To learn more, read our Privacy Statement. If you receive a suspicious email, please report it by forwarding the email to spoof@intuit.com. Visit Security to find out more. © 2017 Intuit Inc., All rights reserved. Trademarks. 2800 E. Commerce Centre Place, Tucson, AZ 85706                                                            
---=-0S9dulBUPaJnddegh/5DMg==
+From: Intuit <do_not_reply@intuit.com>Date: Tue, Nov 12, 2024 at 12:54=E2=80=
+=AFPMSubject: Your client access at Clasibot Synthetic Bookkeeper has chang=
+edTo: <bradenrogersdev@gmail.com>QuickBooks Online Accountant Hi Braden Rog=
+ers, QuickBooks has changed your access at Clasibot Synthetic Bookkeeper: G=
+ranted access to 1169911 BC Ltd. See all access changes in QuickBooks Onlin=
+e Accountant. Go to QuickBooks Online Accountant This message was sent to y=
+ou to inform you of a critical matter. Please note if you have chosen not t=
+o receive marketing messages from Intuit, that choice applies only to promo=
+tional materials. You will continue to receive critical notifications that =
+are legally required or that could affect your service or software. Intuit =
+respects your privacy. To learn more, read our Privacy=C2=A0Statement. If y=
+ou receive a suspicious email, please report it by forwarding the email to =
+spoof@intuit.com. Visit Security to find out more. =C2=A9 2017 Intuit Inc.,=
+ All rights reserved. Trademarks. 2800 E. Commerce Centre Place, Tucson, AZ=
+ 85706 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+
+--=-BVA8n4if0W3aJUPeQh7LCQ==
 Content-Type: text/html; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -78,143 +97,151 @@ Content-Transfer-Encoding: quoted-printable
         color: #dcdddf;
         background-color: #dcdddf;
     }
-</style><p></p><blockquote><p>QuickBooks Online Accountant</p><p><a href=3D=
-"https://elink.prd.intuit.com/ls/click?upn=3Du001.d9zYstuVyGyvrjXWFtlQIpnWu=
-qsJ2w-2FMFVKwd5rIr0ozwEhgHPdQnuhdDOl0GG3XbQW0_5keBt-2BI8aEnIjCObQUtgoskYuJH=
-yPEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2=
-Fx8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY=
-8vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDm=
-UjjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8F=
-VzXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178=
-KVcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi=
--2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y=
-8pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2=
-F6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2F=
-Hi4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnP=
-Ix-2B2oJRLGKIePToy8KSosxEkZc-2FEYWL44tvf3GSplJ499Dt10QpleCFu53F7sDvt9Y3qU-2=
-FdsWUDGyoV9bBay83qF3QJ0-2BalFGFl2uLLyTpi-2BKmGQBZzrWqKM1hcxBJg0IwR2QKc1uXtl=
-MY7shfvdqjLaPb2FjiZH90MmY9yLpSObHART1cawCnEZelfqo8HV1yEu7nazGmAjx3EUy7WAEtK=
-8-3D" target=3D"_blank" title=3D""><strong><img src=3D"https://plugin-qbo.i=
-ntuit.com/brand/1.0.13/common-brand/assets/images/qb-logo%402x.png" alt=3D"=
-Intuit QuickBooks" width=3D"150" style=3D"font-family:Arial,sans-serif;colo=
-r:#393a3d;font-size:19px;font-weight:bold;border:0"></strong></a></p><p><st=
-rong> Hi Braden Rogers, </strong>QuickBooks has changed your access at Clas=
-ibot Synthetic Bookkeeper: </p><p></p><p><strong>Granted access </strong><e=
-m>to 1169911 BC Ltd. </em>See all access changes in QuickBooks Online Accou=
-ntant. <a href=3D"https://elink.prd.intuit.com/ls/click?upn=3Du001.d9zYstuV=
-yGyvrjXWFtlQItDv-2BzaZPTd8UBhDH3s4Ed8-3DSr8f_5keBt-2BI8aEnIjCObQUtgoskYuJHy=
-PEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2F=
-x8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8=
-vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmU=
-jjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FV=
-zXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178K=
-VcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-=
-2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8=
-pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F=
-6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FH=
-i4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPI=
-x-2B2oJRLGKIePToy8KSosxEljQbzDWH-2FV2yUCavpJ4-2FbB-2Btxi3JSD2hENF9vU6lyOLmp=
-sHJUXJ2-2B7BXJuitHDgAVP17P7GB-2FZFcg9ZTwL-2B8XFBY-2F2ke2UIVMMJWmfnucr1UCAKb=
-h4629ARsRHJ4aezdaZ-2F254dPn-2FGJLIKDSaVqJ-2B7NK4p0-2FoZtfSk3H0dFOwNCZd3Qsvr=
-ZHNwuOjCy-2F5WHk-3D" target=3D"_blank" title=3D"">Go to QuickBooks Online A=
-ccountant</a></p><p><a href=3D"https://elink.prd.intuit.com/ls/click?upn=3D=
-u001.d9zYstuVyGyvrjXWFtlQIpnWuqsJ2w-2FMFVKwd5rIr0ozwEhgHPdQnuhdDOl0GG3XZwQl=
-_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2=
-FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWjlHs=
--2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Ccaht=
-9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZ=
-IRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZNhuE=
-TTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl=
-7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv=
-1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6OtvW=
--2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7Vfpk=
-boiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9=
-bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSosxElCQNVSZEfRWWW4XTzLfo=
-LyTGo46UWRT8vp9TCtC69zLdGW9kZrlNYGGYsD21WDLa2GlxTzPC2OfnIX7iNG4Be26lII6O7G0=
-vAlO8zJsVp9yFrX-2Bj1NJV3fWIqlo8Y0C7OddYCzCeAVdTgjAMurvyQC6-2BlaSYKiLCczsUb1=
-5-2B0CsW-2B6gU8MYYztClRW10-2FZkYw-3D" target=3D"_blank" title=3D""><span st=
-yle=3D"font-family: Arial, Helvetica, sans-serif"><img src=3D"http://images=
-/qb-logo-new_retina.png" alt=3D"Intuit QuickBooks" width=3D"1" height=3D"1"=
- style=3D"display:none;border:0"></span></a></p><p> This message was sent t=
-o you to inform you of a critical matter. Please note if you have chosen no=
-t to receive marketing messages from Intuit, that choice applies only to pr=
-omotional materials. You will continue to receive critical notifications th=
-at are legally required or that could affect your service or software. Intu=
-it respects your privacy. To learn more, read our <a href=3D"https://elink.=
-prd.intuit.com/ls/click?upn=3Du001.XQolCBc5tfeNmvHsKjZ4-2BtTQoXnmpKQGjZRYlP=
--2BeQ8njWQdFTI9GcnHslYRDDP3XWp8c_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adW=
-ruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI=
--2FJykKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce=
-62j4WBYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2=
-FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2B=
-jHhFz1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2=
-B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24W=
-yOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJ=
-cSqG5HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FT=
-Z1-2FzmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0=
-In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKI=
-ePToy8KSosxElFKFHHVOLOMaP6bp0XT2T52V2OnXZlTkcrE-2Bt1Z1mDzUKZELN2xfXYm6MnPrY=
-85Ma-2FkrARRLfXyyVaUkVeTENzBNSq9neSXEAzcVdckgYrIsWMQtPiP7W2BSv0XzVB-2BLFr6I=
-CDa8a4v-2FP-2BpjbA9pBD-2F5vuF7UAh-2Bi06T2WwBEOfgA9neDzxI2MferBnEOzxlo-3D" t=
-arget=3D"_blank" title=3D"">Privacy&nbsp;Statement.</a> If you receive a su=
-spicious email, please report it by forwarding the email to <a href=3D"mail=
-to:spoof@intuit.com" target=3D"_blank" title=3D""><font style=3D"font-size:=
-16px">spoof@intuit.com</font></a>. Visit <a href=3D"https://elink.prd.intui=
-t.com/ls/click?upn=3Du001.XQolCBc5tfeNmvHsKjZ4-2BtTQoXnmpKQGjZRYlP-2BeQ8kw2=
-zyObXCBqYK2cqP3EyAA4yJb_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adWruUPNh5uB=
-gmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzD=
-Qq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfc=
-zxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJt=
-yDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDm=
-jNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gj=
-r5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuC=
-fwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJd=
-I-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeL=
-iliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN=
-1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSo=
-sxEmsZLAxV3T72cCJGuKZAWwTIz5fJEJ9jN6oFypvDtg8f9B991Y3J6z3UCLw3aZiTuUdsYMm7l=
-fxUusDP8zofhQ-2BS33uBFTRUWlaw3FJT2nDaba5jEcb8VL-2FJswV5ikq7kYyxvPDAbmrDFUWV=
-nFBJBCwzP2cG-2Ba-2BIbnYi9-2Fthml-2Byo5rlod8HBKYWtTb0gIQezs-3D" target=3D"_b=
-lank" title=3D"">Security</a> to find out more. =C2=A9 2017 Intuit Inc., Al=
-l rights reserved. <a href=3D"https://elink.prd.intuit.com/ls/click?upn=3Du=
-001.UBluuXcNst71G3g4QkRkgbxBWK8Y-2BpkEhlicx1RdDj-2BbbB-2FkMs4FNjvfMOs08PhAY=
-uVv_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pa=
-t-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWj=
-lHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Cc=
-aht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blH=
-cMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZN=
-huETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gx=
-BBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2F=
-xrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6O=
-tvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7V=
-fpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-=
-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSosxEln9okjXY8cF587CSp=
-0U1-2B3apNcc3hMnmM1ZLeQhz-2Fv8vdeTXmM8U-2B8Z3zXMZfStxyM74YSgUVmDndH0oTOblXE=
-ld2fJj1bru2JrYfx8MznO6hXGFwplf6G6MWcQ9Y72TLc8hd8rYiXjaZy7vZYOSDsvGPRpaecP-2=
-Fk7rqI7qbxTMZ2-2BG28qQuZVtMfdtRYmk-2Bg-3D" target=3D"_blank" title=3D"">Tra=
-demarks.</a> <br><font style=3D"font-size:16px"><span style=3D"font-family:=
- Arial, Helvetica, sans-serif">2800 E. Commerce Centre Place, Tucson, AZ 85=
-706</span></font></p><p> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
-nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;=
- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbs=
-p; &nbsp;</p><p><img src=3D"https://elink.prd.intuit.com/wf/open?upn=3Du001=
-.TEz4EUTXUg-2FA8eRXZmq8XcVjyg5y8zNvKh7RIm9xoEXDMGTJOQdl0gOAnqnDZTOsBMkij7i4=
-qElrf-2Bz8MBmTfWxXwWCZjdI5QrFLdhUM-2B23VQibw60I5jzOUnWC9ZN1OwHsJCn7WhIghssx=
-EAvvNQho-2BGTLOQDEFDG8P84IgDHI9RyKNy48QgZAFwxCuxwdY-2FEJ66px-2BQGQZUuWHlECa=
-It8gwMzhuMKPlW3BASGfnjYiZIW0fwO9MahbLUB0CKJSJLVHJyxfRlo8F-2B2jcssRyYlRYVadA=
-TONQP6bRfLAmM9uAzY33rXy-2FyjM2cobj3D5HNWkUhPmUJNah3vWrdONbZbZtdv6096bEcStbd=
-Ilk9gMpW3RNGOi5QHBaorBHM-2B8dga-2BMgduBWBc4-2BPi6rWsG2qBPxBt16cI7DYk1cB-2Fs=
-16DiOimGLJm1DrcjjcpwxzBtPAw-2FSYmUQPVEV-2FsHYrKQTs7zcuAlyo2LwLQVEI-2BcllK8c=
-r-2FHG7tyaHwESRCskjUIEjz8inGU6hQM-2FP5yDjmYBg9CK87jVyPEsDWk3ao4E4bUGwAFMgnS=
-92DjGF9HGXfYmw8aWWirPbehu9-2F-2FVBsUOGJXoqk74prA5icW-2BavBUOIWLx8QIvkSBGCI1=
-gFI11Tyz3Zwxn1jV2StFQdbhRryzQ9RB0232YzGF1EMg2AozB5nTqj3KpEMZrMqVV5x3cK3F27Z=
-d6WDUDLSqr8EV1LQNERyPIO96nOYYH1LF1QmEoD1o8JpCDbpHtgSxS7lzr35kcvioUCn3pvu2T8=
-SUyhvdN3ZSAYC5R69nQV452Yjo4OGkBb10RnJh53g3dPy2i-2FgrUIIdy1NqoWqLPJ6avBMn1L5=
-5fxeegidsEHYi6ChxJVouTK10xWchuDNoB1MY07rBjFI5TySr-2FnoPAyh5I5rIzAm8WKlTyD3O=
-A28-2B26I7VTSwEiZNAKqSRqt4mo2f9e" alt=3D"" width=3D"1" height=3D"1" style=3D=
-"height:1px!important;width:1px!important;border-width:0!important;margin-t=
-op:0!important;margin-bottom:0!important;margin-right:0!important;margin-le=
-ft:0!important;padding-top:0!important;padding-bottom:0!important;padding-r=
-ight:0!important;padding-left:0!important"></p></blockquote>=
+</style><p><br>From: <strong>Intuit</strong> <span style=3D"font-family: Ar=
+ial, Helvetica, sans-serif">&lt;</span><a href=3D"mailto:do_not_reply@intui=
+t.com" target=3D"_blank" title=3D""><span style=3D"font-family: Arial, Helv=
+etica, sans-serif">do_not_reply@intuit.com</span></a><span style=3D"font-fa=
+mily: Arial, Helvetica, sans-serif">&gt;</span><br>Date: Tue, Nov 12, 2024 =
+at 12:54=E2=80=AFPM<br>Subject: Your client access at Clasibot Synthetic Bo=
+okkeeper has changed<br>To: &lt;<a href=3D"mailto:bradenrogersdev@gmail.com=
+" target=3D"_blank" title=3D"">bradenrogersdev@gmail.com</a>&gt;<br><br><br=
+></p><blockquote><p></p><p>QuickBooks Online Accountant</p><p><a href=3D"ht=
+tps://elink.prd.intuit.com/ls/click?upn=3Du001.d9zYstuVyGyvrjXWFtlQIpnWuqsJ=
+2w-2FMFVKwd5rIr0ozwEhgHPdQnuhdDOl0GG3XbQW0_5keBt-2BI8aEnIjCObQUtgoskYuJHyPE=
+P3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8=
+OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vh=
+mw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjj=
+cxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzX=
+KO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVc=
+qKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2B=
+TNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8py=
+U6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6s=
+oRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4=
+y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-=
+2B2oJRLGKIePToy8KSosxEkZc-2FEYWL44tvf3GSplJ499Dt10QpleCFu53F7sDvt9Y3qU-2Fds=
+WUDGyoV9bBay83qF3QJ0-2BalFGFl2uLLyTpi-2BKmGQBZzrWqKM1hcxBJg0IwR2QKc1uXtlMY7=
+shfvdqjLaPb2FjiZH90MmY9yLpSObHART1cawCnEZelfqo8HV1yEu7nazGmAjx3EUy7WAEtK8-3=
+D" target=3D"_blank" title=3D""><strong><img src=3D"https://plugin-qbo.intu=
+it.com/brand/1.0.13/common-brand/assets/images/qb-logo%402x.png" alt=3D"Int=
+uit QuickBooks" width=3D"150" style=3D"font-family:Arial,sans-serif;color:#=
+393a3d;font-size:19px;font-weight:bold;border:0"></strong></a></p><p><stron=
+g> Hi Braden Rogers, </strong>QuickBooks has changed your access at Clasibo=
+t Synthetic Bookkeeper: <strong>Granted access </strong><em>to 1169911 BC L=
+td. </em>See all access changes in QuickBooks Online Accountant. <a href=3D=
+"https://elink.prd.intuit.com/ls/click?upn=3Du001.d9zYstuVyGyvrjXWFtlQItDv-=
+2BzaZPTd8UBhDH3s4Ed8-3DSr8f_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adWruUPN=
+h5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJy=
+kKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4W=
+BYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqD=
+fTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz=
+1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU=
+92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-=
+2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5=
+HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2F=
+zmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3Uq=
+D8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy=
+8KSosxEljQbzDWH-2FV2yUCavpJ4-2FbB-2Btxi3JSD2hENF9vU6lyOLmpsHJUXJ2-2B7BXJuit=
+HDgAVP17P7GB-2FZFcg9ZTwL-2B8XFBY-2F2ke2UIVMMJWmfnucr1UCAKbh4629ARsRHJ4aezda=
+Z-2F254dPn-2FGJLIKDSaVqJ-2B7NK4p0-2FoZtfSk3H0dFOwNCZd3QsvrZHNwuOjCy-2F5WHk-=
+3D" target=3D"_blank" title=3D"">Go to QuickBooks Online Accountant</a></p>=
+<p><a href=3D"https://elink.prd.intuit.com/ls/click?upn=3Du001.d9zYstuVyGyv=
+rjXWFtlQIpnWuqsJ2w-2FMFVKwd5rIr0ozwEhgHPdQnuhdDOl0GG3XZwQl_5keBt-2BI8aEnIjC=
+ObQUtgoskYuJHyPEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2=
+Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv=
+213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2F=
+nzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067nE6=
+xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy7Mt=
+gwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQA=
+ox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UG=
+sB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW9mN=
+nUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerLXIk=
+8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl=
+7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSosxElCQNVSZEfRWWW4XTzLfoLyTGo46UWRT8vp9TC=
+tC69zLdGW9kZrlNYGGYsD21WDLa2GlxTzPC2OfnIX7iNG4Be26lII6O7G0vAlO8zJsVp9yFrX-2=
+Bj1NJV3fWIqlo8Y0C7OddYCzCeAVdTgjAMurvyQC6-2BlaSYKiLCczsUb15-2B0CsW-2B6gU8MY=
+YztClRW10-2FZkYw-3D" target=3D"_blank" title=3D""><span style=3D"font-famil=
+y: Arial, Helvetica, sans-serif"><img src=3D"http://images/qb-logo-new_reti=
+na.png" alt=3D"Intuit QuickBooks" width=3D"1" height=3D"1" style=3D"display=
+:none;border:0"></span></a></p><p> This message was sent to you to inform y=
+ou of a critical matter. Please note if you have chosen not to receive mark=
+eting messages from Intuit, that choice applies only to promotional materia=
+ls. You will continue to receive critical notifications that are legally re=
+quired or that could affect your service or software. Intuit respects your =
+privacy. To learn more, read our <a href=3D"https://elink.prd.intuit.com/ls=
+/click?upn=3Du001.XQolCBc5tfeNmvHsKjZ4-2BtTQoXnmpKQGjZRYlP-2BeQ8njWQdFTI9Gc=
+nHslYRDDP3XWp8c_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adWruUPNh5uBgmt2Xcuv=
+5jA94gwrn5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzDQq7cuvhN=
+IxHtYJIopTWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfczxsLsc04=
+3Q6dIE-2F0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJtyDu2Snhq=
+zuk-2Bch6blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDmjNI5A1Uq=
+kuuhF978dzZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gjr5IRmIP0=
+b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuCfwBqrCji=
+GTnX-2Fss-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJdI-2BEV8Q=
+SMqztHDzON6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeLiliox-2B=
+PmpW9UdYOz7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN1DOYabuh=
+IoTHsKAZDHf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSosxElFKFH=
+HVOLOMaP6bp0XT2T52V2OnXZlTkcrE-2Bt1Z1mDzUKZELN2xfXYm6MnPrY85Ma-2FkrARRLfXyy=
+VaUkVeTENzBNSq9neSXEAzcVdckgYrIsWMQtPiP7W2BSv0XzVB-2BLFr6ICDa8a4v-2FP-2Bpjb=
+A9pBD-2F5vuF7UAh-2Bi06T2WwBEOfgA9neDzxI2MferBnEOzxlo-3D" target=3D"_blank" =
+title=3D"">Privacy&nbsp;Statement.</a> If you receive a suspicious email, p=
+lease report it by forwarding the email to <a href=3D"mailto:spoof@intuit.c=
+om" target=3D"_blank" title=3D""><font style=3D"font-size:16px">spoof@intui=
+t.com</font></a>. Visit <a href=3D"https://elink.prd.intuit.com/ls/click?up=
+n=3Du001.XQolCBc5tfeNmvHsKjZ4-2BtTQoXnmpKQGjZRYlP-2BeQ8kw2zyObXCBqYK2cqP3Ey=
+AA4yJb_5keBt-2BI8aEnIjCObQUtgoskYuJHyPEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn=
+5Pat-2FgMBU4fIJcwXcii-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIop=
+TWjlHs-2F-2BuCtDrfeVaXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F=
+0Ccaht9ZhQTx2s6qk89J-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6=
+blHcMZIRJB64PpWd2067nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978d=
+zZNhuETTXpPwWtSRMaCy7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r=
+2gxBBl7Q-2Bsyz5q8sr4GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss=
+-2Fxrv1lyqnQhW0F0FMT7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzO=
+N6OtvW-2FvuU7RWzDlXW9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYO=
+z7VfpkboiimatujWcerLXIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZD=
+Hf-2B9bC2kjmYo4q-2Bbczl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSosxEmsZLAxV3T72cCJ=
+GuKZAWwTIz5fJEJ9jN6oFypvDtg8f9B991Y3J6z3UCLw3aZiTuUdsYMm7lfxUusDP8zofhQ-2BS=
+33uBFTRUWlaw3FJT2nDaba5jEcb8VL-2FJswV5ikq7kYyxvPDAbmrDFUWVnFBJBCwzP2cG-2Ba-=
+2BIbnYi9-2Fthml-2Byo5rlod8HBKYWtTb0gIQezs-3D" target=3D"_blank" title=3D"">=
+Security</a> to find out more. =C2=A9 2017 Intuit Inc., All rights reserved=
+. <a href=3D"https://elink.prd.intuit.com/ls/click?upn=3Du001.UBluuXcNst71G=
+3g4QkRkgbxBWK8Y-2BpkEhlicx1RdDj-2BbbB-2FkMs4FNjvfMOs08PhAYuVv_5keBt-2BI8aEn=
+IjCObQUtgoskYuJHyPEP3lm028adWruUPNh5uBgmt2Xcuv5jA94gwrn5Pat-2FgMBU4fIJcwXci=
+i-2Fvs0ywRu83r-2Fx8OLke05y0TI-2FJykKzDQq7cuvhNIxHtYJIopTWjlHs-2F-2BuCtDrfeV=
+aXv213Vi6mqGyPiY8vhmw20kjn8Ce62j4WBYfczxsLsc043Q6dIE-2F0Ccaht9ZhQTx2s6qk89J=
+-2FnzB-2BDfmwuDmUjjcxhahCTx-2FWMqDfTJtyDu2Snhqzuk-2Bch6blHcMZIRJB64PpWd2067=
+nE6xYsZ7eQpUbc8FVzXKO7th51-2BjHhFz1QDmjNI5A1UqkuuhF978dzZNhuETTXpPwWtSRMaCy=
+7MtgwFXZeyvZb178KVcqKUaDLeM-2B2GeU92gjr5IRmIP0b1EXjED7r2gxBBl7Q-2Bsyz5q8sr4=
+GQAox6fL-2Fo7JVi-2BTNz9MPt24WyOI8-2BuCfwBqrCjiGTnX-2Fss-2Fxrv1lyqnQhW0F0FMT=
+7UGsB4cfjbG6Sh1y8pyU6TEY50owJcSqG5HrJdI-2BEV8QSMqztHDzON6OtvW-2FvuU7RWzDlXW=
+9mNnUQDx0Pspn2j2F6soRsRf8-2FTZ1-2FzmeLiliox-2BPmpW9UdYOz7VfpkboiimatujWcerL=
+XIk8WTj7UmxVU-2FHi4y9PD2UeSh0In3UqD8PN1DOYabuhIoTHsKAZDHf-2B9bC2kjmYo4q-2Bb=
+czl7eXz4CIL7bqnPIx-2B2oJRLGKIePToy8KSosxEln9okjXY8cF587CSp0U1-2B3apNcc3hMnm=
+M1ZLeQhz-2Fv8vdeTXmM8U-2B8Z3zXMZfStxyM74YSgUVmDndH0oTOblXEld2fJj1bru2JrYfx8=
+MznO6hXGFwplf6G6MWcQ9Y72TLc8hd8rYiXjaZy7vZYOSDsvGPRpaecP-2Fk7rqI7qbxTMZ2-2B=
+G28qQuZVtMfdtRYmk-2Bg-3D" target=3D"_blank" title=3D"">Trademarks.</a> <br>=
+<font style=3D"font-size:16px"><span style=3D"font-family: Arial, Helvetica=
+, sans-serif">2800 E. Commerce Centre Place, Tucson, AZ 85706</span></font>=
+</p><p> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbs=
+p; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &n=
+bsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p><p><=
+img src=3D"https://elink.prd.intuit.com/wf/open?upn=3Du001.TEz4EUTXUg-2FA8e=
+RXZmq8XcVjyg5y8zNvKh7RIm9xoEXDMGTJOQdl0gOAnqnDZTOsBMkij7i4qElrf-2Bz8MBmTfWx=
+XwWCZjdI5QrFLdhUM-2B23VQibw60I5jzOUnWC9ZN1OwHsJCn7WhIghssxEAvvNQho-2BGTLOQD=
+EFDG8P84IgDHI9RyKNy48QgZAFwxCuxwdY-2FEJ66px-2BQGQZUuWHlECaIt8gwMzhuMKPlW3BA=
+SGfnjYiZIW0fwO9MahbLUB0CKJSJLVHJyxfRlo8F-2B2jcssRyYlRYVadATONQP6bRfLAmM9uAz=
+Y33rXy-2FyjM2cobj3D5HNWkUhPmUJNah3vWrdONbZbZtdv6096bEcStbdIlk9gMpW3RNGOi5QH=
+BaorBHM-2B8dga-2BMgduBWBc4-2BPi6rWsG2qBPxBt16cI7DYk1cB-2Fs16DiOimGLJm1Drcjj=
+cpwxzBtPAw-2FSYmUQPVEV-2FsHYrKQTs7zcuAlyo2LwLQVEI-2BcllK8cr-2FHG7tyaHwESRCs=
+kjUIEjz8inGU6hQM-2FP5yDjmYBg9CK87jVyPEsDWk3ao4E4bUGwAFMgnS92DjGF9HGXfYmw8aW=
+WirPbehu9-2F-2FVBsUOGJXoqk74prA5icW-2BavBUOIWLx8QIvkSBGCI1gFI11Tyz3Zwxn1jV2=
+StFQdbhRryzQ9RB0232YzGF1EMg2AozB5nTqj3KpEMZrMqVV5x3cK3F27Zd6WDUDLSqr8EV1LQN=
+ERyPIO96nOYYH1LF1QmEoD1o8JpCDbpHtgSxS7lzr35kcvioUCn3pvu2T8SUyhvdN3ZSAYC5R69=
+nQV452Yjo4OGkBb10RnJh53g3dPy2i-2FgrUIIdy1NqoWqLPJ6avBMn1L55fxeegidsEHYi6Chx=
+JVouTK10xWchuDNoB1MY07rBjFI5TySr-2FnoPAyh5I5rIzAm8WKlTyD3OA28-2B26I7VTSwEiZ=
+NAKqSRqt4mo2f9e" alt=3D"" width=3D"1" height=3D"1" style=3D"height:1px!impo=
+rtant;width:1px!important;border-width:0!important;margin-top:0!important;m=
+argin-bottom:0!important;margin-right:0!important;margin-left:0!important;p=
+adding-top:0!important;padding-bottom:0!important;padding-right:0!important=
+;padding-left:0!important"></p></blockquote>=
 
---=-0S9dulBUPaJnddegh/5DMg==--
+--=-BVA8n4if0W3aJUPeQh7LCQ==--
