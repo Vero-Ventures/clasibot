@@ -50,7 +50,8 @@ export async function Navbar() {
             </div>
           </Link>
         </div>
-        <div className={` ${session?.user ? '' : 'hidden'} `}>
+        <div
+          className={`flex w-full content-center ${session?.user ? '' : 'hidden'} `}>
           <NavBarSesssionButtons
             connectionStatus={connectionResult.connected}
             stripeUrl={stripeUrl}
