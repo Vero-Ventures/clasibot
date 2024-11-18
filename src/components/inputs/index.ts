@@ -12,6 +12,8 @@ export { DeactivationButton } from './deactivation-button';
 
 export { HomeButton } from './home-button';
 
+export { ManageAccountButton } from './manage-account-button';
+
 export { SignInButton } from './sign-in-button';
 
 export { SignOutButton } from './sign-out-button';

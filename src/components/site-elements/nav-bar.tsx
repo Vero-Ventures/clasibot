@@ -16,9 +16,8 @@ import {
   SignOutButton,
   ChangeCompanyButton,
   DeactivationButton,
+  ManageAccountButton,
 } from '@/components/inputs/index';
-
-import { Button } from '@/components/ui/button';
 
 export async function Navbar() {
   // Check the user's Subscription status.
@@ -32,9 +31,9 @@ export async function Navbar() {
   const stripePortalUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
-    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md lg:flex-row lg:px-8 xl:px-24">
-      <div className="mt-2 flex w-full flex-col items-center justify-between shadow-md md:flex-row md:justify-between">
-        <div className="flex items-center space-x-4 md:mx-8 md:min-w-48 lg:mx-0">
+    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md md:flex-row md:justify-start md:pl-12 lg:pl-16">
+      <div className="mt-2 flex w-full flex-col items-center justify-between shadow-md md:w-fit">
+        <div className="flex items-center space-x-4 md:min-w-48 lg:mx-0">
           <Link href="/">
             <Image
               id="LogoImage"
@@ -50,41 +49,33 @@ export async function Navbar() {
               <div className="text-2xl font-bold text-white">
                 <span className="text-green-400">{siteConfig.name}</span>
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-gray-300">
                 Transaction Classifier
               </div>
             </div>
           </Link>
         </div>
-        <div
-          className={`w-full ${session?.user ? '' : 'hidden'} lg:mx-8 xl:mx-12`}>
+        <div className={` ${session?.user ? '' : 'hidden'} `}>
           <UserSessionButtons stripePortalUrl={stripePortalUrl} />
-        </div>
-      </div>
-      <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
-        <div className={`mt-4 w-fit mb:mr-2 ${session?.user ? '' : 'hidden'}`}>
-          <ChangeCompanyButton />
-        </div>
-        <div className={`mt-4 w-fit mb:ml-2 ${session?.user ? '' : 'hidden'}`}>
-          <DeactivationButton connectionStatus={connectionStatus} />
+          <UserCompanyButtons connectionStatus={connectionStatus} />
         </div>
       </div>
       {!session?.user && (
-        <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:pl-4 lg:pr-12 xl:pr-24">
+        <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:px-4 md:py-0">
           <a
             href="#how-it-works"
-            className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
+            className="w-48 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             How It&nbsp;
             <span className="mb:block sm:inline-block">Works</span>
           </a>
           <a
             href="#why-quickbooks"
-            className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
+            className="w-48 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             Why QuickBooks
           </a>
           <a
             href="#demo"
-            className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
+            className="w-48 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             Clasibot Demo
           </a>
         </div>
@@ -103,16 +94,37 @@ const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
   stripePortalUrl,
 }) => {
   return (
-    <div className="mt-4 flex w-full flex-col md:mt-0 md:w-full md:flex-row md:justify-center">
-      <div className="mt-2 flex justify-evenly mb:mt-4 mb:gap-x-8 md:mt-1 md:w-full md:justify-evenly">
-        <Button asChild variant="link">
-          <Link
-            className="!mb-1 bg-gray-700 text-white hover:bg-gray-500 mb:max-w-44 md:!mb-0 md:p-6"
-            href={stripePortalUrl}>
-            <span className="font-bold mb:text-lg">Manage Account</span>
-          </Link>
-        </Button>
+    <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
+      <div className={`mt-6 w-fit`}>
+        <ManageAccountButton stripePortalUrl={stripePortalUrl} />
+      </div>
+      <div className={`mt-6 w-fit`}>
         <SignOutButton />
+      </div>
+    </div>
+  );
+};
+
+// Define interface for data used in the user Company info elements.
+interface UserCompanyButtonsProps {
+  connectionStatus: {
+    connected: boolean;
+    result: string;
+    message: string;
+  };
+}
+
+// Takes the connection status result object.
+const UserCompanyButtons: React.FC<UserCompanyButtonsProps> = ({
+  connectionStatus,
+}) => {
+  return (
+    <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
+      <div className={`mt-6 w-fit`}>
+        <ChangeCompanyButton />
+      </div>
+      <div className={`mt-6 w-fit`}>
+        <DeactivationButton connectionStatus={connectionStatus} />
       </div>
     </div>
   );
