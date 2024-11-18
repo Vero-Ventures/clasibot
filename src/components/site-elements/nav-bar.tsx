@@ -26,23 +26,24 @@ export async function Navbar() {
   const stripeUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
-    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md md:flex-row md:justify-start md:pl-12 lg:pl-16">
-      <div className="mt-2 flex w-full flex-col items-center justify-between shadow-md md:w-fit">
-        <div className="flex items-center space-x-4 md:min-w-48 lg:mx-0">
+    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 md:flex-row md:justify-start">
+      <div
+        className={`mt-2 flex w-fit flex-col items-center justify-between shadow-md ${session?.user ? 'md:w-full' : ''}`}>
+        <div className="flex items-center space-x-4 md:min-w-48">
           <Link href="/">
             <Image
               id="LogoImage"
               src={logo}
               width={40}
               height={40}
-              className="h-auto w-12"
+              className="w-12"
               alt={siteConfig.name}
             />
           </Link>
           <Link href="/">
-            <div className="flex flex-col">
-              <div className="text-2xl font-bold text-white">
-                <span className="text-green-400">{siteConfig.name}</span>
+            <div className="flex-col">
+              <div className="text-2xl font-bold text-green-400">
+                {siteConfig.name}
               </div>
               <div className="text-sm text-gray-300">
                 Transaction Classifier
@@ -50,8 +51,7 @@ export async function Navbar() {
             </div>
           </Link>
         </div>
-        <div
-          className={`flex w-full content-center ${session?.user ? '' : 'hidden'} `}>
+        <div className={`w-full ${session?.user ? '' : 'hidden'} `}>
           <NavBarSesssionButtons
             connectionStatus={connectionResult.connected}
             stripeUrl={stripeUrl}
@@ -59,21 +59,21 @@ export async function Navbar() {
         </div>
       </div>
       {!session?.user && (
-        <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:px-4 md:py-0">
+        <div className="flex flex-col items-center justify-evenly gap-y-4 pt-4 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:px-4 md:py-0">
           <a
             href="#how-it-works"
-            className="w-48 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
+            className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             How It&nbsp;
             <span className="mb:block sm:inline-block">Works</span>
           </a>
           <a
             href="#why-quickbooks"
-            className="w-48 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
+            className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             Why QuickBooks
           </a>
           <a
             href="#demo"
-            className="w-48 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
+            className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             Clasibot Demo
           </a>
         </div>
