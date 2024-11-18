@@ -2,15 +2,12 @@
 
 import { signOut } from 'next-auth/react';
 
-import { Button } from '@/components/ui/button';
-
 export const SignOutButton = () => {
   return (
-    <Button
-      variant="link"
-      className="mb-1 bg-gray-700 font-bold text-white hover:bg-gray-500 mb:min-w-40 mb:text-lg md:p-6"
+    <button
+      className="flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-4 py-3 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 lg:w-full lg:min-w-0"
       onClick={() => signOut({ callbackUrl: '/' })}>
-      Sign Out
-    </Button>
+      <span className="text-lg font-semibold md:text-2xl">Sign Out</span>
+    </button>
   );
 };
