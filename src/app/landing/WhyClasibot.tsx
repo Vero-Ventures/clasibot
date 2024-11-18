@@ -87,7 +87,6 @@ export const WhyClasibot = () => {
               </span>
             </li>
           </ul>
-          <SignInButton />
         </div>
       </div>
     </section>

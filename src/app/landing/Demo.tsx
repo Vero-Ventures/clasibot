@@ -7,6 +7,16 @@ import { SignInButton } from '@/components/inputs/index';
 export const Demo = () => {
   return (
     <div>
+      <section className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl md:hidden">
+        <div className="h-80 rounded-lg">
+          <iframe
+            className="absolute left-0 top-0 h-full w-full rounded-lg"
+            src="https://www.youtube.com/embed/qytiCd-tAUo"
+            title="Clasibot Demo Video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen></iframe>
+        </div>
+      </section>
       <section className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
         <div className="flex flex-col items-center md:flex-row">
           <div className="flex flex-col items-center justify-center p-4 px-8 md:w-1/2">
@@ -89,16 +99,6 @@ export const Demo = () => {
                 allowFullScreen></iframe>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl md:hidden">
-        <div className="h-80 rounded-lg">
-          <iframe
-            className="absolute left-0 top-0 h-full w-full rounded-lg"
-            src="https://www.youtube.com/embed/qytiCd-tAUo"
-            title="Clasibot Demo Video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen></iframe>
         </div>
       </section>
     </div>
