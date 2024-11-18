@@ -12,23 +12,18 @@ import { siteConfig } from '@/site-config/site';
 
 import logo from '@/public/logo.svg';
 
-import {
-  SignOutButton,
-  ChangeCompanyButton,
-  DeactivationButton,
-  ManageAccountButton,
-} from '@/components/inputs/index';
+import { NavBarSesssionButtons } from './nav-bar-session-buttons';
 
 export async function Navbar() {
-  // Check the user's Subscription status.
-  const connectionStatus = await checkCompanyConnection();
+  // Check the user's Subscription status and set the connected state with the result.
+  const connectionResult = await checkCompanyConnection();
 
   // Get get the server session and extract the user name and email.
   const session = await getServerSession(options);
   const userEmail = session?.user?.email ?? '';
 
-  // Define the Stripe portal URL using the user's email. Takes user to a profile management page.
-  const stripePortalUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
+  // Define and record the Stripe portal URL using the user's email. Takes user to a profile management page.
+  const stripeUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
     <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md md:flex-row md:justify-start md:pl-12 lg:pl-16">
@@ -56,8 +51,10 @@ export async function Navbar() {
           </Link>
         </div>
         <div className={` ${session?.user ? '' : 'hidden'} `}>
-          <UserSessionButtons stripePortalUrl={stripePortalUrl} />
-          <UserCompanyButtons connectionStatus={connectionStatus} />
+          <NavBarSesssionButtons
+            connectionStatus={connectionResult.connected}
+            stripeUrl={stripeUrl}
+          />
         </div>
       </div>
       {!session?.user && (
@@ -83,49 +80,3 @@ export async function Navbar() {
     </nav>
   );
 }
-
-// Define interface for data used in the user session info elements.
-interface UserSessionButtonsProps {
-  stripePortalUrl: string;
-}
-
-// Takes the Stripe portal URL.
-const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
-  stripePortalUrl,
-}) => {
-  return (
-    <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
-      <div className={`mt-6 w-fit`}>
-        <ManageAccountButton stripePortalUrl={stripePortalUrl} />
-      </div>
-      <div className={`mt-6 w-fit`}>
-        <SignOutButton />
-      </div>
-    </div>
-  );
-};
-
-// Define interface for data used in the user Company info elements.
-interface UserCompanyButtonsProps {
-  connectionStatus: {
-    connected: boolean;
-    result: string;
-    message: string;
-  };
-}
-
-// Takes the connection status result object.
-const UserCompanyButtons: React.FC<UserCompanyButtonsProps> = ({
-  connectionStatus,
-}) => {
-  return (
-    <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
-      <div className={`mt-6 w-fit`}>
-        <ChangeCompanyButton />
-      </div>
-      <div className={`mt-6 w-fit`}>
-        <DeactivationButton connectionStatus={connectionStatus} />
-      </div>
-    </div>
-  );
-};
