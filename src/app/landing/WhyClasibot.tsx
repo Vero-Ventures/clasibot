@@ -21,11 +21,10 @@ export const WhyClasibot = () => {
             Why QuickBooks
           </h2>
           <p className="mb-6 text-center text-lg text-gray-700">
-            Clasibot simplifies transaction classification, saving you time by
-            automating routine tasks. By integrating with QuickBooks, you get
-            seamless, weekly updates to your transactions.
+            Clasibot simplifies the process of classification and tax code
+            assignment, saving you time by automating the transaction review
+            process.
           </p>
-
           <ul className="mb-6 space-y-4 text-lg text-gray-700">
             <li className="flex items-start">
               <span className="mr-2 translate-y-1.5 text-green-500">
@@ -43,7 +42,9 @@ export const WhyClasibot = () => {
                 </svg>
               </span>
               <span className="text-base">
-                Automate repetitive tasks and focus on what matters most.
+                QuickBooks Online integration allows seamlessly review of your
+                newest transactions. Our weekly updates keep us up to date with
+                no import process needed.
               </span>
             </li>
             <li className="flex items-start">
@@ -62,7 +63,9 @@ export const WhyClasibot = () => {
                 </svg>
               </span>
               <span className="text-base">
-                Seamless integration with QuickBooks for real-time updates.
+                New transactions are automatically classified during weekly
+                updates. Your transactions will be classified and ready for
+                review whenever you are.
               </span>
             </li>
             <li className="flex items-start">
@@ -81,7 +84,9 @@ export const WhyClasibot = () => {
                 </svg>
               </span>
               <span className="text-base">
-                Accurate classification recommendations for every transaction.
+                Straightforward design makes the review process as quick and
+                easy as possible. Approved transactions are automatically
+                updated on QuickBooks Online.
               </span>
             </li>
           </ul>

@@ -23,10 +23,6 @@ export const Demo = () => {
             <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
               See Clasibot in Action
             </h2>
-            <p className="mb-6 text-center text-lg text-gray-700">
-              Experience how Clasibot seamlessly integrates with QuickBooks to
-              automate your transaction classification.
-            </p>
 
             <ul className="mb-6 space-y-4 text-lg text-gray-700">
               <li className="flex items-start">
@@ -44,7 +40,10 @@ export const Demo = () => {
                     />
                   </svg>
                 </span>
-                <span className="text-base">Quick and easy setup process.</span>
+                <span className="text-base">
+                  Provides an example of the QuickBooks Online connection
+                  process.
+                </span>
               </li>
               <li className="flex items-start">
                 <span className="mr-2 translate-y-1.5 text-blue-500">
@@ -62,7 +61,7 @@ export const Demo = () => {
                   </svg>
                 </span>
                 <span className="text-base">
-                  Automated classification with high accuracy.
+                  Shows how Clasibot works with your QuickBooks Online account.
                 </span>
               </li>
               <li className="flex items-start">
@@ -81,11 +80,50 @@ export const Demo = () => {
                   </svg>
                 </span>
                 <span className="text-base">
-                  Real-time updates and seamless QuickBooks integration.
+                  Contains a step-by-step walkthrough of an example Clasibot
+                  session.
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2 translate-y-1.5 text-blue-500">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </span>
+                <span className="text-base">
+                  Offers a detailed breakdown of the features that Clasibot
+                  offers.
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2 translate-y-1.5 text-blue-500">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </span>
+                <span className="text-base">
+                  Provides tips on how to get the most out of Clasibot.
                 </span>
               </li>
             </ul>
-
             <SignInButton />
           </div>
 

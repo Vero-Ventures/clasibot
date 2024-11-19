@@ -15,16 +15,8 @@ export const Welcome = () => {
             Welcome to Clasibot
           </h1>
           <p className="text-center text-xl text-gray-700 mb:w-96 md:w-80 lg:w-96">
-            <span className="block mb:inline-block">
-              Automatically classify&nbsp;
-            </span>
-            <span className="block mb:inline-block">
-              your transactions&nbsp;
-            </span>
-            <span className="block mb:inline-block">
-              and tax codes with ease.
-            </span>
-            <span className="block mb:inline-block"></span>
+            Helping you to classify expense transactions and assign tax codes
+            with ease.
           </p>
           <div className="flex flex-col items-center">
             <SignInButton />
