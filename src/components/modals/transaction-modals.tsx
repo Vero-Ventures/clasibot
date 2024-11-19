@@ -40,7 +40,7 @@ export const ErrorLoadingTransactionsModal: React.FC<
               className="flex justify-center">
               <Button
                 id="CloseButton"
-                className="text-md min-w-24 space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
+                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => setDisplayState(false)}>
                 Close
               </Button>
@@ -107,10 +107,10 @@ export const SaveClassifiedTransactionsModal: React.FC<
             )}
 
             {/* Define button to return with text based on the error message state. */}
-            <div className="flex justify-evenly max-[375px]:gap-4">
+            <div className="flex justify-evenly gap-4">
               <Button
                 id="ReturnButton"
-                className="text-md rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-24 sm:text-lg"
+                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => {
                   const url = window.location.origin + window.location.pathname;
                   window.location.href = url;
@@ -122,7 +122,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
 
               <Button
                 id="SignOutButton"
-                className="text-md rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-24 sm:text-lg"
+                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => signOut({ callbackUrl: '/' })}>
                 Sign Out
               </Button>

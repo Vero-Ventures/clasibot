@@ -71,29 +71,27 @@ export const ManualClassifyCompleteModal: React.FC<
                   {manualClassificationState === 'Error' ? 'Error' : 'Complete'}
                 </h2>
                 {manualClassificationState === 'Error' ? (
-                  <div className="flex h-12 w-12 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
-                    <XIcon className="h-6 w-6 text-white" />
+                  <div className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500 sm:h-12 sm:w-12">
+                    <XIcon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                   </div>
                 ) : (
-                  <div className="flex h-12 w-12 animate-successAnimation items-center justify-center rounded-full bg-green-500">
-                    <CheckIcon className="h-8 w-8 text-white" />
+                  <div className="flex h-10 w-10 animate-successAnimation items-center justify-center rounded-full bg-green-500 sm:h-12 sm:w-12">
+                    <CheckIcon className="h-6 w-6 text-white sm:h-8 sm:w-8" />
                   </div>
                 )}
               </div>
               <p
                 id="ResultMessage"
-                className="mx-6 mb-6 mt-3 text-center font-medium text-gray-800">
+                className="mb-4 mt-2 text-center font-medium text-gray-800 sm:mb-6 sm:mt-3 sm:text-lg">
                 {manualClassificationState === 'Error'
                   ? 'An error occured during the classification process. Please try again later or contact us if the issue persists.'
                   : 'Your transactions are classified and ready for review.'}
               </p>
             </>
-            <div
-              id="ReturnButtonContainer"
-              className="flex justify-center gap-4">
+            <div id="ReturnButtonContainer" className="flex justify-center">
               <Button
                 id="CloseButton"
-                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500"
+                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => setDisplayState(false)}>
                 {manualClassificationState === 'Error' ? 'Close' : 'Continue'}
               </Button>
