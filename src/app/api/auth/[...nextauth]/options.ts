@@ -1,15 +1,19 @@
 import { cookies } from 'next/headers';
-import NextAuth, { getServerSession } from 'next-auth';
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
   NextApiResponse,
 } from 'next';
+
+import NextAuth, { getServerSession } from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
+
 import { refreshToken, refreshBackendToken } from '@/lib/refresh-token';
+
 import { db } from '@/db/index';
 import { Company, Subscription, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import { createCustomer } from '@/actions/stripe';
 
 // Export the config options to work with Next Auth.

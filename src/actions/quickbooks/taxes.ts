@@ -1,8 +1,12 @@
 'use server';
+
 import { checkFaultProperty, createQueryResult } from './index';
+
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+
 import { TaxCodes, LocationsToTaxCodes } from '@/enums/taxes';
 import type { Locations } from '@/enums/taxes';
+
 import type { ErrorResponse, TaxCode, LoginTokens } from '@/types/index';
 
 // Get all valid Canadian Tax Codes for a User location.

@@ -1,6 +1,9 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+
 import Script from 'next/script';
+
 import { createCustomerSession } from '@/actions/stripe';
 
 // Takes: Stripe Env variables used to define the pricing table.
@@ -48,7 +51,6 @@ export function PricingTable({
         src="https://js.stripe.com/v3/pricing-table.js"
         strategy="afterInteractive"
       />
-      {/* If the Customer session is present (logged in user), load the table using the Customer's session. */}
       {customerSession && (
         <stripe-pricing-table
           pricing-table-id={tableId}

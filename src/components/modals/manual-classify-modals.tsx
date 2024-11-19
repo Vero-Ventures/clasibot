@@ -1,4 +1,5 @@
 import { ProgressBar } from '@/components/loading/index';
+
 import { Button } from '@/components/ui/button';
 import { CheckIcon, XIcon } from 'lucide-react';
 
@@ -23,9 +24,7 @@ export const ManualClassifyProgessModal: React.FC<
         <div
           className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${displayState ? '' : 'hidden'}`}>
           <div className="mx-4 flex w-96 flex-col space-y-4 rounded-lg bg-white p-6">
-            <p
-              id="ResultMessage"
-              className="text-center text-lg font-medium text-gray-800 sm:text-xl">
+            <p className="text-center text-lg font-medium text-gray-800 sm:text-xl">
               {progressMessage}
             </p>
             {completedChunks < maxChunks && completedChunks >= 0 && (

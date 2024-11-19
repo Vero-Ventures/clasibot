@@ -1,7 +1,11 @@
 'use client';
+
 import { useState } from 'react';
+
 import { CheckConnectionButton } from '@/components/inputs/index';
+
 import { Button } from '@/components/ui/button';
+
 import clsx from 'clsx';
 
 interface AddSBKInstructionsProps {
@@ -48,7 +52,6 @@ export default function AddSBKInstructions({
             Accounting Firm
           </Button>
         </div>
-
         <div className="w-full max-w-2xl">
           {isSingleCompany ? (
             <>
@@ -95,7 +98,6 @@ export default function AddSBKInstructions({
                   to view your connected QuickBooks accountants.
                 </li>
               </ol>
-
               <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Add Clasibot As First Accountant
               </h4>
@@ -123,7 +125,6 @@ export default function AddSBKInstructions({
                   and join your company.
                 </li>
               </ol>
-
               <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Add Clasibot To Existing Accountant&apos;s
               </h4>
@@ -149,7 +150,6 @@ export default function AddSBKInstructions({
                   <CheckConnectionButton />
                 </div>
               )}
-
               <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black sm:mb-4 md:mt-12">
                 Connection Troubleshooting
               </h4>
@@ -208,7 +208,6 @@ export default function AddSBKInstructions({
                   tab.
                 </li>
               </ol>
-
               <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Invite To Your Accountant Company
               </h4>
@@ -238,7 +237,6 @@ export default function AddSBKInstructions({
                   and join your accounting firm.
                 </li>
               </ol>
-
               <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Check If The Invite Was Accepted
               </h4>
@@ -267,7 +265,6 @@ export default function AddSBKInstructions({
                   try refreshing the page.
                 </li>
               </ol>
-
               <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
                 Grant Access To Client Companies
               </h4>
@@ -295,13 +292,11 @@ export default function AddSBKInstructions({
                   update its connection to your client&apos;s company.
                 </li>
               </ol>
-
               {showCheckConnectionButton && (
                 <div className="mx-auto flex flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
               )}
-
               <div className="px-4 md:px-0">
                 <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black sm:mb-4 md:mt-12">
                   Connection Troubleshooting

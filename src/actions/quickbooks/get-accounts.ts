@@ -1,6 +1,9 @@
 'use server';
+
 import { checkFaultProperty, createQueryResult } from './index';
+
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+
 import type { Account, ErrorResponse, LoginTokens } from '@/types/index';
 
 // Get specific Accounts from the QuickBooks API depending on passed Account type.

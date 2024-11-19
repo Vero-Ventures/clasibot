@@ -1,16 +1,14 @@
 import React from 'react';
 
 export const HowItWorks = () => (
-  <section
-    id="how-it-works"
-    className="mb-8 transform rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+  <section className="mb-8 transform rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
     <h2 className="mb-8 text-center text-3xl font-bold text-gray-800">
       How It Works
     </h2>
     <div className="flex flex-col space-y-8 sm:flex-row sm:space-x-6 sm:space-y-0">
       <Step
         iconColor="bg-blue-500"
-        iconPath="M10 4a6 6 0 100 12 6 6 0 000-12zm8 8l-4.35-4.35"
+        iconPath="M10 4a6 6 0 100 12 6 6 0 000-12zm9 14l-4.35-4.35"
         title="Analyze Past Transactions"
         description="Clasibot reviews past transactions to find matches, predicting classifications to reduce manual input."
       />

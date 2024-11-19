@@ -1,10 +1,14 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
+
 import type {
   ForReviewTransaction,
   UpdatedForReviewTransaction,

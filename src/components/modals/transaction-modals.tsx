@@ -1,4 +1,5 @@
 import { signOut } from 'next-auth/react';
+
 import { Button } from '@/components/ui/button';
 import { CheckIcon, XIcon } from 'lucide-react';
 
@@ -66,7 +67,6 @@ export const SaveClassifiedTransactionsModal: React.FC<
         <div
           className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${displayState ? '' : 'hidden'}`}>
           <div className="mx-4 w-96 rounded-lg bg-white p-6">
-            {/* If an error is present, display an error message in the modal. */}
             {errorMessage !== '' ? (
               <>
                 <div className="flex items-center justify-center space-x-4 p-2 text-center">
@@ -86,7 +86,6 @@ export const SaveClassifiedTransactionsModal: React.FC<
                 </p>
               </>
             ) : (
-              // If no error is present, display a success message in the modal instead.
               <>
                 <div className="flex items-center justify-center space-x-4 p-2 text-center">
                   <h2

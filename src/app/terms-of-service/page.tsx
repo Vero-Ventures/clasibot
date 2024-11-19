@@ -1,4 +1,5 @@
 import Markdown from '@/components/markdown';
+
 import Data from './data.mdx';
 
 // Terms of Service page that can be visited without login.
