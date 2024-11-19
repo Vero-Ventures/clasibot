@@ -75,13 +75,13 @@ export const SaveClassifiedTransactionsModal: React.FC<
                     className="text-center text-2xl font-bold text-red-500">
                     Error
                   </h2>
-                  <div className="flex h-12 w-12 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
-                    <XIcon className="h-6 w-6 text-white" />
+                  <div className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500 sm:h-12 sm:w-12">
+                    <XIcon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                   </div>
                 </div>
                 <p
                   id="ResultMessage"
-                  className="mb-6 mt-3 mx-6 text-center font-medium text-gray-800">
+                  className="mx-6 mb-4 mt-2 text-center font-medium text-gray-800 sm:mb-6 sm:mt-3 sm:text-lg">
                   {errorMessage}
                 </p>
               </>
@@ -107,24 +107,22 @@ export const SaveClassifiedTransactionsModal: React.FC<
             )}
 
             {/* Define button to return with text based on the error message state. */}
-            <div className="flex justify-evenly">
+            <div className="flex justify-evenly max-[375px]:gap-4">
               <Button
                 id="ReturnButton"
-                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500"
+                className="text-md rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-24 sm:text-lg"
                 onClick={() => {
                   const url = window.location.origin + window.location.pathname;
                   window.location.href = url;
                 }}>
-                {errorMessage !== ''
-                  ? 'Retry Selection'
-                  : 'Continue'}
+                {errorMessage !== '' ? 'Retry Selection' : 'Continue'}
               </Button>
 
               {/* Define button to finish the session by logging the user out. */}
 
               <Button
                 id="SignOutButton"
-                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500"
+                className="text-md rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-24 sm:text-lg"
                 onClick={() => signOut({ callbackUrl: '/' })}>
                 Sign Out
               </Button>
