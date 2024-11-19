@@ -20,16 +20,16 @@ export const ErrorLoadingTransactionsModal: React.FC<
               <div className="mb-2 flex items-center justify-center space-x-4 p-2 text-center">
                 <h2
                   id="ResultTitle"
-                  className="text-center text-2xl font-bold text-red-500">
+                  className="text-center text-2xl font-bold text-red-500 ">
                   Error
                 </h2>
-                <div className="flex h-12 w-12 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
-                  <XIcon className="h-6 w-6 text-white" />
+                <div className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500 sm:h-12 sm:w-12">
+                  <XIcon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                 </div>
               </div>
               <p
                 id="ResultMessage"
-                className="mb-6 mt-3 text-center font-medium text-gray-800">
+                className="text-md mb-4 mt-2 text-center font-medium text-gray-800 sm:text-lg sm:mb-6 sm:mt-3">
                 An error occured while loading your classified transactions.
                 Refresh the page to try again or contact us if the issue
                 persists.
@@ -37,7 +37,7 @@ export const ErrorLoadingTransactionsModal: React.FC<
             </>
             <div
               id="ReturnButtonContainer"
-              className="flex justify-center gap-4">
+              className="flex justify-center">
               <Button
                 id="CloseButton"
                 className="text-md min-w-24 space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
