@@ -1,5 +1,7 @@
 'use server';
 
+import { checkConfidenceValue } from '@/actions/check-confidence-value';
+
 import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
 
 import {
@@ -371,9 +373,11 @@ export async function createClassifiedForReviewTransactions(
         transaction[0] as FormattedForReviewTransaction;
       const fullTransaction = transaction[1] as ForReviewTransaction;
 
-      // Define inital null values for the Classifications.
+      // Define inital null values for the Classifications and their confidence values.
       let categoryClassification = null;
+      let categoryConfidence = 0;
       let taxCodeClassification = null;
+      let taxCodeCondifence = 0;
 
       // Extract the value for the current 'For Review' transaction from the passed 'For Review' transaction record.
       const transactionClassifications =
@@ -384,6 +388,26 @@ export async function createClassifiedForReviewTransactions(
         // Use the extracted values to update the Classifications.
         categoryClassification = transactionClassifications.category;
         taxCodeClassification = transactionClassifications.taxCode;
+        // Check if the Classifications are not null and one or more Classifications are present.
+        if (
+          transactionClassifications.category &&
+          transactionClassifications.category.length > 0
+        ) {
+          // Update the related confidence value.
+          categoryConfidence = checkConfidenceValue(
+            transactionClassifications.category[0].classifiedBy
+          );
+        }
+
+        if (
+          transactionClassifications.taxCode &&
+          transactionClassifications.taxCode.length > 0
+        ) {
+          // Update the related confidence value.
+          taxCodeCondifence = checkConfidenceValue(
+            transactionClassifications.taxCode[0].classifiedBy
+          );
+        }
       }
 
       // Push the new ClassifiedForReviewTransaction and its related ForReviewTransaction as a Sub-array.
@@ -399,7 +423,9 @@ export async function createClassifiedForReviewTransactions(
           amount: formattedTransaction.amount,
           // Adds either the inital null values or the Classifications found in the results.
           categories: categoryClassification,
+          categoryConfidence: categoryConfidence,
           taxCodes: taxCodeClassification,
+          taxCodeConfidence: taxCodeCondifence,
         },
         fullTransaction,
       ]);
