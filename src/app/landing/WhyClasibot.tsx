@@ -2,8 +2,6 @@
 
 import React from 'react';
 
-import { SignInButton } from '@/components/inputs/index';
-
 import quickbooks from './quickbooks.jpg';
 
 export const WhyClasibot = () => {
