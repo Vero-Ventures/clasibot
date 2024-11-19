@@ -13,6 +13,8 @@ import {
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
+import { checkConfidenceValue } from '@/actions/check-confidence-value';
+
 import { getAccounts, getTaxCodes } from '@/actions/quickbooks/index';
 
 import type {
@@ -135,6 +137,13 @@ export async function getDatabaseTransactions(): Promise<{
         for (const account of checkedAccounts) {
           // Check if the matching Account has been found.
           if (account.id === forReviewTransaction.accountId) {
+            // Get the confidence values for both Classifications.
+            const categoryConfidence = checkConfidenceValue(
+              forReviewTransaction.topCategoryClassification
+            );
+            const taxCodeCondifence = checkConfidenceValue(
+              forReviewTransaction.topTaxCodeClassification
+            );
             // Create the Classified 'For Review' transaction.
             const classifiedTransaction: ClassifiedForReviewTransaction = {
               // Id for the 'For Review' transaction.
@@ -145,7 +154,9 @@ export async function getDatabaseTransactions(): Promise<{
               accountName: account.name,
               amount: forReviewTransaction.amount,
               categories: transactionCategories,
+              categoryConfidence: categoryConfidence,
               taxCodes: transactionTaxCodes,
+              taxCodeConfidence: taxCodeCondifence,
             };
 
             // Add both the Classified and Raw 'For Review' transaction objects to the array.
