@@ -39,91 +39,94 @@ export function ReviewTableFilters({
   updateAccountSelection: (account: string) => void;
 }>) {
   return (
-    <div>
-      <div className="mt-6 flex flex-grow px-6">
+    <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="flex justify-center px-6">
         <Input
           placeholder="Search by transaction description..."
-          // Set the input value to the name filter value from the table (or an empty string).
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          // When the input value changes, update the name filter value with the new value.
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="mx-auto max-w-xs mb:max-w-sm sm:max-w-full md:w-2/3 lg:max-w-2xl"
+          className="w-full max-w-lg rounded-md border border-gray-300 px-4 py-2 text-gray-700 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300"
         />
       </div>
-      <div className="mb-4 mt-2 flex w-full flex-col md:mt-6 md:flex-row">
-        <div className="mx-auto flex w-11/12 flex-col items-center md:w-1/2 md:justify-evenly md:px-6">
-          <div className="mt-4 flex w-full flex-row justify-evenly md:mt-0">
-            <p className="mx-6 w-full max-w-56 text-center font-semibold md:min-w-[150px] md:max-w-[176px]">
-              Start Date
-            </p>
-            <p className="mx-6 w-full max-w-56 text-center font-semibold md:min-w-[150px] md:max-w-[176px]">
-              End Date
-            </p>
-          </div>
-          <div className="flex w-full flex-row justify-evenly md:mt-0">
-            <DatePicker date={startDate} setDate={changeStartDate} />
-            <DatePicker date={endDate} setDate={changeEndDate} />
+
+      {/* Filters Section */}
+      <div className="flex flex-col gap-6 md:flex-row md:justify-center">
+        {/* Date Filters */}
+        <div className="flex flex-col items-center rounded-md border border-gray-200 bg-gray-50 p-4 shadow-md md:w-1/2">
+          <p className="mb-2 text-sm font-medium text-gray-600">
+            Filter by Date
+          </p>
+          <div className="flex w-full justify-around gap-4">
+            <div className="flex flex-col items-center">
+              <p className="text-sm font-semibold text-gray-800">Start Date</p>
+              <DatePicker date={startDate} setDate={changeStartDate} />
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="text-sm font-semibold text-gray-800">End Date</p>
+              <DatePicker date={endDate} setDate={changeEndDate} />
+            </div>
           </div>
         </div>
-        <div className="mx-auto mt-4 flex w-11/12 items-center justify-evenly md:mt-6 md:w-1/2">
-          <div className="w-full max-w-64 px-4 md:max-w-48">
+
+        {/* Column and Account Filters */}
+        <div className="flex flex-col items-center rounded-md border border-gray-200 bg-gray-50 p-4 shadow-md md:w-1/2">
+          <p className="mb-4 text-sm font-medium text-gray-600">
+            Filter by Options
+          </p>
+          <div className="flex w-full justify-around gap-4">
+            {/* Columns Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full bg-blue-500 text-base font-semibold text-white hover:bg-blue-800 hover:text-white">
-                  Columns <ChevronDown className="ml-2 mt-1 h-6 w-6" />
+                  className="w-40 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm hover:bg-gray-100 focus:ring focus:ring-blue-300">
+                  Columns <ChevronDown className="ml-2 h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center">
-                {/* Gets a list of the Columns and filters out the ones that cannot be hidden. */}
+              <DropdownMenuContent
+                align="start"
+                className="rounded-md shadow-lg">
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    const field = column.id;
-                    return (
-                      // Create a checkbox item for each Column that can be hidden.
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize focus:bg-blue-300"
-                        // Checked status is determined by the associated Column's visibility state.
-                        checked={column.getIsVisible()}
-                        // On change, toggle the visibility of the associated Column.
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }>
-                        {field}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize hover:bg-blue-100 focus:bg-blue-300"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }>
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-          <div className="w-full max-w-64 px-4 md:max-w-48">
+
+            {/* Accounts Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full bg-blue-500 text-base font-semibold text-white hover:bg-blue-800 hover:text-white">
-                  Accounts <ChevronDown className="ml-2 mt-1 h-6 w-6" />
+                  className="w-40 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm hover:bg-gray-100 focus:ring focus:ring-blue-300">
+                  Accounts <ChevronDown className="ml-2 h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center">
-                {/* For each Account, create a checkbox item in the dropdown menu. */}
-                {accountNames.map((account) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={account}
-                      className="capitalize focus:bg-blue-300"
-                      checked={selectedAccounts.includes(account)}
-                      onCheckedChange={() => updateAccountSelection(account)}>
-                      {account}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
+              <DropdownMenuContent
+                align="start"
+                className="rounded-md shadow-lg">
+                {accountNames.map((account) => (
+                  <DropdownMenuCheckboxItem
+                    key={account}
+                    className="capitalize hover:bg-blue-100 focus:bg-blue-300"
+                    checked={selectedAccounts.includes(account)}
+                    onCheckedChange={() => updateAccountSelection(account)}>
+                    {account}
+                  </DropdownMenuCheckboxItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

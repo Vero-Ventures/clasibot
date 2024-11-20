@@ -242,19 +242,26 @@ export default function ReviewPage({
 
   return (
     <>
-      <h1 className="mx-auto mb-4 text-center text-3xl font-bold">
+      <h1 className="mx-auto mb-6 text-center text-4xl font-extrabold text-gray-800">
         Review Transactions -{' '}
-        <span className="text-blue-900">{companyInfo.name}</span>
+        <span className="text-blue-700">{companyInfo.name}</span>
       </h1>
 
-      <ManualReviewButton handleManualReview={handleManualClassification} />
 
-      <h2 className="py-4 text-center text-lg font-semibold">
-        Next Scheduled Auto-Review: &nbsp;
-        <span className="inline-block px-2 font-bold">
-          {nextBackendClassifyDate}
-        </span>
-      </h2>
+
+      {/* Manual Review Button Section */}
+      <div className="mx-auto mb-6 w-fit rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 p-6 shadow-lg">
+        <h2 className="text-center text-lg font-medium text-gray-600">
+          Next Scheduled Auto-Review:&nbsp;
+          <span className="inline-block rounded bg-blue-100 px-3 py-1 font-bold text-blue-800">
+            {nextBackendClassifyDate}
+          </span>
+        </h2>
+        <p className="mb-3 text-center text-lg font-semibold text-gray-900">
+          Start Manual Classification
+        </p>
+        <ManualReviewButton handleManualReview={handleManualClassification} />
+      </div>
 
       <div className="mx-auto w-fit">
         <BackendClassifyErrorNotice
