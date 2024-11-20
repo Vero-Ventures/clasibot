@@ -21,7 +21,7 @@ export const Demo = () => {
         <div className="flex flex-col items-center md:flex-row">
           <div className="flex flex-col items-center justify-center p-4 px-8 md:w-1/2">
             <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
-              See Clasibot in Action
+              Introduction to Clasibot
             </h2>
 
             <ul className="mb-6 space-y-4 text-lg text-gray-700">
@@ -120,7 +120,7 @@ export const Demo = () => {
                   </svg>
                 </span>
                 <span className="text-base">
-                  Provides tips on how to get the most out of Clasibot.
+                  Provides tips on how to get the most out of using Clasibot.
                 </span>
               </li>
             </ul>

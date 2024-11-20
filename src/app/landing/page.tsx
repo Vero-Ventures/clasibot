@@ -3,7 +3,7 @@ import React from 'react';
 import { Welcome } from './Welcome';
 import { HowItWorks } from './HowItWorks';
 import { WhyClasibot } from './WhyClasibot';
-import { Demo } from './Demo';
+import { Demo } from './IntroVideo';
 
 const Page = () => {
   return (

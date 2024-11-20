@@ -4,10 +4,10 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 
-export function HomeButton() {
+export function ReturnButton() {
   return (
     <Button asChild className="my-2">
-      <Link href="/">Go Back Home</Link>
+      <Link href="/">Return</Link>
     </Button>
   );
 }

@@ -33,7 +33,7 @@ export const Footer = () => {
           </Link>
         </div>
         <p className="text-center text-base italic">
-          &copy; {new Date().getFullYear()} {siteConfig.name}. All Rights
+          &copy; {new Date().getFullYear()} {siteConfig.name} - All Rights
           Reserved.
         </p>
       </div>

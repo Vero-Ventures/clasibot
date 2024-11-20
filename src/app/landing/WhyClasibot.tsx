@@ -18,7 +18,7 @@ export const WhyClasibot = () => {
 
         <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-8">
           <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
-            Why QuickBooks
+            Why Use Clasibot?
           </h2>
           <p className="mb-6 text-center text-lg text-gray-700">
             Clasibot simplifies the process of classification and tax code

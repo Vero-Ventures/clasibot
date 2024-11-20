@@ -141,7 +141,7 @@ const commonColumns = [
       column:
         | Column<FormattedForReviewTransaction>
         | Column<ClassifiedForReviewTransaction>;
-    }) => sortableHeader(column, 'Name'),
+    }) => sortableHeader(column, 'Description'),
     cell: ({
       row,
     }: {
@@ -293,7 +293,7 @@ export const ReviewColumns = (
   {
     accessorKey: 'categoryConfidence',
     header: ({ column }: { column: Column<ClassifiedForReviewTransaction> }) =>
-      sortableHeader(column, 'Category Confidence'),
+      sortableHeader(column, 'Confidence (Category)'),
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
       // Get the confidence value from the row and use it to determine the Confidence Bar hover text.
       const confidenceValue: number = row.getValue('categoryConfidence');
@@ -320,7 +320,7 @@ export const ReviewColumns = (
   {
     accessorKey: 'taxCodeConfidence',
     header: ({ column }: { column: Column<ClassifiedForReviewTransaction> }) =>
-      sortableHeader(column, 'Tax Code Confidence'),
+      sortableHeader(column, 'Confidence (Tax Code)'),
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
       // Get the confidence value from the row and use it to determine the Confidence Bar hover text.
       const confidenceValue: number = row.getValue('taxCodeConfidence');
