@@ -10,7 +10,9 @@ export { DatePicker } from './date-picker';
 
 export { DeactivationButton } from './deactivation-button';
 
-export { HomeButton } from './home-button';
+export { ReturnButton } from './return-button';
+
+export { ManageSubscriptionButton } from './manage-subscription-button';
 
 export { SignInButton } from './sign-in-button';
 

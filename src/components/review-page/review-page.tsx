@@ -70,7 +70,7 @@ export default function ReviewPage({
       const loadResult = await getDatabaseTransactions();
       if (loadResult.queryResult.result === 'Error') {
         // If an error was found, open the related error modal.
-        setErrorLoadingTransactions(true);
+        // setErrorLoadingTransactions(true);
       }
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
@@ -243,7 +243,7 @@ export default function ReviewPage({
   return (
     <>
       <h1 className="mx-auto mb-4 text-center text-3xl font-bold">
-        Classified Transactions -{' '}
+        Review Transactions -{' '}
         <span className="text-blue-900">{companyInfo.name}</span>
       </h1>
 

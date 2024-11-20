@@ -90,6 +90,10 @@ export type ClassifiedForReviewTransaction = {
   amount: number;
   // An (potentially empty) array of possible Categories for the 'For Review' transaction to be Classified as.
   categories: ClassifiedElement[] | null;
+  // A value between 0 and 3 that defines how the Category Classifications were made.
+  categoryConfidence: number;
   // An (potentially empty) array of possible Tax Codes for the 'For Review' transaction to be Classified as.
   taxCodes: ClassifiedElement[] | null;
+  // A value between 0 and 3 that defines how the Tax Code Classifications were made.
+  taxCodeConfidence: number;
 };

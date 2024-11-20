@@ -12,108 +12,72 @@ import { siteConfig } from '@/site-config/site';
 
 import logo from '@/public/logo.svg';
 
-import {
-  SignOutButton,
-  ChangeCompanyButton,
-  DeactivationButton,
-} from '@/components/inputs/index';
-
-import { Button } from '@/components/ui/button';
+import { NavBarSesssionButtons } from './nav-bar-session-buttons';
 
 export async function Navbar() {
-  // Check the user's Subscription status.
-  const connectionStatus = await checkCompanyConnection();
+  // Check the user's Subscription status and set the connected state with the result.
+  const connectionResult = await checkCompanyConnection();
 
   // Get get the server session and extract the user name and email.
   const session = await getServerSession(options);
   const userEmail = session?.user?.email ?? '';
 
-  // Define the Stripe portal URL using the user's email. Takes user to a profile management page.
-  const stripePortalUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
+  // Define and record the Stripe portal URL using the user's email. Takes user to a profile management page.
+  const stripeUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (
-    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 shadow-md lg:flex-row lg:px-8 xl:px-24">
-      <div className="mt-2 flex w-full flex-col items-center justify-between shadow-md md:flex-row md:justify-between">
-        <div className="flex items-center space-x-4 md:mx-8 md:min-w-48 lg:mx-0">
+    <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 md:flex-row md:justify-start">
+      <div
+        className={`mt-2 flex w-fit flex-col items-center justify-between shadow-md ${session?.user ? 'md:w-full' : ''}`}>
+        <div className="flex items-center space-x-4 md:min-w-48">
           <Link href="/">
             <Image
               id="LogoImage"
               src={logo}
               width={40}
               height={40}
-              className="h-auto w-12"
+              className="w-12"
               alt={siteConfig.name}
             />
           </Link>
           <Link href="/">
-            <div className="flex flex-col">
-              <div className="text-2xl font-bold text-white">
-                <span className="text-green-400">{siteConfig.name}</span>
+            <div className="flex-col">
+              <div className="text-2xl font-bold text-green-400">
+                {siteConfig.name}
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-gray-300">
                 Transaction Classifier
               </div>
             </div>
           </Link>
         </div>
-        <div
-          className={`w-full ${session?.user ? '' : 'hidden'} lg:mx-8 xl:mx-12`}>
-          <UserSessionButtons stripePortalUrl={stripePortalUrl} />
-        </div>
-      </div>
-      <div className="flex flex-col mb:w-full mb:flex-row mb:justify-evenly md:justify-evenly lg:gap-x-4">
-        <div className={`mt-4 w-fit mb:mr-2 ${session?.user ? '' : 'hidden'}`}>
-          <ChangeCompanyButton />
-        </div>
-        <div className={`mt-4 w-fit mb:ml-2 ${session?.user ? '' : 'hidden'}`}>
-          <DeactivationButton connectionStatus={connectionStatus} />
+        <div className={`w-full ${session?.user ? '' : 'hidden'} `}>
+          <NavBarSesssionButtons
+            connectionStatus={connectionResult.connected}
+            stripeUrl={stripeUrl}
+          />
         </div>
       </div>
       {!session?.user && (
-        <div className="mt-4 flex flex-col items-center justify-evenly gap-y-4 py-2 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:pl-4 lg:pr-12 xl:pr-24">
+        <div className="flex flex-col items-center justify-evenly gap-y-4 pt-4 mb:flex-row mb:gap-x-6 sm:gap-x-8 md:mt-2 md:w-full md:px-4 md:py-0">
           <a
             href="#how-it-works"
-            className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
+            className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
             How It&nbsp;
             <span className="mb:block sm:inline-block">Works</span>
           </a>
           <a
             href="#why-quickbooks"
-            className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
-            Why QuickBooks
+            className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
+            Why Use Clasibot
           </a>
           <a
             href="#demo"
-            className="w-48 rounded-lg bg-white bg-opacity-20 p-2 text-center text-lg font-semibold text-white hover:bg-opacity-40 mb:w-32 sm:w-40 lg:w-48">
-            Clasibot Demo
+            className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-2 text-center text-lg font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-28 lg:w-48">
+            Introduction Video
           </a>
         </div>
       )}
     </nav>
   );
 }
-
-// Define interface for data used in the user session info elements.
-interface UserSessionButtonsProps {
-  stripePortalUrl: string;
-}
-
-// Takes the Stripe portal URL.
-const UserSessionButtons: React.FC<UserSessionButtonsProps> = ({
-  stripePortalUrl,
-}) => {
-  return (
-    <div className="mt-4 flex w-full flex-col md:mt-0 md:w-full md:flex-row md:justify-center">
-      <div className="mt-2 flex justify-evenly mb:mt-4 mb:gap-x-8 md:mt-1 md:w-full md:justify-evenly">
-        <Button asChild variant="link">
-          <Link
-            className="!mb-1 bg-gray-700 text-white hover:bg-gray-500 mb:max-w-44 md:!mb-0 md:p-6"
-            href={stripePortalUrl}>
-            <span className="font-bold mb:text-lg">Manage Account</span>
-          </Link>
-        </Button>
-        <SignOutButton />
-      </div>
-    </div>
-  );
-};
