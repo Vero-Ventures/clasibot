@@ -1,4 +1,5 @@
 'use server';
+
 import nodemailer from 'nodemailer';
 
 // Takes: The user email, contact subject, and email body.
@@ -29,7 +30,7 @@ export async function sendContactEmail({
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.CONTACT_EMAIL,
-      subject: `New Contact Form Submission from ${email}`,
+      subject: `New Contact Form Submission from: ${email}`,
       text: `Subject: ${subject}\n\nBody:\n${body}`,
     };
 

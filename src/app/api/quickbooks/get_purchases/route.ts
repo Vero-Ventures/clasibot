@@ -1,4 +1,4 @@
-import { findFormattedPurchase } from '@/actions/quickbooks/find-purchase';
+import { findFormattedPurchase } from '@/actions/quickbooks/index';
 
 export async function GET() {
   // Call action to find a specific Purchase from QuickBooks API.

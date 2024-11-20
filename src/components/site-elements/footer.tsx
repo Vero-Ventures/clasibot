@@ -1,30 +1,44 @@
 import Link from 'next/link';
+
 import { siteConfig } from '@/site-config/site';
 
-const Footer = () => {
+export const Footer = () => {
   return (
-    <footer className="mt-auto bg-gray-800 p-8">
-      <div
-        id="FooterContentGrid"
-        className="grid grid-cols-2 items-center pr-12 text-white popout:grid-cols-3 popout:pr-0">
-        <p id="AppCopyright" className="mr-6 text-center md:text-left">
-          &copy; {siteConfig.name}.
-          <span className="block">All Rights Reserved.</span>
-        </p>
-        <div
-          id="FooterLinkContainer"
-          className="flex flex-col justify-center space-y-2 text-center mb:mr-6 popout:ml-6 popout:mr-0 md:flex-row md:space-x-4 md:space-y-0 lg:text-left">
-          {/* Iterates through footer items in the site content and populates links using the href values. */}
-          {siteConfig.footerItems.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:underline">
-              {item.label}
-            </Link>
-          ))}
+    <footer className="mt-auto bg-gray-900 p-6 text-white">
+      <div className="flex flex-col items-center space-y-2 sm:space-y-4">
+        <div className="grid w-full grid-cols-2 grid-rows-2 justify-evenly gap-y-4 mb:px-8 sm:flex sm:px-0 md:px-12 lg:px-20">
+          <Link
+            key={'/add-sbk-instructions'}
+            href={'/add-sbk-instructions'}
+            className="text-center text-lg font-semibold hover:underline">
+            Setup Instructions
+          </Link>
+          <Link
+            key={'/contact-us'}
+            href={'/contact-us'}
+            className="text-center text-lg font-semibold hover:underline">
+            Contact Us
+          </Link>
+          <Link
+            key={'/terms-of-service'}
+            href={'/terms-of-service'}
+            className="text-center hover:underline">
+            Terms of Service
+          </Link>
+          <Link
+            key={'/privacy-policy'}
+            href={'/privacy-policy'}
+            className="text-center hover:underline">
+            Privacy Policy
+          </Link>
         </div>
+        <p className="text-center text-base italic">
+          &copy; {new Date().getFullYear()} {siteConfig.name} - All Rights
+          Reserved.
+        </p>
       </div>
     </footer>
   );
 };
 
-// Export the Footer component.
 export default Footer;

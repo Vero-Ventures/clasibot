@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
-import { classificationUserIteration } from '@/actions/backend-actions/user-company-selection/user-iteration';
+
+import { classificationUserIteration } from '@/actions/backend-actions/user-company-selection/index';
 
 export async function GET(request: NextRequest) {
   // Get the authorization header from the request.

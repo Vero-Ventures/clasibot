@@ -1,16 +1,18 @@
 'use server';
+
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
-import { fetchCustomSearch } from './custom-search';
-import { fetchKnowledgeGraph } from './knowledge-graph';
+
+import { fetchCustomSearch, fetchKnowledgeGraph } from './index';
+
 import type {
   Classification,
   ClassifiedElement,
   ClassifiedResult,
-} from '@/types/Classification';
-import type { CompanyInfo } from '@/types/CompanyInfo';
-import type { FormattedForReviewTransaction } from '@/types/ForReviewTransaction';
+  CompanyInfo,
+  FormattedForReviewTransaction,
+} from '@/types/index';
 
 // Define the AI provider and model to use.
 const provider = process.env.AI_PROVIDER;

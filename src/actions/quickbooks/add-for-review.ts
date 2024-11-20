@@ -1,15 +1,19 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
+
 import type {
   ForReviewTransaction,
   UpdatedForReviewTransaction,
-} from '@/types/ForReviewTransaction';
-import type { QueryResult } from '@/types/QueryResult';
+  QueryResult,
+} from '@/types/index';
 
 // Updates the User QuickBooks to add a 'For Review' transaction to the saved Transactions with the passed Classificaions.
 // Takes: A Raw 'For Review' transaction, and the Id's of its Classificaions.

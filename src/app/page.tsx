@@ -1,5 +1,7 @@
 import { getServerSession } from 'next-auth';
+
 import { redirect } from 'next/navigation';
+
 import LandingPage from '@/app/landing/page';
 
 export default async function Page() {

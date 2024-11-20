@@ -1,4 +1,4 @@
-import { getTaxCodes } from '@/actions/quickbooks/taxes';
+import { getTaxCodes } from '@/actions/quickbooks/index';
 
 export async function GET() {
   // Call action to get formatted User Tax Codes from QuickBooks API.

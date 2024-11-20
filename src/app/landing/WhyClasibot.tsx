@@ -1,16 +1,13 @@
-'use client'; // Mark as client-side component
+'use client';
 
 import React from 'react';
-import SignInButton from '@/components/inputs/sign-in-button';
+
 import quickbooks from './quickbooks.jpg';
 
 export const WhyClasibot = () => {
   return (
-    <section
-      id="why-quickbooks"
-      className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+    <section className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
       <div className="flex flex-col items-center md:flex-row">
-        {/* Left Side: Background Image */}
         <div
           className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
           style={{
@@ -19,17 +16,15 @@ export const WhyClasibot = () => {
             backgroundPosition: 'center',
           }}></div>
 
-        {/* Right Side: Content */}
         <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-8">
           <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
-            Why QuickBooks
+            Why Use Clasibot?
           </h2>
           <p className="mb-6 text-center text-lg text-gray-700">
-            Clasibot simplifies transaction classification, saving you time by
-            automating routine tasks. By integrating with QuickBooks, you get
-            seamless, weekly updates to your transactions.
+            Clasibot simplifies the process of classification and tax code
+            assignment, saving you time by automating the transaction review
+            process.
           </p>
-
           <ul className="mb-6 space-y-4 text-lg text-gray-700">
             <li className="flex items-start">
               <span className="mr-2 translate-y-1.5 text-green-500">
@@ -47,7 +42,9 @@ export const WhyClasibot = () => {
                 </svg>
               </span>
               <span className="text-base">
-                Automate repetitive tasks and focus on what matters most.
+                QuickBooks Online integration allows seamlessly review of your
+                newest transactions. Our weekly updates keep us up to date with
+                no import process needed.
               </span>
             </li>
             <li className="flex items-start">
@@ -66,7 +63,9 @@ export const WhyClasibot = () => {
                 </svg>
               </span>
               <span className="text-base">
-                Seamless integration with QuickBooks for real-time updates.
+                New transactions are automatically classified during weekly
+                updates. Your transactions will be classified and ready for
+                review whenever you are.
               </span>
             </li>
             <li className="flex items-start">
@@ -85,11 +84,12 @@ export const WhyClasibot = () => {
                 </svg>
               </span>
               <span className="text-base">
-                Accurate classification recommendations for every transaction.
+                Straightforward design makes the review process as quick and
+                easy as possible. Approved transactions are automatically
+                updated on QuickBooks Online.
               </span>
             </li>
           </ul>
-          <SignInButton />
         </div>
       </div>
     </section>

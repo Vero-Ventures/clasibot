@@ -1,9 +1,12 @@
 'use server';
+
 import { getServerSession } from 'next-auth/next';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { User, Subscription, Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
@@ -17,7 +20,7 @@ const stripe = new Stripe(
 // Check the Subscription status of the current User using the session.
 // Takes: An optional Company realm Id to support backend functions.
 // Returns: An object with a status string and a validity boolean or an error object with a string value.
-export default async function checkSubscription(
+export async function checkSubscription(
   realmId: string | null = null
 ): Promise<{ status: string; valid: boolean } | { error: string }> {
   try {

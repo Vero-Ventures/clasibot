@@ -1,7 +1,10 @@
 'use server';
+
 import { db } from '@/db/index';
 import { User, Subscription } from '@/db/schema';
+
 import { Stripe } from 'stripe';
+
 import { classificationCompanyIteration } from './company-iteration';
 
 // Create a new Stripe object with the private key.

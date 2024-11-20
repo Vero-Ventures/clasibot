@@ -1,10 +1,14 @@
 import './globals.css';
-import { siteConfig } from '@/site-config/site';
-import { Analytics } from '@vercel/analytics/react';
-import { Toaster } from '@/components/ui/toasts/toaster';
-import Footer from '@/components/site-elements/footer';
-import Navbar from '@/components/site-elements/nav-bar';
+
 import type { Metadata } from 'next';
+
+import { Analytics } from '@vercel/analytics/react';
+
+import { Toaster } from '@/components/ui/toasts/toaster';
+
+import { Footer, Navbar } from '@/components/site-elements/index';
+
+import { siteConfig } from '@/site-config/site';
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -21,13 +25,9 @@ export default function RootLayout({
   // Also defines two  unseen elements: the toaster and vercel analytics handlers.
   return (
     <html lang="en">
-      <body
-        id="PageLayoutContainer"
-        className="flex min-h-screen flex-col bg-gray-100">
+      <body className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-gray-100">
         <Navbar />
-        <main
-          id="PageContent"
-          className="flex flex-grow flex-col items-center justify-center">
+        <main className="flex flex-grow flex-col items-center justify-center">
           {children}
         </main>
         <Footer />

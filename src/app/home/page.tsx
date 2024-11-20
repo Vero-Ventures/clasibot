@@ -1,8 +1,20 @@
 import { checkSubscription } from '@/actions/stripe';
-import { checkCompanyConnection } from '@/actions/user-company/check-db-company';
-import SBKConfirmationModal from '@/components/halt-elements/sbk-confirmation-modal';
-import SubscriptionPurchase from '@/components/halt-elements/subscription-purchase';
-import HomePage from '@/components/home';
+
+import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+
+import { SBKConfirmationModal } from '@/components/modals/index';
+
+import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
+
+import ReviewPage from '@/components/review-page/review-page';
+
+import {
+  getCompanyName,
+  getCompanyIndustry,
+  getCompanyLocation,
+} from '@/actions/quickbooks/index';
+
+import type { CompanyInfo } from '@/types';
 
 export default async function Page() {
   // Get user subscription and check their status.
@@ -10,7 +22,19 @@ export default async function Page() {
   // Check if the Synthetic BookKeeper is connected to the account.
   const companyHasSBK = await checkCompanyConnection();
 
-  if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
+  // Get the Company Info from the QuickBooks functions.
+  const userCompanyName = await getCompanyName();
+  const userCompanyIndustry = await getCompanyIndustry();
+  const userCompanyLocation = JSON.parse(await getCompanyLocation());
+
+  // Record the collected Company Info as an object to be passed to the review page.
+  const companyInfo: CompanyInfo = {
+    name: userCompanyName,
+    industry: userCompanyIndustry,
+    location: userCompanyLocation,
+  };
+
+  if ('error' in subscriptionStatus || (!subscriptionStatus.valid && false)) {
     // If the user status is invalid or there is an error, go to the subscription purchase.
     return <SubscriptionPurchase />;
   } else if (
@@ -21,7 +45,11 @@ export default async function Page() {
     console.log(`${companyHasSBK.result}: ${companyHasSBK.message}`);
     return <SBKConfirmationModal />;
   } else {
-    // Otherwise, show the home page.
-    return <HomePage />;
+    // Otherwise, show the review page.
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <ReviewPage companyInfo={companyInfo} />
+      </div>
+    );
   }
 }

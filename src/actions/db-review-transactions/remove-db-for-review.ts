@@ -1,6 +1,8 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import {
   ForReviewTransaction as DatabaseForReviewTransaction,
@@ -8,8 +10,8 @@ import {
   ForReviewTransactionToTaxCodes,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { ForReviewTransaction } from '@/types/ForReviewTransaction';
-import type { QueryResult } from '@/types/QueryResult';
+
+import type { ForReviewTransaction, QueryResult } from '@/types/index';
 
 // Removes a 'For Review' transaction from the database after it is saved to User QuickBooks Transactions.
 // Takes:  A Raw 'For Review' transaction object
