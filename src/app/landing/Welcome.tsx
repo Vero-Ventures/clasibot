@@ -4,7 +4,7 @@ import React from 'react';
 
 import { SignInButton } from '@/components/inputs/index';
 
-import welcomeBackground from './welcome-new.jpg';
+import welcomeBackground from './welcome-adjusted.jpg';
 
 export const Welcome = () => {
   return (
@@ -23,11 +23,11 @@ export const Welcome = () => {
           </div>
         </div>
         <div
-          className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
+          className="h-full w-full rounded-lg bg-cover bg-center md:ml-4 md:h-96 md:w-1/2 lg:ml-0"
           style={{
             backgroundImage: `url(${welcomeBackground.src})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'left',
+            backgroundPosition: '30%',
           }}></div>
       </div>
     </section>

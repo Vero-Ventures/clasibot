@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import quickbooks from './qb.jpg.webp';
+import quickbooks from './qb.jpg';
 
 export const WhyClasibot = () => {
   return (
@@ -12,11 +12,12 @@ export const WhyClasibot = () => {
           className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
           style={{
             backgroundImage: `url(${quickbooks.src})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            
+            backgroundPosition: '16%',
+            
           }}></div>
 
-        <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-8">
+        <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-6">
           <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
             Why Use Clasibot?
           </h2>
