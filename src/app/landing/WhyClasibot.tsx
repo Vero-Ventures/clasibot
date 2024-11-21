@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import quickbooks from './quickbooks.jpg';
+import quickbooks from './qb.jpg.webp';
 
 export const WhyClasibot = () => {
   return (

@@ -4,7 +4,7 @@ import React from 'react';
 
 import { SignInButton } from '@/components/inputs/index';
 
-import welcomeBackground from './welcome_background_1.jpg';
+import welcomeBackground from './welcome-new.jpg';
 
 export const Welcome = () => {
   return (
