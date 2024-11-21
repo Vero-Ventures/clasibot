@@ -12,8 +12,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { ReviewColumns } from '@/components/review-page-components/index';
-
 import type { ClassifiedForReviewTransaction } from '@/types/index';
 
 export function ReviewTableDisplay({
@@ -22,51 +20,53 @@ export function ReviewTableDisplay({
   table: Table<ClassifiedForReviewTransaction>;
 }>) {
   return (
-    <div className="mt-2 rounded border-2 border-gray-300">
+    <div className="mt-4 overflow-x-auto rounded-md border border-gray-300 bg-white shadow-md">
       <DisplayTable>
+        {/* Table Header */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {/* Map over the Columns (header groups) inside the react Table header row. */}
-              {headerGroup.headers.map((header) => {
-                return (
-                  // Create a Table head object using the current header Id and Column header.
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
+            <TableRow key={headerGroup.id} className="bg-gray-100">
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className="px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
+
+        {/* Table Body */}
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            // Iterate through the rows of the Table to create the Table body.
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                // Sets the Row's background color depending on the selected state.
-                className={`relative ${row.getIsSelected() ? 'bg-blue-100' : ''} hover:bg-blue-100`}
+                className={`transition-colors ${
+                  row.getIsSelected() ? 'bg-blue-100' : ''
+                } hover:bg-blue-50`}
                 onClick={() => row.toggleSelected(!row.getIsSelected())}
                 style={{ cursor: 'pointer' }}>
-                {/* Iterate over the Column values (cells) inside the current Row. */}
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className="px-4 py-3 text-sm text-gray-700">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
-            <TableRow id="EmptyTable">
+            <TableRow>
               <TableCell
-                colSpan={ReviewColumns.length}
-                className="relative pl-14 text-2xl font-bold mb:pl-0 mb:text-center">
+                colSpan={table.getAllColumns().length}
+                className="px-4 py-6 text-center text-sm font-medium text-gray-500">
                 No results found.
               </TableCell>
             </TableRow>

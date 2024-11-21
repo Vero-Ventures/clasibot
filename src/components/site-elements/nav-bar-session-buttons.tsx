@@ -37,7 +37,7 @@ export function NavBarSesssionButtons({
         </button>
 
         <div
-          className={`w-[272px] justify-center rounded-lg bg-gray-600 px-8 ${showOptions ? 'h-[236px] scale-y-100' : 'h-0 scale-y-0'} origin-top overflow-hidden transition-all duration-500 ease-out`}>
+          className={`w-[272px] justify-center rounded-lg bg-gray-600 px-8 ${showOptions ? 'h-[212px] scale-y-100' : 'h-0 scale-y-0'} origin-top overflow-hidden transition-all duration-500 ease-out`}>
           <div className="mt-4 flex flex-col gap-y-6">
             {/* Each button is animated with a staggered delay */}
             <div
@@ -46,27 +46,26 @@ export function NavBarSesssionButtons({
             </div>
             <div
               className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
-              <ChangeCompanyButton />
+              <DeactivationButton connectionStatus={connectionStatus} />
             </div>
             <div
               className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
-              <DeactivationButton connectionStatus={connectionStatus} />
+              <ChangeCompanyButton />
             </div>
           </div>
         </div>
       </div>
-
       <div className={`hidden md:mt-6 md:block`}>
         <ManageSubscriptionButton stripePortalUrl={stripeUrl} />
       </div>
-      <div className={`hidden md:mt-6 md:block`}>
-        <ChangeCompanyButton />
-      </div>
-      <div className={`hidden md:mt-6 md:block`}>
+      <div className={`hidden pl-4 pr-2 md:mt-6 md:block`}>
         <DeactivationButton connectionStatus={connectionStatus} />
       </div>
-
-      <div className={` ${showOptions ? 'mt-4' : 'mt-2'} w-fit mb:mt-6`}>
+      <div className={`hidden pl-2 pr-4 md:mt-6 md:block`}>
+        <ChangeCompanyButton />
+      </div>
+      <div
+        className={` ${showOptions ? 'mt-4' : 'mt-2'} w-fit mb:mt-7 md:mt-6`}>
         <SignOutButton />
       </div>
     </div>
