@@ -247,8 +247,6 @@ export default function ReviewPage({
         <span className="text-blue-700">{companyInfo.name}</span>
       </h1>
 
-
-
       {/* Manual Review Button Section */}
       <div className="mx-auto mb-6 w-fit rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 p-6 shadow-lg">
         <h2 className="text-center text-lg font-medium text-gray-600">

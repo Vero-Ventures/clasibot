@@ -1,7 +1,6 @@
 import React from 'react';
 import { FaSearch, FaDatabase, FaRobot } from 'react-icons/fa';
 
-
 export const HowItWorks = () => (
   <section className="mb-8 transform rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
     <h2 className="mb-8 text-center text-3xl font-bold text-gray-800">
@@ -30,7 +29,6 @@ export const HowItWorks = () => (
   </section>
 );
 
-
 interface StepProps {
   iconColor: string;
   IconComponent: React.ElementType;
@@ -55,4 +53,3 @@ const Step: React.FC<StepProps> = ({
     <p className="text-gray-700">{description}</p>
   </div>
 );
-
