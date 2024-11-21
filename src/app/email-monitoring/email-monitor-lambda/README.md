@@ -4,7 +4,7 @@
 
 ##### Command for installing dependencies into ./package ######
 ```shell
-pip install <new_package_name>
+pip install --target=./package <new_package_name>
 ```
 
 ##### Command for installing all dependencies listed in requirements.txt ######
