@@ -28,7 +28,7 @@ export async function Navbar() {
   return (
     <nav className="flex flex-col items-center justify-between bg-gray-900 px-6 py-4 md:flex-row md:justify-start">
       <div
-        className={`mt-2 flex w-fit flex-col items-center justify-between shadow-md ${session?.user ? 'md:w-full' : ''}`}>
+        className={`mt-2 flex w-fit flex-col items-center justify-between shadow-md ${session?.user ? 'mb:w-full' : ''}`}>
         <div className="flex items-center space-x-4 md:min-w-48">
           <Link href="/">
             <Image

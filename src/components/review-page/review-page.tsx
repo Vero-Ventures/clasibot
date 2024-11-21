@@ -248,17 +248,14 @@ export default function ReviewPage({
       </h1>
 
       {/* Manual Review Button Section */}
-      <div className="mx-auto mb-6 w-fit rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 p-6 shadow-lg">
-        <h2 className="text-center text-lg font-medium text-gray-600">
+      <div className="mx-auto mb-6 w-fit rounded-lg border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+        <ManualReviewButton handleManualReview={handleManualClassification} />
+        <h2 className="mt-4 text-center text-lg font-medium text-gray-600">
           Next Scheduled Auto-Review:&nbsp;
-          <span className="inline-block rounded bg-blue-100 px-3 py-1 font-bold text-blue-800">
+          <span className="inline-block rounded bg-blue-100 px-4 py-1 font-bold text-blue-800">
             {nextBackendClassifyDate}
           </span>
         </h2>
-        <p className="mb-3 text-center text-lg font-semibold text-gray-900">
-          Start Manual Classification
-        </p>
-        <ManualReviewButton handleManualReview={handleManualClassification} />
       </div>
 
       <div className="mx-auto w-fit">
