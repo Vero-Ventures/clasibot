@@ -1,4 +1,4 @@
-import { getAccounts } from '@/actions/quickbooks/get-accounts';
+import { getAccounts } from '@/actions/quickbooks/index';
 
 export async function GET() {
   // Call action to get formatted User Accounts from QuickBooks API.

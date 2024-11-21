@@ -1,5 +1,4 @@
-import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { QueryResult } from '@/types/QueryResult';
+import type { ErrorResponse, QueryResult } from '@/types/index';
 
 // Check for the 'Fault' property in error objects returned from QuickBooks calls.
 // Takes: An unknown type object called error.

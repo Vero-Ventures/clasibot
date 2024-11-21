@@ -10,16 +10,20 @@ export const siteConfig = {
   //    Also used to define the paths users can visit when not logged in.
   footerItems: [
     {
-      label: 'Privacy Policy',
-      href: '/privacy-policy',
+      label: 'Setup Instructions',
+      href: '/add-sbk-instructions',
+    },
+    {
+      label: 'Contact Us',
+      href: '/contact-us',
     },
     {
       label: 'Terms of Service',
       href: '/terms-of-service',
     },
     {
-      label: 'Contact Us',
-      href: '/contact-us',
+      label: 'Privacy Policy',
+      href: '/privacy-policy',
     },
   ],
 };

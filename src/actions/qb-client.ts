@@ -1,8 +1,11 @@
 'use server';
+
 import { getServerSession } from 'next-auth';
 import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import QB from 'node-quickbooks';
-import type { LoginTokens } from '@/types/LoginTokens';
+
+import type { LoginTokens } from '@/types/index';
 
 // Create a QuickBooks client object for frontend functions.
 // Returns: A QuickBooks object used for API calls.

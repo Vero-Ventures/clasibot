@@ -43,3 +43,21 @@ export enum TaxCodes {
   HstNL = 'HST NL 2016',
   HstPE = 'HST PE 2016',
 }
+
+export const LocationsToTaxCodes: Record<string, string[]> = {
+  Canada: [
+    TaxCodes.Exempt,
+    TaxCodes.ZeroRated,
+    TaxCodes.OutOfScope,
+    TaxCodes.Gst,
+  ],
+  BC: [TaxCodes.GstPstBC, TaxCodes.PstBC],
+  MB: [TaxCodes.GstPstMB, TaxCodes.PstMB],
+  SK: [TaxCodes.GstPstSK, TaxCodes.PstSk],
+  QC: [TaxCodes.GstQstQC, TaxCodes.QstQC],
+  NS: [TaxCodes.HstNS],
+  ON: [TaxCodes.HstON],
+  NB: [TaxCodes.HstNB],
+  NL: [TaxCodes.HstNL],
+  PE: [TaxCodes.HstPE],
+};

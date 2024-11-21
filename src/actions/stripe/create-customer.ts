@@ -1,7 +1,9 @@
 'use server';
+
 import { db } from '@/db/index';
 import { Subscription, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import { Stripe } from 'stripe';
 
 // Create a new Stripe object with the private key.
@@ -15,9 +17,7 @@ const stripe = new Stripe(
 // Creates a new Stripe Customer and records their Stripe Id to a User database Subscription object.
 // Takes: A User Id as a string to create a Stripe Id.
 // Returns: A response object containing a success message or an error.
-export default async function createCustomer(
-  userId: string
-): Promise<Response> {
+export async function createCustomer(userId: string): Promise<Response> {
   try {
     // Find the database Subscription object by matching the User Id to the passed value.
     const subscription = await db

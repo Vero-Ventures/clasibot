@@ -1,10 +1,13 @@
 'use server';
+
+import { checkFaultProperty, createQueryResult } from './index';
+
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
-import { checkFaultProperty, createQueryResult } from './query-helpers';
-import { Locations, TaxCodes } from '@/enums/taxes';
-import type { ErrorResponse } from '@/types/ErrorResponse';
-import type { TaxCode } from '@/types/TaxCode';
-import type { LoginTokens } from '@/types/LoginTokens';
+
+import { TaxCodes, LocationsToTaxCodes } from '@/enums/taxes';
+import type { Locations } from '@/enums/taxes';
+
+import type { ErrorResponse, TaxCode, LoginTokens } from '@/types/index';
 
 // Get all valid Canadian Tax Codes for a User location.
 // Takes: An optional set of Login Tokens and a Company realm Id.
@@ -107,45 +110,16 @@ export async function getTaxCodes(
 export async function getTaxCodesByLocation(
   LocationName: Locations
 ): Promise<string[]> {
-  // Define the array of valid Tax Code name strings.
-  const taxCodeNames = [];
+  // Define the array of valid Tax Code name strings for the country Canada.
+  const taxCodeNames = LocationsToTaxCodes.Canada;
 
-  // Add the standard nation wide Tax Codes that apply a 0% rate.
-  taxCodeNames.push(TaxCodes.Exempt, TaxCodes.ZeroRated, TaxCodes.OutOfScope);
+  // Check for Sub-locational Tax Code and save them.
+  const subLocationCodes = LocationsToTaxCodes[LocationName];
 
-  // Add the nation wide GST Tax Code.
-  taxCodeNames.push(TaxCodes.Gst);
-
-  // Use switch case to determine and add appropriate Tax Codes by location.
-  // Alberta and the Territories (NU, NW, YK) have not additional Tax Codes.
-  switch (LocationName) {
-    case Locations.BC:
-      taxCodeNames.push(TaxCodes.GstPstBC, TaxCodes.PstBC);
-      break;
-    case Locations.MB:
-      taxCodeNames.push(TaxCodes.GstPstMB, TaxCodes.PstMB);
-      break;
-    case Locations.SK:
-      taxCodeNames.push(TaxCodes.GstPstSK, TaxCodes.PstSk);
-      break;
-    case Locations.QC:
-      taxCodeNames.push(TaxCodes.GstQstQC, TaxCodes.QstQC);
-      break;
-    case Locations.NS:
-      taxCodeNames.push(TaxCodes.HstNS);
-      break;
-    case Locations.ON:
-      taxCodeNames.push(TaxCodes.HstON);
-      break;
-    case Locations.NB:
-      taxCodeNames.push(TaxCodes.HstNB);
-      break;
-    case Locations.NL:
-      taxCodeNames.push(TaxCodes.HstNL);
-      break;
-    case Locations.PE:
-      taxCodeNames.push(TaxCodes.HstPE);
-      break;
+  // If Sub-location codes are found, push them onto the array of Tax Code strings.
+  if (subLocationCodes) {
+    // Push the array of strings for the sub-location onto the existing array.
+    taxCodeNames.push(...subLocationCodes);
   }
 
   // Return the array of Tax Code names.

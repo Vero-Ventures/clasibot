@@ -1,38 +1,55 @@
 import { checkSubscription } from '@/actions/stripe';
-import HomePage from '@/components/home';
-import PricingTable from '@/components/site-elements/pricing-table';
+
+import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+
+import { SBKConfirmationModal } from '@/components/modals/index';
+
+import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
+
+import ReviewPage from '@/components/review-page/review-page';
+
+import {
+  getCompanyName,
+  getCompanyIndustry,
+  getCompanyLocation,
+} from '@/actions/quickbooks/index';
+
+import type { CompanyInfo } from '@/types';
 
 export default async function Page() {
-  // Define the public Stripe key and pricing table Id based on app config.
-  let publicKey = '';
-  let tableId = '';
-
-  if (process.env.APP_CONFIG === 'production') {
-    publicKey = process.env.PROD_STRIPE_PUBLIC_KEY!;
-    tableId = process.env.PROD_PRICING_TABLE_ID!;
-  } else {
-    publicKey = process.env.DEV_STRIPE_PUBLIC_KEY!;
-    tableId = process.env.DEV_PRICING_TABLE_ID!;
-  }
-
-  // Get User Subscription status.
+  // Get user subscription and check their status.
   const subscriptionStatus = await checkSubscription();
+  // Check if the Synthetic BookKeeper is connected to the account.
+  const companyHasSBK = await checkCompanyConnection();
 
-  // Check in an invalid Subscription staus was returned (Not an error).
-  if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
-    // For an unsubscribed User display the pricing table alongside the regular home page.
-    // Pricing table displays above on smaller screens and to the left on larger screens.
+  // Get the Company Info from the QuickBooks functions.
+  const userCompanyName = await getCompanyName();
+  const userCompanyIndustry = await getCompanyIndustry();
+  const userCompanyLocation = JSON.parse(await getCompanyLocation());
+
+  // Record the collected Company Info as an object to be passed to the review page.
+  const companyInfo: CompanyInfo = {
+    name: userCompanyName,
+    industry: userCompanyIndustry,
+    location: userCompanyLocation,
+  };
+
+  if ('error' in subscriptionStatus || (!subscriptionStatus.valid && false)) {
+    // If the user status is invalid or there is an error, go to the subscription purchase.
+    return <SubscriptionPurchase />;
+  } else if (
+    !companyHasSBK.connected &&
+    process.env.APP_CONFIG === 'production'
+  ) {
+    // Only perform check if in production mode.
+    console.log(`${companyHasSBK.result}: ${companyHasSBK.message}`);
+    return <SBKConfirmationModal />;
+  } else {
+    // Otherwise, show the review page.
     return (
-      <div className="flex w-11/12 flex-grow flex-col lg:flex-row lg:gap-x-12">
-        <div id="PricingTableContainer" className="w-full lg:w-4/12">
-          <PricingTable publicKey={publicKey} tableId={tableId} />
-        </div>
-        <div id="HomePageContainer" className="w-full lg:w-8/12">
-          <HomePage />
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <ReviewPage companyInfo={companyInfo} />
       </div>
     );
   }
-  // If a Subscription is present and valid, display the homepage as normal.
-  return <HomePage />;
 }

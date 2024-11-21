@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import { cookies } from 'next/headers';
+
 import { options } from './options';
 
 // Define the NextAuth handler using the options file.
