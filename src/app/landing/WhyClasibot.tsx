@@ -12,9 +12,8 @@ export const WhyClasibot = () => {
           className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
           style={{
             backgroundImage: `url(${quickbooks.src})`,
-            
+
             backgroundPosition: '16%',
-            
           }}></div>
 
         <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-6">
