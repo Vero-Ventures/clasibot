@@ -88,7 +88,7 @@ export default function Page() {
   };
 
   return (
-    <div className="flex min-h-full w-full max-w-3xl items-center justify-center bg-gray-100 px-8 py-8 sm:w-3/4">
+    <div className="flex min-h-full w-full max-w-3xl items-center justify-center bg-gray-100 px-8 py-10 sm:w-3/4">
       <section
         className="flex-grow transform overflow-auto rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl"
         style={{ maxHeight: '90vh', width: '40vw', maxWidth: 'none' }}>
