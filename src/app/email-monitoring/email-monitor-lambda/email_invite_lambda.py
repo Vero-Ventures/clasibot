@@ -6,11 +6,15 @@ from string_patterns_enum import StringPatterns
 # To install dependencies within working directory
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'package'))
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 import re
 import quopri
 import boto3
 import json
 import requests
+
+
+load_dotenv()
 
 
 def decode_email(email_content_bytes: bytes) -> str | None:
@@ -191,7 +195,7 @@ def execute_post_request(data: dict, email_type: EmailType):
     """
     Packages extracted data and makes a POST request to one of three API endpoint.
 
-    :param data: extracted data as a dict
+    :param data: a dict of the extracted data to be sent
     :param email_type: one of three EmailType enums
     """
     if email_type == EmailType.COMPANY_INVITE:
@@ -207,18 +211,39 @@ def execute_post_request(data: dict, email_type: EmailType):
         'Content-Type': 'application/json',
         'Authorization': os.getenv("EMAIL_ENDPOINT_AUTH")
     }
-    if data and url and headers:
+    if not data or not url or not headers:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'Invalid input: data, url, and headers are required'})
+        }
+
+    try:
         response = requests.post(url=url, headers=headers, data=json.dumps(data))
+        print("Response:", response)
         if response.status_code == 200:
             return {
                 'statusCode': 200,
-                'body': json.dumps({'message': 'Request was successful!', 'response': response.json()})
+                'body': json.dumps({
+                    'message': 'Request was successful!',
+                    'response': response.json()
+                })
             }
         else:
             return {
                 'statusCode': response.status_code,
-                'body': json.dumps({'message': 'Request failed', 'error': response.text})
+                'body': json.dumps({
+                    'message': 'Request failed',
+                    'error': response.text
+                })
             }
+    except requests.exceptions.RequestException as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'message': 'An error occurred while making the POST request',
+                'error': str(e)
+            })
+        }
 
 
 def lambda_handler(event, context):
@@ -237,13 +262,15 @@ def lambda_handler(event, context):
 
 # For testing locally
 def main():
-    with open("email-invite-company", 'rb') as f:
+    with open("email-access-change", 'rb') as f:
         email_content_bytes = f.read()
         f.close()
     decoded_content = decode_email(email_content_bytes)
     soup = BeautifulSoup(decoded_content, "html.parser")
     email_type = identify_email_type(soup)
     data = process_email_parsing(decoded_content, soup, email_type)
+    result = execute_post_request(data, email_type)
+    print(result)
 
 
 if __name__ == '__main__':
