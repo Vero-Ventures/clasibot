@@ -25,11 +25,11 @@ export const SBKConfirmationModal = () => {
           Please Invite The Clasibot Bookkeeper
         </h2>
 
-        <p className="text-center font-medium text-gray-800">
+        <p className="text-center text-gray-800 py-2">
           Before reviewing your transactions, please ensure the Clasibot
           Bookkeeper is connected to your QuickBooks account.
         </p>
-        <p className="text-center font-medium text-gray-800">
+        <p className="text-center font-semibold text-gray-800">
           Click below for a step-by-step tutorial on inviting the Clasibot
           bookkeeper.
         </p>
