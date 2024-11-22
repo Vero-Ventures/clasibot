@@ -25,7 +25,7 @@ export const SBKConfirmationModal = () => {
           Please Invite The Clasibot Bookkeeper
         </h2>
 
-        <p className="text-center text-gray-800 py-2">
+        <p className="py-2 text-center text-gray-800">
           Before reviewing your transactions, please ensure the Clasibot
           Bookkeeper is connected to your QuickBooks account.
         </p>
