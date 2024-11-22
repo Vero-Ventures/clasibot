@@ -15,7 +15,7 @@ interface AddSBKInstructionsProps {
 export default function AddSBKInstructions({
   showCheckConnectionButton,
 }: AddSBKInstructionsProps) {
-  const [isSingleCompany, setIsSingleCompany] = useState(false);
+  const [isSingleCompany, setIsSingleCompany] = useState(true);
 
   return (
     <section className="m-8 transform rounded-lg bg-white px-4 py-10 shadow-lg mb:px-6 sm:px-8 md:px-12">
