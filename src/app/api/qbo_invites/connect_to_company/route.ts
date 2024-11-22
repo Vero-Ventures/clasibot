@@ -21,14 +21,14 @@ export async function POST(request: Request) {
     // Get request body that contains the User email name and connected Company name.
     const body = await request.json();
 
-    // Extract the User email and Company name from the request body.
-    const userEmail: string = body.userEmail;
+    // Extract the Username, Company name, and invite URL from the request body.
+    const userName: string = body.userName;
     const companyName: string = body.companyName;
     const _invite_link: string = body.inviteLink;
 
     // Check if valid User email name and Company name was passed.
     // Log error responses for the missing values.
-    if (!userEmail) {
+    if (!userName) {
       console.error(
         'Error Adding Company Connection: No Valid User Email Passed.'
       );
@@ -41,12 +41,12 @@ export async function POST(request: Request) {
     }
 
     // Return an error response if either of the values are missing.
-    if (!userEmail || !companyName) {
+    if (!userName || !companyName) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
     // Call handler for Company accountant invite emails.
-    await addCompanyConnection(userEmail, companyName);
+    await addCompanyConnection(userName, companyName);
 
     // Return a success response.
     return new Response('Company Connection Successfully Updated.');

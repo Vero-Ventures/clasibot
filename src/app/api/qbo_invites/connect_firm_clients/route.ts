@@ -23,8 +23,7 @@ export async function POST(request: Request) {
 
     // Extract the Firm name and Company names from the request body.
     const firmName: string = body.firmName;
-    const companyNames: string[] = body.companies || [];
-    const _invite_link: string = body.inviteLink;
+    const companyNames: string[] = body.companyNames || [];
 
     // Check if valid Firm name and Company names were passed.
     // Log error responses for the missing values.
