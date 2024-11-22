@@ -61,7 +61,7 @@ export function NavBarSesssionButtons({
                   setInfoModalOpen(true);
                 }}
                 className="flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-2 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
-                Stop&nbsp; <span className="inline-block"> Auto-Review</span>
+                Remove Connection
               </button>
             </div>
             <div

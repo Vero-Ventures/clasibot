@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { signIn, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 
 import { makeCompanyIncactive } from '@/actions/backend-actions/database-functions/index';
 
@@ -45,7 +45,7 @@ export const MobileDeactivationButton: React.FC<DeactivationButtonProps> = ({
   }
 
   // Deactivate database Company object handler.
-  async function deactivateCompany(switchCompany: boolean) {
+  async function deactivateCompany() {
     // Get the deactivation result and check for an error.
     const deactivationResult = await makeCompanyIncactive();
 
@@ -53,13 +53,8 @@ export const MobileDeactivationButton: React.FC<DeactivationButtonProps> = ({
       // Close the confirmation modal and open the error modal.
       setConfirmModalOpen(false);
       setErrorModalOpen(true);
-    }
-
-    // If the switch Company option was selected, redirect the user to Company selection.
-    if (switchCompany) {
-      signIn('quickbooks', { callbackUrl: '/home' });
     } else {
-      // Otherwise, sign the user out.
+      // If no error occured, sign the user out.
       signOut({ callbackUrl: '/' });
     }
   }
