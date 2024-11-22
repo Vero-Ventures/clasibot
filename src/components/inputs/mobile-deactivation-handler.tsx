@@ -12,16 +12,30 @@ import {
 } from '@/components/modals/index';
 
 interface DeactivationButtonProps {
-  connectionStatus: boolean;
+  setShowModal: (newState: boolean) => void;
 }
 
-export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
-  connectionStatus,
+export const MobileDeactivationButton: React.FC<DeactivationButtonProps> = ({
+  setShowModal,
 }) => {
   // State trackers to indicate which modals should be displayed to the user.
-  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(true);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
+
+  // Define wrappers of state setting functions to also set the mobile modals to be hidden.
+  // Sets the modals to be hidden and the info modal to be shown.
+  function closeConfirmModal() {
+    setShowModal(false);
+    setConfirmModalOpen(false);
+    setInfoModalOpen(true);
+  }
+
+  function closeErrorModal() {
+    setShowModal(false);
+    setInfoModalOpen(false);
+    setInfoModalOpen(true);
+  }
 
   // Helper function to allow buttons to switch from info to confirmation modal through single call.
   function openConfirmationModal() {
@@ -51,32 +65,24 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
 
   return (
     <>
-      {!connectionStatus && (
-        <button
-          className="flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-2 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 md:w-32 md:min-w-32 lg:min-w-52"
-          onClick={() => setInfoModalOpen(true)}>
-          Stop <span className="inline-block"> Auto-Review</span>
-        </button>
-      )}
-
       {
         <DeactivateInfoModal
           displayState={infoModalOpen}
-          setDisplayState={setInfoModalOpen}
+          setDisplayState={setShowModal}
           switchToInfoModal={openConfirmationModal}></DeactivateInfoModal>
       }
 
       {
         <DeactivateConfirmModal
           displayState={confirmModalOpen}
-          setDisplayState={setConfirmModalOpen}
+          setDisplayState={closeConfirmModal}
           deactivateCompany={deactivateCompany}></DeactivateConfirmModal>
       }
 
       {
         <DeactivateErrorModal
           displayState={errorModalOpen}
-          setDisplayState={setErrorModalOpen}></DeactivateErrorModal>
+          setDisplayState={closeErrorModal}></DeactivateErrorModal>
       }
     </>
   );
