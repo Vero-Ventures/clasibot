@@ -70,7 +70,7 @@ export default function ReviewPage({
       const loadResult = await getDatabaseTransactions();
       if (loadResult.queryResult.result === 'Error') {
         // If an error was found, open the related error modal.
-        setErrorLoadingTransactions(true);
+        // setErrorLoadingTransactions(true);
       }
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
@@ -242,19 +242,21 @@ export default function ReviewPage({
 
   return (
     <>
-      <h1 className="mx-auto mb-4 text-center text-3xl font-bold">
-        Classified Transactions -{' '}
-        <span className="text-blue-900">{companyInfo.name}</span>
+      <h1 className="mx-auto mb-6 text-center text-4xl font-extrabold text-gray-800">
+        Review Transactions -{' '}
+        <span className="text-blue-700">{companyInfo.name}</span>
       </h1>
 
-      <ManualReviewButton handleManualReview={handleManualClassification} />
-
-      <h2 className="py-4 text-center text-lg font-semibold">
-        Next Scheduled Auto-Review: &nbsp;
-        <span className="inline-block px-2 font-bold">
-          {nextBackendClassifyDate}
-        </span>
-      </h2>
+      {/* Manual Review Button Section */}
+      <div className="mx-auto mb-6 w-fit rounded-lg border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+        <ManualReviewButton handleManualReview={handleManualClassification} />
+        <h2 className="mt-4 text-center text-lg font-medium text-gray-600">
+          Next Scheduled Auto-Review:&nbsp;
+          <span className="inline-block rounded bg-blue-100 px-4 py-1 font-bold text-blue-800">
+            {nextBackendClassifyDate}
+          </span>
+        </h2>
+      </div>
 
       <div className="mx-auto w-fit">
         <BackendClassifyErrorNotice

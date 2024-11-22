@@ -17,52 +17,31 @@ export default async function SubscriptionPurchase() {
 
   return (
     <div className="container md:pb-[5%] lg:pb-[0%]">
-      <div className="flex flex-col justify-between lg:flex-row xl:justify-evenly">
-        <div className="content-center md:pb-4 lg:w-[55%] xl:w-[40%]">
+      <div className="flex transform flex-col justify-between lg:flex-row lg:content-center xl:justify-evenly">
+        <div className="content-center rounded-lg border-4 border-red-300 border-opacity-60 bg-white p-6 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl md:pb-4 lg:w-[55%] xl:w-[40%]">
           <div className="flex flex-col space-y-4 pt-8 lg:pt-0">
-            <h2 className="mb-4 text-center text-2xl font-bold text-red-500 md:text-3xl">
+            <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
               Your account does not have a valid subscription.
             </h2>
             <div className="space-y-2">
               <p className="text-center md:text-xl">
-                <span className="block md:inline-block">
-                  Before accessing the&nbsp;
-                  <span className="block mb:inline-block">
-                    Clasibot Transaction Classifier,&nbsp;
-                  </span>
-                </span>
-                <span className="block md:inline-block">
-                  <span className="block mb:inline-block">
-                    please setup a subscription or&nbsp;
-                  </span>
-                  <span className="block mb:inline-block">
-                    begin your free one month trial.
-                  </span>
-                </span>
+                A subscription is required before reviewing your transactions.
               </p>
+
+              <p className="text-center md:text-xl"></p>
+
               <p className="text-center md:text-xl">
-                Once you have an active&nbsp;
-                <span className="block mb:inline-block">
-                  subscription or trial,&nbsp;
-                </span>
-                <span className="block sm:inline-block">
-                  you will be redirected to the homepage.
-                </span>
+                Please ensure your subscription is active or begin your free one
+                month trial. After your subscription or trial is activated, you
+                will be redirected to the review page.
               </p>
             </div>
           </div>
           <div>
             <h2 className="mb-2 mt-8 text-center text-xl font-bold md:text-2xl">
-              View the monthly and yearly&nbsp;
-              <span className="block mb:inline-block">
-                subscription options&nbsp;
-              </span>
-              <span className="block mb:inline-block lg:hidden">
-                in the table below.
-              </span>
-              <span className="hidden lg:inline-block">
-                in the table to the right.
-              </span>
+              Select between a monthly and yearly subscription&nbsp;
+              <span className="lg:hidden">below.</span>
+              <span className="hidden lg:inline-block">to the right.</span>
             </h2>
           </div>
         </div>

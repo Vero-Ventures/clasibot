@@ -4,7 +4,7 @@ import React from 'react';
 
 import { SignInButton } from '@/components/inputs/index';
 
-import welcomeBackground from './welcome_background_1.jpg';
+import welcomeBackground from './welcome-adjusted.jpg';
 
 export const Welcome = () => {
   return (
@@ -15,27 +15,19 @@ export const Welcome = () => {
             Welcome to Clasibot
           </h1>
           <p className="text-center text-xl text-gray-700 mb:w-96 md:w-80 lg:w-96">
-            <span className="block mb:inline-block">
-              Automatically classify&nbsp;
-            </span>
-            <span className="block mb:inline-block">
-              your transactions&nbsp;
-            </span>
-            <span className="block mb:inline-block">
-              and tax codes with ease.
-            </span>
-            <span className="block mb:inline-block"></span>
+            Helping you to classify expense transactions and assign tax codes
+            with ease.
           </p>
           <div className="flex flex-col items-center">
             <SignInButton />
           </div>
         </div>
         <div
-          className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
+          className="h-full w-full rounded-lg bg-cover bg-center md:ml-4 md:h-96 md:w-1/2 lg:ml-0"
           style={{
             backgroundImage: `url(${welcomeBackground.src})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'left',
+            backgroundPosition: '30%',
           }}></div>
       </div>
     </section>
