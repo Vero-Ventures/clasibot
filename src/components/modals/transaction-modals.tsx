@@ -16,12 +16,12 @@ export const ErrorLoadingTransactionsModal: React.FC<
       {
         <div
           className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${displayState ? '' : 'hidden'}`}>
-          <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <div className="mx-4 w-96 rounded-lg bg-white p-4 px-8">
             <>
-              <div className="mb-2 flex items-center justify-center space-x-4 p-2 text-center">
+              <div className="flex items-center justify-center space-x-4 p-2 text-center">
                 <h2
                   id="ResultTitle"
-                  className="text-center text-2xl font-bold text-red-500 ">
+                  className="text-center text-3xl font-bold text-red-500">
                   Error
                 </h2>
                 <div className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500 sm:h-12 sm:w-12">
@@ -30,18 +30,16 @@ export const ErrorLoadingTransactionsModal: React.FC<
               </div>
               <p
                 id="ResultMessage"
-                className="text-md mb-4 mt-2 text-center font-medium text-gray-800 sm:text-lg sm:mb-6 sm:mt-3">
+                className="mb-4 text-center text-lg font-semibold text-gray-800 mb:text-xl sm:mb-6 sm:mt-2">
                 An error occured while loading your classified transactions.
                 Refresh the page to try again or contact us if the issue
                 persists.
               </p>
             </>
-            <div
-              id="ReturnButtonContainer"
-              className="flex justify-center">
+            <div id="ReturnButtonContainer" className="flex justify-center">
               <Button
                 id="CloseButton"
-                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
+                className="0 min-w-32 space-x-4 rounded-md bg-red-500 px-4 py-2 text-xl font-bold hover:bg-red-400 sm:mb-2 sm:min-w-40"
                 onClick={() => setDisplayState(false)}>
                 Close
               </Button>
@@ -66,13 +64,13 @@ export const SaveClassifiedTransactionsModal: React.FC<
       {
         <div
           className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 ${displayState ? '' : 'hidden'}`}>
-          <div className="mx-4 w-96 rounded-lg bg-white p-6">
+          <div className="mx-4 w-96 rounded-lg bg-white p-6 sm:w-[448px]">
             {errorMessage !== '' ? (
               <>
                 <div className="flex items-center justify-center space-x-4 p-2 text-center">
                   <h2
                     id="ResultTitle"
-                    className="text-center text-2xl font-bold text-red-500">
+                    className="text-center text-3xl font-bold text-red-500">
                     Error
                   </h2>
                   <div className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500 sm:h-12 sm:w-12">
@@ -81,7 +79,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
                 </div>
                 <p
                   id="ResultMessage"
-                  className="mx-6 mb-4 mt-2 text-center font-medium text-gray-800 sm:mb-6 sm:mt-3 sm:text-lg">
+                  className="mb-6 mt-3 text-center text-lg font-semibold text-gray-800 sm:mb-8">
                   {errorMessage}
                 </p>
               </>
@@ -90,7 +88,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
                 <div className="flex items-center justify-center space-x-4 p-2 text-center">
                   <h2
                     id="ResultTitle"
-                    className="text-center text-2xl font-bold text-green-500">
+                    className="text-center text-3xl font-bold text-green-500">
                     Success
                   </h2>
                   <div className="flex h-12 w-12 animate-successAnimation items-center justify-center rounded-full bg-green-500">
@@ -99,7 +97,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
                 </div>
                 <p
                   id="ResultMessage"
-                  className="mb-6 mt-3 text-center font-medium text-gray-800">
+                  className="mb-6 mt-3 text-center text-lg font-semibold text-gray-800 sm:mb-8">
                   Transactions have been saved.
                 </p>
               </>
@@ -109,7 +107,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
             <div className="flex justify-evenly gap-4">
               <Button
                 id="ReturnButton"
-                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
+                className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => {
                   const url = window.location.origin + window.location.pathname;
                   window.location.href = url;
@@ -121,7 +119,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
 
               <Button
                 id="SignOutButton"
-                className="text-md space-x-4 rounded-md bg-gray-400 px-4 py-2 font-semibold text-gray-900 hover:bg-gray-500 mb:min-w-32 sm:min-w-40 sm:text-lg"
+                className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => signOut({ callbackUrl: '/' })}>
                 Sign Out
               </Button>
