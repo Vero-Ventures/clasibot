@@ -36,8 +36,8 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   function hideModals(hideState: boolean) {
     setShowModal(hideState);
     setInfoModalOpen(hideState);
-    setConfirmModalOpen(hideState)
-    setErrorModalOpen(hideState)
+    setConfirmModalOpen(hideState);
+    setErrorModalOpen(hideState);
   }
 
   // Helper function to allow buttons to switch from info to confirmation modal through single call.
