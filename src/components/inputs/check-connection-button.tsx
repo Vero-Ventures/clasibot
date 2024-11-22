@@ -47,7 +47,7 @@ export const CheckConnectionButton = () => {
   return (
     <>
       <Button
-        className="text-md w-full transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3 font-semibold text-white shadow-md transition-transform duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-800"
+        className="w-full transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
         onClick={handleCheckConnection}
         disabled={checkingForSBK}>
         Check Connection

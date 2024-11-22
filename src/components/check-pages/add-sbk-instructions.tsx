@@ -30,20 +30,20 @@ export default function AddSBKInstructions({
           <Button
             onClick={() => setIsSingleCompany(true)}
             className={clsx(
-              'text-md transform rounded-lg px-4 py-3 font-semibold text-white shadow-md transition-transform duration-300 sm:w-1/3',
+              'text-lg transform rounded-lg px-4 py-3 font-semibold text-white shadow-lg transition-all duration-300 ease-in-out sm:w-1/3',
               isSingleCompany
-                ? 'bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 hover:from-blue-600 hover:to-blue-800'
-                : 'bg-gray-500 hover:scale-105 hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75'
+                : 'bg-gray-500 hover:scale-105 hover:bg-gray-600'
             )}>
             Single Company
           </Button>
           <Button
             onClick={() => setIsSingleCompany(false)}
             className={clsx(
-              'text-md transform rounded-lg px-4 py-3 font-semibold text-white shadow-md transition-transform duration-300 sm:w-1/3',
+              'text-lg transform rounded-lg px-4 py-3 font-semibold text-white shadow-lg transition-all duration-300 ease-in-out sm:w-1/3',
               isSingleCompany
-                ? 'bg-gray-500 hover:scale-105 hover:bg-gray-700'
-                : 'bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 hover:from-blue-600 hover:to-blue-800'
+                ? 'bg-gray-500 hover:scale-105 hover:bg-gray-600'
+                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:scale-105 hover:from-blue-700 hover:to-blue-800'
             )}>
             Accounting Firm
           </Button>

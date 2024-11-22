@@ -10,7 +10,7 @@ export function ManualReviewButton({
   return (
     <div className="mx-auto w-fit">
       <Button
-        className="self-center rounded bg-blue-500 px-8 py-6 text-lg font-bold text-white hover:bg-blue-600 sm:text-xl sm:px-12 sm:py-7"
+        className="self-center rounded bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-6 text-lg font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 sm:px-12 sm:py-7 sm:text-xl"
         onClick={() => handleManualReview()}>
         Start Review
       </Button>

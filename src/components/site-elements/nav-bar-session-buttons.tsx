@@ -25,7 +25,7 @@ export function NavBarSesssionButtons({
     <div className="flex w-full flex-col items-center mb:flex-row mb:items-start mb:justify-evenly mb:pr-14 md:justify-evenly md:pr-0">
       <div className="flex flex-col items-center md:hidden">
         <button
-          className="mb-4 mt-6 flex w-fit min-w-48 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-1 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:mt-8 md:hidden"
+          className="mb-4 mt-6 flex w-fit min-w-48 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-1 text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:mt-8 md:hidden"
           onClick={() => setShowOptions(!showOptions)}>
           <span className="mr-2 text-lg font-semibold">Options</span>
           <span className={`${showOptions ? '' : 'hidden'}`}>
