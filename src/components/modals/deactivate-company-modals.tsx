@@ -20,7 +20,7 @@ export const DeactivateInfoModal: React.FC<DeactivateInfoProps> = ({
       {displayState && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
           <div className="relative mx-4 max-h-[80%] w-full max-w-2xl overflow-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <h2 className="mb-4 text-center text-3xl font-extrabold text-red-500">
+            <h2 className="mb-4 text-center text-3xl font-extrabold text-red-500 md:text-4xl">
               Deactivate Company
             </h2>
             <div className="space-y-4 text-gray-700">

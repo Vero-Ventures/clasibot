@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { signIn, signOut } from 'next-auth/react';
 
 import { makeCompanyIncactive } from '@/actions/backend-actions/database-functions/index';
@@ -13,28 +13,29 @@ import {
 
 interface DeactivationButtonProps {
   setShowModal: (newState: boolean) => void;
+  infoModalOpen: boolean;
+  confirmModalOpen: boolean;
+  errorModalOpen: boolean;
+  setInfoModalOpen: (newState: boolean) => void;
+  setConfirmModalOpen: (newState: boolean) => void;
+  setErrorModalOpen: (newState: boolean) => void;
 }
 
 export const MobileDeactivationButton: React.FC<DeactivationButtonProps> = ({
   setShowModal,
+  infoModalOpen,
+  confirmModalOpen,
+  errorModalOpen,
+  setInfoModalOpen,
+  setConfirmModalOpen,
+  setErrorModalOpen,
 }) => {
-  // State trackers to indicate which modals should be displayed to the user.
-  const [infoModalOpen, setInfoModalOpen] = useState(true);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-
-  // Define wrappers of state setting functions to also set the mobile modals to be hidden.
-  // Sets the modals to be hidden and the info modal to be shown.
-  function closeConfirmModal() {
-    setShowModal(false);
-    setConfirmModalOpen(false);
-    setInfoModalOpen(true);
-  }
-
-  function closeErrorModal() {
-    setShowModal(false);
-    setInfoModalOpen(false);
-    setInfoModalOpen(true);
+  // Helper function to close the modals and the info modal to closed as well.
+  function hideModals(hideState: boolean) {
+    setShowModal(hideState);
+    setInfoModalOpen(hideState);
+    setConfirmModalOpen(hideState);
+    setErrorModalOpen(hideState);
   }
 
   // Helper function to allow buttons to switch from info to confirmation modal through single call.
@@ -68,21 +69,21 @@ export const MobileDeactivationButton: React.FC<DeactivationButtonProps> = ({
       {
         <DeactivateInfoModal
           displayState={infoModalOpen}
-          setDisplayState={setShowModal}
+          setDisplayState={hideModals}
           switchToInfoModal={openConfirmationModal}></DeactivateInfoModal>
       }
 
       {
         <DeactivateConfirmModal
           displayState={confirmModalOpen}
-          setDisplayState={closeConfirmModal}
+          setDisplayState={hideModals}
           deactivateCompany={deactivateCompany}></DeactivateConfirmModal>
       }
 
       {
         <DeactivateErrorModal
           displayState={errorModalOpen}
-          setDisplayState={closeErrorModal}></DeactivateErrorModal>
+          setDisplayState={hideModals}></DeactivateErrorModal>
       }
     </>
   );

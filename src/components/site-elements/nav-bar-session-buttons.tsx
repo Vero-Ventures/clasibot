@@ -21,8 +21,14 @@ export function NavBarSesssionButtons({
 }>) {
   // Define state to show additional NavBar options on smaller screens.
   const [showOptions, setShowOptions] = useState(false);
+
   const [showMobileDeactivateModal, setShowMobileDeactivateModal] =
     useState(false);
+
+  // State trackers to indicate which deactivation modals should be displayed to the user.
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
 
   return (
     <div className="flex w-full flex-col items-center mb:flex-row mb:items-start mb:justify-evenly mb:pr-14 md:justify-evenly md:pr-0">
@@ -50,7 +56,10 @@ export function NavBarSesssionButtons({
             <div
               className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
               <button
-                onClick={() => setShowMobileDeactivateModal(true)}
+                onClick={() => {
+                  setShowMobileDeactivateModal(true);
+                  setInfoModalOpen(true);
+                }}
                 className="flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-2 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
                 Stop&nbsp; <span className="inline-block"> Auto-Review</span>
               </button>
@@ -63,13 +72,30 @@ export function NavBarSesssionButtons({
         </div>
       </div>
       <div className={`${showMobileDeactivateModal ? 'md:hidden' : 'hidden'}`}>
-        <MobileDeactivationButton setShowModal={setShowMobileDeactivateModal} />
+        <MobileDeactivationButton
+          setShowModal={setShowMobileDeactivateModal}
+          infoModalOpen={infoModalOpen}
+          confirmModalOpen={confirmModalOpen}
+          errorModalOpen={errorModalOpen}
+          setInfoModalOpen={setInfoModalOpen}
+          setConfirmModalOpen={setConfirmModalOpen}
+          setErrorModalOpen={setErrorModalOpen}
+        />
       </div>
       <div className={`hidden md:mt-6 md:block`}>
         <ManageSubscriptionButton stripePortalUrl={stripeUrl} />
       </div>
       <div className={`hidden pl-4 pr-2 md:mt-6 md:block`}>
-        <DeactivationButton connectionStatus={connectionStatus} />
+        <DeactivationButton
+          setShowModal={setShowMobileDeactivateModal}
+          connectionStatus={connectionStatus}
+          infoModalOpen={infoModalOpen}
+          confirmModalOpen={confirmModalOpen}
+          errorModalOpen={errorModalOpen}
+          setInfoModalOpen={setInfoModalOpen}
+          setConfirmModalOpen={setConfirmModalOpen}
+          setErrorModalOpen={setErrorModalOpen}
+        />
       </div>
       <div className={`hidden pl-2 pr-4 md:mt-6 md:block`}>
         <ChangeCompanyButton />
