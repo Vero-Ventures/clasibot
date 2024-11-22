@@ -17,7 +17,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 
   if (completedChunks < 0) {
     return (
-      <div className="flex items-center justify-center space-x-2 pt-2">
+      <div className="flex items-center justify-center">
         <div className="flex h-12 w-12 animate-failureAnimation items-center justify-center rounded-full bg-red-500">
           <XIcon className="h-6 w-6 text-white" />
         </div>
@@ -26,7 +26,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   }
 
   return (
-    <div className="flex items-center justify-center space-x-2 pt-2">
+    <div className="flex items-center justify-center">
       {isCompleted ? (
         <div className="flex h-12 w-12 animate-successAnimation items-center justify-center rounded-full bg-green-500">
           <CheckIcon className="h-8 w-8 text-white" />
