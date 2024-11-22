@@ -1,4 +1,4 @@
-import { addCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { addAccountingFirmCompanies } from '@/actions/backend-actions/database-functions/index';
 
 export async function POST(request: Request) {
   try {
@@ -11,51 +11,51 @@ export async function POST(request: Request) {
       authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
     ) {
       console.error(
-        'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
+        'Error Adding Accounting Firm Companies: Missing Or Invalid Authorization Header.'
       );
       return new Response('Missing Or Invalid Authorization Header', {
         status: 401,
       });
     }
 
-    // Get request body that contains the User email name and connected Company name.
+    // Get request body that contains the Firm name and Company names.
     const body = await request.json();
 
-    // Extract the User email and Company name from the request body.
-    const userEmail: string = body.userEmail;
-    const companyName: string = body.companyName;
-    const _invite_link: string = body.inviteLink;
+    // Extract the Firm name and Company names from the request body.
+    const firmName: string = body.firmName;
+    const companyNames: string[] = body.companyNames || [];
 
-    // Check if valid User email name and Company name was passed.
+    // Check if valid Firm name and Company names were passed.
     // Log error responses for the missing values.
-    if (!userEmail) {
+    if (!firmName) {
       console.error(
-        'Error Adding Company Connection: No Valid User Email Passed.'
+        'Error Adding Accounting Firm Companies: No Valid Firm Name Passed.'
       );
     }
-
-    if (!companyName) {
+    if (!companyNames.length) {
       console.error(
-        'Error Adding Company Connection: No Valid Company Name Passed.'
+        'Error Adding Accounting Firm Companies: No Valid Company Names Passed.'
       );
     }
 
     // Return an error response if either of the values are missing.
-    if (!userEmail || !companyName) {
+    if (!firmName || !companyNames.length) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call handler for Company accountant invite emails.
-    await addCompanyConnection(userEmail, companyName);
+    // Call handler for accounting Firm client access emails.
+    await addAccountingFirmCompanies(firmName, companyNames);
 
     // Return a success response.
-    return new Response('Company Connection Successfully Updated.');
+    return new Response('Firm Companies Connections Successfully Updated.');
   } catch (error) {
     // Catch any errors and log them (include the error message if it is present) and return an error response.
     if (error instanceof Error) {
-      console.error('Error Adding Company Connection: ' + error.message);
+      console.error(
+        'Error Adding Accounting Firm Client Companies: ' + error.message
+      );
     } else {
-      console.error('Unexpected Error Company Connection.');
+      console.error('Unexpected Error Adding Accounting Firm Client Companies');
     }
     return new Response('Invalid Body Passed', { status: 400 });
   }
