@@ -219,23 +219,16 @@ def execute_post_request(data: dict, email_type: EmailType):
 
     try:
         response = requests.post(url=url, headers=headers, data=json.dumps(data))
-        print("Response:", response)
         if response.status_code == 200:
             return {
                 'statusCode': 200,
-                'body': json.dumps({
-                    'message': 'Request was successful!',
-                    'response': response.json()
-                })
+                'body': response.text
             }
         else:
             return {
                 'statusCode': response.status_code,
-                'body': json.dumps({
-                    'message': 'Request failed',
-                    'error': response.text
-                })
-            }
+                'body': response.text
+                }
     except requests.exceptions.RequestException as e:
         return {
             'statusCode': 500,
@@ -270,7 +263,7 @@ def main():
     email_type = identify_email_type(soup)
     data = process_email_parsing(decoded_content, soup, email_type)
     result = execute_post_request(data, email_type)
-    print(result)
+    return result
 
 
 if __name__ == '__main__':
