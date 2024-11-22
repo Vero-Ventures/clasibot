@@ -15,20 +15,16 @@ interface AddSBKInstructionsProps {
 export default function AddSBKInstructions({
   showCheckConnectionButton,
 }: AddSBKInstructionsProps) {
-  const [isSingleCompany, setIsSingleCompany] = useState(true);
+  const [isSingleCompany, setIsSingleCompany] = useState(false);
 
   return (
     <section className="m-8 transform rounded-lg bg-white px-4 py-10 shadow-lg mb:px-6 sm:px-8 md:px-12">
       <div className="flex flex-col items-center justify-center">
         <h1 className="mb-4 text-center text-3xl font-bold text-black">
-          <span className="inline-block">How to connect Clasibot&nbsp;</span>
-          <span className="inline-block">to your QuickBooks account</span>
+          How to connect Clasibot to your QuickBooks account
         </h1>
-        <h2 className="mb-6 inline-block text-center text-lg text-gray-700">
-          Are you using Clasibot for a&nbsp;
-          <span className="inline-block">
-            single company or an accounting firm?
-          </span>
+        <h2 className="mb-6 inline-block text-center text-xl font-semibold text-gray-700">
+          Are you using Clasibot for a single company or an accounting firm?
         </h2>
         <div className="mb-2 flex w-full justify-center space-x-5 mb:space-x-12 md:justify-evenly md:space-x-0">
           <Button
@@ -56,33 +52,21 @@ export default function AddSBKInstructions({
           {isSingleCompany ? (
             <>
               <p className="my-4 text-center font-semibold italic text-gray-900">
-                <span className="inline-block">
-                  <span className="inline-block">
-                    If you plan to use Clasibot&nbsp;
-                  </span>
-                  <span className="inline-block">
-                    for a single company,&nbsp;
-                  </span>
-                </span>
-                <span className="inline-block">
-                  <span className="inline-block">
-                    add the Clasibot bookkeeper directly&nbsp;
-                  </span>
-                  <span className="inline-block">as a company accountant.</span>
-                </span>
+                If you plan to use Clasibot for a single company, add the
+                Clasibot bookkeeper directly as a company accountant.
               </p>
-              <h3 className="mb-2 mt-6 text-center text-xl font-semibold text-black sm:mt-8">
+              <h3 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
                 Invite To Your Company
               </h3>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Log into your QuickBooks Online company.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Open the settings menu by clicking the gear icon in the top
                   right.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Under the&nbsp;
                   <span className="font-semibold italic">
                     Your Company&nbsp;
@@ -90,67 +74,82 @@ export default function AddSBKInstructions({
                   options, find and select&nbsp;
                   <span className="font-semibold italic">Manage users.</span>
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select&nbsp;
                   <span className="font-semibold italic">
                     Accounting Firms&nbsp;
                   </span>
                   to view your connected QuickBooks accountants.
                 </li>
+                <li className="mb-2.5 marker:font-semibold">
+                  Determine the next steps for connecting to Clasibot:
+                  <ol className="list-none pl-5">
+                    <li className="mb-2.5 mt-2 marker:font-semibold">
+                      <strong>A:&nbsp;</strong>
+                      You have no other connected accountants.
+                    </li>
+                    <li className="mb-2.5 mt-2 marker:font-semibold">
+                      <strong>B:&nbsp;</strong>
+                      You already have other connected accountants.
+                    </li>
+                  </ol>
+                </li>
               </ol>
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
-                Add Clasibot As First Accountant
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+                A: Add Clasibot As First Accountant
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select the&nbsp;
                   <span className="font-semibold italic">
                     Accountant&apos;s email&nbsp;
                   </span>
                   field option next to the invite button.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Enter the email of the Clasibot bookkeeper:&nbsp;
-                  <strong>bookkeeper@clasibot.com</strong>
+                  <strong>synthetic-bookkeeper@clasibot.com</strong>
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Click the invite button to invite the Clasibot bookkeeper.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   It may be necessary to enter an authorization code at this
                   step.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Send the invite and wait for the Clasibot bookkeeper to accept
                   and join your company.
                 </li>
               </ol>
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
-                Add Clasibot To Existing Accountant&apos;s
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+                B: Add Clasibot To Existing Accountant&apos;s
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select the invite button in the top right of the screen to add
                   a new accountant.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Give the Clasibot bookkeeper the name you want.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Enter the email of the Clasibot bookkeeper:&nbsp;
-                  <strong>bookkeeper@clasibot.com</strong>
+                  <strong>synthetic-bookkeeper@clasibot.com</strong>
                 </li>
-                <li className="mb-4">
+                <li className="mb-4 marker:font-semibold">
                   Send the invite and wait for the Clasibot accountant to accept
                   and join your company.
                 </li>
               </ol>
-              {showCheckConnectionButton && (
+              {true ? (
                 <div className="mx-auto flex min-w-80 flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
+              ) : (
+                <div className="py-2" />
               )}
-              <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black sm:mb-4 md:mt-12">
+              <h4 className="mb-2 mt-4 text-center text-2xl font-semibold text-black sm:mb-4 md:mt-6">
                 Connection Troubleshooting
               </h4>
               <p className="mb-4 text-gray-700">
@@ -158,7 +157,7 @@ export default function AddSBKInstructions({
                 Clasibot bookkeeper will not be able to connect to that company,
                 even if it still has client access through QuickBooks.
               </p>
-              <p className="text-md mb-4 ml-6 mr-4 text-center text-gray-500">
+              <p className="text-md ml-6 mr-4 text-center font-semibold text-gray-700">
                 Simply delete the Clasibot bookkeeper then invite it back to
                 have the Clasibot bookkeeper&nbsp;
                 <span className="inline-block">re-activate</span> its
@@ -168,33 +167,21 @@ export default function AddSBKInstructions({
           ) : (
             <>
               <p className="my-4 text-center font-semibold italic text-gray-900">
-                <span className="inline-block">
-                  If you plan to use Clasibot for&nbsp;
-                  <span className="inline-block">
-                    multiple client companies,
-                  </span>
-                </span>
-                <span className="inline-block">
-                  <span className="inline-block">
-                    add the Clasibot bookkeeper&nbsp;
-                  </span>
-                  <span className="inline-block">
-                    to your accounting company.
-                  </span>
-                </span>
+                If you plan to use Clasibot for multiple client companies, add
+                the Clasibot bookkeeper to your accounting company.
               </p>
-              <h3 className="mb-2 mt-6 text-center text-xl font-semibold text-black sm:mt-8">
-                Invite To Accountant Company
+              <h3 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+                Navigate To Firm Users
               </h3>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Log into your QuickBooks Online accountant company.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Open the settings menu by clicking the gear icon in the top
                   right.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Under the&nbsp;
                   <span className="font-semibold italic">
                     Your Company&nbsp;
@@ -202,78 +189,78 @@ export default function AddSBKInstructions({
                   options, find and select&nbsp;
                   <span className="font-semibold italic">Your team.</span>
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Check the top to ensure you are under the&nbsp;
                   <span className="font-semibold italic">Users&nbsp;</span>
                   tab.
                 </li>
               </ol>
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
-                Invite To Your Accountant Company
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+                Invite To Your Accounting Firm
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select&nbsp;
                   <span className="font-semibold italic">Add user&nbsp;</span>
                   to start adding the Clasibot bookkeeper to your accounting
                   team.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Give the Clasibot bookkeeper the name you want.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Enter the email of the Clasibot bookkeeper:&nbsp;
-                  <strong>bookkeeper@clasibot.com</strong>
+                  <strong>synthetic-bookkeeper@clasibot.com</strong>
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select the&nbsp;
                   <span className="font-semibold italic">
                     Standard no access&nbsp;
                   </span>
                   option for Clasibot&apos;s permissions.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Send the invite and wait for the Clasibot accountant to accept
                   and join your accounting firm.
                 </li>
               </ol>
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
-                Check If The Invite Was Accepted
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+                Check That The Invite Has Been Accepted
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Wait a few minutes for Clasibot to receive and accept your
                   invite.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Find the user with the&nbsp;
                   <strong>bookkeeper@clasibot.com</strong> email and the name
                   you chose to give the Clasibot bookkeeper.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Check that the invite has been accepted by looking under the
                   status column.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   If the value says&nbsp;
                   <span className="font-semibold italic">Active&nbsp;</span>
                   you are ready to continue.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   If the value still says&nbsp;
                   <span className="font-semibold italic">Invited&nbsp;</span>,
                   try refreshing the page.
                 </li>
               </ol>
-              <h4 className="mb-2 mt-6 text-center text-lg font-semibold text-black sm:mt-8">
-                Grant Access To Client Companies
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+                Grant Access To The Client Companies
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select the edit option for the Clasibot bookkeeper.
                 </li>
-                <li className="mb-2.5">
-                  Scroll down to the section labeled
+                <li className="mb-2.5 marker:font-semibold">
+                  Scroll down to the section labeled&nbsp;
                   <span className="font-semibold italic">
                     Access to clients&nbsp;
                   </span>
@@ -283,22 +270,24 @@ export default function AddSBKInstructions({
                   </span>
                   dropdown.
                 </li>
-                <li className="mb-2.5">
+                <li className="mb-2.5 marker:font-semibold">
                   Select the client you are presently logged in as to grant the
                   Clasibot bookkeeper access.
                 </li>
-                <li className="mb-4">
+                <li className="mb-4 marker:font-semibold">
                   Click save changes and wait for the Clasibot bookkeeper to
                   update its connection to your client&apos;s company.
                 </li>
               </ol>
-              {showCheckConnectionButton && (
+              {showCheckConnectionButton ? (
                 <div className="mx-auto flex flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
+              ) : (
+                <div className="py-2" />
               )}
               <div className="px-4 md:px-0">
-                <h4 className="mb-2 mt-8 text-center text-lg font-semibold text-black sm:mb-4 md:mt-12">
+                <h4 className="text-2lg mb-2 mt-4 text-center text-2xl font-semibold text-black sm:mb-4 md:mt-6">
                   Connection Troubleshooting
                 </h4>
                 <p className="mb-4 text-gray-700">
@@ -307,7 +296,7 @@ export default function AddSBKInstructions({
                   companies that have not been authenticated through logging
                   into the Clasibot application.
                 </p>
-                <p className="text-md mb-6 ml-6 mr-4 text-center text-gray-500 sm:mb-10">
+                <p className="text-md mb-6 ml-6 mr-4 text-center font-semibold text-gray-700">
                   If access has already been granted, simply edit the Clasibot
                   bookkeeper to remove the access, log in to the client company,
                   then grant the client access again.
@@ -318,7 +307,7 @@ export default function AddSBKInstructions({
                   company, even if it still has client access through
                   QuickBooks.
                 </p>
-                <p className="text-md ml-6 mr-4 text-center text-gray-500">
+                <p className="text-md ml-6 mr-4 text-center font-semibold text-gray-700">
                   Simply edit the Clasibot bookkeeper to remove the access then
                   grant it again to have the Clasibot bookkeeper&nbsp;
                   <span className="inline-block">re-activate</span> its
