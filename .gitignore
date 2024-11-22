@@ -1,5 +1,10 @@
 # dependencies
 /node_modules
+package
+.idea
+
+# testing
+/coverage
 
 # next.js
 /.next/
@@ -9,3 +14,7 @@
 
 # typescript
 next-env.d.ts
+
+# __pycache__ directories
+__pycache__/
+*.pyc
