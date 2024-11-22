@@ -18,7 +18,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun i --frozen-lockfile
+        run: bun i
 
       - name: Format All Files with Prettier
         run: bun format:check
