@@ -20,7 +20,7 @@ export default function AddSBKInstructions({
   return (
     <section className="m-8 transform rounded-lg bg-white px-4 py-10 shadow-lg mb:px-6 sm:px-8 md:px-12">
       <div className="flex flex-col items-center justify-center">
-        <h1 className="mb-4 text-center text-3xl font-bold text-black">
+        <h1 className="mb-4 text-center text-3xl font-bold">
           How to connect Clasibot to your QuickBooks account
         </h1>
         <h2 className="mb-6 inline-block text-center text-xl font-semibold text-gray-700">
@@ -55,7 +55,7 @@ export default function AddSBKInstructions({
                 If you plan to use Clasibot for a single company, add the
                 Clasibot bookkeeper directly as a company accountant.
               </p>
-              <h3 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h3 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 Invite To Your Company
               </h3>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -95,7 +95,7 @@ export default function AddSBKInstructions({
                   </ol>
                 </li>
               </ol>
-              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 A: Add Clasibot As First Accountant
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -122,7 +122,7 @@ export default function AddSBKInstructions({
                   and join your company.
                 </li>
               </ol>
-              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 B: Add Clasibot To Existing Accountant&apos;s
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -149,7 +149,7 @@ export default function AddSBKInstructions({
               ) : (
                 <div className="py-2" />
               )}
-              <h4 className="mb-2 mt-4 text-center text-2xl font-semibold text-black sm:mb-4 md:mt-6">
+              <h4 className="mb-2 mt-4 text-center text-2xl font-semibold sm:mb-4 md:mt-6">
                 Connection Troubleshooting
               </h4>
               <p className="mb-4 text-gray-700">
@@ -170,7 +170,7 @@ export default function AddSBKInstructions({
                 If you plan to use Clasibot for multiple client companies, add
                 the Clasibot bookkeeper to your accounting company.
               </p>
-              <h3 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h3 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 Navigate To Firm Users
               </h3>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -195,7 +195,7 @@ export default function AddSBKInstructions({
                   tab.
                 </li>
               </ol>
-              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 Invite To Your Accounting Firm
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -224,7 +224,7 @@ export default function AddSBKInstructions({
                   and join your accounting firm.
                 </li>
               </ol>
-              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 Check That The Invite Has Been Accepted
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -252,7 +252,7 @@ export default function AddSBKInstructions({
                   try refreshing the page.
                 </li>
               </ol>
-              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold text-black sm:mt-8">
+              <h4 className="mb-4 mt-6 text-center text-2xl font-semibold sm:mt-8">
                 Grant Access To The Client Companies
               </h4>
               <ol className="list-decimal pl-5 text-left text-gray-700">
@@ -287,7 +287,7 @@ export default function AddSBKInstructions({
                 <div className="py-2" />
               )}
               <div className="px-4 md:px-0">
-                <h4 className="text-2lg mb-2 mt-4 text-center text-2xl font-semibold text-black sm:mb-4 md:mt-6">
+                <h4 className="text-2lg mb-2 mt-4 text-center text-2xl font-semibold sm:mb-4 md:mt-6">
                   Connection Troubleshooting
                 </h4>
                 <p className="mb-4 text-gray-700">

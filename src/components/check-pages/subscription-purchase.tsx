@@ -18,7 +18,7 @@ export default async function SubscriptionPurchase() {
   return (
     <div className="container mt-6 md:my-8">
       <div className="mx-2 flex transform flex-col justify-between md:mx-0 md:flex-row md:content-center lg:justify-evenly">
-        <div className="content-center rounded-lg border-4 border-red-300 bg-white p-6 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl md:w-[55%] lg:mr-6 lg:w-[540px]">
+        <div className="content-center rounded-lg border-4 border-red-300 bg-white p-6 py-4 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl md:w-[55%] lg:mr-6 lg:w-[540px]">
           <div className="flex flex-col space-y-4 pt-4 lg:pt-0">
             <h2 className="mb-2 text-center text-3xl font-bold md:text-4xl">
               Your account does not have a valid subscription.

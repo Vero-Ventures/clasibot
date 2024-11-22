@@ -90,7 +90,7 @@ export default function Page() {
   return (
     <div className="flex min-h-full w-full max-w-3xl items-center justify-center bg-gray-100 px-8 py-10 sm:w-3/4">
       <section
-        className="flex-grow transform overflow-auto rounded-lg bg-white px-8 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl"
+        className="flex-grow transform overflow-auto rounded-lg bg-white px-8 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl"
         style={{ maxHeight: '90vh', width: '40vw', maxWidth: 'none' }}>
         <h1 className="mb-6 text-center text-4xl font-extrabold tracking-tight text-gray-800">
           Contact Us
@@ -166,7 +166,7 @@ export default function Page() {
             />
             <div className="mb:w-/5 mx-auto flex w-3/4 flex-col justify-center gap-4 mb:min-w-64 sm:w-full sm:flex-row sm:justify-evenly">
               <Link href="/" className="sm:w-auto">
-                <Button className="w-full rounded-lg bg-gray-500 px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-600 sm:w-40 sm:text-lg md:w-44 lg:w-56">
+                <Button className="w-full rounded-lg bg-gray-500 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-600 sm:w-40 sm:text-lg md:w-44 lg:w-56">
                   Return
                 </Button>
               </Link>
@@ -176,7 +176,7 @@ export default function Page() {
                   loading
                     ? 'bg-gray-400'
                     : 'transform bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75'
-                } rounded-lg px-6 py-3 text-base font-semibold text-white shadow-lg sm:w-40 sm:text-lg md:w-44 lg:w-56`}
+                } rounded-lg px-6 py-3 font-semibold text-white shadow-lg sm:w-40 sm:text-lg md:w-44 lg:w-56`}
                 disabled={loading}>
                 {loading ? 'Submitting...' : 'Submit'}
               </Button>

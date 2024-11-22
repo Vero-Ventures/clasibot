@@ -45,7 +45,7 @@ export function PricingTable({
   }, [publicKey]);
 
   return (
-    <div className="mx-auto my-6 w-fit rounded-lg border-4 border-gray-300 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl sm:px-6">
+    <div className="mx-auto my-6 w-fit rounded-lg border-4 border-gray-300 py-4 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl sm:px-6">
       <Script
         id="StripePricingTableScript"
         src="https://js.stripe.com/v3/pricing-table.js"

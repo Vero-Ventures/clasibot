@@ -28,7 +28,7 @@ export const ManualClassifyProgessModal: React.FC<
               {progressMessage}
             </p>
             {completedChunks < maxChunks && completedChunks >= 0 && (
-              <p className="text-center text-base italic text-gray-800 mb:text-lg">
+              <p className="text-center italic text-gray-800 mb:text-lg">
                 Working through process {completedChunks + 1} of {maxChunks}
               </p>
             )}

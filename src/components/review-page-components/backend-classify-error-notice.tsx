@@ -11,7 +11,7 @@ export function BackendClassifyErrorNotice({
 }>) {
   return (
     <div
-      className={`${showErrorNotice ? '' : 'hidden'} mx-2 mb-12 mt-8 flex w-fit max-w-lg transform flex-col overflow-auto rounded-lg border-4 border-red-300 bg-white p-6 py-4 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl mb:mx-8 mb:px-8`}>
+      className={`${showErrorNotice ? '' : 'hidden'} mx-2 mb-12 mt-8 flex w-fit max-w-lg transform flex-col overflow-auto rounded-lg border-4 border-red-300 bg-white p-6 py-4 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl mb:mx-8 mb:px-8`}>
       <div className="text-center">
         <p className="pb-2 text-2xl font-bold text-red-500 mb:text-3xl">
           Notice
@@ -19,7 +19,7 @@ export function BackendClassifyErrorNotice({
         <p className="text-lg font-semibold text-red-600 mb:text-xl">
           An Error Occured During Latest Auto-Review
         </p>
-        <p className="py-4 text-base italic text-gray-700 mb:px-2 mb:text-lg">
+        <p className="py-4 italic text-gray-700 mb:px-2 mb:text-lg">
           Start a new review to get up to date transactions and classifications.
         </p>
       </div>
