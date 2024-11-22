@@ -23,13 +23,13 @@ export function DatePicker({
   setDate: (date: Date | null) => void;
 }>) {
   return (
-    <div className="flex max-w-56 flex-grow px-6">
+    <div className="flex max-w-56 flex-grow px-4">
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant={'outline'}
             className={cn(
-              'w-full justify-center border-2 border-gray-300 pr-6 text-center font-normal md:min-w-[150px]',
+              'w-full justify-center border-2 border-gray-300 pr-6 text-center font-normal hover:border-blue-100 hover:bg-blue-300 hover:ring md:min-w-[150px]',
               !date && 'text-muted-foreground'
             )}>
             <CalendarIcon className="mr-2 h-4 w-4" />
