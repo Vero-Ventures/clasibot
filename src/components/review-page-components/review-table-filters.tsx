@@ -49,16 +49,16 @@ export function ReviewTableFilters({
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="mx-auto max-w-xs mb:max-w-sm sm:max-w-full md:w-2/3 lg:max-w-2xl"
+          className="mx-auto max-w-xs focus:ring focus:!ring-blue-500 mb:max-w-sm sm:max-w-full md:w-2/3 lg:max-w-2xl"
         />
       </div>
       <div className="mb-4 mt-2 flex w-full flex-col md:mt-6 md:flex-row">
         <div className="mx-auto flex w-11/12 flex-col items-center md:w-1/2 md:justify-evenly md:px-6">
-          <div className="mt-4 flex w-full flex-row justify-evenly md:mt-0">
-            <p className="mx-6 w-full max-w-56 text-center font-semibold md:min-w-[150px] md:max-w-[176px]">
+          <div className="mb-1 mt-4 flex w-full flex-row justify-evenly md:mt-0">
+            <p className="w-full min-w-[174px] max-w-56 px-4 text-center font-semibold md:min-w-[182px]">
               Start Date
             </p>
-            <p className="mx-6 w-full max-w-56 text-center font-semibold md:min-w-[150px] md:max-w-[176px]">
+            <p className="w-full min-w-[174px] max-w-56 px-4 text-center font-semibold md:min-w-[182px]">
               End Date
             </p>
           </div>
@@ -67,13 +67,13 @@ export function ReviewTableFilters({
             <DatePicker date={endDate} setDate={changeEndDate} />
           </div>
         </div>
-        <div className="mx-auto mt-4 flex w-11/12 items-center justify-evenly md:mt-6 md:w-1/2">
+        <div className="mx-auto mt-6 flex w-11/12 items-center justify-evenly md:mt-6 md:w-1/2">
           <div className="w-full max-w-64 px-4 md:max-w-48">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full bg-blue-500 text-base font-semibold text-white hover:bg-blue-800 hover:text-white">
+                  className="w-full border-2 border-gray-300 bg-white text-base font-semibold hover:border-blue-100 hover:bg-blue-300 hover:ring">
                   Columns <ChevronDown className="ml-2 mt-1 h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
@@ -107,7 +107,7 @@ export function ReviewTableFilters({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full bg-blue-500 text-base font-semibold text-white hover:bg-blue-800 hover:text-white">
+                  className="w-full border-2 border-gray-300 bg-white text-base font-semibold hover:border-blue-100 hover:bg-blue-300 hover:ring">
                   Accounts <ChevronDown className="ml-2 mt-1 h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
