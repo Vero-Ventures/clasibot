@@ -19,7 +19,7 @@ export function BackendClassifyErrorNotice({
         <p className="text-lg font-semibold text-red-600 mb:text-xl">
           An Error Occured During Latest Auto-Review
         </p>
-        <p className="py-4 text-base italic mb:px-2 mb:text-lg text-gray-700">
+        <p className="py-4 text-base italic text-gray-700 mb:px-2 mb:text-lg">
           Start a new review to get up to date transactions and classifications.
         </p>
       </div>

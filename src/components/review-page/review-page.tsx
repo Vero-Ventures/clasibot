@@ -250,7 +250,7 @@ export default function ReviewPage({
       {/* Manual Review Button Section */}
       <div className="mx-auto mb-6 w-fit rounded-lg border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 p-6 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
         <ManualReviewButton handleManualReview={handleManualClassification} />
-        <h2 className="mt-6 w-full text-center text-lg font-medium text-gray-600 px-6 sm:px-2">
+        <h2 className="mt-6 w-full px-6 text-center text-lg font-medium text-gray-600 sm:px-2">
           Next Scheduled Auto-Review
           <span className="mt-2 block rounded bg-blue-100 px-4 py-1 font-bold text-blue-800 sm:ml-4 sm:mt-0 sm:inline-block">
             {nextBackendClassifyDate}
