@@ -14,3 +14,7 @@ package
 
 # typescript
 next-env.d.ts
+
+# __pycache__ directories
+__pycache__/
+*.pyc
