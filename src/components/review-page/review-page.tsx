@@ -165,8 +165,7 @@ export default function ReviewPage({
       // Set the dismissal loading element to be shown while calling dismsisal function.
       setDismissalLoading(true);
       // Close the frontend element, then dismiss the error from the database Company object.
-      const dismissedError = await dismissBackendClassifyError();
-      console.log(dismissedError);
+      await dismissBackendClassifyError();
       setTimeout(() => {
         setDismissalLoading(false);
         setShowErrorNotice(false);

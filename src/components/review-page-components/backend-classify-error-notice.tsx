@@ -35,7 +35,7 @@ export function BackendClassifyErrorNotice({
             Dismiss
           </Button>
         ) : (
-          <div className='mb-2'>
+          <div className="mb-2">
             <MiniSpinner success={null} />
           </div>
         )}
