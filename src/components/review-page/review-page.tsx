@@ -267,7 +267,7 @@ export default function ReviewPage({
 
       <ReviewTable
         accountNames={accounts}
-        categorizedTransactions={loadedTransactions}
+        classifiedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}
         selectedTaxCodes={selectedTaxCodes}
         handleCategoryChange={handleCategoryChange}
