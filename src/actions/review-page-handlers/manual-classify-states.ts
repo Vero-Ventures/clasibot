@@ -1,6 +1,9 @@
 'use client';
 
-import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
+import {
+  getDatabaseTransactions,
+  removeAllForReviewTransactions,
+} from '@/actions/db-review-transactions/index';
 
 import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
 
@@ -109,6 +112,9 @@ async function handleBackendProcessStates(
   } else {
     return false;
   }
+
+  // If synthetic login was successful, before continuing remove all old 'For Review' transactions for the Company from the database.
+  removeAllForReviewTransactions(startResult.realmId);
 
   // Get the 'For Review' transactions to be Classified.
   const transactionResults = await fetchTransactionsToClassify(

@@ -4,4 +4,7 @@
 
 export { getDatabaseTransactions } from './get-db-for-review';
 
-export { removeForReviewTransactions } from './remove-db-for-review';
+export {
+  removeSelectedForReviewTransaction,
+  removeAllForReviewTransactions,
+} from './remove-db-for-review';
