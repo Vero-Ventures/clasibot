@@ -18,7 +18,8 @@ export function middleware(request: NextRequest) {
   if (
     footerPaths.includes(pathname) ||
     emailApiEndpoints.includes(pathname) ||
-    pathname === '/'
+    pathname === '/' ||
+    pathname === '/home'
   ) {
     // Ignore the middleware functions and continue as normal.
     return NextResponse.next();
