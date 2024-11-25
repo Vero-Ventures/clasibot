@@ -8,7 +8,7 @@ import welcomeBackground from './welcome-adjusted.jpg';
 
 export const Welcome = () => {
   return (
-    <section className="mb-8 transform rounded-lg bg-white px-8 py-10 text-center shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+    <section className="transform rounded-lg bg-white px-8 py-10 text-center shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
       <div className="flex flex-col items-center rounded-lg md:flex-row md:text-left">
         <div className="flex flex-col items-center justify-center space-y-4 p-6 md:w-1/2 md:space-y-8">
           <h1 className="text-center text-4xl font-bold text-black">

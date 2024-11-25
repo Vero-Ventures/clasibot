@@ -6,7 +6,7 @@ import quickbooks from './qb.jpg';
 
 export const WhyClasibot = () => {
   return (
-    <section className="mb-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
+    <section className="mt-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
       <div className="flex flex-col items-center md:flex-row">
         <div
           className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"

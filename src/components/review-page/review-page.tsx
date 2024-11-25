@@ -70,7 +70,7 @@ export default function ReviewPage({
       const loadResult = await getDatabaseTransactions();
       if (loadResult.queryResult.result === 'Error') {
         // If an error was found, open the related error modal.
-        // setErrorLoadingTransactions(true);
+        setErrorLoadingTransactions(true);
       }
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
