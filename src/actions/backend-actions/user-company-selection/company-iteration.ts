@@ -4,6 +4,8 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
+import { removeAllForReviewTransactions } from '@/actions/db-review-transactions/index';
+
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
 
 import { classifyCompany } from '@/actions/backend-actions/classification/index';
@@ -30,14 +32,14 @@ export async function classificationCompanyIteration(user: databaseUser) {
       //    May not be accurate reflection of QuickBooks, but considered to be true if true in the database.
       if (currentCompany.bookkeeperConnected) {
         // Get the Company realm Id and potential Firm name from the Company.
-        const companyId = currentCompany.realmId;
+        const realmId = currentCompany.realmId;
         const connectedFirmName = currentCompany.firmName;
 
         // Call method for synthetic login.
         // Takes: The Company realm Id and possible Firm name used for Company selection.
         // Returns: A QueryResult and a synthetic Login Tokens object.
         const [loginResult, loginTokens] = await syntheticLogin(
-          companyId,
+          realmId,
           connectedFirmName
         );
 
@@ -46,9 +48,12 @@ export async function classificationCompanyIteration(user: databaseUser) {
           // If the synthetic login failed, log the error Query Result then continue to the next Company.
           console.error(loginResult);
         } else {
+          // Before starting new Classificaion review, remove all old 'For Review' transactions for the Company from the database.
+          removeAllForReviewTransactions(realmId);
+
           // Classify the 'For Review' transactions for the current Company.
           // Passes the the synthetic Login Tokens and Company realm Id needed for backend Classificaion.
-          classifyCompany(loginTokens, companyId).then((classifyResult) => {
+          classifyCompany(loginTokens, realmId).then((classifyResult) => {
             // Use .then() to deal with error logging while the main process continues.
             //    Allows the async Classificaion of Comapnies to be done concurrently.
 
@@ -70,12 +75,12 @@ export async function classificationCompanyIteration(user: databaseUser) {
               // Record that the backend Classificaion process encountered an error and failed.
               db.update(Company)
                 .set({ classificationFailed: true })
-                .where(eq(Company.id, companyId));
+                .where(eq(Company.id, realmId));
             } else {
               // Otherwise, clear any existing Classificaion error logs from the database Company object.
               db.update(Company)
                 .set({ classificationFailed: false })
-                .where(eq(Company.id, companyId));
+                .where(eq(Company.id, realmId));
             }
           });
         }
