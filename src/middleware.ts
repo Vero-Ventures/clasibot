@@ -14,8 +14,7 @@ export function middleware(request: NextRequest) {
   const footerPaths = siteConfig.footerItems.map((link) => link.href);
   const emailApiEndpoints = siteConfig.emailEndpoints.map((path) => path.href);
 
-  console.log('pathname: ' + pathname)
-  console.log('callback:' + callbackUrl)
+  console.log('pathname: ' + pathname);
 
   // Check the current path to see if it is for the landing page, one of the allowed paths, or a signin call.
   if (
@@ -23,6 +22,7 @@ export function middleware(request: NextRequest) {
     emailApiEndpoints.includes(pathname) ||
     pathname === '/'
   ) {
+    console.log();
     // Ignore the middleware functions and continue as normal.
     return NextResponse.next();
   }
@@ -30,9 +30,14 @@ export function middleware(request: NextRequest) {
   // If a callback URL is present, the middleware is forcing the user to log in.
   // Redirect to landing page instead of the default middleware location.
   if (callbackUrl) {
+    console.log('callback path: ' + pathname);
+    console.log('callback url: ' + callbackUrl);
     const baseUrl = new URL(request.url);
     return NextResponse.redirect(new URL(baseUrl.origin));
   }
+
+  console.log('default path');
+  console.log('default path: ' + pathname);
 
   // If not an allowed path and callback URL is not present, must be a valid login call.
   // Continue with the default middleware to take user to QuickBooks login page.
