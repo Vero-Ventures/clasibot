@@ -27,9 +27,9 @@ const sortableHeader = (
       id={title + 'SortButton'}
       variant="ghost"
       onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className="p-0">
+      className="p-0 font-semibold">
       {title}
-      <ArrowUpDown className="ml-2 h-4 w-4" />
+      <ArrowUpDown className="ml-2 h-5 w-5" />
     </Button>
   );
 };

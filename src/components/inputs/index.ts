@@ -14,6 +14,8 @@ export { ReturnButton } from './return-button';
 
 export { ManageSubscriptionButton } from './manage-subscription-button';
 
+export { MobileDeactivationButton } from './mobile-deactivation-handler';
+
 export { SignInButton } from './sign-in-button';
 
 export { SignOutButton } from './sign-out-button';

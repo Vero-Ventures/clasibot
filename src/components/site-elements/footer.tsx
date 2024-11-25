@@ -32,7 +32,7 @@ export const Footer = () => {
             Privacy Policy
           </Link>
         </div>
-        <p className="text-center text-base italic lg:pl-4">
+        <p className="text-center italic lg:pl-4">
           &copy; {new Date().getFullYear()} {siteConfig.name} - All Rights
           Reserved.
         </p>

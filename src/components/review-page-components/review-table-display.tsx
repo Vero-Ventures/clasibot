@@ -20,7 +20,7 @@ export function ReviewTableDisplay({
   table: Table<ClassifiedForReviewTransaction>;
 }>) {
   return (
-    <div className="mt-4 overflow-x-auto rounded-md border border-gray-300 bg-white shadow-md">
+    <div className="mt-4 overflow-x-auto rounded-md border border-gray-300 bg-white shadow-lg">
       <DisplayTable>
         {/* Table Header */}
         <TableHeader>
@@ -66,7 +66,7 @@ export function ReviewTableDisplay({
             <TableRow>
               <TableCell
                 colSpan={table.getAllColumns().length}
-                className="px-4 py-6 text-center text-sm font-medium text-gray-500">
+                className="px-4 py-6 text-center text-sm text-gray-500">
                 No results found.
               </TableCell>
             </TableRow>

@@ -16,7 +16,7 @@ const Section: React.FC<SectionProps> = ({
   id,
 }) => (
   <section
-    className="mb-8 transform rounded-lg bg-white px-8 py-6 shadow-lg transition-transform duration-500 hover:scale-105 hover:shadow-2xl"
+    className="mb-8 transform rounded-lg bg-white px-8 py-6 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl"
     id={id}>
     <div
       className="mb-4 cursor-pointer text-center"
