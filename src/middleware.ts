@@ -28,14 +28,9 @@ export function middleware(request: NextRequest) {
   // If a callback URL is present, the middleware is forcing the user to log in.
   // Redirect to landing page instead of the default middleware location.
   if (callbackUrl) {
-    console.log('callback path: ' + pathname);
-    console.log('callback url: ' + callbackUrl);
     const baseUrl = new URL(request.url);
     return NextResponse.redirect(new URL(baseUrl.origin));
   }
-
-  console.log('default path');
-  console.log('default path: ' + pathname);
 
   // If not an allowed path and callback URL is not present, must be a valid login call.
   // Continue with the default middleware to take user to QuickBooks login page.
