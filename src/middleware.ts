@@ -14,15 +14,12 @@ export function middleware(request: NextRequest) {
   const footerPaths = siteConfig.footerItems.map((link) => link.href);
   const emailApiEndpoints = siteConfig.emailEndpoints.map((path) => path.href);
 
-  console.log('pathname: ' + pathname);
-
   // Check the current path to see if it is for the landing page, one of the allowed paths, or a signin call.
   if (
     footerPaths.includes(pathname) ||
     emailApiEndpoints.includes(pathname) ||
     pathname === '/'
   ) {
-    console.log();
     // Ignore the middleware functions and continue as normal.
     return NextResponse.next();
   }
