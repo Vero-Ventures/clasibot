@@ -8,11 +8,11 @@
 
 import ReviewPage from '@/components/review-page/review-page';
 
-import {
-  getCompanyName,
-  getCompanyIndustry,
-  getCompanyLocation,
-} from '@/actions/quickbooks/index';
+// import {
+//   getCompanyName,
+//   getCompanyIndustry,
+//   getCompanyLocation,
+// } from '@/actions/quickbooks/index';
 
 import type { CompanyInfo } from '@/types';
 
@@ -23,20 +23,16 @@ export default async function Page() {
   // const companyHasSBK = await checkCompanyConnection();
 
   // Get the Company Info from the QuickBooks functions.
-  const userCompanyName = await getCompanyName();
-  const userCompanyIndustry = await getCompanyIndustry();
-  const userCompanyLocation = JSON.parse(await getCompanyLocation());
+  // const userCompanyName = await getCompanyName();
+  // const userCompanyIndustry = await getCompanyIndustry();
+  // const userCompanyLocation = JSON.parse(await getCompanyLocation());
 
   // Record the collected Company Info as an object to be passed to the review page.
   const companyInfo: CompanyInfo = {
-    name: userCompanyName,
-    industry: userCompanyIndustry,
-    location: userCompanyLocation,
+    name: 'Error: Name not found',
+    industry: 'Error',
+    location: { Country: '', SubLocation: null },
   };
-
-  console.log('company info: ' + companyInfo);
-  // console.log('subscription: ' + subscriptionStatus)
-  // console.log('connection: ' + companyHasSBK)
 
   // Otherwise, show the review page.
   return (
