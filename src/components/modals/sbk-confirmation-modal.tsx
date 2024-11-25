@@ -25,16 +25,16 @@ export const SBKConfirmationModal = () => {
           Please Invite The Clasibot Bookkeeper
         </h2>
 
-        <p className="text-center font-medium text-gray-800">
+        <p className="py-2 text-center text-gray-800">
           Before reviewing your transactions, please ensure the Clasibot
           Bookkeeper is connected to your QuickBooks account.
         </p>
-        <p className="text-center font-medium text-gray-800">
+        <p className="text-center font-semibold text-gray-800">
           Click below for a step-by-step tutorial on inviting the Clasibot
           bookkeeper.
         </p>
         <Button
-          className="text-md mx-auto h-12 w-44 rounded bg-blue-500 px-4 py-4 text-center font-bold text-white hover:bg-blue-600"
+          className="text-md mx-auto h-12 w-44 rounded bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-4 text-center font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
           onClick={() => router.push('/add-sbk-instructions')}>
           Invite Instructions
         </Button>
