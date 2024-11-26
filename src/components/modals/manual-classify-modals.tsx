@@ -1,4 +1,4 @@
-import { ProgressBar } from '@/components/loading/index';
+import { ProgressBar } from '@/components/loading-elements/index';
 
 import { Button } from '@/components/ui/button';
 import { CheckIcon, XIcon } from 'lucide-react';
