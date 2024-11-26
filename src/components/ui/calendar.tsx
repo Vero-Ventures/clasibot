@@ -23,10 +23,10 @@ function Calendar({
       classNames={{
         months: 'flex flex-col p-2',
         nav: 'flex w-full',
-        button_previous: 'absolute left-4',
-        button_next: 'absolute right-4',
+        button_previous: 'absolute left-4 mt-0.5',
+        button_next: 'absolute right-4 mt-0.5',
         month: 'px-2',
-        caption_label: 'text-md flex justify-center font-semibold',
+        caption_label: 'text-md flex justify-center font-semibold mb-2',
         weekday: 'w-8',
         day: 'rounded-md border-4 border-white p-2 text-center transition-all duration-300 ease-in-out hover:scale-110 hover:bg-blue-300',
         selected:
