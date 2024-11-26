@@ -1,5 +1,5 @@
 {
-    "name": "quickbooks-fargate-task",
+    "name": "server-auth-lambda",
     "scripts": {
         "build": "tsc",
         "start": "node dist/lambda.js"
