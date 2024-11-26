@@ -2,7 +2,7 @@
 
 import { ArrowUp, ArrowDown } from 'lucide-react';
 
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 
 import type { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
 
@@ -66,7 +66,9 @@ const commonColumns = [
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         // Convert the checked value to a boolean, then set that as the checked value of all Rows.
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value: boolean) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
         aria-label="Select all"
       />
     ),
@@ -82,7 +84,7 @@ const commonColumns = [
         // Use the Row value and getIsSelected to check if the Row is selected.
         checked={row.getIsSelected()}
         // When checked status changes, toggle the selection value of the Row.
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
@@ -111,7 +113,7 @@ const commonColumns = [
     }) => {
       // Convert the date value from the Row to a Month-Day-Year format.
       const formattedDate = format(
-        parseISO(row.getValue('date')),
+        Date.parse(row.getValue('date')),
         'MM/dd/yyyy'
       );
       return <div>{formattedDate}</div>;

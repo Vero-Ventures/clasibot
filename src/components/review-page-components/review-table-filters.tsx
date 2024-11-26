@@ -92,7 +92,7 @@ export function ReviewTableFilters({
                         // Checked status is determined by the associated Column's visibility state.
                         checked={column.getIsVisible()}
                         // On change, toggle the visibility of the associated Column.
-                        onCheckedChange={(value) =>
+                        onCheckedChange={(value: boolean) =>
                           column.toggleVisibility(!!value)
                         }>
                         {field}

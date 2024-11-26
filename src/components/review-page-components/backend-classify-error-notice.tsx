@@ -1,6 +1,6 @@
 'use client';
 
-import { MiniSpinner } from '@/components/loading/index';
+import { MiniSpinner } from '@/components/loading-elements/index';
 
 import { Button } from '@/components/ui/button';
 
