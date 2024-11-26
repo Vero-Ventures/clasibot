@@ -41,11 +41,32 @@ export class QuickBooksAuth {
 
       await accountSelector.selectAccounts(realmId, firmName);
 
+      try {
+        const isOnConfirmPage = await Promise.race([
+          this.page.waitForURL(
+            (url) =>
+              url.href.includes(
+                'appcenter.intuit.com/app/connect/oauth2/authorize'
+              ),
+            { timeout: 5000 }
+          ),
+          this.page.waitForSelector('button:has-text("Next")', {
+            timeout: 5000,
+          }),
+        ]);
+
+        if (isOnConfirmPage) {
+          console.log('On confirmation page, clicking connect button...');
+          await this.page.click('button:has-text("Connect")');
+        }
+      } catch {
+        console.log('No confirmation page found, proceeding with redirect...');
+      }
+
       // Wait for redirect and get session token from cookies
-      await this.page.waitForURL(
-        (url) => url.href.startsWith(`${process.env.CLASIBOT_URL}`),
-        { timeout: 30000 }
-      );
+      await this.page.waitForURL((url) => url.href.includes('clasibot'), {
+        timeout: 45000,
+      });
       await this.page.evaluate(() => window.stop());
 
       const cookies = await this.context.cookies();
@@ -69,7 +90,6 @@ export class QuickBooksAuth {
 
   private async initialLogin(browser: BrowserHelper): Promise<void> {
     await this.page.goto(process.env.CLASIBOT_URL!);
-    await browser.waitAndClick(CONFIG.selectors.login.appSignInButton);
     await browser.waitAndFill(
       CONFIG.selectors.login.emailInput,
       CONFIG.quickbooks.email
@@ -86,9 +106,6 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
-    console.log('Current URL:', await this.page.url());
-    console.log('Page content:', await this.page.content());
-
     await browser.waitAndClick(CONFIG.selectors.login.mfaEmailOption, 30000);
     const code = await this.waitForVerificationCode(emailService);
     if (!code) throw new Error('Failed to retrieve verification code');
