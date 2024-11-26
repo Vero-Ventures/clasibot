@@ -54,7 +54,7 @@ export const CheckConnectionButton = () => {
       </Button>
       {(checkingForSBK || sbkExists !== null) && (
         <div className="mt-4">
-          <MiniSpinner sbkExists={sbkExists} />
+          <MiniSpinner success={sbkExists} />
           {displayFailMessage && (
             <div className="text-md mt-4 text-center font-semibold mb:min-w-80 sm:text-lg">
               <p>Connection failed, please try again.</p>
