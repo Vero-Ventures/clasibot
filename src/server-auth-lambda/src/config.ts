@@ -9,7 +9,6 @@ export const CONFIG = {
   quickbooks: {
     email: process.env.QB_EMAIL_ADDRESS!,
     password: process.env.QB_PASSWORD!,
-    baseUrl: process.env.CLASIBOT_URL!,
   },
   selectors: {
     login: {
