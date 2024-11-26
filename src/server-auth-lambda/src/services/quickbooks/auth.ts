@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from 'playwright';
+import type { BrowserContext, Page } from 'playwright-core';
 import { BrowserHelper } from '../browser';
 import { EmailService } from '../email';
 import { AccountSelector } from './account-selector';
