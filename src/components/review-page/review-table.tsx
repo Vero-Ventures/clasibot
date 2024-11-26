@@ -87,61 +87,6 @@ export function ReviewTable({
     ClassifiedForReviewTransaction[]
   >([]);
 
-  useEffect(() => {
-    // Define test data
-    const testTransactions: ClassifiedForReviewTransaction[] = [
-      {
-        transaction_Id: '13579',
-        name: 'INTUIT QuickBooks Online',
-        date: '2024-09-10',
-        account: '123',
-        accountName: 'Checking',
-        amount: 16.72,
-        categories: null,
-        categoryConfidence: 3,
-        taxCodes: null,
-        taxCodeConfidence: 3,
-      },
-      {
-        transaction_Id: '24680',
-        name: 'Lucid Software Inc.',
-        date: '2024-08-13',
-        account: '123',
-        accountName: 'Checking',
-        amount: 35.96,
-        categories: null,
-        categoryConfidence: 2,
-        taxCodes: null,
-        taxCodeConfidence: 2,
-      },
-      {
-        transaction_Id: '12480',
-        name: 'PEARLE VISION',
-        date: '2024-09-22',
-        account: '234',
-        accountName: 'Savings',
-        amount: 74.9,
-        categories: null,
-        categoryConfidence: 1,
-        taxCodes: null,
-        taxCodeConfidence: 1,
-      },
-      {
-        transaction_Id: '36925',
-        name: '7-ELEVEN STORE',
-        date: '2024-08-14',
-        account: '432',
-        accountName: 'Visa 1234',
-        amount: 32.99,
-        categories: null,
-        categoryConfidence: 0,
-        taxCodes: null,
-        taxCodeConfidence: 0,
-      },
-    ];
-    setFormattedTransactions(testTransactions);
-  }, []);
-
   // Extract the Classified Transactions and update state on change to passed Classified Transactions value.
   useEffect(() => {
     // Extract the formatted Transactions from the [Classified, Raw] formatted array.
@@ -153,7 +98,7 @@ export function ReviewTable({
       );
     }
     // Set the formatted Transactions array to be equal to the extracted values.
-    // setFormattedTransactions(extractedTransactions);
+    setFormattedTransactions(extractedTransactions);
   }, [classifiedTransactions]);
 
   // Create states to track and set key Table values.
@@ -208,6 +153,7 @@ export function ReviewTable({
 
   // Whenever there is a change to the list of Account names, resets the selected Accounts.
   useEffect(() => {
+    console.log(selectedAccounts);
     setSelectedAccounts(accountNames);
   }, [accountNames]);
 

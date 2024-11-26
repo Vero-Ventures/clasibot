@@ -38,13 +38,13 @@ export function DatePicker({
             {date === null && <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+        <PopoverContent className="w-auto border-0 p-0">
           <Calendar
             id="DatePickerDropdownCalendar"
             mode="single"
             selected={date || undefined}
             onSelect={(day: Date | null) => setDate(day ?? null)}
-            className="bg-white"
+            className="mt-1 rounded-md border-3 border-blue-800 border-opacity-30 bg-white"
             required
           />
         </PopoverContent>
