@@ -1,3 +1,7 @@
+import { getServerSession } from 'next-auth';
+
+import { redirect } from 'next/navigation';
+
 import { checkSubscription } from '@/actions/stripe';
 
 import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
@@ -17,6 +21,11 @@ import {
 import type { CompanyInfo } from '@/types';
 
 export default async function Page() {
+  const session = await getServerSession();
+  if (!session) {
+    redirect('/');
+  }
+
   // Get user subscription and check their status.
   const subscriptionStatus = await checkSubscription();
   // Check if the Synthetic BookKeeper is connected to the account.
@@ -34,7 +43,7 @@ export default async function Page() {
     location: userCompanyLocation,
   };
 
-  if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
+  if ('error' in subscriptionStatus || subscriptionStatus.valid) {
     // If the user status is invalid or there is an error, go to the subscription purchase.
     return <SubscriptionPurchase />;
   } else if (

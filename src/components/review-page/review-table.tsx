@@ -32,7 +32,7 @@ import type {
  */
 export function ReviewTable({
   accountNames,
-  categorizedTransactions,
+  classifiedTransactions,
   selectedCategories,
   selectedTaxCodes,
   handleCategoryChange,
@@ -41,7 +41,7 @@ export function ReviewTable({
   handleSave,
 }: Readonly<{
   accountNames: string[];
-  categorizedTransactions: (
+  classifiedTransactions: (
     | ForReviewTransaction
     | ClassifiedForReviewTransaction
   )[][];
@@ -55,14 +55,21 @@ export function ReviewTable({
     transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
   ) => void;
 }>) {
-  // Define the default start and end date (two years ago & current date).
-  const currentDate = new Date();
-  const twoYearsAgo = new Date();
-  twoYearsAgo.setFullYear(currentDate.getFullYear() - 2);
-
   // Create states to track and set the start and end values for the date filter.
-  const [startDate, setStartDate] = useState<Date | null>(twoYearsAgo);
-  const [endDate, setEndDate] = useState<Date | null>(currentDate);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  // Set the default start date and end date on element load.
+  useEffect(() => {
+    // Define the default start and end date (two years ago & current date).
+    const startDatePresent = new Date();
+    const endDateTwoYearsPast = new Date();
+    endDateTwoYearsPast.setFullYear(startDatePresent.getFullYear() - 2);
+
+    // Set the start and end date states with the calculated default values.
+    setStartDate(startDatePresent);
+    setEndDate(endDateTwoYearsPast);
+  }, []);
 
   // Define helper functions to handle change to the date selection and update the filters.
   function changeStartDate(date: Date | null) {
@@ -74,14 +81,24 @@ export function ReviewTable({
     setEndDate(date);
   }
 
-  // Extract the formatted Transactions from the [Classified, Raw] formatted array.
-  const formattedTransactions: ClassifiedForReviewTransaction[] = [];
-  for (const transaction of categorizedTransactions) {
-    // Assert the object type as it is being added to the array.
-    formattedTransactions.push(
-      transaction[0] as ClassifiedForReviewTransaction
-    );
-  }
+  // Define the Classified Transactions array.
+  const [formattedTransactions, setFormattedTransactions] = useState<
+    ClassifiedForReviewTransaction[]
+  >([]);
+
+  // Extract the Classified Transactions and update state on change to passed Classified Transactions value.
+  useEffect(() => {
+    // Extract the formatted Transactions from the [Classified, Raw] formatted array.
+    const extractedTransactions = [];
+    for (const transaction of classifiedTransactions) {
+      // Assert the object type as it is being added to the array.
+      extractedTransactions.push(
+        transaction[0] as ClassifiedForReviewTransaction
+      );
+    }
+    // Set the formatted Transactions array to be equal to the extracted values.
+    setFormattedTransactions(extractedTransactions);
+  }, [classifiedTransactions]);
 
   // Create states to track and set key Table values.
   // Column to sort by, Column filtering rules, and selected Rows.
@@ -166,7 +183,7 @@ export function ReviewTable({
       <TablePaginationAndSave
         table={table}
         rowSelection={rowSelection}
-        categorizedTransactions={categorizedTransactions}
+        categorizedTransactions={classifiedTransactions}
         isSaving={isSaving}
         handleSave={handleSave}
       />

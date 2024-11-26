@@ -9,6 +9,7 @@ import {
   ChangeCompanyButton,
   DeactivationButton,
   ManageSubscriptionButton,
+  MobileDeactivationButton,
 } from '@/components/inputs/index';
 
 export function NavBarSesssionButtons({
@@ -21,11 +22,19 @@ export function NavBarSesssionButtons({
   // Define state to show additional NavBar options on smaller screens.
   const [showOptions, setShowOptions] = useState(false);
 
+  const [showMobileDeactivateModal, setShowMobileDeactivateModal] =
+    useState(false);
+
+  // State trackers to indicate which deactivation modals should be displayed to the user.
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+
   return (
     <div className="flex w-full flex-col items-center mb:flex-row mb:items-start mb:justify-evenly mb:pr-14 md:justify-evenly md:pr-0">
       <div className="flex flex-col items-center md:hidden">
         <button
-          className="mb-4 mt-6 flex w-fit min-w-48 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-1 text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:mt-8 md:hidden"
+          className="mb-4 mt-6 flex w-fit min-w-48 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-1 text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:mt-8 md:hidden"
           onClick={() => setShowOptions(!showOptions)}>
           <span className="mr-2 text-lg font-semibold">Options</span>
           <span className={`${showOptions ? '' : 'hidden'}`}>
@@ -46,7 +55,14 @@ export function NavBarSesssionButtons({
             </div>
             <div
               className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
-              <DeactivationButton connectionStatus={connectionStatus} />
+              <button
+                onClick={() => {
+                  setShowMobileDeactivateModal(true);
+                  setInfoModalOpen(true);
+                }}
+                className="flex min-w-52 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-2 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+                Remove Connection
+              </button>
             </div>
             <div
               className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
@@ -55,11 +71,31 @@ export function NavBarSesssionButtons({
           </div>
         </div>
       </div>
+      <div className={`${showMobileDeactivateModal ? 'md:hidden' : 'hidden'}`}>
+        <MobileDeactivationButton
+          setShowModal={setShowMobileDeactivateModal}
+          infoModalOpen={infoModalOpen}
+          confirmModalOpen={confirmModalOpen}
+          errorModalOpen={errorModalOpen}
+          setInfoModalOpen={setInfoModalOpen}
+          setConfirmModalOpen={setConfirmModalOpen}
+          setErrorModalOpen={setErrorModalOpen}
+        />
+      </div>
       <div className={`hidden md:mt-6 md:block`}>
         <ManageSubscriptionButton stripePortalUrl={stripeUrl} />
       </div>
       <div className={`hidden pl-4 pr-2 md:mt-6 md:block`}>
-        <DeactivationButton connectionStatus={connectionStatus} />
+        <DeactivationButton
+          setShowModal={setShowMobileDeactivateModal}
+          connectionStatus={connectionStatus}
+          infoModalOpen={infoModalOpen}
+          confirmModalOpen={confirmModalOpen}
+          errorModalOpen={errorModalOpen}
+          setInfoModalOpen={setInfoModalOpen}
+          setConfirmModalOpen={setConfirmModalOpen}
+          setErrorModalOpen={setErrorModalOpen}
+        />
       </div>
       <div className={`hidden pl-2 pr-4 md:mt-6 md:block`}>
         <ChangeCompanyButton />

@@ -39,7 +39,7 @@ export const ErrorLoadingTransactionsModal: React.FC<
             <div id="ReturnButtonContainer" className="flex justify-center">
               <Button
                 id="CloseButton"
-                className="0 min-w-32 space-x-4 rounded-md bg-red-500 px-4 py-2 text-xl font-bold hover:bg-red-400 sm:mb-2 sm:min-w-40"
+                className="0 min-w-32 space-x-4 rounded-md bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 text-xl font-bold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 sm:mb-2 sm:min-w-40"
                 onClick={() => setDisplayState(false)}>
                 Close
               </Button>
@@ -107,7 +107,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
             <div className="flex justify-evenly gap-4">
               <Button
                 id="ReturnButton"
-                className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
+                className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => {
                   const url = window.location.origin + window.location.pathname;
                   window.location.href = url;
@@ -119,7 +119,7 @@ export const SaveClassifiedTransactionsModal: React.FC<
 
               <Button
                 id="SignOutButton"
-                className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 font-semibold text-white shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:from-red-600 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
+                className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => signOut({ callbackUrl: '/' })}>
                 Sign Out
               </Button>

@@ -38,7 +38,7 @@ export function TablePaginationAndSave({
         <div>
           <Button
             variant="outline"
-            className="w-20 translate-y-12 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:translate-y-0"
+            className="w-20 translate-y-12 border-2 border-gray-300 font-semibold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring sm:translate-y-0"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}>
@@ -49,7 +49,7 @@ export function TablePaginationAndSave({
           <Button
             variant="outline"
             size="sm"
-            className="absolute w-20 -translate-y-10 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-100 sm:relative sm:translate-y-0"
+            className="absolute w-20 -translate-y-10 border-2 border-gray-300 font-semibold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring sm:relative sm:translate-y-0"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}>
             Next
@@ -62,7 +62,7 @@ export function TablePaginationAndSave({
           disabled={
             isSaving || table.getFilteredSelectedRowModel().rows.length === 0
           }
-          className="ml-2 mr-4 h-12 w-24 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
+          className="ml-2 mr-4 h-12 w-24 rounded bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-lg font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
           {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </div>

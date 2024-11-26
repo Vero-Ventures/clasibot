@@ -73,7 +73,7 @@ export function ReviewTableFilters({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-gray-300 bg-white text-base font-semibold hover:border-blue-100 hover:bg-blue-300 hover:ring">
+                  className="w-full border-2 border-gray-300 bg-white font-semibold transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring">
                   Columns <ChevronDown className="ml-2 mt-1 h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
@@ -107,7 +107,7 @@ export function ReviewTableFilters({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-gray-300 bg-white text-base font-semibold hover:border-blue-100 hover:bg-blue-300 hover:ring">
+                  className="w-full border-2 border-gray-300 bg-white font-semibold transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring">
                   Accounts <ChevronDown className="ml-2 mt-1 h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>

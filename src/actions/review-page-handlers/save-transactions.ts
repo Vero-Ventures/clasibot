@@ -2,7 +2,7 @@
 
 import { addDatabaseTransactions } from '@/actions/db-transactions';
 
-import { removeForReviewTransactions } from '@/actions/db-review-transactions/index';
+import { removeSelectedForReviewTransaction } from '@/actions/db-review-transactions/index';
 
 import { addForReview, getAccounts } from '@/actions/quickbooks/index';
 
@@ -136,7 +136,7 @@ export async function saveSelectedTransactions(
 
           // Remove the related 'For Review' transaction and its connections from the database.
           const removeResult =
-            await removeForReviewTransactions(rawTransaction);
+            await removeSelectedForReviewTransaction(rawTransaction);
 
           // If removing the Transaction resulted in an error, throw the Query Result message as an error.
           if (removeResult.result === 'Error') {
