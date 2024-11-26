@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 
-import { MiniSpinner } from '@/components/loading/index';
+import { MiniSpinner } from '@/components/loading-elements/index';
 
 import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
 

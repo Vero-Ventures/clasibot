@@ -26,7 +26,7 @@ export async function getForReview(
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=${loginTokens?.qboTicket}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${companyId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
+        cookie: `qbo.tkt=${loginTokens?.qboTicket}; qbo.agentid=${process.env.BACKEND_REALM_ID}; qbo.parentid=${companyId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
       },
     });
 

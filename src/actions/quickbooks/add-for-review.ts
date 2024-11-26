@@ -72,7 +72,7 @@ export async function addForReview(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        cookie: `qbo.tkt=${loginTokens.qboTicket}; qbo.agentid=${process.env.BACKEND_AGENT_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
+        cookie: `qbo.tkt=${loginTokens.qboTicket}; qbo.agentid=${process.env.BACKEND_REALM_ID}; qbo.parentid=${session!.realmId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
       },
       body: JSON.stringify(body),
     });
