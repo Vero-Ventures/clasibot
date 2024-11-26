@@ -13,12 +13,12 @@ export const CONFIG = {
   },
   selectors: {
     login: {
-      appSignInButton: '#QuickBooksSignIn',
+      appSignInButton: 'button:has-text("Sign in with QuickBooks")',
       emailInput: '#iux-identifier-first-international-email-user-id-input',
       emailSubmit: '[data-testid="IdentifierFirstSubmitButton"]',
       passwordInput: '#iux-password-confirmation-password',
       passwordSubmit: '[data-testid="passwordVerificationContinueButton"]',
-      mfaEmailOption: '[data-testid="challengePickerOption_EMAIL_OTP"]',
+      mfaEmailOption: '[data-testid="challengePickerOption_SMS_OTP"]',
       verificationInput: '[data-testid="VerifyOtpInput"]',
       verificationSubmit: '[data-testid="VerifyOtpSubmitButton"]',
     },

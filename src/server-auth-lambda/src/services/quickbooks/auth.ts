@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from 'playwright';
+import type { BrowserContext, Page } from 'playwright-core';
 import { BrowserHelper } from '../browser';
 import { EmailService } from '../email';
 import { AccountSelector } from './account-selector';
@@ -6,6 +6,8 @@ import { CONFIG } from '../../config';
 import type { QBOTokenData } from '../../types';
 
 export class QuickBooksAuth {
+  private authCookies: { qboTicket: string; authId: string } | null = null;
+
   constructor(
     private context: BrowserContext,
     private page: Page
@@ -30,8 +32,56 @@ export class QuickBooksAuth {
         console.log('MFA required, handling verification...');
         await this.handleMFA(browserHelper, emailService);
       }
+
+      // Extract QB auth cookies
+      this.authCookies = await this.extractAuthCookies();
+      if (!this.authCookies) {
+        throw new Error('Failed to extract authentication cookies');
+      }
+
       await accountSelector.selectAccounts(realmId, firmName);
-      return await this.extractCookie();
+
+      try {
+        const isOnConfirmPage = await Promise.race([
+          this.page.waitForURL(
+            (url) =>
+              url.href.includes(
+                'appcenter.intuit.com/app/connect/oauth2/authorize'
+              ),
+            { timeout: 5000 }
+          ),
+          this.page.waitForSelector('button:has-text("Next")', {
+            timeout: 5000,
+          }),
+        ]);
+
+        if (isOnConfirmPage) {
+          console.log('On confirmation page, clicking connect button...');
+          await this.page.click('button:has-text("Connect")');
+        }
+      } catch {
+        console.log('No confirmation page found, proceeding with redirect...');
+      }
+
+      // Wait for redirect and get session token from cookies
+      await this.page.waitForURL((url) => url.href.includes('clasibot'), {
+        timeout: 45000,
+      });
+      await this.page.evaluate(() => window.stop());
+
+      const cookies = await this.context.cookies();
+      const sessionCookie = cookies.find(
+        (c) => c.name === '__Secure-next-auth.session-token'
+      );
+      if (!sessionCookie) {
+        throw new Error('Session token cookie not found after redirect');
+      }
+
+      return {
+        qboTicket: this.authCookies.qboTicket,
+        authId: this.authCookies.authId,
+        nextSessionToken: sessionCookie.value,
+      };
     } catch (error) {
       console.error('Authentication failed:', error);
       throw error;
@@ -40,7 +90,6 @@ export class QuickBooksAuth {
 
   private async initialLogin(browser: BrowserHelper): Promise<void> {
     await this.page.goto(process.env.CLASIBOT_URL!);
-    await browser.waitAndClick(CONFIG.selectors.login.appSignInButton);
     await browser.waitAndFill(
       CONFIG.selectors.login.emailInput,
       CONFIG.quickbooks.email
@@ -57,7 +106,7 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
-    await browser.waitAndClick(CONFIG.selectors.login.mfaEmailOption);
+    await browser.waitAndClick(CONFIG.selectors.login.mfaEmailOption, 30000);
     const code = await this.waitForVerificationCode(emailService);
     if (!code) throw new Error('Failed to retrieve verification code');
 
@@ -85,21 +134,25 @@ export class QuickBooksAuth {
     return null;
   }
 
-  private async extractCookie(): Promise<QBOTokenData | null> {
+  private async extractAuthCookies(): Promise<{
+    qboTicket: string;
+    authId: string;
+  } | null> {
     const cookies = await this.context.cookies();
     const qbnTkt = cookies.find((cookie) => cookie.name === 'qbn.tkt');
     const qbnAuthId = cookies.find((cookie) => cookie.name === 'qbn.authid');
 
     if (!qbnTkt || !qbnAuthId) {
-      console.error('qbn.tkt cookie not found');
+      console.error('Required auth cookies not found');
       return null;
     }
 
-    console.log(`tkt: ${qbnTkt.value}, authId: ${qbnAuthId.value}`);
-
+    console.log(
+      `Found auth cookies - tkt: ${qbnTkt.value}, authId: ${qbnAuthId.value}`
+    );
     return {
-      qbnTkt: qbnTkt.value,
-      qbnAuthId: qbnAuthId.value,
+      qboTicket: qbnTkt.value,
+      authId: qbnAuthId.value,
     };
   }
 }

@@ -8,7 +8,6 @@ import {
   integer,
   boolean,
   serial,
-  timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -49,14 +48,6 @@ export const Company = pgTable('Company', {
   firmName: text('firm_name'),
   bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
   classificationFailed: boolean('classification_failed'),
-});
-
-export const QuickbooksToken = pgTable('QuickbooksCookies', {
-  companyId: uuid('company_id')
-    .primaryKey()
-    .references(() => Company.id, { onDelete: 'cascade' }),
-  tokenValue: text('tokenValue').notNull(),
-  expiresAt: timestamp('expires_at').notNull(),
 });
 
 export const Transaction = pgTable('Transaction', {
