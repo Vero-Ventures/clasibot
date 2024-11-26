@@ -18,7 +18,7 @@ export const CONFIG = {
       emailSubmit: '[data-testid="IdentifierFirstSubmitButton"]',
       passwordInput: '#iux-password-confirmation-password',
       passwordSubmit: '[data-testid="passwordVerificationContinueButton"]',
-      mfaEmailOption: '[data-testid="challengePickerOption_EMAIL_OTP"]',
+      mfaEmailOption: '[data-testid="challengePickerOption_SMS_OTP"]',
       verificationInput: '[data-testid="VerifyOtpInput"]',
       verificationSubmit: '[data-testid="VerifyOtpSubmitButton"]',
     },
