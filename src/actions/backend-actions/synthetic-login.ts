@@ -7,8 +7,8 @@ import { decode } from 'next-auth/jwt';
 // Takes: The Company realm Id and (possibly null) and the Firm name of a Company.
 // Returns: A Query Result for the login process and a Login Token object containing the 4 tokens from the login process.
 export async function syntheticLogin(
-  _realmId: string,
-  _firmName: string | null
+  realmId: string,
+  firmName: string | null
 ): Promise<[QueryResult, LoginTokens]> {
   // Synthetic Login Logic (Makes use of Company realm Id and Firm name in Company selection.)
   // Initialize the result and token objects
@@ -35,7 +35,7 @@ export async function syntheticLogin(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ realmId: _realmId, firmName: _firmName }),
+      body: JSON.stringify({ realmId: realmId, firmName: firmName }),
     });
 
     const data = await response.json();
