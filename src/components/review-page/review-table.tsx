@@ -86,6 +86,61 @@ export function ReviewTable({
     ClassifiedForReviewTransaction[]
   >([]);
 
+  useEffect(() => {
+    // Define test data
+    const testTransactions: ClassifiedForReviewTransaction[] = [
+      {
+        transaction_Id: '12345',
+        name: 'Tiny',
+        date: '2024-01-10',
+        account: '123',
+        accountName: 'Checking',
+        amount: 5,
+        categories: null,
+        categoryConfidence: 0,
+        taxCodes: null,
+        taxCodeConfidence: 0,
+      },
+      {
+        transaction_Id: '54321',
+        name: 'Small',
+        date: '2024-02-20',
+        account: '123',
+        accountName: 'Checking',
+        amount: 10,
+        categories: null,
+        categoryConfidence: 1,
+        taxCodes: null,
+        taxCodeConfidence: 1,
+      },
+      {
+        transaction_Id: '67890',
+        name: 'Medium',
+        date: '2024-03-30',
+        account: '234',
+        accountName: 'Savings',
+        amount: 25,
+        categories: null,
+        categoryConfidence: 2,
+        taxCodes: null,
+        taxCodeConfidence: 2,
+      },
+      {
+        transaction_Id: '09876',
+        name: 'Big',
+        date: '2024-11-25',
+        account: '432',
+        accountName: 'Visa 1234',
+        amount: 50,
+        categories: null,
+        categoryConfidence: 3,
+        taxCodes: null,
+        taxCodeConfidence: 3,
+      },
+    ];
+    setFormattedTransactions(testTransactions);
+  }, []);
+
   // Extract the Classified Transactions and update state on change to passed Classified Transactions value.
   useEffect(() => {
     // Extract the formatted Transactions from the [Classified, Raw] formatted array.
@@ -97,7 +152,7 @@ export function ReviewTable({
       );
     }
     // Set the formatted Transactions array to be equal to the extracted values.
-    setFormattedTransactions(extractedTransactions);
+    // setFormattedTransactions(extractedTransactions);
   }, [classifiedTransactions]);
 
   // Create states to track and set key Table values.

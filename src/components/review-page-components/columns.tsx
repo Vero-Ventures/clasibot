@@ -1,4 +1,6 @@
-import { ArrowUpDown } from 'lucide-react';
+'use client';
+
+import { ArrowUp, ArrowDown } from 'lucide-react';
 
 import { format, parseISO } from 'date-fns';
 
@@ -16,23 +18,34 @@ import type {
 } from '@/types/index';
 
 // Define button format for a sortable Column header.
-const sortableHeader = (
+function sortableHeader(
   column:
     | Column<FormattedForReviewTransaction>
     | Column<ClassifiedForReviewTransaction>,
   title: string
-) => {
+) {
   return (
     <Button
       id={title + 'SortButton'}
       variant="ghost"
-      onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className="p-0 font-semibold">
+      onClick={() => {
+        column.toggleSorting(column.getIsSorted() !== 'desc');
+      }}
+      className="ml-2 p-0 font-semibold">
       {title}
-      <ArrowUpDown className="ml-2 h-5 w-5" />
+      {/* Set to inverse of value (Down arrow for ascending) to indicate new direction of sort when clicked. */}
+      {column.getIsSorted() === 'asc' ? (
+        <ArrowUp
+          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-400'}`}
+        />
+      ) : (
+        <ArrowDown
+          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-400'}`}
+        />
+      )}
     </Button>
   );
-};
+}
 
 const commonColumns = [
   // Define the Select Column - Box that indiates if the Row is selected.
@@ -234,7 +247,11 @@ export const ReviewColumns = (
     accessorKey: 'categories',
     header: 'Categories',
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      const categories: Classification[] = row.getValue('categories');
+      let categories: Classification[] | null = row.getValue('categories');
+      // If no Catagories are found (null), treat it the same as an empty array.
+      if (!categories) {
+        categories = [];
+      }
       return categories.length > 0 ? (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"
@@ -264,7 +281,11 @@ export const ReviewColumns = (
     accessorKey: 'taxCodes',
     header: 'Tax Codes',
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      const taxCodes: Classification[] = row.getValue('taxCodes');
+      let taxCodes: Classification[] | null = row.getValue('taxCodes');
+      // If no Tax Codes are found (null), treat it the same as an empty array.
+      if (!taxCodes) {
+        taxCodes = [];
+      }
       return taxCodes.length > 0 ? (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"

@@ -32,10 +32,10 @@ export function ConfidenceBar({
   }
 
   return (
-    <div className="relative flex w-fit">
+    <div className="relative mx-auto flex w-fit">
       <HoverCard>
         <HoverCardContent>{hoverText}</HoverCardContent>
-        <div className="relative h-8 w-36 -translate-y-0.5 pb-2">
+        <div className="relative w-36">
           <HoverCardTrigger asChild>
             <div className="mx-2 flex w-fit rounded-lg border-3 border-blue-300 hover:mb-12">
               <div className={segmentOneFormatting}></div>
