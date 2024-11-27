@@ -14,10 +14,6 @@ export function middleware(request: NextRequest) {
   const footerPaths = siteConfig.footerItems.map((link) => link.href);
   const emailApiEndpoints = siteConfig.emailEndpoints.map((path) => path.href);
 
-  console.log(pathname)
-
-  return NextResponse.next();
-
   // Check the current path to see if it is for the landing page, one of the allowed paths, or a signin call.
   if (
     footerPaths.includes(pathname) ||
