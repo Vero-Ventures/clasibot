@@ -167,25 +167,18 @@ export async function fetchTransactionsToClassify(
 }
 
 // Gets the users past Transactions to be used as context during Classificaion.
-// Takes: The Login Tokens from synthetic login and the Comapany realm Id.
 // Returns: Boolean value for success / failure, the Transactions, and the Comapany Info.
-export async function fetchPredictionContext(
-  loginTokens: LoginTokens,
-  realmId: string
-): Promise<{
+export async function fetchPredictionContext(): Promise<{
   result: boolean;
   transactions: Transaction[];
   companyInfo: CompanyInfo | null;
 }> {
   try {
     // Get the saved Classified Transactions from the User to use as context for prediction.
-    const classifiedPastTransactions = await getClassifiedPastTransactions(
-      loginTokens,
-      realmId
-    );
+    const classifiedPastTransactions = await getClassifiedPastTransactions();
 
     // Get Company Info for the User as context during LLM predictions.
-    const companyInfo = await getCompanyInfo(loginTokens, realmId);
+    const companyInfo = await getCompanyInfo();
 
     // Return the fetched context (Transactions and Company Info).
     return {
@@ -231,7 +224,6 @@ export async function startTransactionClassification(
       contextTransactions,
       reviewTransactions,
       companyInfo,
-      loginTokens,
       realmId
     );
 

@@ -26,7 +26,6 @@ import type {
   ClassifiedResult,
   CompanyInfo,
   FormattedForReviewTransaction,
-  LoginTokens,
   TaxCode,
   Transaction,
 } from '@/types/index';
@@ -39,7 +38,6 @@ export async function classifyTransactions(
   classifiedTransactions: Transaction[],
   unclassifiedTransactions: FormattedForReviewTransaction[],
   companyInfo: CompanyInfo,
-  loginTokens: LoginTokens,
   companyId: string
 ): Promise<
   | Record<
@@ -96,24 +94,15 @@ export async function classifyTransactions(
   try {
     // Get the valid Categories for Classification from QuickBooks Expense Accounts using a synthetic Login Tokens object.
     // Pass boolean value to indicate if names will be saved to database to properly parse the Category names.
-    const validDBCategories: Classification[] = await fetchValidCategories(
-      true,
-      loginTokens,
-      companyId
-    );
-    const validLLMCategories: Classification[] = await fetchValidCategories(
-      false,
-      loginTokens,
-      companyId
-    );
+    const validDBCategories: Classification[] =
+      await fetchValidCategories(true);
+    const validLLMCategories: Classification[] =
+      await fetchValidCategories(false);
 
     // Get the valid Tax Codes for Classification using the Company Info location.
     // Also returns a value indicating if Tax Code Classification is possible for the Company (Canadian Companies only).
-    const [classifyTaxCodes, validTaxCodes] = await fetchValidTaxCodes(
-      companyInfo,
-      loginTokens,
-      companyId
-    );
+    const [classifyTaxCodes, validTaxCodes] =
+      await fetchValidTaxCodes(companyInfo);
 
     // Create records that connect a 'For Review' transaction Id to an array of its Classified Elements.
     // Create a seperate record for tracking both Categories and Tax Codes.
@@ -226,18 +215,14 @@ export async function classifyTransactions(
 }
 
 // Finds and uses the User Expense Acccounts to find the possible Categories a Transaction can be connected to.
-// Takes: A boolean value indicating how Account names are parsed, a synthetic Login Tokens object, and the Company realm Id.
+// Takes: A boolean value indicating how Account names are parsed.
 // Returns: An array of Classification objects for the valid Catagories from the User Expense Accounts.
 async function fetchValidCategories(
-  filterToBase: boolean,
-  loginTokens: LoginTokens,
-  companyId: string
+  filterToBase: boolean
 ): Promise<Classification[]> {
   try {
     // Gets a list of valid Category Accounts from QuickBooks using the 'Expense' Accounts type.
-    const validCategoriesResult = JSON.parse(
-      await getAccounts('Expense', loginTokens, companyId)
-    );
+    const validCategoriesResult = JSON.parse(await getAccounts('Expense'));
 
     // Check if the Account fetch Query Result resulted in an error.
     if (validCategoriesResult[0].result === 'Error') {
@@ -289,12 +274,10 @@ async function fetchValidCategories(
 }
 
 // Finds and uses the User Tax Codes to find the possible Tax Codes a Transaction can be connected to.
-// Takes: Company Info containing the Company location, a synthetic Login Tokens object, and the Company realm Id.
+// Takes: Company Info containing the Company location.
 // Returns: An array of Classification objects for the valid user Tax Codes for their location.
 async function fetchValidTaxCodes(
-  companyInfo: CompanyInfo,
-  loginTokens: LoginTokens,
-  companyId: string
+  companyInfo: CompanyInfo
 ): Promise<[boolean, Classification[]]> {
   try {
     // Define boolean value to track if Tax Code Classification is possible for the Company.
@@ -311,9 +294,7 @@ async function fetchValidTaxCodes(
     ) {
       classifyTaxCode = true;
       // Use the synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
-      const userTaxCodes = JSON.parse(
-        await getTaxCodes(loginTokens, companyId)
-      );
+      const userTaxCodes = JSON.parse(await getTaxCodes());
 
       // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(

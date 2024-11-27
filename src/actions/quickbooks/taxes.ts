@@ -2,32 +2,19 @@
 
 import { checkFaultProperty, createQueryResult } from './index';
 
-import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject } from '@/actions/qb-client';
 
-import { TaxCodes, LocationsToTaxCodes } from '@/enums/taxes';
-import type { Locations } from '@/enums/taxes';
+import { TaxCodes, LocationsToTaxCodes } from '@/enums/tax-codes';
+import type { Locations } from '@/enums/tax-codes';
 
-import type { ErrorResponse, TaxCode, LoginTokens } from '@/types/index';
+import type { ErrorResponse, TaxCode } from '@/types/index';
 
 // Get all valid Canadian Tax Codes for a User location.
-// Takes: An optional set of Login Tokens and a Company realm Id.
 // Returns: An array of Tax Code objects as a string.
-export async function getTaxCodes(
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
-): Promise<string> {
+export async function getTaxCodes(): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.
     type TaxCodeResponse = {

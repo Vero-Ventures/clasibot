@@ -14,19 +14,19 @@ import type {
 export async function getForReview(
   accountId: string,
   loginTokens: LoginTokens,
-  companyId: string
+  realmId: string
 ): Promise<QueryResult> {
   try {
-    // Define the parameters for the GET call, then define the full endpoint.
+    // Define the endpoint for the GET call.
     // Uses the Id of the Company and the Id of the Account to fetch the 'For Review' transactions from.
-    const parameters = `accountId=${accountId}&sort=-txnDate&reviewState=PENDING&ignoreMatching=false`;
-    const endpoint = `https://c15.qbo.intuit.com/qbo15/neo/v1/company/${companyId}/olb/ng/getTransactions?${parameters}`;
+    const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/getTransactions?accountId=${accountId}&sort=-amount&reviewState=PENDING&ignoreMatching=false`;
 
     // Call the query endpoint while passing the required header cookies.
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        cookie: `qbo.tkt=${loginTokens?.qboTicket}; qbo.agentid=${process.env.BACKEND_REALM_ID}; qbo.parentid=${companyId}; qbo.authid=${loginTokens.authId}; SameSite=None`,
+        authorization: `Intuit_APIKey intuit_apikey=${loginTokens.intuitApiKey}`,
+        cookie: `qbo.tkt=${loginTokens?.qboTicket}; qbo.agentid=${loginTokens.agentId};  qbo.authid=${loginTokens.authId}; e`,
       },
     });
 

@@ -18,10 +18,10 @@ export async function syntheticLogin(
     detail: '',
   };
   const loginTokens: LoginTokens = {
+    intuitApiKey: '',
     qboTicket: '',
     authId: '',
-    accessToken: '',
-    refreshToken: '',
+    agentId: '',
   };
 
   try {
@@ -62,8 +62,6 @@ export async function syntheticLogin(
 
     loginTokens.qboTicket = data.qboTicket;
     loginTokens.authId = data.authId;
-    loginTokens.accessToken = decodedToken.accessToken as string;
-    loginTokens.refreshToken = decodedToken.refreshToken as string;
 
     loginResult.result = 'success';
     loginResult.message = 'Successfully completed synthetic auth process';

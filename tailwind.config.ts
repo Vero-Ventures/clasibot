@@ -16,8 +16,6 @@ const config = {
       md: '768px',
       lg: '1024px',
       xl: '1280px',
-      // Extra class created for larger screens.
-      '2xl': '1536px',
     },
     // Define rules for spacing, animation, and other tailwind features.
     container: {

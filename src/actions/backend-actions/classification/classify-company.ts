@@ -56,10 +56,7 @@ export async function classifyCompany(
     )[][];
 
     // Get the saved Classified Transactions from the User to use as context for prediction.
-    const classifiedPastTransactions = await getClassifiedPastTransactions(
-      loginTokens,
-      companyId
-    );
+    const classifiedPastTransactions = await getClassifiedPastTransactions();
 
     // Extract the formatted 'For Review' transactions to use in Classification.
     const formattedForReviewTransactions = forReviewTransactions.map(
@@ -67,7 +64,7 @@ export async function classifyCompany(
     );
 
     // Get Company Info for the User as context during LLM predictions.
-    const companyInfo = await getCompanyInfo(loginTokens, companyId);
+    const companyInfo = await getCompanyInfo();
 
     // Call Classification function on the formatted 'For Review' transactions.
     const classificationResults:
@@ -82,7 +79,6 @@ export async function classifyCompany(
       classifiedPastTransactions,
       formattedForReviewTransactions,
       companyInfo,
-      loginTokens,
       companyId
     );
 
@@ -161,7 +157,7 @@ export async function getForReviewTransactions(
 > {
   try {
     // Get all Accounts that may contain 'For Review' transactions.
-    const response = await getAccounts('Transaction', loginTokens, companyId);
+    const response = await getAccounts('Transaction');
     const result = JSON.parse(response);
 
     // Check if the Transaction fetch resulted in an error.
@@ -238,12 +234,8 @@ export async function getForReviewTransactions(
 }
 
 // Gets the saved and Classified Transactions from the Company for use in LLM prediction.
-// Takes: The set of synthetic Login Tokens and the realm Id of the Company.
 // Returns: An array of Transactions objects for the User Classified Transactions.
-export async function getClassifiedPastTransactions(
-  loginTokens: LoginTokens,
-  companyId: string
-): Promise<Transaction[]> {
+export async function getClassifiedPastTransactions(): Promise<Transaction[]> {
   try {
     // Define the range of dates to fetch Transactions from.
     const today = new Date();
@@ -258,12 +250,7 @@ export async function getClassifiedPastTransactions(
     const endDate = fiveYearsAgo.toISOString().split('T')[0];
 
     // Get the Classified and saved Transactions from QuickBooks.
-    const response = await getSavedTransactions(
-      startDate,
-      endDate,
-      loginTokens,
-      companyId
-    );
+    const response = await getSavedTransactions(startDate, endDate);
     const result = JSON.parse(response);
 
     // Check if the Transaction fetch resulted in an error.
@@ -290,23 +277,13 @@ export async function getClassifiedPastTransactions(
 }
 
 // Gets the Company Info that is used in Transaction Classification.
-// Takes: The set of synthetic Login Tokens and the realm Id of the Company.
 // Returns: The relevant Company Info object.
-export async function getCompanyInfo(
-  loginTokens: LoginTokens,
-  companyId: string
-): Promise<CompanyInfo> {
+export async function getCompanyInfo(): Promise<CompanyInfo> {
   try {
     // Get the Company Info values from the current Company.
-    const userCompanyName = await getCompanyName(loginTokens, companyId);
-    const userCompanyIndustry = await getCompanyIndustry(
-      loginTokens,
-      companyId
-    );
-    const userCompanyLocation = await getCompanyLocation(
-      loginTokens,
-      companyId
-    );
+    const userCompanyName = await getCompanyName();
+    const userCompanyIndustry = await getCompanyIndustry();
+    const userCompanyLocation = await getCompanyLocation();
     // Return the formatted Company Info object.
     return {
       name: userCompanyName,

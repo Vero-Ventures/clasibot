@@ -2,33 +2,19 @@
 
 import { checkFaultProperty, createQueryResult } from './index';
 
-import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject } from '@/actions/qb-client';
 
-import type { Account, ErrorResponse, LoginTokens } from '@/types/index';
+import type { Account, ErrorResponse } from '@/types/index';
 
 // Get specific Accounts from the QuickBooks API depending on passed Account type.
 // Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
 // Use 'Expense' to get Accounts for Categorization.
 // Takes: The account type as either a 'Transaction' or 'Expense' string.
-//    May also take synthetic Login Tokens and Company realm Id for backend calls.
 // Returns: An array of objects starting with a Query Result, then containing Purchase objects.
-export async function getAccounts(
-  accountType: string,
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
-): Promise<string> {
+export async function getAccounts(accountType: string): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a success tracking value and the format of QuickBooks and error response objects.
     let success = true;

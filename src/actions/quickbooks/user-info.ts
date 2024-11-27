@@ -9,29 +9,14 @@ import { eq } from 'drizzle-orm';
 
 import { checkFaultProperty } from './index';
 
-import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
-
-import type { LoginTokens } from '@/types/index';
+import { getQBObject } from '@/actions/qb-client';
 
 // Get the Company name from the QuickBooks API.
-// Takes: May take synthetic Login Tokens and the Company realm Id.
 // Returns: The Company name as a string or 'Error: Name not found'
-export async function getCompanyName(
-  loginTokens: LoginTokens | null = null,
-  realmId: string | null = null
-): Promise<string> {
+export async function getCompanyName(): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && realmId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, realmId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.
     type CompanyInfoResponse = {
@@ -54,20 +39,15 @@ export async function getCompanyName(
       });
     });
 
-    // If realmId was not passed (called by frontend) get it from the current session.
-    if (!realmId) {
-      const session = await getServerSession(options);
-      if (session?.realmId) {
-        realmId = session?.realmId;
-      }
-    }
+    // Get the current session for the Company realm Id.
+    const session = await getServerSession(options);
 
-    // If a realm Id was passed or found, update the database Company object with the found name.
-    if (realmId) {
+    // Update the company name using the fetched realm Id.
+    if (session?.realmId) {
       await db
         .update(Company)
         .set({ name: response.QueryResponse.CompanyInfo[0].CompanyName })
-        .where(eq(Company.realmId, realmId));
+        .where(eq(Company.realmId, session.realmId));
     }
 
     // Return the name value from the Company Info.
@@ -81,24 +61,11 @@ export async function getCompanyName(
 }
 
 // Get the Company industry from the QuickBooks API.
-// Takes: May take synthetic Login Tokenss and the Company realm Id.
 // Returns: The Company industry as a string or 'Error' / 'None'
-export async function getCompanyIndustry(
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
-): Promise<string> {
+export async function getCompanyIndustry(): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.
     type CompanyInfoResponse = {
@@ -154,24 +121,11 @@ export async function getCompanyIndustry(
 }
 
 // Get the Company location from the QBO API, return the country and the Sub-location for Canadian Companies.
-// Takes: May take synthetic Login Tokens and the Companies realm Id.
 // Returns: A stringified object that contains the Country and Sub-location.
-export async function getCompanyLocation(
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
-): Promise<string> {
+export async function getCompanyLocation(): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.
     type CompanyInfoResponse = {
