@@ -24,6 +24,13 @@ const config = {
       center: true,
       padding: '2rem',
       screens: {
+        tableMin: '320px',
+        tableName: '466px',
+        tableAmount: '590px',
+        tableCatagories: '706px',
+        tableCatConfidence: '922px',
+        tableTaxCodes: '1010px',
+        tableTaxConfidence: '1225px',
         '2xl': '1400px',
       },
     },

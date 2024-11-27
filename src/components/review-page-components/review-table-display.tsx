@@ -20,7 +20,7 @@ export function ReviewTableDisplay({
   table: Table<ClassifiedForReviewTransaction>;
 }>) {
   return (
-    <div className="mb-1 mt-4 overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
+    <div className="tableMin:w-[280px] tableName:w-[426px] tableAmount:w-[550px] tableCatagories:w-[666px] tableCatConfidence:w-[890px] tableTaxCodes:w-[970px] tableTaxConfidence:w-full mb-1 mt-4 overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
       <DisplayTable>
         {/* Table Header */}
         <TableHeader>
@@ -68,9 +68,10 @@ export function ReviewTableDisplay({
             <TableRow>
               <TableCell
                 colSpan={table.getAllColumns().length}
-                className="px-4 py-6 text-center text-sm text-gray-500">
-                No results found.
-              </TableCell>
+                className="py-8"></TableCell>
+              <div className="absolute inset-1/2 text-xl font-semibold text-red-400">
+                <p className="mt-5 w-40 -translate-x-20">No Results Found</p>
+              </div>
             </TableRow>
           )}
         </TableBody>
