@@ -20,16 +20,18 @@ export function ReviewTableDisplay({
   table: Table<ClassifiedForReviewTransaction>;
 }>) {
   return (
-    <div className="mt-4 overflow-x-auto rounded-md border border-gray-300 bg-white shadow-lg">
+    <div className="mb-1 mt-4 overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
       <DisplayTable>
         {/* Table Header */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-gray-100">
+            <TableRow
+              key={headerGroup.id}
+              className="divide-x-2 divide-gray-300 !border-b-2 bg-gray-100">
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                  className={`bg-white py-3 text-left font-semibold text-gray-800 ${header.column.getCanSort() ? '!py-2 !pl-1 !pr-2' : ''} `}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -43,20 +45,20 @@ export function ReviewTableDisplay({
         </TableHeader>
 
         {/* Table Body */}
-        <TableBody>
+        <TableBody className="divide-y-8 divide-gray-200">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                className={`transition-colors ${
+                className={`divide-x-2 divide-gray-300 transition-colors ${
                   row.getIsSelected() ? 'bg-blue-100' : ''
-                } hover:bg-blue-50`}
+                } hover:bg-blue-100`}
                 onClick={() => row.toggleSelected(!row.getIsSelected())}
                 style={{ cursor: 'pointer' }}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className="px-4 py-3 text-sm text-gray-700">
+                    className="px-4 py-3 text-sm font-semibold text-gray-700">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

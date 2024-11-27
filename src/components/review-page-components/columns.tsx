@@ -31,16 +31,16 @@ function sortableHeader(
       onClick={() => {
         column.toggleSorting(column.getIsSorted() !== 'desc');
       }}
-      className="ml-2 p-0 font-semibold">
+      className="ml-2 px-3 font-semibold hover:!bg-gray-200 hover:!bg-opacity-40">
       {title}
       {/* Set to inverse of value (Down arrow for ascending) to indicate new direction of sort when clicked. */}
       {column.getIsSorted() === 'asc' ? (
         <ArrowUp
-          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-400'}`}
+          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-500'}`}
         />
       ) : (
         <ArrowDown
-          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-400'}`}
+          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-500'}`}
         />
       )}
     </Button>
@@ -91,6 +91,39 @@ const commonColumns = [
     // Disable sorting and Column hiding.
     enableSorting: false,
     enableHiding: false,
+  },
+
+  // Define the Account Column.
+  // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
+  {
+    accessorKey: 'account',
+    header: 'Account',
+    cell: ({
+      row,
+    }: {
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<ClassifiedForReviewTransaction>;
+    }) => row.getValue('account'),
+    // Filter function takes the Row value and an array of Account names (filterValue).
+    //    Column Id is needed to match the expected function signature.
+    filterFn: (
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<ClassifiedForReviewTransaction>,
+      columnId: string,
+      filterValue: string
+    ) => {
+      // Filter values should be an array of strings.
+      // If no filter value is provided or no Accounts were selected, display all Rows.
+      if (!filterValue || filterValue.length === 0) {
+        return true;
+      }
+      // Check if the Account name is included the array of selected Account names.
+      // Return the result as a boolean value to determine Row filtering.
+      return filterValue.includes(row.getValue('account'));
+    },
+    enableSorting: false,
   },
 
   // Define the Date Column.
@@ -164,38 +197,6 @@ const commonColumns = [
         | Row<FormattedForReviewTransaction>
         | Row<ClassifiedForReviewTransaction>;
     }) => row.getValue('name'),
-  },
-
-  // Define the Account Column.
-  // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
-  {
-    accessorKey: 'account',
-    header: 'Account',
-    cell: ({
-      row,
-    }: {
-      row:
-        | Row<FormattedForReviewTransaction>
-        | Row<ClassifiedForReviewTransaction>;
-    }) => row.getValue('account'),
-    // Filter function takes the Row value and an array of Account names (filterValue).
-    //    Column Id is needed to match the expected function signature.
-    filterFn: (
-      row:
-        | Row<FormattedForReviewTransaction>
-        | Row<ClassifiedForReviewTransaction>,
-      columnId: string,
-      filterValue: string
-    ) => {
-      // Filter values should be an array of strings.
-      // If no filter value is provided or no Accounts were selected, display all Rows.
-      if (!filterValue || filterValue.length === 0) {
-        return true;
-      }
-      // Check if the Account name is included the array of selected Account names.
-      // Return the result as a boolean value to determine Row filtering.
-      return filterValue.includes(row.getValue('account'));
-    },
   },
 
   // Define the Amount Column
@@ -276,6 +277,34 @@ export const ReviewColumns = (
         <span className="text-red-500">No Categories Found</span>
       );
     },
+    enableSorting: false,
+  },
+
+  // Define the Category Confidence Column
+  {
+    accessorKey: 'categoryConfidence',
+    header: ({ column }: { column: Column<ClassifiedForReviewTransaction> }) =>
+      sortableHeader(column, 'Confidence (Category)'),
+    cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
+      // Get the confidence value from the row and use it to determine the Confidence Bar hover text.
+      const confidenceValue: number = row.getValue('categoryConfidence');
+      let hoverText = '';
+      if (confidenceValue === 0) {
+        hoverText = 'No Classification results found.';
+      }
+      if (confidenceValue === 1) {
+        hoverText = 'Results found by LLM prediction.';
+      }
+      if (confidenceValue === 2) {
+        hoverText = 'Results found by database check.';
+      }
+      if (confidenceValue === 3) {
+        hoverText = 'Results found by name matching.';
+      }
+      return (
+        <ConfidenceBar confidence={confidenceValue} hoverText={hoverText} />
+      );
+    },
   },
 
   // Define the Tax Codes Column.
@@ -310,33 +339,7 @@ export const ReviewColumns = (
         <span className="text-red-500">No Categories Found</span>
       );
     },
-  },
-
-  // Define the Category Confidence Column
-  {
-    accessorKey: 'categoryConfidence',
-    header: ({ column }: { column: Column<ClassifiedForReviewTransaction> }) =>
-      sortableHeader(column, 'Confidence (Category)'),
-    cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      // Get the confidence value from the row and use it to determine the Confidence Bar hover text.
-      const confidenceValue: number = row.getValue('categoryConfidence');
-      let hoverText = '';
-      if (confidenceValue === 0) {
-        hoverText = 'No Classification results found.';
-      }
-      if (confidenceValue === 1) {
-        hoverText = 'Results found by LLM prediction.';
-      }
-      if (confidenceValue === 2) {
-        hoverText = 'Results found by database check.';
-      }
-      if (confidenceValue === 3) {
-        hoverText = 'Results found by name matching.';
-      }
-      return (
-        <ConfidenceBar confidence={confidenceValue} hoverText={hoverText} />
-      );
-    },
+    enableSorting: false,
   },
 
   // Define the Tax Code Confidence Column
