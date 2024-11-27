@@ -153,7 +153,7 @@ export async function getAccounts(
     if (error instanceof Error) {
       return JSON.stringify([
         {
-          result: 'error',
+          result: 'Error',
           message: 'Unexpected error occured while fetching Accounts.',
           detail: error.message,
         },
@@ -161,7 +161,7 @@ export async function getAccounts(
     } else {
       return JSON.stringify([
         {
-          result: 'error',
+          result: 'Error',
           message: 'Unexpected error occured while fetching Accounts.',
           detail: 'N/A',
         },

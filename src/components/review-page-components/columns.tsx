@@ -1,6 +1,8 @@
-import { ArrowUpDown } from 'lucide-react';
+'use client';
 
-import { format, parseISO } from 'date-fns';
+import { ArrowUp, ArrowDown } from 'lucide-react';
+
+import { format } from 'date-fns';
 
 import type { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
 
@@ -16,23 +18,34 @@ import type {
 } from '@/types/index';
 
 // Define button format for a sortable Column header.
-const sortableHeader = (
+function sortableHeader(
   column:
     | Column<FormattedForReviewTransaction>
     | Column<ClassifiedForReviewTransaction>,
   title: string
-) => {
+) {
   return (
     <Button
       id={title + 'SortButton'}
       variant="ghost"
-      onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className="p-0 font-semibold">
+      onClick={() => {
+        column.toggleSorting(column.getIsSorted() !== 'desc');
+      }}
+      className="ml-2 px-3 font-semibold hover:!bg-gray-200 hover:!bg-opacity-40">
       {title}
-      <ArrowUpDown className="ml-2 h-5 w-5" />
+      {/* Set to inverse of value (Down arrow for ascending) to indicate new direction of sort when clicked. */}
+      {column.getIsSorted() === 'asc' ? (
+        <ArrowUp
+          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-500'}`}
+        />
+      ) : (
+        <ArrowDown
+          className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-500'}`}
+        />
+      )}
     </Button>
   );
-};
+}
 
 const commonColumns = [
   // Define the Select Column - Box that indiates if the Row is selected.
@@ -53,7 +66,9 @@ const commonColumns = [
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         // Convert the checked value to a boolean, then set that as the checked value of all Rows.
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value: boolean) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
         aria-label="Select all"
       />
     ),
@@ -69,13 +84,46 @@ const commonColumns = [
         // Use the Row value and getIsSelected to check if the Row is selected.
         checked={row.getIsSelected()}
         // When checked status changes, toggle the selection value of the Row.
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
     // Disable sorting and Column hiding.
     enableSorting: false,
     enableHiding: false,
+  },
+
+  // Define the Account Column.
+  // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
+  {
+    accessorKey: 'account',
+    header: 'Account',
+    cell: ({
+      row,
+    }: {
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<ClassifiedForReviewTransaction>;
+    }) => row.getValue('account'),
+    // Filter function takes the Row value and an array of Account names (filterValue).
+    //    Column Id is needed to match the expected function signature.
+    filterFn: (
+      row:
+        | Row<FormattedForReviewTransaction>
+        | Row<ClassifiedForReviewTransaction>,
+      columnId: string,
+      filterValue: string
+    ) => {
+      // Filter values should be an array of strings.
+      // If no filter value is provided or no Accounts were selected, display all Rows.
+      if (!filterValue || filterValue.length === 0) {
+        return true;
+      }
+      // Check if the Account name is included the array of selected Account names.
+      // Return the result as a boolean value to determine Row filtering.
+      return filterValue.includes(row.getValue('account'));
+    },
+    enableSorting: false,
   },
 
   // Define the Date Column.
@@ -98,7 +146,7 @@ const commonColumns = [
     }) => {
       // Convert the date value from the Row to a Month-Day-Year format.
       const formattedDate = format(
-        parseISO(row.getValue('date')),
+        Date.parse(row.getValue('date')),
         'MM/dd/yyyy'
       );
       return <div>{formattedDate}</div>;
@@ -149,38 +197,6 @@ const commonColumns = [
         | Row<FormattedForReviewTransaction>
         | Row<ClassifiedForReviewTransaction>;
     }) => row.getValue('name'),
-  },
-
-  // Define the Account Column.
-  // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
-  {
-    accessorKey: 'account',
-    header: 'Account',
-    cell: ({
-      row,
-    }: {
-      row:
-        | Row<FormattedForReviewTransaction>
-        | Row<ClassifiedForReviewTransaction>;
-    }) => row.getValue('account'),
-    // Filter function takes the Row value and an array of Account names (filterValue).
-    //    Column Id is needed to match the expected function signature.
-    filterFn: (
-      row:
-        | Row<FormattedForReviewTransaction>
-        | Row<ClassifiedForReviewTransaction>,
-      columnId: string,
-      filterValue: string
-    ) => {
-      // Filter values should be an array of strings.
-      // If no filter value is provided or no Accounts were selected, display all Rows.
-      if (!filterValue || filterValue.length === 0) {
-        return true;
-      }
-      // Check if the Account name is included the array of selected Account names.
-      // Return the result as a boolean value to determine Row filtering.
-      return filterValue.includes(row.getValue('account'));
-    },
   },
 
   // Define the Amount Column
@@ -234,7 +250,11 @@ export const ReviewColumns = (
     accessorKey: 'categories',
     header: 'Categories',
     cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      const categories: Classification[] = row.getValue('categories');
+      let categories: Classification[] | null = row.getValue('categories');
+      // If no Catagories are found (null), treat it the same as an empty array.
+      if (!categories) {
+        categories = [];
+      }
       return categories.length > 0 ? (
         <select
           className="rounded-lg border border-gray-700 px-2 py-1"
@@ -257,36 +277,7 @@ export const ReviewColumns = (
         <span className="text-red-500">No Categories Found</span>
       );
     },
-  },
-
-  // Define the Tax Codes Column.
-  {
-    accessorKey: 'taxCodes',
-    header: 'Tax Codes',
-    cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
-      const taxCodes: Classification[] = row.getValue('taxCodes');
-      return taxCodes.length > 0 ? (
-        <select
-          className="rounded-lg border border-gray-700 px-2 py-1"
-          onClick={(e) => e.stopPropagation()}
-          // Use a callback function (handleTaxCodeChange) when the selected Tax Code for a row changes.
-          //    Updates the selected Tax Codes for each Transaction in the Review Page.
-          onChange={(e) => {
-            handleTaxCodeChange(row.original.transaction_Id, e.target.value);
-          }}
-          value={selectedTaxCodes[row.original.transaction_Id]}>
-          {/* Map the Tax Codes associated with the Transaction to a dropdown */}
-          {taxCodes.map((taxCodes) => (
-            <option key={taxCodes.name} value={taxCodes.name}>
-              {taxCodes.name}
-            </option>
-          ))}
-        </select>
-      ) : (
-        // If no Tax Codes are found, display a message indicating none were found.
-        <span className="text-red-500">No Categories Found</span>
-      );
-    },
+    enableSorting: false,
   },
 
   // Define the Category Confidence Column
@@ -314,6 +305,41 @@ export const ReviewColumns = (
         <ConfidenceBar confidence={confidenceValue} hoverText={hoverText} />
       );
     },
+  },
+
+  // Define the Tax Codes Column.
+  {
+    accessorKey: 'taxCodes',
+    header: 'Tax Codes',
+    cell: ({ row }: { row: Row<ClassifiedForReviewTransaction> }) => {
+      let taxCodes: Classification[] | null = row.getValue('taxCodes');
+      // If no Tax Codes are found (null), treat it the same as an empty array.
+      if (!taxCodes) {
+        taxCodes = [];
+      }
+      return taxCodes.length > 0 ? (
+        <select
+          className="rounded-lg border border-gray-700 px-2 py-1"
+          onClick={(e) => e.stopPropagation()}
+          // Use a callback function (handleTaxCodeChange) when the selected Tax Code for a row changes.
+          //    Updates the selected Tax Codes for each Transaction in the Review Page.
+          onChange={(e) => {
+            handleTaxCodeChange(row.original.transaction_Id, e.target.value);
+          }}
+          value={selectedTaxCodes[row.original.transaction_Id]}>
+          {/* Map the Tax Codes associated with the Transaction to a dropdown */}
+          {taxCodes.map((taxCodes) => (
+            <option key={taxCodes.name} value={taxCodes.name}>
+              {taxCodes.name}
+            </option>
+          ))}
+        </select>
+      ) : (
+        // If no Tax Codes are found, display a message indicating none were found.
+        <span className="text-red-500">No Categories Found</span>
+      );
+    },
+    enableSorting: false,
   },
 
   // Define the Tax Code Confidence Column

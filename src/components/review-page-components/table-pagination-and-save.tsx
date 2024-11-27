@@ -29,40 +29,39 @@ export function TablePaginationAndSave({
   ) => void;
 }>) {
   return (
-    <div className="flex items-center justify-between py-2">
-      <div className="ml-2 mr-2 mt-0.5 p-2 text-center text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{' '}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div>
-      <div className="grid grid-rows-2 space-y-1 sm:grid-cols-2 sm:grid-rows-1 sm:space-x-2 sm:space-y-0">
-        <div>
+    <div className="flex flex-col items-center justify-between pt-2 sm:flex-row">
+      <div className="mb-6 flex h-12 w-full flex-row items-center px-2 mb:px-4 sm:mb-0">
+        <div className="mr-2 mt-1 h-fit min-w-[75px] py-2 text-center text-sm text-muted-foreground mb:mr-4 mb:min-w-[90px] sm:mr-0 sm:w-1/5 sm:min-w-[110px] sm:pr-6 lg:w-1/6">
+          {table.getState().pagination.pageIndex < 0
+            ? 0
+            : table.getState().pagination.pageIndex * 10}{' '}
+          - {table.getState().pagination.pageIndex * 10 + 10} of{' '}
+          {table.getFilteredRowModel().rows.length}
+        </div>
+        <div className="sm:max-w-1/2 flex h-fit flex-grow flex-row justify-evenly gap-x-4">
           <Button
-            variant="outline"
-            className="w-20 translate-y-12 border-2 border-gray-300 font-semibold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring sm:translate-y-0"
-            size="sm"
+            className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
-        </div>
-        <div>
+
           <Button
-            variant="outline"
-            size="sm"
-            className="absolute w-20 -translate-y-10 border-2 border-gray-300 font-semibold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring sm:relative sm:translate-y-0"
+            className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 font-sans text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>
       </div>
-      <div className="ml-2">
+
+      <div className="flex w-full justify-center sm:mr-4 sm:w-1/4 md:mr-8">
         <Button
           onClick={() => handleSave(rowSelection, categorizedTransactions)}
           disabled={
             isSaving || table.getFilteredSelectedRowModel().rows.length === 0
           }
-          className="ml-2 mr-4 h-12 w-24 rounded bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-lg font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+          className="h-12 w-1/2 rounded bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-lg font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 sm:w-full sm:min-w-32 sm:max-w-52 xl:mr-4">
           {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </div>

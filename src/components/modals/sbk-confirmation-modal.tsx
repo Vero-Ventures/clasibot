@@ -1,21 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 
 export const SBKConfirmationModal = () => {
   const router = useRouter();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // router.push('/add-sbk-instructions');
-    }, 4000);
-
-    return () => clearTimeout(timer);
-  });
 
   return (
     <div

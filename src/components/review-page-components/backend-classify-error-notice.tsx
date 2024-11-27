@@ -1,13 +1,17 @@
 'use client';
 
+import { MiniSpinner } from '@/components/loading-elements/index';
+
 import { Button } from '@/components/ui/button';
 
 export function BackendClassifyErrorNotice({
   showErrorNotice,
   dismissErrorStatus,
+  dismissalLoading,
 }: Readonly<{
   showErrorNotice: boolean;
   dismissErrorStatus: () => void;
+  dismissalLoading: boolean;
 }>) {
   return (
     <div
@@ -24,11 +28,17 @@ export function BackendClassifyErrorNotice({
         </p>
       </div>
       <div className="mt-2 flex justify-evenly">
-        <Button
-          onClick={() => dismissErrorStatus()}
-          className="transform rounded-lg bg-gradient-to-r from-red-600 to-red-700 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 mb:py-6 mb:text-xl sm:py-6 sm:text-2xl">
-          Dismiss
-        </Button>
+        {!dismissalLoading ? (
+          <Button
+            onClick={() => dismissErrorStatus()}
+            className="transform rounded-lg bg-gradient-to-r from-red-600 to-red-700 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 mb:py-6 mb:text-xl sm:py-6 sm:text-2xl">
+            Dismiss
+          </Button>
+        ) : (
+          <div className="mb-2">
+            <MiniSpinner success={null} />
+          </div>
+        )}
       </div>
     </div>
   );

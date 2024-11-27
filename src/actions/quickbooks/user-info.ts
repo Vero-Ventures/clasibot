@@ -1,5 +1,12 @@
 'use server';
 
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
+
+import { db } from '@/db/index';
+import { Company } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+
 import { checkFaultProperty } from './index';
 
 import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
@@ -11,16 +18,16 @@ import type { LoginTokens } from '@/types/index';
 // Returns: The Company name as a string or 'Error: Name not found'
 export async function getCompanyName(
   loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
+  realmId: string | null = null
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
     let qbo;
 
     // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
+    if (loginTokens && realmId) {
       // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
+      qbo = await getQBObjectWithSession(loginTokens, realmId);
     } else {
       // Otherwise, preform the regular frontend login.
       qbo = await getQBObject();
@@ -46,6 +53,22 @@ export async function getCompanyName(
         resolve(data);
       });
     });
+
+    // If realmId was not passed (called by frontend) get it from the current session.
+    if (!realmId) {
+      const session = await getServerSession(options);
+      if (session?.realmId) {
+        realmId = session?.realmId;
+      }
+    }
+
+    // If a realm Id was passed or found, update the database Company object with the found name.
+    if (realmId) {
+      await db
+        .update(Company)
+        .set({ name: response.QueryResponse.CompanyInfo[0].CompanyName })
+        .where(eq(Company.realmId, realmId));
+    }
 
     // Return the name value from the Company Info.
     return response.QueryResponse.CompanyInfo[0].CompanyName;

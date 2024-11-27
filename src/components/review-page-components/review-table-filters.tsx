@@ -62,7 +62,7 @@ export function ReviewTableFilters({
               End Date
             </p>
           </div>
-          <div className="flex w-full flex-row justify-evenly md:mt-0">
+          <div className="flex w-full flex-row justify-evenly">
             <DatePicker date={startDate} setDate={changeStartDate} />
             <DatePicker date={endDate} setDate={changeEndDate} />
           </div>
@@ -83,16 +83,26 @@ export function ReviewTableFilters({
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
                   .map((column) => {
-                    const field = column.id;
+                    let field = column.id;
+                    // Replace column ID names with spaced versions where needed.
+                    if (field === 'taxCodes') {
+                      field = 'Tax Codes';
+                    }
+                    if (field === 'categoryConfidence') {
+                      field = 'Category Confidence';
+                    }
+                    if (field === 'taxCodeConfidence') {
+                      field = 'Tax Code Confidence';
+                    }
                     return (
                       // Create a checkbox item for each Column that can be hidden.
                       <DropdownMenuCheckboxItem
                         key={column.id}
-                        className="capitalize focus:bg-blue-300"
+                        className="w-[130px] capitalize focus:bg-blue-300"
                         // Checked status is determined by the associated Column's visibility state.
                         checked={column.getIsVisible()}
                         // On change, toggle the visibility of the associated Column.
-                        onCheckedChange={(value) =>
+                        onCheckedChange={(value: boolean) =>
                           column.toggleVisibility(!!value)
                         }>
                         {field}
@@ -106,6 +116,7 @@ export function ReviewTableFilters({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
+                  disabled={accountNames.length === 0}
                   variant="outline"
                   className="w-full border-2 border-gray-300 bg-white font-semibold transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring">
                   Accounts <ChevronDown className="ml-2 mt-1 h-6 w-6" />
@@ -117,7 +128,7 @@ export function ReviewTableFilters({
                   return (
                     <DropdownMenuCheckboxItem
                       key={account}
-                      className="capitalize focus:bg-blue-300"
+                      className="w-[130px] capitalize focus:bg-blue-300"
                       checked={selectedAccounts.includes(account)}
                       onCheckedChange={() => updateAccountSelection(account)}>
                       {account}

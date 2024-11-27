@@ -146,6 +146,7 @@ export default function ReviewPage({
 
   // Create states for checking if an error occured during backend Classification.
   const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false);
+  const [dimsissalLoading, setDismissalLoading] = useState<boolean>(false);
 
   // On page load, check the database for an error notice from backend Classification.
   useEffect(() => {
@@ -161,9 +162,14 @@ export default function ReviewPage({
   // Defines a callback to dismiss backend Classification error the database and hide the error notice.
   async function dismissErrorStatus() {
     const handleDismissBackendErrorCall = async () => {
+      // Set the dismissal loading element to be shown while calling dismsisal function.
+      setDismissalLoading(true);
       // Close the frontend element, then dismiss the error from the database Company object.
       await dismissBackendClassifyError();
-      setShowErrorNotice(false);
+      setTimeout(() => {
+        setDismissalLoading(false);
+        setShowErrorNotice(false);
+      }, 300);
     };
     handleDismissBackendErrorCall();
   }
@@ -262,6 +268,7 @@ export default function ReviewPage({
         <BackendClassifyErrorNotice
           showErrorNotice={showErrorNotice}
           dismissErrorStatus={dismissErrorStatus}
+          dismissalLoading={dimsissalLoading}
         />
       </div>
 

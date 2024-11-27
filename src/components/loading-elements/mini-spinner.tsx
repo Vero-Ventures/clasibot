@@ -5,19 +5,19 @@ import { CheckIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface MiniSpinnerProps {
-  sbkExists: boolean | null;
+  success: boolean | null;
 }
 
-export const MiniSpinner = ({ sbkExists }: MiniSpinnerProps) => {
+export const MiniSpinner = ({ success }: MiniSpinnerProps) => {
   const [animationState, setAnimationState] = useState('loading');
 
   useEffect(() => {
-    if (sbkExists === true) {
+    if (success === true) {
       setAnimationState('success');
-    } else if (sbkExists === false) {
+    } else if (success === false) {
       setAnimationState('failure');
     }
-  }, [sbkExists]);
+  }, [success]);
 
   const circleCommonClasses = 'h-3 w-3 bg-blue-500 rounded-full m-1';
 
