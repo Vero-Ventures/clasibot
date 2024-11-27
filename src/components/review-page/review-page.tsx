@@ -6,18 +6,12 @@ import { changeManualClassificationState } from '@/actions/backend-actions/class
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 
 import {
-  checkBackendClassifyError,
-  dismissBackendClassifyError,
-} from '@/actions/backend-actions/database-functions/index';
-
-import {
   getNextReviewDate,
   handleStateForManualClassify,
   initalizeLoadedTransactions,
   saveSelectedTransactions,
 } from '@/actions/review-page-handlers/index';
 
-import { BackendClassifyErrorNotice } from '@/components/review-page-components/index';
 import { ReviewTable } from '@/components/review-page/review-table';
 
 import { ManualReviewButton } from '@/components/inputs/manual-review-button';
@@ -144,36 +138,6 @@ export default function ReviewPage({
     handleManualClassificationChangeCall();
   }, [manualClassificationState]);
 
-  // Create states for checking if an error occured during backend Classification.
-  const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false);
-  const [dimsissalLoading, setDismissalLoading] = useState<boolean>(false);
-
-  // On page load, check the database for an error notice from backend Classification.
-  useEffect(() => {
-    // Call the helper function to check for backend Classification failure.
-    const handleCheckBackendErrorCall = async () => {
-      const foundError = await checkBackendClassifyError();
-      // Set the found error state based on the found error value.
-      setShowErrorNotice(foundError.errorStatus);
-    };
-    handleCheckBackendErrorCall();
-  }, []);
-
-  // Defines a callback to dismiss backend Classification error the database and hide the error notice.
-  async function dismissErrorStatus() {
-    const handleDismissBackendErrorCall = async () => {
-      // Set the dismissal loading element to be shown while calling dismsisal function.
-      setDismissalLoading(true);
-      // Close the frontend element, then dismiss the error from the database Company object.
-      await dismissBackendClassifyError();
-      setTimeout(() => {
-        setDismissalLoading(false);
-        setShowErrorNotice(false);
-      }, 300);
-    };
-    handleDismissBackendErrorCall();
-  }
-
   // Create states to track the selected Classifications for each row.
   const [selectedCategories, setSelectedCategories] = useState<
     Record<string, string>
@@ -262,14 +226,6 @@ export default function ReviewPage({
             {nextBackendClassifyDate}
           </span>
         </h2>
-      </div>
-
-      <div className="mx-auto w-fit">
-        <BackendClassifyErrorNotice
-          showErrorNotice={showErrorNotice}
-          dismissErrorStatus={dismissErrorStatus}
-          dismissalLoading={dimsissalLoading}
-        />
       </div>
 
       <ReviewTable
