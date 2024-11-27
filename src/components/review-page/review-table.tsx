@@ -153,7 +153,6 @@ export function ReviewTable({
 
   // Whenever there is a change to the list of Account names, resets the selected Accounts.
   useEffect(() => {
-    console.log(selectedAccounts);
     setSelectedAccounts(accountNames);
   }, [accountNames]);
 
