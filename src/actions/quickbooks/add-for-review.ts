@@ -49,6 +49,9 @@ export async function addForReview(
     // Define the Account Id for the call and the full endpoint to use.
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/batchAcceptTransactions`;
 
+    // Define static Intuit API key value.
+    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, '
+
     // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
     const body = createForReviewUpdateObject(
       forReviewTransaction,
@@ -62,8 +65,8 @@ export async function addForReview(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        authorization: `Intuit_APIKey intuit_apikey=${loginTokens.intuitApiKey}`,
-        cookie: `qbo.tkt=${loginTokens?.ticket}; qbo.agentid=${loginTokens.agentId};  qbo.authid=${loginTokens.authId}; e`,
+        authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
+        cookie: `qbn.tkt=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId}; e`,
       },
 
       body: JSON.stringify(body),

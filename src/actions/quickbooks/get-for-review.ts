@@ -21,12 +21,15 @@ export async function getForReview(
     // Uses the Id of the Company and the Id of the Account to fetch the 'For Review' transactions from.
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/getTransactions?accountId=${accountId}&sort=-amount&reviewState=PENDING&ignoreMatching=false`;
 
+    // Define static Intuit API key value.
+    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, '
+
     // Call the query endpoint while passing the required header cookies.
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        authorization: `Intuit_APIKey intuit_apikey=${loginTokens.intuitApiKey}`,
-        cookie: `qbo.tkt=${loginTokens?.ticket}; qbo.agentid=${loginTokens.agentId};  qbo.authid=${loginTokens.authId}; e`,
+        authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
+        cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId}; e`,
       },
     });
 
