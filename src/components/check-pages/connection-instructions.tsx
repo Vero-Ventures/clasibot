@@ -142,7 +142,7 @@ export default function ConnectionInstructions({
                   and join your company.
                 </li>
               </ol>
-              {true ? (
+              {showCheckConnectionButton ? (
                 <div className="mx-auto flex min-w-80 flex-col items-center justify-center p-4 mb:w-2/3 sm:w-1/2">
                   <CheckConnectionButton />
                 </div>
