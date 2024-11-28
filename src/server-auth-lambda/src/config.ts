@@ -24,7 +24,11 @@ export const CONFIG = {
     firmSelection: {
       searchInput:
         'input[role="combobox"][placeholder="Search for a company or firm"]',
+      inviteSearchInput: 'input[id="idsTxtField1"]',
       listItem: 'li[role="none"]',
+      inviteListItem:
+        'button[class="account-btn accountpicker-account-btn-quickbooks"]',
+      inviteFirmAcceptButton: 'button[id="account-picker-continue-btn"]',
     },
     companySelection: {
       searchInput: 'input[role="combobox"][placeholder="Search for a client"]',

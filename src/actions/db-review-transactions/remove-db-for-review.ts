@@ -11,13 +11,13 @@ import {
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-import type { ForReviewTransaction, QueryResult } from '@/types/index';
+import type { RawForReviewTransaction, QueryResult } from '@/types/index';
 
 // Removes a 'For Review' transaction from the database after it is saved to User QuickBooks Transactions.
 // Takes:  A Raw 'For Review' transaction object
 // Returns: A Query Result object for removing the 'For Review' transaction from the database.
 export async function removeSelectedForReviewTransaction(
-  savedTransaction: ForReviewTransaction
+  savedTransaction: RawForReviewTransaction
 ): Promise<QueryResult> {
   try {
     // Get the session and extract the Company realm Id.

@@ -1,4 +1,4 @@
-import { syntheticAuth } from './synthetic-login';
+import { syntheticAuth, syntheticAccept } from './synthetic-login';
 import type { APIGatewayProxyEvent } from 'aws-lambda';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
@@ -10,7 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       };
     }
 
-    const { realmId, firmName } =
+    const { realmId, firmName, inviteLink, inviteType } =
       typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
 
     if (!realmId) {
@@ -20,12 +20,21 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       };
     }
 
-    const tokenData = await syntheticAuth(realmId, firmName || null);
+    if (inviteLink === '') {
+      const tokenData = await syntheticAuth(realmId, firmName || null);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(tokenData),
-    };
+      return {
+        statusCode: 200,
+        body: JSON.stringify(tokenData),
+      };
+    } else {
+      await syntheticAccept(inviteLink, inviteType);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ result: '' }),
+      };
+    }
   } catch (error) {
     console.error('Error:', error);
     return {

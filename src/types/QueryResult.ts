@@ -6,10 +6,10 @@
 export type QueryResult = {
   // 'Success' or 'Error';
   result: string;
-  // A message that indicates the result of the query.
+  // A message that indicates the Result of the Query.
   // Primarily for error logging.
   message: string;
-  // Any details related to the result of the query.
+  // Any details related to the Result of the Query.
   // Should only be logged internally.
   detail: string;
 };

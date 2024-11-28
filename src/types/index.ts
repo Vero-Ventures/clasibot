@@ -15,8 +15,8 @@ export type { CompanyInfo } from './CompanyInfo';
 export type { ErrorResponse } from './ErrorResponse';
 
 export type {
-  ForReviewTransaction,
-  UpdatedForReviewTransaction,
+  RawForReviewTransaction,
+  ClassifiedRawForReviewTransaction,
   FormattedForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from './ForReviewTransaction';

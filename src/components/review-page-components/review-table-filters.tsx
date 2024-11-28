@@ -67,6 +67,7 @@ export function ReviewTableFilters({
             <DatePicker date={endDate} setDate={changeEndDate} />
           </div>
         </div>
+
         <div className="mx-auto mt-6 flex w-11/12 items-center justify-evenly md:mt-6 md:w-1/2">
           <div className="w-full max-w-64 px-4 md:max-w-48">
             <DropdownMenu>
@@ -112,6 +113,7 @@ export function ReviewTableFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+
           <div className="w-full max-w-64 px-4 md:max-w-48">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

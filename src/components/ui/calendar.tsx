@@ -3,11 +3,8 @@ import { cn } from '@/lib/utils';
 import { DayPicker } from 'react-day-picker';
 import type { ComponentProps } from 'react';
 
-// Export the Calendar component props.
 export type CalendarProps = ComponentProps<typeof DayPicker>;
 
-// Define the Calendar component which takes classnames, classnames -
-// - a value determining whether show outside days (default true), and props.
 function Calendar({
   className,
   classNames,
@@ -15,11 +12,9 @@ function Calendar({
   ...props
 }: CalendarProps) {
   return (
-    // Return the DayPicker component with the showOutsideDays prop,
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
-      // Define the classnames for the DayPicker internal components.
       classNames={{
         months: 'flex flex-col p-2',
         nav: 'flex w-full',
@@ -34,14 +29,11 @@ function Calendar({
         outside: 'pointer-events-none text-gray-400',
         ...classNames,
       }}
-      // Add any additional passed props to the end of the DayPicker component.
       {...props}
     />
   );
 }
 
-// Define the display name of the Calendar component.
 Calendar.displayName = 'Calendar';
 
-// Export the Calendar component.
 export { Calendar };

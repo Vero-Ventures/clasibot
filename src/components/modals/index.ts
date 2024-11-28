@@ -8,10 +8,7 @@ export {
   DeactivateErrorModal,
 } from './deactivate-company-modals';
 
-export {
-  ManualClassifyProgessModal,
-  ManualClassifyCompleteModal,
-} from './manual-classify-modals';
+export { ClassifyProgessModal, ClassifyCompleteModal } from './classify-modals';
 
 export { SBKConfirmationModal } from './sbk-confirmation-modal';
 

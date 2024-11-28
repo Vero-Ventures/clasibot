@@ -10,14 +10,17 @@ export const Spinner = () => {
         id="SpinnerCircle1"
         className={`${circleCommonClasses} animate-bounce`}
         style={{ animationDelay: '0s', animationDuration: '1s' }}></div>
+
       <div
         id="SpinnerCircle2"
         className={`${circleCommonClasses} animate-bounce`}
         style={{ animationDelay: '0.1s', animationDuration: '1s' }}></div>
+
       <div
         id="SpinnerCircle3"
         className={`${circleCommonClasses} animate-bounce`}
         style={{ animationDelay: '0.2s', animationDuration: '1s' }}></div>
+
       <div
         id="SpinnerCircle4"
         className={`${circleCommonClasses} animate-bounce`}

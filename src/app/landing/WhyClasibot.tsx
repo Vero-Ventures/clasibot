@@ -43,29 +43,8 @@ export const WhyClasibot = () => {
               </span>
               <span className="text-base">
                 QuickBooks Online integration allows seamlessly review of your
-                newest transactions. Our weekly updates keep us up to date with
-                no import process needed.
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2 translate-y-1.5 text-green-500">
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </span>
-              <span className="text-base">
-                New transactions are automatically classified during weekly
-                updates. Your transactions will be classified and ready for
-                review whenever you are.
+                newest transactions. Our system checks for new transactions on
+                every review for the most up to date classifications.
               </span>
             </li>
             <li className="flex items-start">

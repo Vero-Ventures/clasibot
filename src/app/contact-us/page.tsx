@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
-import { sendContactEmail } from '@/actions/contact';
+import { sendContactEmail } from '@/actions/send-contact-email';
 
 import { Button } from '@/components/ui/button';
 import {

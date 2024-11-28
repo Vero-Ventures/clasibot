@@ -3,6 +3,7 @@
  * Used in determining the Tax Codes and Categories.
  */
 
+// Basic Classification value that contains key values for both Classification types.
 export type Classification = {
   // Either 'category' or 'tax code'
   type: string;
@@ -12,12 +13,13 @@ export type Classification = {
   name: string;
 };
 
+// Classification for a 'For Review' transaction that defines the Classification method.
 export type ClassifiedElement = {
   // Either 'category' or 'tax code'
   type: string;
   //  QuickBooks internal Id.
   id: string;
-  // The name of the Category.
+  // The name of the Classification.
   name: string;
   // The method of Classification:
   // 'Matching', 'Database', or 'LLM'
@@ -25,7 +27,7 @@ export type ClassifiedElement = {
 };
 
 /**
- * Defines the format of the Categorized result object.
+ * Defines the format of the Classified result object.
  * Contains multiple Classifications that may apply to a 'For Review' transaction.
  * Defines connection to the 'For Review' transaction with the Transaction Id.
  */

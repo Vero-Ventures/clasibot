@@ -1,30 +1,29 @@
-import { addAccountingFirmConnection } from '@/actions/backend-actions/database-functions/index';
+import { addAccountingFirmConnection } from '@/actions/connection-functions/index';
+
+import { syntheticLogin } from '@/actions/synthetic-login';
 
 export async function POST(request: Request) {
   try {
-    // Get the Authorization header from the request.
-    const authorizationHeader = request.headers.get('Authorization');
+    // Get request body that contains the email monitor auth code and email data.
+    const body = await request.json();
+
+    // Check for body value that authenticates email monitor requests.
+    const monitorAuth = body.monitorAuth;
+
+    // Extract the Username, Company name, and invite URL from the request body.
+    const firmName: string = body.firmName;
+    const userName: string = body.userName;
+    const invite_link: string = body.inviteLink;
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
-    if (
-      !authorizationHeader ||
-      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
-    ) {
+    if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
-        'Error Adding Accounting Firm Connection: Missing Or Invalid Authorization Header.'
+        'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
       );
       return new Response('Missing Or Invalid Authorization Header', {
         status: 401,
       });
     }
-
-    // Get request body that contains the Firm name and User name.
-    const body = await request.json();
-
-    // Extract the Firm name and User name from the request body.
-    const firmName: string = body.firmName;
-    const userName: string = body.userName;
-    const _invite_link: string = body.inviteLink;
 
     // Check if valid Firm name and User name were passed.
     // Log error responses for the missing values.
@@ -43,6 +42,9 @@ export async function POST(request: Request) {
     if (!firmName || !userName) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
+
+    // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
+    syntheticLogin(process.env.BACKEND_REALM_ID!, null, invite_link, 'firm');
 
     // Call handler for accounting Firm connection emails.
     await addAccountingFirmConnection(firmName, userName);

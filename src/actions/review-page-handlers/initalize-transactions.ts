@@ -2,7 +2,7 @@
 
 import type {
   ClassifiedElement,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/index';
 
@@ -13,8 +13,8 @@ import type {
 // Returns: The record of selected Classifications as well as the list of unique Account names.
 export async function initalizeLoadedTransactions(
   loadedTransactions: (
-    | ForReviewTransaction
     | ClassifiedForReviewTransaction
+    | RawForReviewTransaction
   )[][]
 ): Promise<{
   categoryRecord: Record<string, string>;

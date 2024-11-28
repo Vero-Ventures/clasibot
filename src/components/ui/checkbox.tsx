@@ -5,12 +5,10 @@ import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ComponentPropsWithoutRef, ElementRef } from 'react';
 
-// Define the checkbox component and its display name.
 const Checkbox = forwardRef<
   ElementRef<typeof Root>,
   ComponentPropsWithoutRef<typeof Root>
 >(({ className, ...props }, ref) => (
-  // Define the checkbox root component with the classnames and props.
   <Root
     ref={ref}
     className={cn(
@@ -18,7 +16,6 @@ const Checkbox = forwardRef<
       className
     )}
     {...props}>
-    {/* Define the checkbox indicator component. */}
     <Indicator className={cn('flex items-center justify-center text-current')}>
       <Check className="h-4 w-4" />
     </Indicator>
@@ -27,5 +24,4 @@ const Checkbox = forwardRef<
 
 Checkbox.displayName = Root.displayName;
 
-// Export the checkbox component
 export { Checkbox };

@@ -3,43 +3,31 @@
 import {
   getAccounts,
   findFormattedPurchase,
-  checkFaultProperty,
-  createQueryResult,
   getTaxCodes,
 } from './index';
 
-import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+import { checkFaultProperty, createQueryResult } from '@/actions/helpers/index';
+
+import { getQBObject } from '@/actions/quickbooks/qb-client';
 
 import type {
   Account,
   ErrorResponse,
-  LoginTokens,
   QueryResult,
   TaxCode,
   Transaction,
 } from '@/types/index';
 
 // Get all past saved Transaction from the QuickBooks API.
-// Takes: Optional values for a start date, end date, synthetic Login Tokens and Company realm Id.
+// Takes: Optional values for a start date and end date.
 // Returns: An array of objects starting with a Query Result, then containing Transaction objects.
 export async function getSavedTransactions(
   startDate = '',
-  endDate = '',
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
+  endDate = ''
 ): Promise<string> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a success tracking value and the format of QuickBooks and error response objects.
     let success = true;
@@ -152,7 +140,7 @@ export async function getSavedTransactions(
     // Check if Transaction rows were found and that the Query Result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {
       // Call helper method to check and format response data into Transactions.
-      checkAndFormatTransactions(responseRows, results, loginTokens, companyId);
+      checkAndFormatTransactions(responseRows, results);
     }
 
     // Return the formatted results as a JSON string.
@@ -183,7 +171,6 @@ export async function getSavedTransactions(
 
 // Formats the response rows into Transactions.
 // Takes: The QuickBooks response rows and a results array.
-//    May also take synthetic Login Tokens and Company realm Id for backend calls.
 // Returns: A results array containing a Query Result in the first index and the formatted Transaction objects.
 async function checkAndFormatTransactions(
   rows: {
@@ -193,12 +180,10 @@ async function checkAndFormatTransactions(
     }[];
     Summary: string;
   }[],
-  results: (QueryResult | Transaction)[],
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
+  results: (QueryResult | Transaction)[]
 ) {
   // Call list of expense Accounts to check the Transaction Classifications against.
-  const accounts = await getAccounts('Expense', loginTokens, companyId);
+  const accounts = await getAccounts('Expense');
   const accountResults = JSON.parse(accounts);
 
   // Check the Account fetch Query Result to see if it resulted in an error.
@@ -253,15 +238,11 @@ async function checkAndFormatTransactions(
           // Search for the Purchase related to the Transaction to get the Tax Code.
           // Pass synthetic Login Tokens and Company realm Id in case backend call is needed.
           const transactionPurchase = await findFormattedPurchase(
-            String(row.ColData[idRow].id),
-            loginTokens,
-            companyId
+            String(row.ColData[idRow].id)
           );
 
           // Get the User Tax Codes and parse it to a Query Result and an array of Tax Code objects.
-          const userTaxCodes = JSON.parse(
-            await getTaxCodes(loginTokens, companyId)
-          );
+          const userTaxCodes = JSON.parse(await getTaxCodes());
 
           // Check if either the Purchase or Tax Code fetches resulted in an error Query Result.
           if (

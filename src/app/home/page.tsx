@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 import { checkSubscription } from '@/actions/stripe';
 
-import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { checkCompanyConnection } from '@/actions/connection-functions/index';
 
 import { SBKConfirmationModal } from '@/components/modals/index';
 
@@ -51,7 +51,6 @@ export default async function Page() {
     process.env.APP_CONFIG === 'production'
   ) {
     // Only perform check if in production mode.
-    console.log(`${companyHasSBK.result}: ${companyHasSBK.message}`);
     return <SBKConfirmationModal />;
   } else {
     // Otherwise, show the review page.

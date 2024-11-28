@@ -1,27 +1,22 @@
-import { addCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { addCompanyConnection } from '@/actions/connection-functions/index';
+
+import { syntheticLogin } from '@/actions/synthetic-login';
 
 export async function POST(request: Request) {
   try {
-    console.log(request.headers.get('Authorization'))
-
     // Get request body that contains the email monitor auth code and email data.
     const body = await request.json();
 
-    const monitorAuth = body.monitorAuth
+    // Check for body value that authenticates email monitor requests.
+    const monitorAuth = body.monitorAuth;
 
     // Extract the Username, Company name, and invite URL from the request body.
     const userName: string = body.userName;
     const companyName: string = body.companyName;
-    const _invite_link: string = body.inviteLink;
-
-    console.log('Body');
-    console.log(body);
+    const invite_link: string = body.inviteLink;
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
-    if (
-      !monitorAuth ||
-      monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH
-    ) {
+    if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
         'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
       );
@@ -49,7 +44,10 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call handler for Company accountant invite emails.
+    // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
+    syntheticLogin(process.env.BACKEND_REALM_ID!, null, invite_link, 'company');
+
+    // Call handler to update Company connection.
     await addCompanyConnection(userName, companyName);
 
     // Return a success response.

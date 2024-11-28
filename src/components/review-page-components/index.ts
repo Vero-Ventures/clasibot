@@ -2,8 +2,6 @@
  * Define the exports for the review page / table element TSX files in a single file.
  */
 
-export { BackendClassifyErrorNotice } from './backend-classify-error-notice';
-
 export { ReviewColumns } from './columns';
 
 export { ReviewTableDisplay } from './review-table-display';

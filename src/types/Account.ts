@@ -1,5 +1,5 @@
 /**
- * A formatted version of the Account data returned from the QuickBooks API.
+ * A formatted version of the Account object returned from the QuickBooks API.
  */
 
 export type Account = {

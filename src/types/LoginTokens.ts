@@ -1,12 +1,12 @@
 /**
- * Defines a dictionary for the 4 tokens returned from the synthetic login process.
+ * Defines a dictionary for the tokens returned from the Synthetic Login process.
  */
 
 export type LoginTokens = {
-  // QBO Ticket and Auth Id tokens are pulled from response header cookies.
-  qboTicket: string;
+  // Authorization value from network traffic extracted during Synthetic Login.
+  intuitApiKey: string;
+  // Cookies extracted during Synthetic Login
+  ticket: string;
+  agentId: string;
   authId: string;
-  // Access and refresh token are pulled from Session after login.
-  accessToken: string;
-  refreshToken: string;
 };

@@ -13,14 +13,14 @@ import {
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-import { checkConfidenceValue } from '@/actions/check-confidence-value';
+import { checkConfidenceValue } from '@/actions/helpers/index';
 
 import { getAccounts, getTaxCodes } from '@/actions/quickbooks/index';
 
 import type {
   Account,
   ClassifiedElement,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
   QueryResult,
   TaxCode,
@@ -30,7 +30,7 @@ import type {
 // Returns: An array of Sub-arrays in the format [ClassifiedForReviewTransaction, ForReviewTransaction]
 export async function getDatabaseTransactions(): Promise<{
   queryResult: QueryResult;
-  transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][];
+  transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][];
 }> {
   try {
     // Get the current session to extract the Company realm Id.
@@ -39,7 +39,7 @@ export async function getDatabaseTransactions(): Promise<{
     // Create an array to store the Classified and Raw 'For Review' transactions.
     const classifiedTransactions: (
       | ClassifiedForReviewTransaction
-      | ForReviewTransaction
+      | RawForReviewTransaction
     )[][] = [];
 
     // Get the the Expense and Transaction Accounts from the User.
@@ -105,7 +105,7 @@ export async function getDatabaseTransactions(): Promise<{
       for (const forReviewTransaction of classifiedForReviewTransactions) {
         // Extract the data from the DB 'For Review' transaction to create the raw 'For Review' transaction format.
         // The raw format is needed for writing to the QuickBooks database in the saving process later.
-        const rawTransaction: ForReviewTransaction = {
+        const rawTransaction: RawForReviewTransaction = {
           id: forReviewTransaction.id,
           olbTxnId: forReviewTransaction.reviewTransactionId,
           qboAccountId: forReviewTransaction.accountId,
@@ -126,6 +126,7 @@ export async function getDatabaseTransactions(): Promise<{
             forReviewTransaction,
             expenseAccountsResult
           );
+
         const transactionTaxCodes: ClassifiedElement[] =
           await getTransactionTaxCodes(forReviewTransaction, taxCodesResponse);
 

@@ -25,32 +25,24 @@ import type {
   ComponentPropsWithoutRef,
 } from 'react';
 
-// Define the dropdown menu component.
 const DropdownMenu = Root;
 
-// Define the dropdown menu trigger component.
 const DropdownMenuTrigger = Trigger;
 
-// Define the dropdown menu group component.
 const DropdownMenuGroup = Group;
 
-// Define the dropdown menu portal component.
 const DropdownMenuPortal = Portal;
 
-// Define the dropdown menu sub component.
 const DropdownMenuSub = Sub;
 
-// Define the dropdown menu radio group component.
 const DropdownMenuRadioGroup = RadioGroup;
 
-// Define the dropdown menu sub trigger component and its display name.
 const DropdownMenuSubTrigger = forwardRef<
   ElementRef<typeof SubTrigger>,
   ComponentPropsWithoutRef<typeof SubTrigger> & {
     inset?: boolean;
   }
 >(({ className, inset, children, ...props }, ref) => (
-  // Define using the className, inset value, child elements, props, and and a ref value.
   <SubTrigger
     ref={ref}
     className={cn(
@@ -66,12 +58,10 @@ const DropdownMenuSubTrigger = forwardRef<
 
 DropdownMenuSubTrigger.displayName = SubTrigger.displayName;
 
-// Define the dropdown submenu content component and its display name.
 const DropdownMenuSubContent = forwardRef<
   ElementRef<typeof SubContent>,
   ComponentPropsWithoutRef<typeof SubContent>
 >(({ className, ...props }, ref) => (
-  // Define the dropdown submenu content component with the classnames, props, and a ref value.
   <SubContent
     ref={ref}
     className={cn(
@@ -84,12 +74,10 @@ const DropdownMenuSubContent = forwardRef<
 
 DropdownMenuSubContent.displayName = SubContent.displayName;
 
-// Define the dropdown menu content component and its display name.
 const DropdownMenuContent = forwardRef<
   ElementRef<typeof Content>,
   ComponentPropsWithoutRef<typeof Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
-  // Define the dropdown menu content component with the classnames, side offset (default = 4), props, and a ref value.
   <Portal>
     <Content
       ref={ref}
@@ -105,7 +93,6 @@ const DropdownMenuContent = forwardRef<
 
 DropdownMenuContent.displayName = Content.displayName;
 
-// Define the dropdown menu item component and its display name.
 const DropdownMenuItem = forwardRef<
   ElementRef<typeof Item>,
   ComponentPropsWithoutRef<typeof Item> & {
@@ -113,7 +100,6 @@ const DropdownMenuItem = forwardRef<
   }
 >(({ className, inset, ...props }, ref) => (
   <Item
-    // Define the dropdown menu item component with the classnames, inset value, props, and a ref value.
     ref={ref}
     className={cn(
       'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-slate-100 focus:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-800 dark:focus:text-slate-50',
@@ -126,12 +112,10 @@ const DropdownMenuItem = forwardRef<
 
 DropdownMenuItem.displayName = Item.displayName;
 
-// Define the dropdown menu checkbox item component and its display name.
 const DropdownMenuCheckboxItem = forwardRef<
   ElementRef<typeof CheckboxItem>,
   ComponentPropsWithoutRef<typeof CheckboxItem>
 >(({ className, children, checked, ...props }, ref) => (
-  // Define the dropdown menu checkbox item component with the classnames, children, a checked value, props, and a ref value.
   <CheckboxItem
     ref={ref}
     className={cn(
@@ -151,13 +135,11 @@ const DropdownMenuCheckboxItem = forwardRef<
 
 DropdownMenuCheckboxItem.displayName = CheckboxItem.displayName;
 
-// Define the dropdown menu radio item component and its display name.
 const DropdownMenuRadioItem = forwardRef<
   ElementRef<typeof RadioItem>,
   ComponentPropsWithoutRef<typeof RadioItem>
 >(({ className, children, ...props }, ref) => (
   <RadioItem
-    // Define the dropdown menu radio item component with the classnames, children, props, and a ref value.
     ref={ref}
     className={cn(
       'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-slate-100 focus:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-800 dark:focus:text-slate-50',
@@ -175,14 +157,12 @@ const DropdownMenuRadioItem = forwardRef<
 
 DropdownMenuRadioItem.displayName = RadioItem.displayName;
 
-// Define the dropdown menu label component and its display name.
 const DropdownMenuLabel = forwardRef<
   ElementRef<typeof Label>,
   ComponentPropsWithoutRef<typeof Label> & {
     inset?: boolean;
   }
 >(({ className, inset, ...props }, ref) => (
-  // Define the dropdown menu label component with the classnames, inset value, props, and a ref value.
   <Label
     ref={ref}
     className={cn(
@@ -196,12 +176,10 @@ const DropdownMenuLabel = forwardRef<
 
 DropdownMenuLabel.displayName = Label.displayName;
 
-// Define the dropdown menu separator component and its display name.
 const DropdownMenuSeparator = forwardRef<
   ElementRef<typeof Separator>,
   ComponentPropsWithoutRef<typeof Separator>
 >(({ className, ...props }, ref) => (
-  // Define the dropdown menu separator component with the classnames, props, and a ref value.
   <Separator
     ref={ref}
     className={cn('-mx-1 my-1 h-px bg-slate-100 dark:bg-slate-800', className)}
@@ -211,7 +189,6 @@ const DropdownMenuSeparator = forwardRef<
 
 DropdownMenuSeparator.displayName = Separator.displayName;
 
-// Define the dropdown menu shortcut component and its display name.
 const DropdownMenuShortcut = ({
   className,
   ...props
@@ -226,7 +203,6 @@ const DropdownMenuShortcut = ({
 
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut';
 
-// Export the dropdown menu components.
 export {
   DropdownMenu,
   DropdownMenuTrigger,

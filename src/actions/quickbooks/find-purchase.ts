@@ -1,31 +1,18 @@
 'use server';
 
-import { checkFaultProperty, createQueryResult } from './index';
+import { checkFaultProperty, createQueryResult } from '@/actions/helpers/index';
 
-import { getQBObject, getQBObjectWithSession } from '@/actions/qb-client';
+import { getQBObject } from '@/actions/quickbooks/qb-client';
 
-import type { ErrorResponse, LoginTokens, Purchase } from '@/types/index';
+import type { ErrorResponse, Purchase } from '@/types/index';
 
 // Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.
 // Takes: The Id of the Purchase to find from QuickBooks
 //    May also take synthetic Login Tokens and Company realm Id for backend calls.
-export async function findFormattedPurchase(
-  id: string,
-  loginTokens: LoginTokens | null = null,
-  companyId: string | null = null
-): Promise<Purchase> {
+export async function findFormattedPurchase(id: string): Promise<Purchase> {
   try {
     // Define the variable used to make the qbo calls.
-    let qbo;
-
-    // Check if synthetic Login Tokens and Company realm Id were passed to login through backend.
-    if (loginTokens && companyId) {
-      // If tokens were passed, preform backend login process.
-      qbo = await getQBObjectWithSession(loginTokens, companyId);
-    } else {
-      // Otherwise, preform the regular frontend login.
-      qbo = await getQBObject();
-    }
+    const qbo = await getQBObject();
 
     // Define a success tracking value and the format of QuickBooks and error response objects.
     let success = true;

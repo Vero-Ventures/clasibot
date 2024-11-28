@@ -20,7 +20,7 @@ import {
 } from '@/components/review-page-components/index';
 
 import type {
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/index';
 
@@ -43,7 +43,7 @@ export function ReviewTable({
 }: Readonly<{
   accountNames: string[];
   classifiedTransactions: (
-    | ForReviewTransaction
+    | RawForReviewTransaction
     | ClassifiedForReviewTransaction
   )[][];
   selectedCategories: Record<string, string>;
@@ -53,7 +53,7 @@ export function ReviewTable({
   isSaving: boolean;
   handleSave: (
     selectedRows: Record<number, boolean>,
-    transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
+    transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
 }>) {
   // Create states to track and set the start and end values for the date filter.
