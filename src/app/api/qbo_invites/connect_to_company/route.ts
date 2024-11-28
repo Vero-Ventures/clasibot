@@ -2,6 +2,8 @@ import { addCompanyConnection } from '@/actions/backend-actions/database-functio
 
 export async function POST(request: Request) {
   try {
+    console.log('Connect To Company')
+
     // Get the Authorization header from the request.
     const authorizationHeader = request.headers.get('Authorization');
 
@@ -20,6 +22,9 @@ export async function POST(request: Request) {
 
     // Get request body that contains the User email name and connected Company name.
     const body = await request.json();
+
+    console.log('Connect Body')
+    console.log(body)
 
     // Extract the Username, Company name, and invite URL from the request body.
     const userName: string = body.userName;
