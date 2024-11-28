@@ -3,10 +3,10 @@
 import {
   getAccounts,
   findFormattedPurchase,
-  checkFaultProperty,
-  createQueryResult,
   getTaxCodes,
 } from './index';
+
+import { checkFaultProperty, createQueryResult } from '@/actions/helpers/index';
 
 import { getQBObject } from '@/actions/quickbooks/qb-client';
 

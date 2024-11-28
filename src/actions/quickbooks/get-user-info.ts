@@ -7,7 +7,7 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-import { checkFaultProperty } from './index';
+import { checkFaultProperty } from '@/actions/helpers/index';
 
 import { getQBObject } from '@/actions/quickbooks/qb-client';
 
