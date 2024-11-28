@@ -44,7 +44,16 @@ export async function POST(request: Request) {
     }
 
     // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
-    syntheticLogin(process.env.BACKEND_REALM_ID!, null, invite_link, 'firm');
+    const [loginResult, _loginTokens] = await syntheticLogin(
+      process.env.BACKEND_REALM_ID!,
+      null,
+      invite_link,
+      'company'
+    );
+
+    if (loginResult.result === 'Error') {
+      return new Response('Invite Accept Process Failed', { status: 400 });
+    }
 
     // Call handler for accounting Firm connection emails.
     await addAccountingFirmConnection(firmName, userName);

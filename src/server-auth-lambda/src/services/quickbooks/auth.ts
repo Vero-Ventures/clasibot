@@ -6,7 +6,11 @@ import { CONFIG } from '../../config';
 import type { QBOTokenData } from '../../types';
 
 export class QuickBooksAuth {
-  private authCookies: { qboTicket: string; authId: string } | null = null;
+  private authCookies: {
+    qboTicket: string;
+    authId: string;
+    agentId: string;
+  } | null = null;
 
   constructor(
     private context: BrowserContext,
@@ -69,18 +73,10 @@ export class QuickBooksAuth {
       });
       await this.page.evaluate(() => window.stop());
 
-      const cookies = await this.context.cookies();
-      const sessionCookie = cookies.find(
-        (c) => c.name === '__Secure-next-auth.session-token'
-      );
-      if (!sessionCookie) {
-        throw new Error('Session token cookie not found after redirect');
-      }
-
       return {
         qboTicket: this.authCookies.qboTicket,
         authId: this.authCookies.authId,
-        nextSessionToken: sessionCookie.value,
+        agentId: this.authCookies.agentId,
       };
     } catch (error) {
       console.error('Authentication failed:', error);
@@ -168,22 +164,26 @@ export class QuickBooksAuth {
   private async extractAuthCookies(): Promise<{
     qboTicket: string;
     authId: string;
+    agentId: string;
   } | null> {
     const cookies = await this.context.cookies();
     const qbnTkt = cookies.find((cookie) => cookie.name === 'qbn.tkt');
     const qbnAuthId = cookies.find((cookie) => cookie.name === 'qbn.authid');
+    const qbnAgentId = cookies.find((cookie) => cookie.name === 'qbn.agentId');
 
-    if (!qbnTkt || !qbnAuthId) {
+    if (!qbnTkt || !qbnAuthId || !qbnAgentId) {
       console.error('Required auth cookies not found');
       return null;
     }
 
     console.log(
-      `Found auth cookies - tkt: ${qbnTkt.value}, authId: ${qbnAuthId.value}`
+      `Found auth cookies - tkt: ${qbnTkt.value}, authId: ${qbnAuthId.value} agentId: ${qbnAgentId.value}`
     );
+
     return {
       qboTicket: qbnTkt.value,
       authId: qbnAuthId.value,
+      agentId: qbnAgentId.value,
     };
   }
 }

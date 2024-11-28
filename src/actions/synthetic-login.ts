@@ -1,7 +1,6 @@
 'use server';
 
 import type { LoginTokens, QueryResult } from '@/types/index';
-import { decode } from 'next-auth/jwt';
 
 // Logs into the backend Clasibot app as the synthetic bookkeeper and selects a specific Company.
 // Takes: The Company realm Id and (possibly null) and the Firm name of a Company.
@@ -17,7 +16,7 @@ export async function syntheticLogin(
   // Synthetic Login Logic (Makes use of Company realm Id and Firm name in Company selection.)
   // Initialize the result and token objects
   const loginResult: QueryResult = {
-    result: 'error',
+    result: 'Error',
     message: 'Failed to complete auth process',
     detail: '',
   };
@@ -54,25 +53,13 @@ export async function syntheticLogin(
       return [loginResult, loginTokens];
     }
 
-    const secret = process.env.NEXTAUTH_SECRET;
-    if (!secret) {
-      throw new Error('NEXTAUTH_SECRET environment variable is not defined');
+    if (inviteType === '') {
+      loginTokens.ticket = data.qboTicket;
+      loginTokens.authId = data.authId;
+      loginTokens.agentId = data.authId;
     }
 
-    // Decode the session token to extract access and refresh tokens
-    const decodedToken = await decode({
-      token: data.nextSessionToken,
-      secret,
-    });
-
-    if (!decodedToken) {
-      throw new Error('Failed to decode session token');
-    }
-
-    loginTokens.ticket = data.qboTicket;
-    loginTokens.authId = data.authId;
-
-    loginResult.result = 'success';
+    loginResult.result = 'Success';
     loginResult.message = 'Successfully completed synthetic auth process';
   } catch (error) {
     loginResult.detail =

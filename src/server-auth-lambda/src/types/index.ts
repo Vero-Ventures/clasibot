@@ -1,7 +1,7 @@
 export type QBOTokenData = {
   qboTicket: string;
   authId: string;
-  nextSessionToken: string;
+  agentId: string;
 };
 
 export type QBOFirmClientResponse = {

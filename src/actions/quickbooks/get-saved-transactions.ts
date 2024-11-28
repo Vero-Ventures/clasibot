@@ -1,10 +1,6 @@
 'use server';
 
-import {
-  getAccounts,
-  findFormattedPurchase,
-  getTaxCodes,
-} from './index';
+import { getAccounts, findFormattedPurchase, getTaxCodes } from './index';
 
 import { checkFaultProperty, createQueryResult } from '@/actions/helpers/index';
 
