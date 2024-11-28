@@ -8,15 +8,13 @@ export { getAccounts } from './get-accounts';
 
 export { getSavedTransactions } from './get-saved-transactions';
 
-export { checkFaultProperty, createQueryResult } from './query-helpers';
-
-export { getTaxCodes, getTaxCodesByLocation } from './taxes';
+export { getTaxCodes, getTaxCodesByLocation } from './get-tax-codes';
 
 export {
   getCompanyName,
   getCompanyIndustry,
   getCompanyLocation,
-} from './user-info';
+} from './get-user-info';
 
 export { addForReview } from './for-review/add-for-review';
 
