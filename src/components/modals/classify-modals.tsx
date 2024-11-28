@@ -3,21 +3,19 @@ import { ProgressBar } from '@/components/loading-elements/index';
 import { Button } from '@/components/ui/button';
 import { CheckIcon, XIcon } from 'lucide-react';
 
-interface ManualClassifyProgressProps {
+interface ClassifyProgressProps {
   displayState: boolean;
   progressMessage: string;
   completedChunks: number;
   maxChunks: number;
 }
 
-export const ManualClassifyProgessModal: React.FC<
-  ManualClassifyProgressProps
-> = ({
+export const ClassifyProgessModal: React.FC<ClassifyProgressProps> = ({
   displayState,
   progressMessage,
   completedChunks,
   maxChunks,
-}: ManualClassifyProgressProps) => {
+}: ClassifyProgressProps) => {
   return (
     <>
       {
@@ -43,20 +41,18 @@ export const ManualClassifyProgessModal: React.FC<
   );
 };
 
-interface ManualClassifyCompleteProps {
+interface ClassifyCompleteProps {
   displayState: boolean;
   setDisplayState: (newState: boolean) => void;
-  manualClassificationState: string;
+  classificationState: string;
 }
 
-export const ManualClassifyCompleteModal: React.FC<
-  ManualClassifyCompleteProps
-> = ({
+export const ClassifyCompleteModal: React.FC<ClassifyCompleteProps> = ({
   displayState,
   setDisplayState,
-  manualClassificationState,
-}: ManualClassifyCompleteProps) => {
-  manualClassificationState = 'Error';
+  classificationState,
+}: ClassifyCompleteProps) => {
+  classificationState = 'Error';
   return (
     <>
       {
@@ -67,10 +63,10 @@ export const ManualClassifyCompleteModal: React.FC<
               <div className="flex items-center justify-center space-x-4 p-2 text-center">
                 <h2
                   id="ResultTitle"
-                  className={`text-center text-3xl font-bold ${manualClassificationState === 'Error' ? 'text-red-500' : 'text-green-500'} `}>
-                  {manualClassificationState === 'Error' ? 'Error' : 'Complete'}
+                  className={`text-center text-3xl font-bold ${classificationState === 'Error' ? 'text-red-500' : 'text-green-500'} `}>
+                  {classificationState === 'Error' ? 'Error' : 'Complete'}
                 </h2>
-                {manualClassificationState === 'Error' ? (
+                {classificationState === 'Error' ? (
                   <div className="flex h-10 w-10 animate-failureAnimation items-center justify-center rounded-full bg-red-500 sm:h-12 sm:w-12">
                     <XIcon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                   </div>
@@ -83,7 +79,7 @@ export const ManualClassifyCompleteModal: React.FC<
               <p
                 id="ResultMessage"
                 className="mb-4 mt-2 text-center text-lg font-semibold text-gray-800 sm:mb-6 sm:mt-4">
-                {manualClassificationState === 'Error'
+                {classificationState === 'Error'
                   ? 'An error occured during the classification process. Please try again later or contact us if the issue persists.'
                   : 'Your transactions are classified and ready for review.'}
               </p>
@@ -93,7 +89,7 @@ export const ManualClassifyCompleteModal: React.FC<
                 id="CloseButton"
                 className="text-md transform space-x-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:text-lg"
                 onClick={() => setDisplayState(false)}>
-                {manualClassificationState === 'Error' ? 'Close' : 'Continue'}
+                {classificationState === 'Error' ? 'Close' : 'Continue'}
               </Button>
             </div>
           </div>

@@ -28,9 +28,9 @@ import type {
   Transaction,
 } from '@/types/index';
 
-// Starts the manual Classificaion process by getting session and Company info used in synthetic login.
+// Starts the Classificaion process by getting session and Company info used in synthetic login.
 // Returns: Boolean value for success / failure, the Company realm Id and the potential Firm name.
-export async function startManualClassification(): Promise<{
+export async function startClassification(): Promise<{
   result: boolean;
   realmId: string;
   firmName: string | null;
@@ -74,9 +74,9 @@ export async function startManualClassification(): Promise<{
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Manual Classification : ' + error.message);
+      console.log('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Manual Classification');
+      console.log('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, realmId: '', firmName: null };
@@ -106,9 +106,9 @@ export async function preformSyntheticLogin(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Manual Classification : ' + error.message);
+      console.log('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Manual Classification');
+      console.log('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, loginTokens: null };
@@ -157,9 +157,9 @@ export async function fetchTransactionsToClassify(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Manual Classification : ' + error.message);
+      console.log('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Manual Classification');
+      console.log('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, transactions: [] };
@@ -189,9 +189,9 @@ export async function fetchPredictionContext(): Promise<{
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Manual Classification : ' + error.message);
+      console.log('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Manual Classification');
+      console.log('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, transactions: [], companyInfo: null };
@@ -251,9 +251,9 @@ export async function startTransactionClassification(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Manual Classification : ' + error.message);
+      console.log('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Manual Classification');
+      console.log('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, classificationResults: {} };
@@ -305,31 +305,31 @@ export async function createClassifiedTransactions(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Manual Classification : ' + error.message);
+      console.log('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Manual Classification');
+      console.log('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, transactions: [] };
   }
 }
 
-// Determines three key values for tracking the progress of the manual Classification for the user.
+// Determines three key values for tracking the progress of the Classification for the user.
 // Sets the values based on a passed state string to indicate the current process.
 // Takes: One of the defined state strings to be checked.
 // Returns: The frontend message and the number of finished processes.
-export async function changeManualClassificationState(
-  manualClassificationState: string
+export async function changeClassificationState(
+  classificationState: string
 ): Promise<{ displayValue: string; currentProcess: number }> {
-  // Define the base states of the manual Classification process values.
+  // Define the base states of the Classification process values.
   let processMessage = '';
   let completedProcesses = 0;
 
   // Use switch case to define behavior based on the state string.
   // States are always set prior to the related action being started.
-  switch (manualClassificationState) {
-    // State handlers define when to show and hide the manual Classification state modal.
-    // Also defines what is currently being done in the manual Classification and the number of completed steps.
+  switch (classificationState) {
+    // State handlers define when to show and hide the Classification state modal.
+    // Also defines what is currently being done in the Classification and the number of completed steps.
     case 'Start Classify':
       // Defines the start of the process and shows the state tracker modal.
       processMessage = 'Starting classification process.';

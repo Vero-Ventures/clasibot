@@ -7,11 +7,11 @@ export { classifyCompany } from './classify-company';
 export { classifyTransactions } from './classify-transactions';
 
 export {
-  startManualClassification,
+  startClassification,
   preformSyntheticLogin,
   fetchTransactionsToClassify,
   fetchPredictionContext,
   startTransactionClassification,
   createClassifiedTransactions,
-  changeManualClassificationState,
-} from './manual-classify-helpers';
+  changeClassificationState,
+} from './classify-helpers';

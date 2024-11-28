@@ -1,5 +1,7 @@
 import { addCompanyConnection } from '@/actions/connection-functions/index';
 
+import { syntheticLogin } from '@/actions/synthetic-login';
+
 export async function POST(request: Request) {
   try {
     // Get request body that contains the email monitor auth code and email data.
@@ -11,7 +13,7 @@ export async function POST(request: Request) {
     // Extract the Username, Company name, and invite URL from the request body.
     const userName: string = body.userName;
     const companyName: string = body.companyName;
-    const _invite_link: string = body.inviteLink;
+    const invite_link: string = body.inviteLink;
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
@@ -42,7 +44,10 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call handler for Company accountant invite emails.
+    // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
+    syntheticLogin(process.env.BACKEND_REALM_ID!, null, invite_link, 'company');
+
+    // Call handler to update Company connection.
     await addCompanyConnection(userName, companyName);
 
     // Return a success response.

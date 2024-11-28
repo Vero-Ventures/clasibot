@@ -2,7 +2,6 @@
  * Define the exports for the QuickBooks API function action files in a single file.
  */
 
-
 export { findFormattedPurchase } from './find-purchase';
 
 export { getAccounts } from './get-accounts';

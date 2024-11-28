@@ -2,22 +2,22 @@
 
 import { useEffect, useState } from 'react';
 
-import { changeManualClassificationState } from '@/actions/classification/index';
+import { changeClassificationState } from '@/actions/classification/index';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 
 import {
-  handleStateForManualClassify,
   initalizeLoadedTransactions,
   saveSelectedTransactions,
+  updateClassifyStates,
 } from '@/actions/review-page-handlers/index';
 
 import { ReviewTable } from '@/components/review-page/review-table';
 
-import { ManualReviewButton } from '@/components/inputs/manual-review-button';
+import { ReviewButton } from '@/components/inputs/review-button';
 
 import {
-  ManualClassifyProgessModal,
-  ManualClassifyCompleteModal,
+  ClassifyProgessModal,
+  ClassifyCompleteModal,
   ErrorLoadingTransactionsModal,
   SaveClassifiedTransactionsModal,
 } from '@/components/modals/index';
@@ -58,24 +58,23 @@ export default function ReviewPage({
     loadForReviewTransactions();
   }, []);
 
-  // Create states to track the states of a Manual Classification process.
-  const [manualClassificationState, setManualClassificationState] =
-    useState<string>('');
-  const [openManualClassificationModal, setOpenManualClassificationModal] =
+  // Create states to track the states of a Classification process.
+  const [classificationState, setClassificationState] = useState<string>('');
+  const [openClassificationModal, setOpenClassificationModal] =
     useState<boolean>(false);
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
     useState<boolean>(false);
 
-  // Define the helper function to start the manual Classification process.
+  // Define the helper function to start the Classification process.
   // Also handles the intial and end state setting and displays a modal on completion.
-  function handleManualClassification() {
-    // Calls the handler method to await and set state with the manual Classification results.
+  function handleClassification() {
+    // Calls the handler method to await and set state with the Classification results.
     const handleCall = async () => {
-      const classificationResults = await handleStateForManualClassify(
-        setManualClassificationState
+      const classificationResults = await updateClassifyStates(
+        setClassificationState
       );
 
-      // Check if the manual Classification failed on loading Classified 'For Review' transactions.
+      // Check if the Classification failed on loading Classified 'For Review' transactions.
       if (classificationResults.loadFailure) {
         // If failure to load occurred, show the error loading modal.
         setErrorLoadingTransactions(true);
@@ -90,24 +89,21 @@ export default function ReviewPage({
     handleCall();
   }
 
-  // Create states used in the frontend display of the manual Classification state.
-  const [
-    manualClassificationModalMessage,
-    setManualClassificationModalMessage,
-  ] = useState<string>('');
+  // Create states used in the frontend display of the Classification state.
+  const [classificationModalMessage, setClassificationModalMessage] =
+    useState<string>('');
   const [numCompletedProcesses, setNumCompletedProcesses] = useState<number>(0);
-  const numManualClassificationStates = 8;
+  const numClassificationStates = 8;
 
-  // Defines a handler for changes to the manual Classification state.
+  // Defines a handler for changes to the Classification state.
   useEffect(() => {
-    const handleManualClassificationChangeCall = async () => {
+    const handleClassificationChangeCall = async () => {
       // Calls the handler method to await the new state values.
-      const processStates = await changeManualClassificationState(
-        manualClassificationState
-      );
+      const processStates =
+        await changeClassificationState(classificationState);
 
-      // Set states with the manual Classification process values.
-      setManualClassificationModalMessage(processStates.displayValue);
+      // Set states with the Classification process values.
+      setClassificationModalMessage(processStates.displayValue);
       setNumCompletedProcesses(processStates.currentProcess);
 
       // For end states (-1 / 8), update states to close the modal and reset the progess value.
@@ -116,13 +112,13 @@ export default function ReviewPage({
         processStates.currentProcess === 8
       ) {
         setTimeout(() => {
-          setOpenManualClassificationModal(false);
+          setOpenClassificationModal(false);
           setNumCompletedProcesses(0);
         }, 2000);
       }
     };
-    handleManualClassificationChangeCall();
-  }, [manualClassificationState]);
+    handleClassificationChangeCall();
+  }, [classificationState]);
 
   // Create states to track the selected Classifications for each row.
   const [selectedCategories, setSelectedCategories] = useState<
@@ -203,9 +199,8 @@ export default function ReviewPage({
         <span className="text-blue-700">{companyInfo.name}</span>
       </h1>
 
-      {/* Manual Review Button Section */}
       <div className="mx-auto mb-6 w-fit rounded-lg border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 p-6 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-        <ManualReviewButton handleManualReview={handleManualClassification} />
+        <ReviewButton handleReview={handleClassification} />
       </div>
 
       <ReviewTable
@@ -234,19 +229,19 @@ export default function ReviewPage({
       }
 
       {
-        <ManualClassifyProgessModal
-          displayState={openManualClassificationModal}
-          progressMessage={manualClassificationModalMessage}
+        <ClassifyProgessModal
+          displayState={openClassificationModal}
+          progressMessage={classificationModalMessage}
           completedChunks={numCompletedProcesses}
-          maxChunks={numManualClassificationStates}
+          maxChunks={numClassificationStates}
         />
       }
 
       {
-        <ManualClassifyCompleteModal
+        <ClassifyCompleteModal
           displayState={openFinishedClassificationModal}
           setDisplayState={setOpenFinishedClassificationModal}
-          manualClassificationState={manualClassificationState}
+          classificationState={classificationState}
         />
       }
     </>

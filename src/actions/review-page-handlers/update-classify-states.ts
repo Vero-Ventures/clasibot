@@ -38,9 +38,7 @@ export async function updateClassifyStates(
   setClassificationState('Start Classify');
 
   // Call function to iterate through manual Classification process and update state accordingly.
-  const success = await handleBackendProcessStates(
-    setClassificationState
-  );
+  const success = await handleBackendProcessStates(setClassificationState);
 
   // Check if the Classification process was successful.
   if (success) {
