@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
 
 import type {
   ClassifiedElement,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
   QueryResult,
 } from '@/types/index';
@@ -19,7 +19,7 @@ import type {
 // Takes: An array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a Company realm Id.
 // Returns: A Query Result object for adding the 'For Review' transactions to the database.
 export async function addForReviewTransactions(
-  transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][],
+  transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][],
   realmId: string
 ): Promise<QueryResult> {
   try {
@@ -33,7 +33,7 @@ export async function addForReviewTransactions(
         getClassificationType(classifiedTransaction);
 
       // Extract and define the type of the Raw 'For Review' transaction which contains data for writing to QuickBooks.
-      const rawTransaction = transaction[0] as ForReviewTransaction;
+      const rawTransaction = transaction[0] as RawForReviewTransaction;
 
       // Check if the current 'For Review' transaction has already been saved into the database.
       // Compares the Company realm Id and 'For Review' transaction Id which is a unique combination (Transaction Id's are unique by Company).

@@ -6,8 +6,8 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
 
-// Define the Confidence Bar component to be displayed as a cell in the review page.
-// Takes: The text to display in the hover card component and a Confidence value between 0 and 3.
+// Define the Confidence Bar component to be displayed as a cell in the Review Page.
+// Takes: The text to display in the Hover Card component and a Confidence Value between 0 and 3.
 export function ConfidenceBar({
   confidence,
   hoverText,
@@ -20,7 +20,7 @@ export function ConfidenceBar({
   let segmentTwoFormatting = 'z-0 w-8 h-6 m-1 bg-gray-200';
   let segmentThreeFormatting = 'z-0 w-8 h-6 m-1 mr-2 bg-gray-200 rounded-r-lg';
 
-  // Update the number of highlighted segments based on the Confidence value.
+  // Update the number of highlighted segments based on the Confidence Value.
   if (confidence >= 1) {
     segmentOneFormatting = 'w-8 h-6 m-1 ml-2 bg-green-400 rounded-l-lg';
   }

@@ -18,7 +18,7 @@ export async function Navbar() {
   // Check the user's Subscription status and set the connected state with the result.
   const connectionResult = await checkCompanyConnection();
 
-  // Get get the server session and extract the user name and email.
+  // Get get the server session and extract the user email.
   const session = await getServerSession(options);
   const userEmail = session?.user?.email ?? '';
 
@@ -51,6 +51,7 @@ export async function Navbar() {
             </div>
           </Link>
         </div>
+
         <div className={`w-full ${session?.user ? '' : 'hidden'} `}>
           <NavBarSesssionButtons
             connectionStatus={connectionResult.connected}
@@ -65,11 +66,13 @@ export async function Navbar() {
             className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-2 text-center text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-36 lg:w-48">
             How It Works
           </a>
+
           <a
             href="#why-clasibot"
             className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-2 text-center text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-36 lg:w-48">
             Why Use Clasibot
           </a>
+
           <a
             href="#intro-video"
             className="w-56 transform rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-2 text-center text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:bg-opacity-60 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:w-32 sm:w-40 md:w-36 lg:w-48">

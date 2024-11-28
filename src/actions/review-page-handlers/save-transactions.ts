@@ -9,7 +9,7 @@ import { addForReview, getAccounts } from '@/actions/quickbooks/index';
 import type {
   Account,
   ClassifiedElement,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
   Transaction,
 } from '@/types/index';
@@ -23,7 +23,7 @@ import type {
 // Returns: A boolean value indicating save falure used to set the error message on the frontend.
 export async function saveSelectedTransactions(
   selectedRows: Record<number, boolean>,
-  transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][],
+  transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][],
   selectedCategories: Record<string, string>,
   selectedTaxCodes: Record<string, string>
 ): Promise<boolean> {
@@ -61,7 +61,7 @@ export async function saveSelectedTransactions(
         ][0] as ClassifiedForReviewTransaction;
         const rawTransaction = transactions[
           numericalIndex
-        ][1] as ForReviewTransaction;
+        ][1] as RawForReviewTransaction;
 
         // Get the Id of the Transaction and use that to get its selected Classifications.
         const transactionId = classifiedTransaction.transaction_Id;

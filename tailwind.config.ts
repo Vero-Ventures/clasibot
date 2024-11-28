@@ -9,7 +9,6 @@ const config = {
   ],
   prefix: '',
   theme: {
-    // Define screen sizes for tailwind rules.
     screens: {
       mb: '480px',
       sm: '640px',
@@ -17,7 +16,6 @@ const config = {
       lg: '1024px',
       xl: '1280px',
     },
-    // Define rules for spacing, animation, and other tailwind features.
     container: {
       center: true,
       padding: '2rem',
@@ -29,29 +27,12 @@ const config = {
         tableCatConfidence: '922px',
         tableTaxCodes: '1010px',
         tableTaxConfidence: '1225px',
-        '2xl': '1400px',
       },
     },
     extend: {
-      // Define custom spacing for tailwind elements.
-      spacing: {
-        120: '460px',
-      },
       // Add custom border sizing for 3 px width.
       borderWidth: {
         '3': '3px',
-      },
-      // Custom padding sizes based on percentages of container.
-      padding: {
-        p20: '20%',
-        p15: '15%',
-        p10: '10%',
-        p5: '5%',
-      },
-      // Defines a custom sizing based on the bug report button.
-      // Defines the screen size the button should expand from an icon to include text.
-      screens: {
-        popout: '600px',
       },
       colors: {
         border: 'hsl(var(--border))',

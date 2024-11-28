@@ -1,16 +1,16 @@
 /**
  * Defines several key objects needed for using ' For Review' transactions.
- *    The key data retruned from the Query.
- *    The full data object needed in a saving a Classified 'For Review' transaction.
- *    A formatted version of the object with the values needed in Classification.
- *    A version of the formatted object that also contains the potential Classifications.
+ *    An object defining the important data retruned from the Query.
+ *    The full data object needed to saving the Classified 'For Review' transactions.
+ *    A formatted version of the 'For Review' transaction object with the values needed in Classification.
+ *    A version of the formatted 'For Review' transaction object that also contains the potential Classifications.
  */
 
 import type { ClassifiedElement } from './Classification';
 
 // Defines the object recived when calling a 'For Review' transaction from the API.
 // Contains the values needed later when saving the 'For Review' transaction to the user Account.
-export type ForReviewTransaction = {
+export type RawForReviewTransaction = {
   id: string;
   olbTxnId: string;
   qboAccountId: string;
@@ -25,8 +25,8 @@ export type ForReviewTransaction = {
   };
 };
 
-// Defines the full object needed to save a 'For Review' transaction through an API call.
-export type UpdatedForReviewTransaction = {
+// Defines the full object needed to save a Classified 'For Review' transaction through an API call.
+export type ClassifiedRawForReviewTransaction = {
   txnList: {
     olbTxns: [
       {
@@ -68,7 +68,7 @@ export type FormattedForReviewTransaction = {
   date: string;
   // The Account that the 'For Review' transaction was pulled from.
   account: string;
-  // The name of the above Account, used as part of table filtering on frontend review page.
+  // The name of the Account, used for table filtering on the review page.
   accountName: string;
   // Total value of the Purchase as a negative decimal.
   amount: number;
@@ -84,16 +84,16 @@ export type ClassifiedForReviewTransaction = {
   date: string;
   // The Account that the 'For Review' transaction was pulled from.
   account: string;
-  // The name of the above Account, used as part of table filtering on frontend review page.
+  // The name of the Account, used for table filtering on the review page.
   accountName: string;
   // Total value of the Purchase as a negative decimal.
   amount: number;
   // An (potentially empty) array of possible Categories for the 'For Review' transaction to be Classified as.
   categories: ClassifiedElement[] | null;
-  // A value between 0 and 3 that defines how the Category Classifications were made.
+  // A value between 0 and 3 that defines the confidence level of how the Category Classifications were made.
   categoryConfidence: number;
   // An (potentially empty) array of possible Tax Codes for the 'For Review' transaction to be Classified as.
   taxCodes: ClassifiedElement[] | null;
-  // A value between 0 and 3 that defines how the Tax Code Classifications were made.
+  // A value between 0 and 3 that defines the confidence level of how the Tax Code Classifications were made.
   taxCodeConfidence: number;
 };

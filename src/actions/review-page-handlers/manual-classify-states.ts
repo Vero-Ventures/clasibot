@@ -18,7 +18,7 @@ import {
 
 import type {
   ClassifiedForReviewTransaction,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   FormattedForReviewTransaction,
 } from '@/types/index';
 
@@ -30,8 +30,8 @@ export async function handleStateForManualClassify(
 ): Promise<{
   loadFailure: boolean;
   loadedTransactions: (
-    | ForReviewTransaction
     | ClassifiedForReviewTransaction
+    | RawForReviewTransaction
   )[][];
 }> {
   // Set the Classification process to be in progress and update the state.
@@ -135,10 +135,7 @@ async function handleBackendProcessStates(
   );
 
   // Get the Transactions and Comapany Info used in LLM predictions.
-  const contextResult = await fetchPredictionContext(
-    loginResult.loginTokens!,
-    startResult.realmId
-  );
+  const contextResult = await fetchPredictionContext();
 
   // Update state on successfully getting prediction context, otherwise return a failure value.
   if (contextResult.result) {

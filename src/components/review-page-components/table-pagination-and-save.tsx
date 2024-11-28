@@ -3,7 +3,7 @@
 import type { Table } from '@tanstack/react-table';
 
 import type {
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/index';
 
@@ -25,7 +25,7 @@ export function TablePaginationAndSave({
   isSaving: boolean;
   handleSave: (
     selectedRows: Record<number, boolean>,
-    transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
+    transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
 }>) {
   return (

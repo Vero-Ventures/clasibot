@@ -7,8 +7,8 @@ import { eq } from 'drizzle-orm';
 import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
 
 import type {
-  ForReviewTransaction,
-  UpdatedForReviewTransaction,
+  RawForReviewTransaction,
+  ClassifiedRawForReviewTransaction,
   QueryResult,
 } from '@/types/index';
 
@@ -16,7 +16,7 @@ import type {
 // Takes: A Raw 'For Review' transaction, and the Id's of its Classificaions.
 // Returns: A Query Result object for updating the User QuickBooks Transactions.
 export async function addForReview(
-  forReviewTransaction: ForReviewTransaction,
+  forReviewTransaction: RawForReviewTransaction,
   categoryId: string,
   taxCodeId: string,
   realmId: string
@@ -111,12 +111,12 @@ export async function addForReview(
 // Takes the 'For Review' transaction data, as well as the Id's for the Classificaions.
 // Returns: An formatted 'Update For Review' transaction object.
 function createForReviewUpdateObject(
-  responseData: ForReviewTransaction,
+  responseData: RawForReviewTransaction,
   categoryId: string,
   taxCodeId: string
-): UpdatedForReviewTransaction {
+): ClassifiedRawForReviewTransaction {
   // Create and API call body using the passed QBO entity Id's and the values in the 'For Review' transaction object.
-  const newUpdateObject: UpdatedForReviewTransaction = {
+  const newUpdateObject: ClassifiedRawForReviewTransaction = {
     txnList: {
       olbTxns: [
         {

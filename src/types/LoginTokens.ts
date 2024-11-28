@@ -3,8 +3,9 @@
  */
 
 export type LoginTokens = {
-  // Authorization key and cookies that are pulled from headers during Synthetic Login.
+  // Authorization value from network traffic extracted during Synthetic Login.
   intuitApiKey: string;
+  // Cookies extracted during Synthetic Login
   ticket: string;
   agentId: string;
   authId: string;

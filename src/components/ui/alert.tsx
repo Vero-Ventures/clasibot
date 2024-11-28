@@ -3,7 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import type { HTMLAttributes } from 'react';
 
-// Define the alert variants: default and destructive.
 const alertVariants = cva(
   'relative w-full rounded-lg border border-slate-200 p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-slate-950 dark:border-slate-800 dark:[&>svg]:text-slate-50',
   {
@@ -20,7 +19,6 @@ const alertVariants = cva(
   }
 );
 
-// Define the alert component and its display name.
 const Alert = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
@@ -35,7 +33,6 @@ const Alert = forwardRef<
 
 Alert.displayName = 'Alert';
 
-// Define the alert title and its display name.
 const AlertTitle = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLHeadingElement>
@@ -49,7 +46,6 @@ const AlertTitle = forwardRef<
 
 AlertTitle.displayName = 'AlertTitle';
 
-// Define the alert description and its display name.
 const AlertDescription = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLParagraphElement>
@@ -63,5 +59,4 @@ const AlertDescription = forwardRef<
 
 AlertDescription.displayName = 'AlertDescription';
 
-// Export the alert component, alert title, and alert description.
 export { Alert, AlertTitle, AlertDescription };

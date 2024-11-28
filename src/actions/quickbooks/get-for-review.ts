@@ -1,7 +1,7 @@
 'use server';
 
 import type {
-  ForReviewTransaction,
+  RawForReviewTransaction,
   FormattedForReviewTransaction,
   LoginTokens,
   QueryResult,
@@ -44,7 +44,7 @@ export async function getForReview(
 
     // Get the response 'For Review' transaction data and format it.
     const responseData: {
-      items: [ForReviewTransaction];
+      items: [RawForReviewTransaction];
     } = await response.json();
     const formattedResponse = formatForReviewTransaction(responseData.items);
     // Return the formatted 'For Review' transactions as the detail of a success Query Result.
@@ -77,8 +77,8 @@ export async function getForReview(
 // Take: An array of Raw 'For Review' transactions data.
 // Returns: An array of Sub-arrays for the results in the format: [FormattedForReviewTransaction, ForReviewTransaction].
 function formatForReviewTransaction(
-  responseData: ForReviewTransaction[]
-): (FormattedForReviewTransaction | ForReviewTransaction)[][] {
+  responseData: RawForReviewTransaction[]
+): (FormattedForReviewTransaction | RawForReviewTransaction)[][] {
   const transactions = [];
   for (const transactionItem of responseData) {
     // Only record expense Transactions (check that money left the Account).

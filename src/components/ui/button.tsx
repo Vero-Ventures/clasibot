@@ -4,7 +4,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import type { ButtonHTMLAttributes } from 'react';
 
-// Define the button variants: default, destructive, outline, secondary, ghost, and link.
 const buttonVariants = cva(
   'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300',
   {
@@ -36,7 +35,6 @@ const buttonVariants = cva(
   }
 );
 
-// Define the button props interface.
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
@@ -53,7 +51,6 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-// Define the button component and its display name.
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     let Comp;
@@ -74,5 +71,4 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = 'Button';
 
-// Export the button component and its variants.
 export { Button, buttonVariants };

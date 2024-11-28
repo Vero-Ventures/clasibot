@@ -19,9 +19,8 @@ export function NavBarSesssionButtons({
   connectionStatus: boolean;
   stripeUrl: string;
 }>) {
-  // Define state to show additional NavBar options on smaller screens.
+  // Define state to show NavBar options correctly on smaller screens.
   const [showOptions, setShowOptions] = useState(false);
-
   const [showMobileDeactivateModal, setShowMobileDeactivateModal] =
     useState(false);
 
@@ -48,7 +47,6 @@ export function NavBarSesssionButtons({
         <div
           className={`w-[272px] justify-center rounded-lg bg-gray-600 px-8 ${showOptions ? 'h-[212px] scale-y-100' : 'h-0 scale-y-0'} origin-top overflow-hidden transition-all duration-500 ease-out`}>
           <div className="mt-4 flex flex-col gap-y-6">
-            {/* Each button is animated with a staggered delay */}
             <div
               className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
               <ManageSubscriptionButton stripePortalUrl={stripeUrl} />
@@ -71,6 +69,7 @@ export function NavBarSesssionButtons({
           </div>
         </div>
       </div>
+
       <div className={`${showMobileDeactivateModal ? 'md:hidden' : 'hidden'}`}>
         <MobileDeactivationButton
           setShowModal={setShowMobileDeactivateModal}
@@ -82,9 +81,11 @@ export function NavBarSesssionButtons({
           setErrorModalOpen={setErrorModalOpen}
         />
       </div>
+
       <div className={`hidden md:mt-6 md:block`}>
         <ManageSubscriptionButton stripePortalUrl={stripeUrl} />
       </div>
+
       <div className={`hidden pl-4 pr-2 md:mt-6 md:block`}>
         <DeactivationButton
           setShowModal={setShowMobileDeactivateModal}
@@ -97,9 +98,11 @@ export function NavBarSesssionButtons({
           setErrorModalOpen={setErrorModalOpen}
         />
       </div>
+
       <div className={`hidden pl-2 pr-4 md:mt-6 md:block`}>
         <ChangeCompanyButton />
       </div>
+
       <div
         className={` ${showOptions ? 'mt-4' : 'mt-2'} w-fit mb:mt-7 md:mt-6`}>
         <SignOutButton />

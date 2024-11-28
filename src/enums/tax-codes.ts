@@ -4,7 +4,7 @@
 
 // Defines standardized 2-letter shorthand strings for Canadian locations (provinces and territories).
 //    Should be used by QuickBooks for in Canada Company locations.
-//    Used to determine which Tax Codes will apply to a Company's Transactions.
+//    Used to identify the Tax Codes that may apply to a Company's Transactions.
 export enum Locations {
   AB = 'AB',
   BC = 'BC',
@@ -22,7 +22,6 @@ export enum Locations {
 }
 
 // Defines a list of the current Tax Codes for Canada.
-//    Links variable style names to full Tax Code names
 //    QuickBooks Tax Codes use the same names for frontend and backend.
 export enum TaxCodes {
   Exempt = 'Exempt',
@@ -44,6 +43,7 @@ export enum TaxCodes {
   HstPE = 'HST PE 2016',
 }
 
+// Use record to allow easy identification of relevant Tax Codes by location.
 export const LocationsToTaxCodes: Record<string, string[]> = {
   Canada: [
     TaxCodes.Exempt,

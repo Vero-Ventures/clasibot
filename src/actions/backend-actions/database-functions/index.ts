@@ -5,11 +5,6 @@
 export { addForReviewTransactions } from './add-db-for-review';
 
 export {
-  checkBackendClassifyError,
-  dismissBackendClassifyError,
-} from './backend-classify-failure';
-
-export {
   addCompanyConnection,
   addAccountingFirmConnection,
   addAccountingFirmCompanies,

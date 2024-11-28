@@ -22,7 +22,7 @@ import type {
   ClassifiedElement,
   ClassifiedForReviewTransaction,
   CompanyInfo,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   FormattedForReviewTransaction,
   LoginTokens,
   Transaction,
@@ -123,7 +123,7 @@ export async function fetchTransactionsToClassify(
   realmId: string
 ): Promise<{
   result: boolean;
-  transactions: (ForReviewTransaction | FormattedForReviewTransaction)[][];
+  transactions: (FormattedForReviewTransaction | RawForReviewTransaction)[][];
 }> {
   try {
     // Get the 'For Review' transactions for all Accounts related to the current Company.
@@ -145,8 +145,8 @@ export async function fetchTransactionsToClassify(
     // Define the fetched 'For Review' transactions as an array of Sub-arrays.
     // Interal array format is [FormattedForReviewTransaction, ForReviewTransaction] for each 'For Review' transaction.
     const forReviewTransactions = forReviewResult as (
-      | ForReviewTransaction
       | FormattedForReviewTransaction
+      | RawForReviewTransaction
     )[][];
 
     // Return the defined array of 'For Review' transactions.
@@ -266,7 +266,7 @@ export async function startTransactionClassification(
 export async function createClassifiedTransactions(
   forReviewTransactions: (
     | FormattedForReviewTransaction
-    | ForReviewTransaction
+    | RawForReviewTransaction
   )[][],
   validClassificationResults: Record<
     string,
@@ -277,7 +277,7 @@ export async function createClassifiedTransactions(
   >
 ): Promise<{
   result: boolean;
-  transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][];
+  transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][];
 }> {
   try {
     // Use Classification results to create Classified 'For Review' transaction objects.

@@ -4,18 +4,14 @@ import { Root, Trigger, Content } from '@radix-ui/react-hover-card';
 import { cn } from '@/lib/utils';
 import type { ElementRef, ComponentPropsWithoutRef } from 'react';
 
-// Define the hover card component.
 const HoverCard = Root;
 
-// Define the hover card trigger component.
 const HoverCardTrigger = Trigger;
 
-// Define the hover card content component and its display name.
 const HoverCardContent = forwardRef<
   ElementRef<typeof Content>,
   ComponentPropsWithoutRef<typeof Content>
 >(({ className, align = 'center', sideOffset = 4, ...props }, ref) => (
-  // Define the hover card component with classnames, align (default = center), side offset (default = 4), props, and a ref value.
   <Content
     ref={ref}
     align={align}
@@ -30,5 +26,4 @@ const HoverCardContent = forwardRef<
 
 HoverCardContent.displayName = Content.displayName;
 
-// Export the hover card, hover card trigger, and hover card content components.
 export { HoverCard, HoverCardTrigger, HoverCardContent };

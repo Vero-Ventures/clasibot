@@ -25,7 +25,7 @@ import {
 
 import type {
   CompanyInfo,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
 } from '@/types/index';
 
@@ -50,7 +50,7 @@ export default function ReviewPage({
 
   // Create states to track the loaded Transactions and their assosiated Accounts.
   const [loadedTransactions, setLoadedTransactions] = useState<
-    (ForReviewTransaction | ClassifiedForReviewTransaction)[][]
+    (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   >([]);
   const [accounts, setAccounts] = useState<string[]>([]);
   const [errorLoadingTransactions, setErrorLoadingTransactions] =
@@ -182,7 +182,7 @@ export default function ReviewPage({
   // Define a callback to handle saving the selected Classification of the selected Rows.
   async function handleSave(
     selectedRows: Record<number, boolean>,
-    transactions: (ClassifiedForReviewTransaction | ForReviewTransaction)[][]
+    transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) {
     // Set saving state to be true to lock review table actions.
     setIsSaving(true);

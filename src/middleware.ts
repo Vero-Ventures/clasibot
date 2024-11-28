@@ -5,7 +5,7 @@ import type { NextRequestWithAuth } from 'next-auth/middleware';
 import { siteConfig } from '@/site-config/site';
 
 export function middleware(request: NextRequest) {
-  // Define the current pathname and a callback url if one is present.
+  // Define the current pathname and check for a callback url.
   const pathname = request.nextUrl.pathname;
   const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
 
@@ -13,10 +13,11 @@ export function middleware(request: NextRequest) {
   const footerPaths = siteConfig.footerItems.map((link) => link.href);
 
   // Check the current path to see if it is for the landing page, home page, or one of the allowed paths.
+  // Landing and home page handle their own session based redirects.
   if (
-    footerPaths.includes(pathname) ||
     pathname === '/' ||
-    pathname === '/home'
+    pathname === '/home' ||
+    footerPaths.includes(pathname)
   ) {
     // Ignore the middleware functions and continue as normal.
     return NextResponse.next();

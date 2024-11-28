@@ -13,22 +13,25 @@ export const Footer = () => {
             className="text-center text-lg font-semibold hover:underline md:w-[150px]">
             Connection Instructions
           </Link>
+
           <Link
             key={'/contact-us'}
             href={'/contact-us'}
-            className="text-center text-lg font-semibold hover:underline md:w-[150px]">
+            className="mt-3 text-center text-lg font-semibold hover:underline md:w-[150px]">
             Contact Us
           </Link>
+
           <Link
             key={'/terms-of-service'}
             href={'/terms-of-service'}
-            className="text-center hover:underline md:w-[150px]">
+            className="mt-3 text-center hover:underline md:w-[150px]">
             Terms of Service
           </Link>
+
           <Link
             key={'/privacy-policy'}
             href={'/privacy-policy'}
-            className="text-center hover:underline md:w-[150px]">
+            className="mt-3 text-center hover:underline md:w-[150px]">
             Privacy Policy
           </Link>
         </div>

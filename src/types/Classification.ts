@@ -3,6 +3,7 @@
  * Used in determining the Tax Codes and Categories.
  */
 
+// Basic Classification value that contains key values for both Classification types.
 export type Classification = {
   // Either 'category' or 'tax code'
   type: string;
@@ -12,6 +13,7 @@ export type Classification = {
   name: string;
 };
 
+// Classification for a 'For Review' transaction that defines the Classification method.
 export type ClassifiedElement = {
   // Either 'category' or 'tax code'
   type: string;

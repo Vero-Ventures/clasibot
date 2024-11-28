@@ -19,7 +19,7 @@ import type {
   Account,
   ClassifiedElement,
   CompanyInfo,
-  ForReviewTransaction,
+  RawForReviewTransaction,
   FormattedForReviewTransaction,
   ClassifiedForReviewTransaction,
   LoginTokens,
@@ -51,8 +51,8 @@ export async function classifyCompany(
     // Define the fetched 'For Review' transactions as an array of Sub-arrays.
     // Interal array format is [FormattedForReviewTransaction, ForReviewTransaction] for each 'For Review' transaction.
     const forReviewTransactions = forReviewResult as (
-      | ForReviewTransaction
       | FormattedForReviewTransaction
+      | RawForReviewTransaction
     )[][];
 
     // Get the saved Classified Transactions from the User to use as context for prediction.
@@ -153,7 +153,7 @@ export async function getForReviewTransactions(
   loginTokens: LoginTokens,
   companyId: string
 ): Promise<
-  (FormattedForReviewTransaction | ForReviewTransaction)[][] | QueryResult
+  (FormattedForReviewTransaction | RawForReviewTransaction)[][] | QueryResult
 > {
   try {
     // Get all Accounts that may contain 'For Review' transactions.
@@ -179,7 +179,7 @@ export async function getForReviewTransactions(
       // Define an array to contain the fetched 'For Review' transactions.
       let foundTransactions: (
         | FormattedForReviewTransaction
-        | ForReviewTransaction
+        | RawForReviewTransaction
       )[][] = [];
 
       // Iterate through the fetched Accounts that may contain 'For Review' transactions.
@@ -201,7 +201,7 @@ export async function getForReviewTransactions(
           // Add the newly found 'For Review' transactions to the array of all fetched 'For Review' transactions.
           const resultTransactions: (
             | FormattedForReviewTransaction
-            | ForReviewTransaction
+            | RawForReviewTransaction
           )[][] = JSON.parse(forReviewResults.detail);
           foundTransactions = foundTransactions.concat(resultTransactions);
         }
@@ -317,7 +317,7 @@ export async function getCompanyInfo(): Promise<CompanyInfo> {
 export async function createClassifiedForReviewTransactions(
   forReviewTransactions: (
     | FormattedForReviewTransaction
-    | ForReviewTransaction
+    | RawForReviewTransaction
   )[][],
   result: Record<
     string,
@@ -326,12 +326,12 @@ export async function createClassifiedForReviewTransactions(
       taxCode: ClassifiedElement[] | null;
     }
   >
-): Promise<(ClassifiedForReviewTransaction | ForReviewTransaction)[][]> {
+): Promise<(ClassifiedForReviewTransaction | RawForReviewTransaction)[][]> {
   try {
     // Create an array for Classified 'For Review' transactions.
     const newCategorizedTransactions: (
       | ClassifiedForReviewTransaction
-      | ForReviewTransaction
+      | RawForReviewTransaction
     )[][] = [];
 
     // Iterate through the passed 'For Review' transactions.
@@ -348,7 +348,7 @@ export async function createClassifiedForReviewTransactions(
       // Extract the 'For Review' transactions from the Sub-array and define their types.
       const formattedTransaction =
         transaction[0] as FormattedForReviewTransaction;
-      const fullTransaction = transaction[1] as ForReviewTransaction;
+      const fullTransaction = transaction[1] as RawForReviewTransaction;
 
       // Define inital null values for the Classifications and their confidence values.
       let categoryClassification = null;
