@@ -1,5 +1,8 @@
 'use server';
 
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
+
 import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -19,15 +22,26 @@ export async function addForReview(
   forReviewTransaction: RawForReviewTransaction,
   categoryId: string,
   taxCodeId: string,
-  realmId: string
 ): Promise<QueryResult> {
   try {
+    // Get the current session for the Company realm Id of the currently logged in Company.
+    const session = await getServerSession(options);
+
+    // If session or Company realm Id are not found, handle error logging, state update, and return a failure value.
+    if (!session?.realmId) {
+      return {
+        result: 'Error',
+        message: 'Unable to find Company realm Id from session.',
+        detail: 'Session or realm Id could not be found.',
+      };
+    }
+
     // Get the database Company object to check for a potential Firm name.
     // Needed during synthetic login if access to Company comes through an Firm.
     const currentCompany = await db
       .select()
       .from(Company)
-      .where(eq(Company.realmId, realmId));
+      .where(eq(Company.realmId, session.realmId));
 
     // If a database Company could not be found, create and return an error Query Result.
     if (!currentCompany[0]) {
@@ -37,7 +51,7 @@ export async function addForReview(
     // Call synthetic login with the Company realm Id and the potential Firm name.
     // Returns: A QueryResult and a synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
-      realmId,
+      session.realmId,
       currentCompany[0].firmName
     );
 
@@ -47,10 +61,10 @@ export async function addForReview(
     }
 
     // Define the Account Id for the call and the full endpoint to use.
-    const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/batchAcceptTransactions`;
+    const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${session.realmId}/olb/ng/batchAcceptTransactions`;
 
     // Define static Intuit API key value.
-    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, '
+    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, ';
 
     // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
     const body = createForReviewUpdateObject(
