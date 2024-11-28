@@ -53,6 +53,9 @@ export async function POST(request: Request) {
     );
 
     if (loginResult.result === 'Error') {
+      console.log('Invite Accept Error')
+      console.log(loginResult.message)
+      console.log(loginResult.detail)
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
