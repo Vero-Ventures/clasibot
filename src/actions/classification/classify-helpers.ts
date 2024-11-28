@@ -74,9 +74,9 @@ export async function startClassification(): Promise<{
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Classification : ' + error.message);
+      console.error('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Classification');
+      console.error('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, realmId: '', firmName: null };
@@ -106,9 +106,9 @@ export async function preformSyntheticLogin(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Classification : ' + error.message);
+      console.error('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Classification');
+      console.error('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, loginTokens: null };
@@ -157,9 +157,9 @@ export async function fetchTransactionsToClassify(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Classification : ' + error.message);
+      console.error('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Classification');
+      console.error('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, transactions: [] };
@@ -189,9 +189,9 @@ export async function fetchPredictionContext(): Promise<{
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Classification : ' + error.message);
+      console.error('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Classification');
+      console.error('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, transactions: [], companyInfo: null };
@@ -251,9 +251,9 @@ export async function startTransactionClassification(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Classification : ' + error.message);
+      console.error('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Classification');
+      console.error('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, classificationResults: {} };
@@ -305,9 +305,9 @@ export async function createClassifiedTransactions(
   } catch (error) {
     // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error During Classification : ' + error.message);
+      console.error('Error During Classification : ' + error.message);
     } else {
-      console.log('Unexpected Error During Classification');
+      console.error('Unexpected Error During Classification');
     }
     // Return failure result and values to the caller.
     return { result: false, transactions: [] };

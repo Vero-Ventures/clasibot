@@ -304,7 +304,7 @@ async function fetchValidTaxCodes(
       // Check the fetch for the Company Tax Codes was a success.
       if (userTaxCodes[0].result === 'Error') {
         // If an error occured fetching the Tax Codes, log the message and detail from the Query Result.
-        console.log(
+        console.error(
           'Error getting Tax Codes, Message: ' +
             userTaxCodes[0].message +
             ', Detail: ' +

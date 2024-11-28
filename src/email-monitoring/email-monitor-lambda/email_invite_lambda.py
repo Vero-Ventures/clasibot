@@ -160,7 +160,7 @@ def process_email_parsing(decoded_content: str, soup: BeautifulSoup, email_type:
         else:
             data["firmName"] = company_name
         data["userName"] = sender_name
-        data["_invite_link"] = invite_url
+        data["inviteLink"] = invite_url
     print("Data extracted: ", data)  # Log data extraction
     return data
 
@@ -208,7 +208,7 @@ def execute_post_request(data: dict, email_type: EmailType):
         url = ""
         print("Could not identify email type")
     headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
     }
     if not data or not url or not headers:
         return {
@@ -254,19 +254,3 @@ def lambda_handler(event, context):
     data = process_email_parsing(decoded_content, soup, email_type)
     return execute_post_request(data, email_type)
 
-
-# For testing locally
-def main():
-    with open("email-access-change", 'rb') as f:
-        email_content_bytes = f.read()
-        f.close()
-    decoded_content = decode_email(email_content_bytes)
-    soup = BeautifulSoup(decoded_content, "html.parser")
-    email_type = identify_email_type(soup)
-    data = process_email_parsing(decoded_content, soup, email_type)
-    result = execute_post_request(data, email_type)
-    return result
-
-
-if __name__ == '__main__':
-    main()

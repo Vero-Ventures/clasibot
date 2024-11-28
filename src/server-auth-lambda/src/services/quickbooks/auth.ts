@@ -103,7 +103,6 @@ export class QuickBooksAuth {
     inviteType: string
   ): Promise<void> {
     const browser = new BrowserHelper(this.page);
-
     await this.page.goto(inviteLink);
     await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
     await browser.waitAndFill(
