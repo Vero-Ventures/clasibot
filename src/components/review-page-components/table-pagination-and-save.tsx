@@ -19,8 +19,8 @@ export function TablePaginationAndSave({
   table: Table<ClassifiedForReviewTransaction>;
   rowSelection: Record<number, boolean>;
   categorizedTransactions: (
-    | ForReviewTransaction
     | ClassifiedForReviewTransaction
+    | RawForReviewTransaction
   )[][];
   isSaving: boolean;
   handleSave: (
