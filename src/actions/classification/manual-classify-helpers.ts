@@ -7,7 +7,7 @@ import { db } from '@/db/index';
 import { eq } from 'drizzle-orm';
 import { Company } from '@/db/schema';
 
-import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
+import { syntheticLogin } from '@/actions/synthetic-login';
 
 import { classifyTransactions } from './index';
 

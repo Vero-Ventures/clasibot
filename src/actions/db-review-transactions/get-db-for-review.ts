@@ -13,7 +13,7 @@ import {
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-import { checkConfidenceValue } from '@/actions/check-confidence-value';
+import { checkConfidenceValue } from '@/actions/helpers/index';
 
 import { getAccounts, getTaxCodes } from '@/actions/quickbooks/index';
 

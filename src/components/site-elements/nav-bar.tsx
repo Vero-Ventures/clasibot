@@ -6,7 +6,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { checkCompanyConnection } from '@/actions/connection-functions/index';
 
 import { siteConfig } from '@/site-config/site';
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { signOut } from 'next-auth/react';
 
-import { makeCompanyIncactive } from '@/actions/backend-actions/database-functions/index';
+import { makeCompanyIncactive } from '@/actions/connection-functions/index';
 
 import {
   DeactivateInfoModal,

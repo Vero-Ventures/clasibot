@@ -7,7 +7,7 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-import { syntheticLogin } from '@/actions/backend-actions/synthetic-login';
+import { syntheticLogin } from '@/actions/synthetic-login';
 
 import type {
   RawForReviewTransaction,

@@ -8,7 +8,7 @@ import {
   getTaxCodes,
 } from './index';
 
-import { getQBObject } from '@/actions/qb-client';
+import { getQBObject } from '@/actions/quickbooks/qb-client';
 
 import type {
   Account,

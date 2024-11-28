@@ -11,7 +11,7 @@ import {
 
 import { checkSubscription } from '@/actions/stripe';
 
-import { batchQueryLLM } from '@/actions/backend-actions/llm-prediction/index';
+import { batchQueryLLM } from '@/actions/llm-prediction/index';
 
 import {
   getAccounts,

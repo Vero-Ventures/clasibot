@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 import { MiniSpinner } from '@/components/loading-elements/index';
 
-import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { checkCompanyConnection } from '@/actions/connection-functions/index';
 
 export const CheckConnectionButton = () => {
   const router = useRouter();

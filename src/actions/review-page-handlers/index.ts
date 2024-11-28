@@ -4,6 +4,6 @@
 
 export { initalizeLoadedTransactions } from './initalize-transactions';
 
-export { handleStateForManualClassify } from './manual-classify-states';
-
 export { saveSelectedTransactions } from './save-transactions';
+
+export { updateClassifyStates } from './update-classify-states';

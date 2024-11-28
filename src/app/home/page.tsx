@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 import { checkSubscription } from '@/actions/stripe';
 
-import { checkCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { checkCompanyConnection } from '@/actions/connection-functions/index';
 
 import { SBKConfirmationModal } from '@/components/modals/index';
 

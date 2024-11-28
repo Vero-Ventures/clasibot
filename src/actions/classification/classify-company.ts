@@ -1,8 +1,8 @@
 'use server';
 
-import { checkConfidenceValue } from '@/actions/check-confidence-value';
+import { addForReviewTransactions } from '@/actions/db-review-transactions/index';
 
-import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
+import { checkConfidenceValue } from '@/actions/helpers/index';
 
 import {
   getAccounts,

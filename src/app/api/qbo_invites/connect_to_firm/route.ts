@@ -1,4 +1,4 @@
-import { addAccountingFirmConnection } from '@/actions/backend-actions/database-functions/index';
+import { addAccountingFirmConnection } from '@/actions/connection-functions/index';
 
 export async function POST(request: Request) {
   try {

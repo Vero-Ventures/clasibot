@@ -9,7 +9,7 @@ import { eq } from 'drizzle-orm';
 
 import { checkFaultProperty } from './index';
 
-import { getQBObject } from '@/actions/qb-client';
+import { getQBObject } from '@/actions/quickbooks/qb-client';
 
 // Get the Company name from the QuickBooks API.
 // Returns: The Company name as a string or 'Error: Name not found'

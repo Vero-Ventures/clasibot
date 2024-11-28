@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { changeManualClassificationState } from '@/actions/backend-actions/classification/index';
+import { changeManualClassificationState } from '@/actions/classification/index';
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 
 import {

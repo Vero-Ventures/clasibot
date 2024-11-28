@@ -5,7 +5,7 @@ import {
   removeAllForReviewTransactions,
 } from '@/actions/db-review-transactions/index';
 
-import { addForReviewTransactions } from '@/actions/backend-actions/database-functions/index';
+import { addForReviewTransactions } from '@/actions/db-review-transactions/index';
 
 import {
   preformSyntheticLogin,
@@ -14,7 +14,7 @@ import {
   fetchPredictionContext,
   startTransactionClassification,
   createClassifiedTransactions,
-} from '@/actions/backend-actions/classification/index';
+} from '@/actions/classification/index';
 
 import type {
   ClassifiedForReviewTransaction,
@@ -25,8 +25,8 @@ import type {
 // Starts the manual Classificaion process as well as running the Classified Transaction loading once it completes.
 // Takes: A state setter callback function to update the manual Classificaion state.
 // Returns: A boolean indicating failure to load and  an array of loaded Classified and Raw 'For Review' transactions.
-export async function handleStateForManualClassify(
-  setManualClassificationState: (newState: string) => void
+export async function updateClassifyStates(
+  setClassificationState: (newState: string) => void
 ): Promise<{
   loadFailure: boolean;
   loadedTransactions: (
@@ -35,17 +35,17 @@ export async function handleStateForManualClassify(
   )[][];
 }> {
   // Set the Classification process to be in progress and update the state.
-  setManualClassificationState('Start Classify');
+  setClassificationState('Start Classify');
 
   // Call function to iterate through manual Classification process and update state accordingly.
   const success = await handleBackendProcessStates(
-    setManualClassificationState
+    setClassificationState
   );
 
   // Check if the Classification process was successful.
   if (success) {
     // Update the state to indicate the Classification is finished.
-    setManualClassificationState('Load New Classified Transactions');
+    setClassificationState('Load New Classified Transactions');
 
     // Load the newly Classified 'For Review' transactions from the database.
     const loadResult = await getDatabaseTransactions();
@@ -53,7 +53,7 @@ export async function handleStateForManualClassify(
     // Check the loading Query Result for an error.
     if (loadResult.queryResult.result === 'Error') {
       // Update the manual Classification state to indicate an error.
-      setManualClassificationState('Error');
+      setClassificationState('Error');
 
       // Return a value indicating it failed to ensure the loading failure modal is shown.
       // Returned array is set to be empty on failure to load to ensure only valid data is ever shown.
@@ -63,7 +63,7 @@ export async function handleStateForManualClassify(
       };
     } else {
       // Update the manual Classification state to indicate manual Classification was successful.
-      setManualClassificationState('Classify Complete');
+      setClassificationState('Classify Complete');
 
       // Return a success loading result to ensure the completion modal is shown.
       // Also return the array of loaded Classified 'For Review' transactions.
@@ -74,7 +74,7 @@ export async function handleStateForManualClassify(
     }
   }
   // Update the manual Classification state to indicate an error.
-  setManualClassificationState('Error');
+  setClassificationState('Error');
   // Return load failure as false for Classification failure.
   // Classification completion modal will be shown with an error result based.
   // Returned array is set to be empty on failure to load to ensure only valid data is ever shown.

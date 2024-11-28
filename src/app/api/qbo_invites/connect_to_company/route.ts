@@ -1,4 +1,4 @@
-import { addCompanyConnection } from '@/actions/backend-actions/database-functions/index';
+import { addCompanyConnection } from '@/actions/connection-functions/index';
 
 export async function POST(request: Request) {
   try {
