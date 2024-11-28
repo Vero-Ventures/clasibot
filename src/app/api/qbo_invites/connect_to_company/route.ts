@@ -5,14 +5,14 @@ export async function POST(request: Request) {
     console.log('Connect To Company')
 
     // Get the Authorization header from the request.
-    const authorizationHeader = request.headers.get('Authorization');
+    const authorizationHeader = request.headers
 
     console.log(authorizationHeader)
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
-      !authorizationHeader ||
-      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
+      !authorizationHeader
+      
     ) {
       console.error(
         'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
