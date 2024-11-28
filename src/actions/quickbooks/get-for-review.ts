@@ -22,7 +22,7 @@ export async function getForReview(
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/getTransactions?accountId=${accountId}&sort=-amount&reviewState=PENDING&ignoreMatching=false`;
 
     // Define static Intuit API key value.
-    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, '
+    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, ';
 
     // Call the query endpoint while passing the required header cookies.
     const response = await fetch(endpoint, {

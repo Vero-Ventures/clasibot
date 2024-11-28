@@ -102,6 +102,37 @@ export class QuickBooksAuth {
     await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
   }
 
+  async inviteLoginAndAccept(
+    inviteLink: string,
+    inviteType: string
+  ): Promise<void> {
+    const browser = new BrowserHelper(this.page);
+
+    await this.page.goto(inviteLink);
+    await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
+    await browser.waitAndFill(
+      CONFIG.selectors.login.passwordInput,
+      CONFIG.quickbooks.password
+    );
+    await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
+    if (inviteType === 'company') {
+      const firmInput = await this.page.waitForSelector(
+        CONFIG.selectors.firmSelection.inviteSearchInput
+      );
+      await firmInput.click();
+      await firmInput.fill('Clasibot Synthetic Bookkeeper');
+
+      const options = this.page.locator(
+        CONFIG.selectors.firmSelection.inviteListItem
+      );
+      await options.first().waitFor({ state: 'visible' });
+      await options.first().click();
+      await browser.waitAndClick(
+        CONFIG.selectors.firmSelection.inviteFirmAcceptButton
+      );
+    }
+  }
+
   private async handleMFA(
     browser: BrowserHelper,
     emailService: EmailService

@@ -126,7 +126,7 @@ export async function saveSelectedTransactions(
           const addResult = await addForReview(
             rawTransaction,
             category.id,
-            taxCode.id,
+            taxCode.id
           );
 
           // If adding the new Transactions resulted in an error, throw the Query Result message as an error.

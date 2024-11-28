@@ -21,7 +21,7 @@ import type {
 export async function addForReview(
   forReviewTransaction: RawForReviewTransaction,
   categoryId: string,
-  taxCodeId: string,
+  taxCodeId: string
 ): Promise<QueryResult> {
   try {
     // Get the current session for the Company realm Id of the currently logged in Company.
