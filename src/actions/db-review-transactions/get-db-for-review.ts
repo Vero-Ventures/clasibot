@@ -126,6 +126,7 @@ export async function getDatabaseTransactions(): Promise<{
             forReviewTransaction,
             expenseAccountsResult
           );
+          
         const transactionTaxCodes: ClassifiedElement[] =
           await getTransactionTaxCodes(forReviewTransaction, taxCodesResponse);
 

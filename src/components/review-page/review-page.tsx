@@ -6,7 +6,6 @@ import { changeManualClassificationState } from '@/actions/backend-actions/class
 import { getDatabaseTransactions } from '@/actions/db-review-transactions/index';
 
 import {
-  getNextReviewDate,
   handleStateForManualClassify,
   initalizeLoadedTransactions,
   saveSelectedTransactions,
@@ -35,19 +34,6 @@ export default function ReviewPage({
 }: Readonly<{
   companyInfo: CompanyInfo;
 }>) {
-  // Define state to track the localized time of the next backend Classification.
-  const [nextBackendClassifyDate, setNextBackendClassifyDate] =
-    useState<string>('');
-
-  // On page load, gets the date of the next Saturday at 12 AM UTC.
-  useEffect(() => {
-    // Calls the handler method to await and set state with the date value.
-    const handleBackendClassifyDateCall = async () => {
-      setNextBackendClassifyDate(await getNextReviewDate());
-    };
-    handleBackendClassifyDateCall();
-  }, []);
-
   // Create states to track the loaded Transactions and their assosiated Accounts.
   const [loadedTransactions, setLoadedTransactions] = useState<
     (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
@@ -220,12 +206,6 @@ export default function ReviewPage({
       {/* Manual Review Button Section */}
       <div className="mx-auto mb-6 w-fit rounded-lg border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 p-6 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
         <ManualReviewButton handleManualReview={handleManualClassification} />
-        <h2 className="mt-6 w-full px-6 text-center text-lg text-gray-600 sm:px-2">
-          Next Scheduled Auto-Review
-          <span className="mt-2 block rounded bg-blue-100 px-4 py-1 font-bold text-blue-800 sm:ml-4 sm:mt-0 sm:inline-block">
-            {nextBackendClassifyDate}
-          </span>
-        </h2>
       </div>
 
       <ReviewTable

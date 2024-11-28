@@ -51,7 +51,6 @@ export default async function Page() {
     process.env.APP_CONFIG === 'production'
   ) {
     // Only perform check if in production mode.
-    console.log(`${companyHasSBK.result}: ${companyHasSBK.message}`);
     return <SBKConfirmationModal />;
   } else {
     // Otherwise, show the review page.
