@@ -3,7 +3,7 @@ import { PricingTable } from '@/components/site-elements/index';
 export default async function SubscriptionPurchase() {
   let publicKey = '';
   if (process.env.APP_CONFIG === 'production') {
-    publicKey = process.env.DEV_STRIPE_PRIVATE_KEY!;
+    publicKey = process.env.PROD_STRIPE_PUBLIC_KEY!;
   } else {
     publicKey = process.env.DEV_STRIPE_PUBLIC_KEY!;
   }
