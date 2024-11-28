@@ -2,30 +2,35 @@ import { addCompanyConnection } from '@/actions/backend-actions/database-functio
 
 export async function POST(request: Request) {
   try {
-    console.log('Connect To Company')
-
+    
     // Get the Authorization header from the request.
-    const headers = request.headers;
+    const authorizationHeader = request.headers.get('Authorization');
 
-    console.log(headers)
+    console.log('Connect Company')
+    console.log('Headers')
+    request.headers.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+
+
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
-    // if (
-    //   !authorizationHeader ||
-    //   authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
-    // ) {
-    //   console.error(
-    //     'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
-    //   );
-    //   return new Response('Missing Or Invalid Authorization Header', {
-    //     status: 401,
-    //   });
-    // }
+    if (
+      !authorizationHeader ||
+      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
+    ) {
+      console.error(
+        'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
+      );
+      return new Response('Missing Or Invalid Authorization Header', {
+        status: 401,
+      });
+    }
 
     // Get request body that contains the User email name and connected Company name.
     const body = await request.json();
 
-    console.log('Connect Body')
+    console.log('Body')
     console.log(body)
 
     // Extract the Username, Company name, and invite URL from the request body.
