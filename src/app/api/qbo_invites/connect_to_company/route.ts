@@ -2,8 +2,16 @@ import { addCompanyConnection } from '@/actions/backend-actions/database-functio
 
 export async function POST(request: Request) {
   try {
+    
     // Get the Authorization header from the request.
     const authorizationHeader = request.headers.get('Authorization');
+
+    console.log('Connect Company')
+    console.log('Headers')
+    request.headers.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
@@ -20,6 +28,9 @@ export async function POST(request: Request) {
 
     // Get request body that contains the User email name and connected Company name.
     const body = await request.json();
+
+    console.log('Body')
+    console.log(body)
 
     // Extract the Username, Company name, and invite URL from the request body.
     const userName: string = body.userName;
