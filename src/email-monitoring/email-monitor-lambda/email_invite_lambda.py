@@ -209,13 +209,15 @@ def execute_post_request(data: dict, email_type: EmailType):
         print("Could not identify email type")
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': os.getenv("EMAIL_ENDPOINT_AUTH")
     }
     if not data or not url or not headers:
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Invalid input: data, url, and headers are required'})
         }
+    
+    monitor_auth = os.getenv("EMAIL_ENDPOINT_AUTH")
+    data['monitorAuth'] = monitor_auth
 
     try:
         response = requests.post(url=url, headers=headers, data=json.dumps(data))

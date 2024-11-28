@@ -2,28 +2,25 @@ import { addAccountingFirmCompanies } from '@/actions/backend-actions/database-f
 
 export async function POST(request: Request) {
   try {
-    // Get the Authorization header from the request.
-    const authorizationHeader = request.headers.get('Authorization');
+    // Get request body that contains the email monitor auth code and email data.
+    const body = await request.json();
+
+    // Check for body value that authenticates email monitor requests.
+    const monitorAuth = body.monitorAuth;
+
+    // Extract the Firm name and Company names from the request body.
+    const firmName: string = body.firmName;
+    const companyNames: string[] = body.companyNames || [];
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
-    if (
-      !authorizationHeader ||
-      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
-    ) {
+    if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
-        'Error Adding Accounting Firm Companies: Missing Or Invalid Authorization Header.'
+        'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
       );
       return new Response('Missing Or Invalid Authorization Header', {
         status: 401,
       });
     }
-
-    // Get request body that contains the Firm name and Company names.
-    const body = await request.json();
-
-    // Extract the Firm name and Company names from the request body.
-    const firmName: string = body.firmName;
-    const companyNames: string[] = body.companyNames || [];
 
     // Check if valid Firm name and Company names were passed.
     // Log error responses for the missing values.
