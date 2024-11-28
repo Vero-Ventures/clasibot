@@ -17,7 +17,7 @@ export type ClassifiedElement = {
   type: string;
   //  QuickBooks internal Id.
   id: string;
-  // The name of the Category.
+  // The name of the Classification.
   name: string;
   // The method of Classification:
   // 'Matching', 'Database', or 'LLM'
@@ -25,7 +25,7 @@ export type ClassifiedElement = {
 };
 
 /**
- * Defines the format of the Categorized result object.
+ * Defines the format of the Classified result object.
  * Contains multiple Classifications that may apply to a 'For Review' transaction.
  * Defines connection to the 'For Review' transaction with the Transaction Id.
  */

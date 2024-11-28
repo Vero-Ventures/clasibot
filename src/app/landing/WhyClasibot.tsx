@@ -43,7 +43,8 @@ export const WhyClasibot = () => {
               </span>
               <span className="text-base">
                 QuickBooks Online integration allows seamlessly review of your
-                newest transactions. Our system checks for new transactions on every review for the most up to date classifications.
+                newest transactions. Our system checks for new transactions on
+                every review for the most up to date classifications.
               </span>
             </li>
             <li className="flex items-start">

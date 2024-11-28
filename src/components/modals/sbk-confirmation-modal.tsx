@@ -25,7 +25,7 @@ export const SBKConfirmationModal = () => {
         </p>
         <Button
           className="text-md mx-auto h-12 w-44 rounded bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-4 text-center font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-          onClick={() => router.push('/add-sbk-instructions')}>
+          onClick={() => router.push('/connection-instructions')}>
           Invite Instructions
         </Button>
       </div>

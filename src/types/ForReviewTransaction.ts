@@ -9,7 +9,7 @@
 import type { ClassifiedElement } from './Classification';
 
 // Defines the object recived when calling a 'For Review' transaction from the API.
-// Contains the values needed later when saving the 'For Review' transaction to the User Account.
+// Contains the values needed later when saving the 'For Review' transaction to the user Account.
 export type ForReviewTransaction = {
   id: string;
   olbTxnId: string;

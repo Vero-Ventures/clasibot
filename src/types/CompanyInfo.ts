@@ -1,7 +1,7 @@
 /**
  * Tracks the important info from the User Company in a single object.
  */
-import type { Locations } from '@/enums/taxes';
+import type { Locations } from '@/enums/tax-codes';
 
 export type CompanyInfo = {
   // The Company name. On failure, saved as 'Error: Name not found'.
@@ -14,7 +14,7 @@ export type CompanyInfo = {
   location: {
     // Can either be full name capitalized, 3 Letter Standard abbreviations, or other such as 'CA'.
     Country: string;
-    // For CA country, should always be one of the values defined in the Locations Enum in the Taxes.ts file.
+    // For CA country, should always be one of the values defined in the Locations Enum in the tax-codes.ts file.
     // Otherwise the values is set to null.
     SubLocation: Locations | null;
   };

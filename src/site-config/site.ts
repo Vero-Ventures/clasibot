@@ -10,8 +10,8 @@ export const siteConfig = {
   //    Also used to define the paths users can visit when not logged in.
   footerItems: [
     {
-      label: 'Setup Instructions',
-      href: '/add-sbk-instructions',
+      label: 'Connection Instructions',
+      href: '/connection-instructions',
     },
     {
       label: 'Contact Us',
@@ -24,19 +24,6 @@ export const siteConfig = {
     {
       label: 'Privacy Policy',
       href: '/privacy-policy',
-    },
-  ],
-  // Defines the enpoints that are used in email monitoring calls.
-  //    Allows outside handler to call endpoints without being redirected.
-  emailEndpoints: [
-    {
-      href: '/api/qbo_invites/connect_firm_clients',
-    },
-    {
-      href: '/api/qbo_invites/connect_to_company',
-    },
-    {
-      href: '/api/qbo_invites/connect_to_firm',
     },
   ],
 };

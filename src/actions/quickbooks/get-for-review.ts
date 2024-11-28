@@ -26,7 +26,7 @@ export async function getForReview(
       method: 'GET',
       headers: {
         authorization: `Intuit_APIKey intuit_apikey=${loginTokens.intuitApiKey}`,
-        cookie: `qbo.tkt=${loginTokens?.qboTicket}; qbo.agentid=${loginTokens.agentId};  qbo.authid=${loginTokens.authId}; e`,
+        cookie: `qbo.tkt=${loginTokens?.ticket}; qbo.agentid=${loginTokens.agentId};  qbo.authid=${loginTokens.authId}; e`,
       },
     });
 

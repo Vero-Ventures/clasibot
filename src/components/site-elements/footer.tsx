@@ -8,10 +8,10 @@ export const Footer = () => {
       <div className="flex max-w-[1000px] flex-col items-center space-y-2 sm:space-y-4 lg:mx-auto">
         <div className="grid w-full grid-cols-2 grid-rows-2 justify-evenly gap-y-4 mb:px-8 sm:flex sm:px-0 md:justify-between md:px-12 lg:px-20">
           <Link
-            key={'/add-sbk-instructions'}
-            href={'/add-sbk-instructions'}
+            key={'/connection-instructions'}
+            href={'/connection-instructions'}
             className="text-center text-lg font-semibold hover:underline md:w-[150px]">
-            Setup Instructions
+            Connection Instructions
           </Link>
           <Link
             key={'/contact-us'}

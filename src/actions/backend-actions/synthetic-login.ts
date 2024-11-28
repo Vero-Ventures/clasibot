@@ -19,7 +19,7 @@ export async function syntheticLogin(
   };
   const loginTokens: LoginTokens = {
     intuitApiKey: '',
-    qboTicket: '',
+    ticket: '',
     authId: '',
     agentId: '',
   };
@@ -60,7 +60,7 @@ export async function syntheticLogin(
       throw new Error('Failed to decode session token');
     }
 
-    loginTokens.qboTicket = data.qboTicket;
+    loginTokens.ticket = data.qboTicket;
     loginTokens.authId = data.authId;
 
     loginResult.result = 'success';

@@ -9,15 +9,12 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
 
-  // Define allowed paths for non-logged in users with an array of valid endpoints defined by the site config file.
-  // Footer redirect paths and API endpoints for email monitoring.
+  // Define allowed paths for non-logged in users to redirect to footer pages.
   const footerPaths = siteConfig.footerItems.map((link) => link.href);
-  const emailApiEndpoints = siteConfig.emailEndpoints.map((path) => path.href);
 
-  // Check the current path to see if it is for the landing page, one of the allowed paths, or a signin call.
+  // Check the current path to see if it is for the landing page, home page, or one of the allowed paths.
   if (
     footerPaths.includes(pathname) ||
-    emailApiEndpoints.includes(pathname) ||
     pathname === '/' ||
     pathname === '/home'
   ) {

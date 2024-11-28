@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 
 import clsx from 'clsx';
 
-interface AddSBKInstructionsProps {
+interface ConnectionInstructionsProps {
   showCheckConnectionButton: boolean | null;
 }
 
-export default function AddSBKInstructions({
+export default function ConnectionInstructions({
   showCheckConnectionButton,
-}: AddSBKInstructionsProps) {
+}: ConnectionInstructionsProps) {
   const [isSingleCompany, setIsSingleCompany] = useState(true);
 
   return (

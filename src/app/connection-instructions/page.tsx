@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth';
 
-import AddSBKInstructions from '@/components/check-pages/add-sbk-instructions';
+import ConnectionInstructions from '@/components/check-pages/connection-instructions';
 
 export default async function Page() {
   const session = await getServerSession();
@@ -10,6 +10,8 @@ export default async function Page() {
   }
 
   return (
-    <AddSBKInstructions showCheckConnectionButton={showCheckConnectionButton} />
+    <ConnectionInstructions
+      showCheckConnectionButton={showCheckConnectionButton}
+    />
   );
 }
