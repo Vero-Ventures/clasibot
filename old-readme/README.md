@@ -35,8 +35,6 @@ The application also focuses on a simple to use interface that makes it easy to 
 
 ### **Classification Pipeline**
 
-![Classification Pipeline](readme-assets/readme_pipeline.png)
-
 ## **Tech Stack**
 
 - **Programming Language:**
