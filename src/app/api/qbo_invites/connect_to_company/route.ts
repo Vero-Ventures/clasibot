@@ -7,6 +7,8 @@ export async function POST(request: Request) {
     // Get the Authorization header from the request.
     const authorizationHeader = request.headers.get('Authorization');
 
+    console.log(authorizationHeader)
+
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
       !authorizationHeader ||
