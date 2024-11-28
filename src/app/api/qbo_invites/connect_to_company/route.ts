@@ -2,21 +2,25 @@ import { addCompanyConnection } from '@/actions/backend-actions/database-functio
 
 export async function POST(request: Request) {
   try {
-    
-    // Get the Authorization header from the request.
-    const authorizationHeader = request.headers.get('Authorization');
+    console.log(request.headers.get('Authorization'))
 
-    console.log('Connect Company')
-    console.log('Headers')
-    request.headers.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // Get request body that contains the email monitor auth code and email data.
+    const body = await request.json();
 
+    const monitorAuth = body.monitorAuth
+
+    // Extract the Username, Company name, and invite URL from the request body.
+    const userName: string = body.userName;
+    const companyName: string = body.companyName;
+    const _invite_link: string = body.inviteLink;
+
+    console.log('Body');
+    console.log(body);
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (
-      !authorizationHeader ||
-      authorizationHeader !== process.env.EMAIL_ENDPOINT_AUTH
+      !monitorAuth ||
+      monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH
     ) {
       console.error(
         'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
@@ -25,17 +29,6 @@ export async function POST(request: Request) {
         status: 401,
       });
     }
-
-    // Get request body that contains the User email name and connected Company name.
-    const body = await request.json();
-
-    console.log('Body')
-    console.log(body)
-
-    // Extract the Username, Company name, and invite URL from the request body.
-    const userName: string = body.userName;
-    const companyName: string = body.companyName;
-    const _invite_link: string = body.inviteLink;
 
     // Check if valid User email name and Company name was passed.
     // Log error responses for the missing values.
