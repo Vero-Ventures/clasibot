@@ -15,6 +15,8 @@ export async function POST(request: Request) {
     const companyName: string = body.companyName;
     const invite_link: string = body.inviteLink;
 
+    console.log(body)
+
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
