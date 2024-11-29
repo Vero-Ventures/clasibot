@@ -4,7 +4,9 @@
     "build": "tsc",
     "start": "node dist/lambda.js",
     "deploy": "serverless deploy",
-    "remove": "serverless remove"
+    "remove": "serverless remove",
+    "print": "serverless print",
+    "login": "serverless login"
   },
   "private": true,
   "type": "module",
