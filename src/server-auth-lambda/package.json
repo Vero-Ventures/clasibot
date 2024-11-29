@@ -2,7 +2,9 @@
   "name": "server-auth-lambda",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/lambda.js"
+    "start": "node dist/lambda.js",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove"
   },
   "private": true,
   "type": "module",
@@ -19,6 +21,7 @@
     "@types/imap": "^0.8.42",
     "@types/jsdom": "^21.1.7",
     "@types/mailparser": "^3.4.5",
+    "serverless": "^4.4.13",
     "ts-node": "^10.9.0",
     "typescript": "^5.6.3"
   }
