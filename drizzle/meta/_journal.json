@@ -15,6 +15,13 @@
       "when": 1729712012714,
       "tag": "0001_fine_natasha_romanoff",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1732837888434,
+      "tag": "0002_flippant_obadiah_stane",
+      "breakpoints": true
     }
   ]
 }
