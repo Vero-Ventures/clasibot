@@ -8,7 +8,7 @@ import type { ErrorResponse, Purchase } from '@/types/index';
 
 // Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.
 // Takes: The Id of the Purchase to find from QuickBooks
-//    May also take synthetic Login Tokens and Company realm Id for backend calls.
+//    May also take Synthetic Login Tokens and Company realm Id for backend calls.
 export async function findFormattedPurchase(id: string): Promise<Purchase> {
   try {
     // Define the variable used to make the qbo calls.

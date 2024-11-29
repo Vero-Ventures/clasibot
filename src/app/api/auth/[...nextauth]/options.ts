@@ -153,7 +153,7 @@ export const options: NextAuthOptions = {
           return false;
         }
 
-        // Find the database User object with the User email.
+        // Find the database User object with the User Email.
         const userData = await db
           .select()
           .from(User)
@@ -257,7 +257,7 @@ export const options: NextAuthOptions = {
   },
 };
 
-// Define the backend values for the client Id and secret used in synthetic login processes.
+// Define the backend values for the client Id and secret used in Synthetic Login processes.
 // Values are based based on the environment configuration.
 const useIdBackend =
   process.env.APP_CONFIG === 'production'

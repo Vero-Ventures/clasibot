@@ -232,7 +232,7 @@ async function checkAndFormatTransactions(
           };
 
           // Search for the Purchase related to the Transaction to get the Tax Code.
-          // Pass synthetic Login Tokens and Company realm Id in case backend call is needed.
+          // Pass Synthetic Login Tokens and Company realm Id in case backend call is needed.
           const transactionPurchase = await findFormattedPurchase(
             String(row.ColData[idRow].id)
           );

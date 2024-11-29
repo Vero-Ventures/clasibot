@@ -17,7 +17,7 @@ const stripe = new Stripe(
 );
 
 // Use the current session to create a Stripe session.
-// Returns: An object containing either the Customer session or an error.
+// Returns: Either the Customer session or an error object.
 export async function createCustomerSession(): Promise<
   { customerSession: string } | { error: string }
 > {
@@ -25,12 +25,12 @@ export async function createCustomerSession(): Promise<
     // Get the current session.
     const session = await getServerSession(options);
 
-    // If the current session does not have an email value, return an error.
+    // If the current session does not have an Email value, return an error.
     if (!session?.user?.email) {
       return { error: 'Error getting session' };
     }
 
-    // Find the database User object using the session email.
+    // Find the database User object using the session Email.
     const user = await db
       .select()
       .from(User)
@@ -56,7 +56,7 @@ export async function createCustomerSession(): Promise<
     const userStripeId = userSubscription[0]?.stripeId;
     if (userStripeId) {
       // Create a new Customer session with the User Stripe Id.
-      // Session sets the pricing table component to enabled.
+      // Session sets the Pricing Table component to enabled.
       const customerSession = await stripe.customerSessions.create({
         customer: userStripeId,
         components: {

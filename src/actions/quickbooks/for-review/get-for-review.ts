@@ -8,7 +8,7 @@ import type {
 } from '@/types/index';
 
 // Checks a specific Account of the User for 'For Review' transactions, formats and returns them.
-// Takes: The Id of Account to check, a set of synthetic Login Tokens, and the Company realm Id.
+// Takes: The Id of Account to check, a set of Synthetic Login Tokens, and the Company realm Id.
 // Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
 //    Returned 'For Review' transactions are an array of Sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(

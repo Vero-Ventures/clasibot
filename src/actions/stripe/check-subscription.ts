@@ -51,12 +51,12 @@ export async function checkSubscription(
       // Get the current session.
       const session = await getServerSession(options);
 
-      // If the current session does not have an email value, return an error.
+      // If the current session does not have an Email value, return an error.
       if (!session?.user?.email) {
         return { error: 'Error getting session' };
       }
 
-      // Get the User from the database using the email pulled from the session.
+      // Get the User from the database using the Email pulled from the session.
       user = await db
         .select()
         .from(User)

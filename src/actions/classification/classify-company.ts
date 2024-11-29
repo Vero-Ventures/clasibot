@@ -28,7 +28,7 @@ import type {
 } from '@/types/index';
 
 // Classifies and saves the 'For Review' transactions for a specific Company.
-// Takes: A set of synthetic Login Tokens and the realm Id of the Company.
+// Takes: A set of Synthetic Login Tokens and the realm Id of the Company.
 // Returns: The Query Result from 'For Review' transaction saving function or an error Query Result.
 export async function classifyCompany(
   loginTokens: LoginTokens,
@@ -147,7 +147,7 @@ export async function classifyCompany(
 }
 
 // Gets the 'For Review' transactions from the Company Accounts.
-// Takes: The set of synthetic Login Tokens and the realm Id of the Company.
+// Takes: The set of Synthetic Login Tokens and the realm Id of the Company.
 // Returns: An array of Sub-arrays for the 'For Review' transactions in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 export async function getForReviewTransactions(
   loginTokens: LoginTokens,

@@ -37,7 +37,7 @@ export async function addForReview(
     }
 
     // Get the database Company object to check for a potential Firm name.
-    // Needed during synthetic login if access to Company comes through an Firm.
+    // Needed during Synthetic Login if access to Company comes through an Firm.
     const currentCompany = await db
       .select()
       .from(Company)
@@ -53,14 +53,14 @@ export async function addForReview(
       ? currentCompany[0].firmName
       : '';
 
-    // Call synthetic login with the Company realm Id and the potential Firm name.
-    // Returns: A QueryResult and a synthetic Login Tokens object.
+    // Call Synthetic Login with the Company realm Id and the potential Firm name.
+    // Returns: A QueryResult and a Synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
       firmName
     );
 
-    // Check if the synthetic login resulted in an error and return the assosiated Query Result.
+    // Check if the Synthetic Login resulted in an error and return the assosiated Query Result.
     if (loginResult.result === 'Error') {
       return loginResult;
     }

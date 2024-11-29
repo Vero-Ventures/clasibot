@@ -6,7 +6,7 @@ import type {
   ClassifiedForReviewTransaction,
 } from '@/types/index';
 
-// Takes a set of loaded 'For Review' transactions either from inital page load or finishing manual Classification.
+// Takes a set of loaded 'For Review' transactions either from inital page load or finishing Classification.
 // Initalizes the inital selected Category and Tax Code for each 'For Review' transaction.
 // Also creates a set of Account names from within the passed 'For Review' transactions.
 // Takes: The loaded 'For Review' transactions.

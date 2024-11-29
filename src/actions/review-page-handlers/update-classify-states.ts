@@ -98,20 +98,20 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Preform the synthetic login process needed for Classificaion.
+  // Preform the Synthetic Login process needed for Classificaion.
   const loginResult = await preformSyntheticLogin(
     startResult.realmId,
     startResult.firmName
   );
 
-  // Update state on successfully preforming synthetic login, otherwise return a failure value.
+  // Update state on successfully preforming Synthetic Login, otherwise return a failure value.
   if (loginResult.result) {
     setClassificationState('Get For Review Transactions');
   } else {
     return false;
   }
 
-  // If synthetic login was successful, before continuing remove all old 'For Review' transactions for the Company from the database.
+  // If Synthetic Login was successful, before continuing remove all old 'For Review' transactions for the Company from the database.
   removeAllForReviewTransactions(startResult.realmId);
 
   // Get the 'For Review' transactions to be Classified.

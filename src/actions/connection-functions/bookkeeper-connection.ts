@@ -19,7 +19,7 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes info from a QuickBooks Company invite email and updates the related database Company object.
+// Takes info from a QuickBooks Company invite Email and updates the related database Company object.
 // Takes: The User and Company name from a QBO Company invite.
 // Returns: A Query Result object for finding and updating the Comapany in the database.
 export async function addCompanyConnection(
@@ -27,7 +27,7 @@ export async function addCompanyConnection(
   companyName: string
 ): Promise<QueryResult> {
   try {
-    // Use the passed User email to find the related User from the database.
+    // Use the passed User Email to find the related User from the database.
     const databaseUsers = await db
       .select()
       .from(User)
@@ -102,7 +102,7 @@ export async function addCompanyConnection(
   }
 }
 
-// Takes info from a QuickBooks accounting Firm invite email and creates a related database Firm object.
+// Takes info from a QuickBooks accounting Firm invite Email and creates a related database Firm object.
 // Takes: The accounting Firm name and User name from a QBO Firm invite.
 // Returns: A Query Result object for adding the Firm to database.
 export async function addAccountingFirmConnection(
@@ -154,8 +154,8 @@ export async function addAccountingFirmConnection(
   }
 }
 
-// Takes info from a QuickBooks Firm client access email and updates the related database Company objects.
-// Takes: A Firm name and an array of Company names from a QBO client access update email.
+// Takes info from a QuickBooks Firm client access Email and updates the related database Company objects.
+// Takes: A Firm name and an array of Company names from a QBO client access update Email.
 // Returns: A Query Result object.
 export async function addAccountingFirmCompanies(
   connectedFirmName: string,
@@ -177,7 +177,7 @@ export async function addAccountingFirmCompanies(
 
     // Check if any possible Firms were found.
     if (possibleFirms) {
-      // Iterate through the Company names passed from the email.
+      // Iterate through the Company names passed from the Email.
       for (const companyName of companyNames) {
         // Get all Companies with a matching name.
         const matchingCompanies = await db
@@ -320,7 +320,7 @@ export async function addAccountingFirmCompanies(
   }
 }
 
-// Updates a database Company object to be set as disconnected from the synthetic bookkeeper.
+// Updates a database Company object to be set as disconnected from the Synthetic Bookkeeper.
 //    Done to prevent us from continuing to access that Company.
 // Returns: A Query Result object.
 export async function makeCompanyIncactive(): Promise<QueryResult> {

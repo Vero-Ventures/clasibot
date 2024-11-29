@@ -31,7 +31,7 @@ import type {
 } from '@/types/index';
 
 // Takes: A list of saved Classified Transactions, a list of unclassified 'For Review' transactions, -
-//        A synthetic Login Token object, and the Company Info for use in LLM Classification.
+//        A Synthetic Login Token object, and the Company Info for use in LLM Classification.
 // Returns: A record that connects a 'For Review' transaction Id to an array of Classified Elements.
 //    On error, instead returns an error object with an error message.
 export async function classifyTransactions(
@@ -92,7 +92,7 @@ export async function classifyTransactions(
   }
 
   try {
-    // Get the valid Categories for Classification from QuickBooks Expense Accounts using a synthetic Login Tokens object.
+    // Get the valid Categories for Classification from QuickBooks Expense Accounts using a Synthetic Login Tokens object.
     // Pass boolean value to indicate if names will be saved to database to properly parse the Category names.
     const validDBCategories: Classification[] =
       await fetchValidCategories(true);
@@ -293,7 +293,7 @@ async function fetchValidTaxCodes(
       companyInfo.location.SubLocation
     ) {
       classifyTaxCode = true;
-      // Use the synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
+      // Use the Synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
       const userTaxCodes = JSON.parse(await getTaxCodes());
 
       // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
