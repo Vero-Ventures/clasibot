@@ -25,37 +25,26 @@ export type RawForReviewTransaction = {
   };
 };
 
-// The full data object needed to saving the Classified 'For Review' transactions.
+// The full data object needed to save the Classified 'For Review' transactions.
 // Defines the full object needed to save a Classified 'For Review' transaction through an API call.
 export type ClassifiedRawForReviewTransaction = {
-  txnList: {
-    olbTxns: [
+  id: string;
+  qboAccountId: string;
+  description: string;
+  origDescription: string;
+  amount: number;
+  olbTxnDate: string;
+  acceptType: string;
+  addAsQboTxn: {
+    details: [
       {
-        id: string;
-        qboAccountId: string;
-        description: string;
-        origDescription: string;
-        amount: number;
-        olbTxnDate: string;
-        acceptType: string;
-        addAsQboTxn: {
-          details: [
-            {
-              categoryId: string;
-              taxCodeId: string;
-            },
-          ];
-          nameId: string | null;
-          txnDate: string;
-          txnTypeId: string;
-        };
+        categoryId: string;
+        taxCodeId: string;
       },
     ];
-  };
-  nextTxnInfo: {
-    accountId: string;
-    nextTransactionIndex: number;
-    reviewState: string;
+    nameId: string | null;
+    txnDate: string;
+    txnTypeId: string;
   };
 };
 

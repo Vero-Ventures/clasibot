@@ -14,13 +14,9 @@ import type {
   Transaction,
 } from '@/types/index';
 
-// Preforms the nessasary steps to save selected Classified 'For Review' transactions.
-// Determines the Classifications for each 'For Review' transaction based on the selection values from the table,
-// Also updates the database for later prediction use, updates QuickBooks with the Classified Transactions, and updates the frontend.
-// Takes: The selected rows from the table, the list of 'For Review' transactions from the table,
-//        The record of selected Categories and Tax Codes,
-//        Also takes state update methods for: Saving, Saving Error Message, and Opening the Save Complete modal.
-// Returns: A boolean value indicating save falure used to set the error message on the frontend.
+//
+// Takes:
+// Returns:
 export async function saveSelectedTransactions(
   selectedRows: Record<number, boolean>,
   transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][],
@@ -28,14 +24,11 @@ export async function saveSelectedTransactions(
   selectedTaxCodes: Record<string, string>
 ): Promise<boolean> {
   try {
-    // Define an array for Transactions to be saved to the database for future Classification use.
-    const newTransactions: Transaction[] = [];
-
     // Call the list of Expense Accounts to get Account Id's from the recorded Account names.
     const accountResults = JSON.parse(await getAccounts('Expense'));
 
     // Initally set Accounts variable to be empty and update it if Accounts fetch was successful.
-    let accounts = [];
+    let accounts: Account[] = [];
 
     // Check if the Accounts fetch resulted in an error.
     if (accountResults[0].result === 'Error') {
@@ -50,6 +43,103 @@ export async function saveSelectedTransactions(
     // Get the selected Rows in an iterable format [key: selectedRowIndex, value: true]
     // The key is the index of the Row and the value is true for selected Rows.
     const selectedRowIndices = Object.entries(selectedRows);
+
+    // Call handler to iterate through the selected rows.
+    // Define the array of objects to be batch added to QuickBooks and to be saved to the database for reference.
+    const [batchAddTransactions, newDatabaseTransactions, transactionAccounts] =
+      parseSelectedRows(
+        selectedRowIndices,
+        transactions,
+        selectedCategories,
+        selectedTaxCodes,
+        accounts
+      );
+
+    // Call backend method to add the Classified 'For Review' Transactions to QuickBooks.
+    const addResult = await addForReview(
+      batchAddTransactions,
+      transactionAccounts
+    );
+
+    // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
+    if (addResult.result === 'Error') {
+      throw new Error(addResult.message);
+    }
+
+    // Remove the added 'For Review' transactions and their connections from the database.
+    const removeResult =
+      await removeSelectedForReviewTransaction(batchAddTransactions);
+
+    // If removing the Transaction resulted in an error, throw the Query Result message as an error.
+    if (removeResult.result === 'Error') {
+      throw new Error(removeResult.message);
+    }
+
+    // Add all the newly created Transactions to the database.
+    const addTransactionsResult = await addDatabaseTransactions(
+      newDatabaseTransactions
+    );
+
+    // Check the Query Result if returned by the add Transactions function resulted in an error.
+    if (addTransactionsResult.result === 'Error') {
+      // If the result was an error, log the message and detail.
+      console.error(
+        'Error saving existing Classified Transactions:',
+        addTransactionsResult.message,
+        ', Detail: ',
+        addTransactionsResult.detail
+      );
+      // Return a failure result.
+      return false;
+    }
+
+    // If no errors occured, return true to indicate a success result.
+    return true;
+  } catch (error) {
+    // Catch any errors and log them (include the error message if it is present).
+    if (error instanceof Error) {
+      console.error('Error saving existing Classified Transactions:', error);
+    } else {
+      console.error('Error saving existing Classified Transactions:', error);
+    }
+    // On error, return false to indicate an error or failure result.
+    return false;
+  }
+}
+
+// Iterates over the selected rows to create formatted objects for each select Transaction.
+// Takes: The indices of the selected rows, the related Classified and Raw 'For Review' transactions,
+//        A record of Classification Id to Transaction Id for both Classificaion, and an array of expense accounts.
+// Returns: An array of 'For Review' transaction values used for batch addition to QuickBooks,
+//          An array of Classified Transaction to save to the database,
+//          And a list of Accounts the 'For Review' transactions belong to.
+function parseSelectedRows(
+  selectedRowIndices: [string, boolean][],
+  transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][],
+  selectedCategories: Record<string, string>,
+  selectedTaxCodes: Record<string, string>,
+  accounts: Account[]
+): [
+  {
+    forReviewTransaction: RawForReviewTransaction;
+    categoryId: string;
+    taxCodeId: string;
+  }[],
+  Transaction[],
+  string[],
+] {
+  try {
+    // Define arrays for the different types of parsed Transactions.
+    // ('For Review' for QuickBooks and QBO API for database).
+    const newDatabaseTransactions: Transaction[] = [];
+    const batchAddTransactions: {
+      forReviewTransaction: RawForReviewTransaction;
+      categoryId: string;
+      taxCodeId: string;
+    }[] = [];
+
+    // Define an array to list the different Accounts that the 'For Review' transactions belong to.
+    const transactionAccounts: string[] = [];
 
     // Iterate through the selected Rows, using only values where selected = true.
     selectedRowIndices.forEach(async ([index, selected]) => {
@@ -68,7 +158,7 @@ export async function saveSelectedTransactions(
         const selectedCategory = selectedCategories[transactionId];
         const selectedTaxCode = selectedTaxCodes[transactionId];
 
-        // Define inital null values for the Classification Category and Tax Code.
+        // Define inital null values for the Classifications.
         let category = null;
         let taxCode = null;
 
@@ -86,11 +176,7 @@ export async function saveSelectedTransactions(
           ) as ClassifiedElement;
         }
 
-        // Throw an error if the Id for that Transaction cannot be found.
-        // Occurs if the selected Classification is not present in Classified 'For Review' transaction's Classifications.
-        if (!category || !taxCode) {
-          throw new Error('Error saving Purchase');
-        } else {
+        if (category && taxCode) {
           // Create a new Transaction object to be saved using the Classified Transaction and its Classifications.
           const newDatabaseTransaction: Transaction = {
             name: classifiedTransaction.name,
@@ -119,58 +205,40 @@ export async function saveSelectedTransactions(
             }
           }
 
-          // Push the new Transaction to the array of Transactions to be saved to the database.
-          newTransactions.push(newDatabaseTransaction);
+          // Push the Raw 'For Review' transaction object and its Classification Id's to the array for batch adding to QuickBooks.
+          batchAddTransactions.push({
+            forReviewTransaction: rawTransaction,
+            categoryId: category.id,
+            taxCodeId: taxCode.id,
+          });
 
-          // Call backend method to add the Classified 'For Review' Transaction to QuickBooks.
-          const addResult = await addForReview(
-            rawTransaction,
-            category.id,
-            taxCode.id
-          );
+          // Push the new Transaction object to the array of Classified Transactions to be saved to the database.
+          newDatabaseTransactions.push(newDatabaseTransaction);
 
-          // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
-          if (addResult.result === 'Error') {
-            throw new Error(addResult.message);
+          // Check if the 'For Review' transaction Account is already in the list of related Accounts.
+          if (!transactionAccounts.includes(rawTransaction.qboAccountId)) {
+            // Add the Account Id to the list of Accounts.
+            transactionAccounts.push(rawTransaction.qboAccountId);
           }
-
-          // Remove the related 'For Review' transaction and its connections from the database.
-          const removeResult =
-            await removeSelectedForReviewTransaction(rawTransaction);
-
-          // If removing the Transaction resulted in an error, throw the Query Result message as an error.
-          if (removeResult.result === 'Error') {
-            throw new Error(removeResult.message);
-          }
+        } else {
+          // Throw an error if the Id for the current Transaction cannot be found.
+          // Occurs if the selected Classification is not present in Classified 'For Review' transaction's Classifications.
+          throw new Error('Error saving Purchase');
         }
       }
     });
 
-    // Add all the newly created Transactions to the database.
-    const addTransactionsResult =
-      await addDatabaseTransactions(newTransactions);
-    // Check the Query Result if returned by the add Transactions function resulted in an error.
-    if (addTransactionsResult.result === 'Error') {
-      // If the result was an error, log the message and detail.
-      console.error(
-        'Error saving existing Classified Transactions:',
-        addTransactionsResult.message,
-        ', Detail: ',
-        addTransactionsResult.detail
-      );
-      // Return a failure result.
-      return false;
-    }
-    // If no errors occured, return a truth value to set an empty error message.
-    return true;
+    // Return the 'For Review' transactions to be batch added and Classified Transactions to be saved to the database.
+    // Also returns the array of Account Id's for the 'For Review' transactions.
+    return [batchAddTransactions, newDatabaseTransactions, transactionAccounts];
   } catch (error) {
-    // Catch any errors and log them (include the error message if it is present).
+    // Catch any errors and log them with the error message if it is present.
     if (error instanceof Error) {
-      console.error('Error saving existing Classified Transactions:', error);
+      console.error('Error saving Classified Transactions: ', error.message);
     } else {
-      console.error('Error saving existing Classified Transactions:', error);
+      console.error('Unexpected Error saving Classified Transactions.');
     }
-    // On error, return a failure result.
-    return false;
+    // On error, return empty arrays for the Transactions to be saved.
+    return [[], [], []];
   }
 }
