@@ -21,7 +21,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     }
 
     if (inviteLink === '') {
-      const tokenData = await syntheticAuth(realmId, firmName || null);
+      const tokenData = await syntheticAuth(realmId, firmName);
 
       return {
         statusCode: 200,

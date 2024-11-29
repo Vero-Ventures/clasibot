@@ -13,12 +13,14 @@ export const HowItWorks = () => (
         title="Analyzing Past Transactions"
         description="Clasibot synchronizes with your past transaction classifications, creating predictions that match your business history."
       />
+
       <Step
         iconColor="bg-green-500"
         IconComponent={FaDatabase}
         title="Database Matching"
         description="We check against our ever-growing database of transactions, finding common classifications and identifying the most likely matches."
       />
+
       <Step
         iconColor="bg-purple-500"
         IconComponent={FaRobot}

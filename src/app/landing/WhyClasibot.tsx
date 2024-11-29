@@ -20,11 +20,13 @@ export const WhyClasibot = () => {
           <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
             Why Use Clasibot?
           </h2>
+
           <p className="mb-6 text-center text-lg text-gray-700">
             Clasibot simplifies the process of classification and tax code
             assignment, saving you time by automating the transaction review
             process.
           </p>
+
           <ul className="mb-6 space-y-4 text-lg text-gray-700">
             <li className="flex items-start">
               <span className="mr-2 translate-y-1.5 text-green-500">
@@ -47,6 +49,7 @@ export const WhyClasibot = () => {
                 every review for the most up to date classifications.
               </span>
             </li>
+
             <li className="flex items-start">
               <span className="mr-2 translate-y-1.5 text-green-500">
                 <svg

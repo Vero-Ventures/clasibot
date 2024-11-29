@@ -11,7 +11,7 @@ export type CompanyInfo = {
   // Saved as 'None' if not present.
   // On failure: saved as 'Error'.
   industry: string;
-  // Contains the country and sub location of the country the Company is located in.
+  // Contains the country and Sub-Locations of the country the Company is located in.
   location: {
     // Can either be full name capitalized, 3 Letter Standard abbreviations, or other such as 'CA'.
     // On failure: value is set to an empty string.

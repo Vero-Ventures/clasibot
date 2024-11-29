@@ -19,7 +19,7 @@ export class QuickBooksAuth {
 
   async authenticate(
     realmId: string,
-    firmName: string | null
+    firmName: string
   ): Promise<QBOTokenData | null> {
     const browserHelper = new BrowserHelper(this.page);
     const emailService = new EmailService();

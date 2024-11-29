@@ -5,12 +5,9 @@ import type { QBOFirmClientResponse } from '../../types';
 export class AccountSelector {
   constructor(private page: Page) {}
 
-  async selectAccounts(
-    realmId: string,
-    firmName: string | null
-  ): Promise<void> {
+  async selectAccounts(realmId: string, firmName: string): Promise<void> {
     try {
-      if (firmName) {
+      if (firmName !== '') {
         await this.searchAndSelectFirm(firmName, realmId);
       } else {
         await this.selectDefaultFirm(realmId);

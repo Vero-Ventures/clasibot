@@ -5,7 +5,7 @@ import type { QBOTokenData } from './types';
 
 export const syntheticAuth = async (
   realmId: string,
-  firmName: string | null = null
+  firmName: string
 ): Promise<QBOTokenData> => {
   const executablePath = await chromium.executablePath();
 

@@ -21,6 +21,7 @@ def decode_email(email_content_bytes: bytes) -> str | None:
     """
     Decodes the quoted-printable encoding of the email content bytes.
 
+    :param email_content_bytes: the email content after conversion into bytes
     :returns: the email body decoded as a string
     """
     decoded_content_bytes = quopri.decodestring(email_content_bytes)
@@ -161,7 +162,8 @@ def process_email_parsing(decoded_content: str, soup: BeautifulSoup, email_type:
             data["firmName"] = company_name
         data["userName"] = sender_name
         data["inviteLink"] = invite_url
-    print("Data extracted: ", data)  # Log data extraction
+    # Log data extraction
+    print("Data extracted: ", data)  
     return data
 
 
@@ -170,8 +172,8 @@ def process_s3_event(event):
     Processes the S3 event triggered by S3 object creation.
     Retrieves the S3 Object listed in the event and extracts information from the email stored in S3.
 
-    :param event: The event data from SES triggering Lambda
-    :returns: None
+    :param event: the event data from SES triggering Lambda
+    :returns: the decoded email content and BeautifulSoup object of the decoded content
     """
     # Get the S3 bucket and object key from the event
     bucket = event['Records'][0]['s3']['bucket']['name']
@@ -197,7 +199,9 @@ def execute_post_request(data: dict, email_type: EmailType):
 
     :param data: a dict of the extracted data to be sent
     :param email_type: one of three EmailType enums
+    :return: A request status code and relevant body
     """
+    # Define endpoint based on email type enum or empty url if email could not be identified.
     if email_type == EmailType.COMPANY_INVITE:
         url = os.getenv("COMPANY_INVITE_API")
     elif email_type == EmailType.ACCOUNTANT_FIRM_INVITE:
@@ -207,18 +211,23 @@ def execute_post_request(data: dict, email_type: EmailType):
     else:
         url = ""
         print("Could not identify email type")
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    if not data or not url or not headers:
+    
+    # Return error outcome if data or url is not defined.
+    if not data or not url:
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Invalid input: data, url, and headers are required'})
         }
     
+     # Define request headers and append auth value to body for sender verification at endpoint.
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    
     monitor_auth = os.getenv("EMAIL_ENDPOINT_AUTH")
     data['monitorAuth'] = monitor_auth
 
+    # Make request and return an appropriate staus code and body based on the result.
     try:
         response = requests.post(url=url, headers=headers, data=json.dumps(data))
         if response.status_code == 200:
@@ -247,7 +256,7 @@ def lambda_handler(event, context):
 
     :param event: The event data from S3
     :param context: The context for the Lambda function
-    :returns: None
+    :returns: A request status code and relevant body
     """
     decoded_content, soup = process_s3_event(event)
     email_type = identify_email_type(soup)

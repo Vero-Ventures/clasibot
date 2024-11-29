@@ -48,11 +48,16 @@ export async function addForReview(
       return { result: '', message: '', detail: '' };
     }
 
+    // Check for a Firm name and set it to an empty string if it is not present.
+    const firmName = currentCompany[0].firmName
+      ? currentCompany[0].firmName
+      : '';
+
     // Call synthetic login with the Company realm Id and the potential Firm name.
     // Returns: A QueryResult and a synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
-      currentCompany[0].firmName
+      firmName
     );
 
     // Check if the synthetic login resulted in an error and return the assosiated Query Result.

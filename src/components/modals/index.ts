@@ -10,7 +10,7 @@ export {
 
 export { ClassifyProgessModal, ClassifyCompleteModal } from './classify-modals';
 
-export { SBKConfirmationModal } from './sbk-confirmation-modal';
+export { ConnectionConfirmationModal } from './connection-confirmation-modal';
 
 export {
   ErrorLoadingTransactionsModal,
