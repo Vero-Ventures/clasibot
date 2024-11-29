@@ -1,0 +1,26 @@
+service: synthetic-auth-lambda
+
+provider:
+  name: aws
+  region: us-west-2
+  ecr:
+    images:
+      syntheticauth:
+        path: ./
+
+functions:
+  auth:
+    image:
+      name: syntheticauth
+    memorySize: 2048
+    timeout: 300
+    url: true
+    environment:
+      CLASIBOT_URL: ${env:CLASIBOT_URL}
+      QB_EMAIL_ADDRESS: ${env:QB_EMAIL_ADDRESS}
+      QB_PASSWORD: ${env:QB_PASSWORD}
+      EMAIL_USER: ${env:EMAIL_USER}
+      EMAIL_PASSWORD: ${env:EMAIL_PASSWORD}
+      IMAP_HOST: ${env:IMAP_HOST}
+      IMAP_PORT: ${env:IMAP_PORT}
+      HOME: '/tmp'
