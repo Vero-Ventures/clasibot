@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const companyName: string = body.companyName;
     const invite_link: string = body.inviteLink;
 
-    console.log(body)
+    console.log(body);
 
     // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
@@ -55,9 +55,9 @@ export async function POST(request: Request) {
     );
 
     if (loginResult.result === 'Error') {
-      console.log('Invite Accept Error')
-      console.log(loginResult.message)
-      console.log(loginResult.detail)
+      console.log('Invite Accept Error');
+      console.log(loginResult.message);
+      console.log(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 

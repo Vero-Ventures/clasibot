@@ -86,3 +86,24 @@ There are some more additional cli commands that you may find useful [here](http
 ## Issues
 
 As mentioned before, I had encountered issues in previous versions of this code while attempting to use bun instead of npm for the lambda function. There may be workarounds to use or patches coming, but from the research I did it seems that it is best to use npm for now. If you want to get bun to work, you will need to alter the npm/npx commands in the dockerfile if you haven't already.
+
+# Env.Example
+
+# Oauth URL used in synthetic auth process.
+
+CLASIBOT_URL
+
+# Quickbooks synthetic bookkeeper credentials.
+
+QB_EMAIL_ADDRESS
+QB_PASSWORD
+
+# Spacemail email account credentials used for synthetic auth.
+
+EMAIL_USER
+EMAIL_PASSWORD
+
+# IMAP protocol envs for connecting to email inbox via code.
+
+IMAP_HOST
+IMAP_PORT
