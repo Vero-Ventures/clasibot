@@ -89,7 +89,7 @@ export async function searchDatabaseTransactionCategories(
     } else {
       console.error('Unexpected Error Getting Categories From Database.');
     }
-    // On error, return an empty array to indicate an error sorting the Classificaions.
+    // On error, return an empty array to indicate an error sorting the Classifications.
     return [];
   }
 }

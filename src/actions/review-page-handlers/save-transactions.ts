@@ -109,7 +109,7 @@ export async function saveSelectedTransactions(
 
 // Iterates over the selected rows to create formatted objects for each select Transaction.
 // Takes: The indices of the selected rows, the related Classified and Raw 'For Review' transactions,
-//        A record of Classification Id to Transaction Id for both Classificaion, and an array of expense accounts.
+//        A record of Classification Id to Transaction Id for both Classification, and an array of expense accounts.
 // Returns: An array of 'For Review' transaction values used for batch addition to QuickBooks,
 //          An array of Classified Transaction to save to the database,
 //          And a list of Accounts the 'For Review' transactions belong to.

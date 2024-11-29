@@ -20,7 +20,7 @@ import type {
 export async function getSavedTransactions(
   startDate = '',
   endDate = ''
-): Promise<string> {
+): Promise<(QueryResult | Transaction)[]> {
   try {
     // Define the variable used to make the qbo calls.
     const qbo = await getQBObject();
@@ -59,24 +59,6 @@ export async function getSavedTransactions(
         resolve(data);
       });
     });
-
-    // Get the current date to use as a base for the Transaction date range.
-    const today = new Date();
-
-    // If no start date was passed as an argument, set the end of the range to the default: 2 Years Ago
-    if (startDate === '') {
-      const TwoYearsAgo = new Date(
-        today.getFullYear() - 2,
-        today.getMonth(),
-        today.getDate()
-      );
-      startDate = TwoYearsAgo.toISOString().split('T')[0];
-    }
-
-    // If no end date was passed as an argument, set the end of the range to the default: the current date.
-    if (endDate === '') {
-      endDate = today.toISOString().split('T')[0];
-    }
 
     // Defines the date range and the maximum number of returned Transactions.
     // Columns defines a list of the data columns to include for the Transactions.
@@ -140,27 +122,27 @@ export async function getSavedTransactions(
     }
 
     // Return the formatted results as a JSON string.
-    return JSON.stringify(results);
+    return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
-      return JSON.stringify([
+      return [
         {
           result: 'error',
           message:
             'Unexpected error occured while fetching saved Transactions.',
           detail: error.message,
         },
-      ]);
+      ];
     } else {
-      return JSON.stringify([
+      return [
         {
           result: 'error',
           message:
             'Unexpected error occured while fetching saved Transactions.',
           detail: 'N/A',
         },
-      ]);
+      ];
     }
   }
 }
@@ -232,7 +214,6 @@ async function checkAndFormatTransactions(
           };
 
           // Search for the Purchase related to the Transaction to get the Tax Code.
-          // Pass Synthetic Login Tokens and Company realm Id in case backend call is needed.
           const transactionPurchase = await findFormattedPurchase(
             String(row.ColData[idRow].id)
           );
@@ -240,12 +221,12 @@ async function checkAndFormatTransactions(
           // Get the User Tax Codes and parse it to a Query Result and an array of Tax Code objects.
           const userTaxCodes = JSON.parse(await getTaxCodes());
 
-          // Check if either the Purchase or Tax Code fetches resulted in an error Query Result.
+          // Check if either of the fetches resulted in an error Query Result.
           if (
             transactionPurchase.result_info.result === 'Error' ||
             userTaxCodes[0].result === 'Error'
           ) {
-            // Define truth values for both Classificaions to indicate if that fetch resulted in an error.
+            // Define values for both Classifications to indicate if that fetch resulted in an error.
             const purchaseError =
               transactionPurchase.result_info.result === 'Error';
             const taxCodeError = userTaxCodes[0].result === 'Error';
@@ -258,7 +239,7 @@ async function checkAndFormatTransactions(
                 taxCodeError
             );
 
-            // Log seperate errors for each fetch that failed with the error details.
+            // Log seperate errors with the error details for each fetch that failed.
             if (purchaseError) {
               console.error(
                 'Error Fetching Purchase: ' +
@@ -271,7 +252,7 @@ async function checkAndFormatTransactions(
               );
             }
           } else {
-            // If both fetches were successful, iterate through the User Tax Codes.
+            // If both fetches were successful, iterate through the user Tax Codes.
             // Skips the Query Result in the first index.
             for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {
               // Find the Tax Code that matches the one in the Puchase object for the Transaction.

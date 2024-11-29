@@ -18,7 +18,7 @@ import type {
 // Adds newly Classified 'For Review' transactions to the database to be pulled and shown to User for review on the frontend.
 // Takes: An array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a Company realm Id.
 // Returns: A Query Result object for adding the 'For Review' transactions to the database.
-export async function addForReviewTransactions(
+export async function addDatabaseForReviewTransactions(
   transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][],
   realmId: string
 ): Promise<QueryResult> {

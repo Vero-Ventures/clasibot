@@ -112,8 +112,6 @@ export async function removeSelectedForReviewTransaction(
 }
 
 // Removes all 'For Review' transactions from the database before a new review is done.
-//    Needed to remove any DB transactions that the user classified themselves.
-//    Ensures the saved 'For Review' transactions represent the most up to date list for the user.
 // Takes: The realm Id of the company to delete the 'For Review' transactions for.
 // Returns: A Query Result object for removing the 'For Review' transactions from the database.
 export async function removeAllForReviewTransactions(
@@ -126,9 +124,9 @@ export async function removeAllForReviewTransactions(
       .from(DatabaseForReviewTransaction)
       .where(eq(DatabaseForReviewTransaction.companyId, realmId));
 
-    // Iterate through the transactions, deleting their related values and the transaction itself.
+    // Iterate through the objects, deleting their related Classifications and the object itself.
     for (const databaseTransaction of transactionsToDelete) {
-      // Delete the relationships to Classifications.
+      // Delete the Related Classifications.
       await db
         .delete(ForReviewTransactionToCategories)
         .where(
@@ -146,7 +144,7 @@ export async function removeAllForReviewTransactions(
           )
         );
 
-      // After all Relationships are deleted, delete the original 'For Review' transaction from the database.
+      // After Relationships are deleted, delete the original 'For Review' transaction from the database.
       await db
         .delete(DatabaseForReviewTransaction)
         .where(

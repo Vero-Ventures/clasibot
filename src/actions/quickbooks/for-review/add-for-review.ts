@@ -15,8 +15,8 @@ import type {
   QueryResult,
 } from '@/types/index';
 
-// Updates the user QuickBooks account to add an  'For Review' transaction to the saved Transactions with the passed Classificaions.
-// Takes: An array of objects containing Raw 'For Review' transactions and the Id's of their Classificaions,
+// Updates the user QuickBooks account to add an  'For Review' transaction to the saved Transactions with the passed Classifications.
+// Takes: An array of objects containing Raw 'For Review' transactions and the Id's of their Classifications,
 //        And an array of Account Id's the 'For Review' transactions belong to.
 // Returns: A Query Result object for updating the User QuickBooks Transactions.
 export async function addForReview(
