@@ -1,14 +1,13 @@
 import { getServerSession } from 'next-auth';
-
 import { redirect } from 'next/navigation';
 
 import { checkSubscription } from '@/actions/stripe';
 
 import { checkCompanyConnection } from '@/actions/connection-functions/index';
 
-import { SBKConfirmationModal } from '@/components/modals/index';
+import { ConnectionConfirmationModal } from '@/components/modals/index';
 
-import SubscriptionPurchase from '@/components/check-pages/subscription-purchase';
+import SubscriptionPage from '@/components/check-pages/subscription-purchase';
 
 import ReviewPage from '@/components/review-page/review-page';
 
@@ -28,6 +27,7 @@ export default async function Page() {
 
   // Get user subscription and check their status.
   const subscriptionStatus = await checkSubscription();
+
   // Check if the Synthetic BookKeeper is connected to the account.
   const companyHasSBK = await checkCompanyConnection();
 
@@ -43,17 +43,18 @@ export default async function Page() {
     location: userCompanyLocation,
   };
 
+  // If the user status is invalid or there is an error, go to the subscription page.
   if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
-    // If the user status is invalid or there is an error, go to the subscription purchase.
-    return <SubscriptionPurchase />;
+    return <SubscriptionPage />;
   } else if (
     !companyHasSBK.connected &&
     process.env.APP_CONFIG === 'production'
   ) {
-    // Only perform check if in production mode.
-    return <SBKConfirmationModal />;
+    // Checks if the the app is in production and the user is not Connected to the Synthetic Bookkeeper.
+    // Shows the Connection required message that redirects to the Connection page.
+    return <ConnectionConfirmationModal />;
   } else {
-    // Otherwise, show the review page.
+    // If the user is subscribed and connected, show the Review Page.
     return (
       <div className="container mx-auto px-4 py-8">
         <ReviewPage companyInfo={companyInfo} />

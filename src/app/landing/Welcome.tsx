@@ -22,6 +22,7 @@ export const Welcome = () => {
             <SignInButton />
           </div>
         </div>
+
         <div
           className="h-full w-full rounded-lg bg-cover bg-center md:ml-4 md:h-96 md:w-1/2 lg:ml-0"
           style={{

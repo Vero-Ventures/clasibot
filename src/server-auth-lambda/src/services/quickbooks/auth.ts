@@ -19,7 +19,7 @@ export class QuickBooksAuth {
 
   async authenticate(
     realmId: string,
-    firmName: string | null
+    firmName: string
   ): Promise<QBOTokenData | null> {
     const browserHelper = new BrowserHelper(this.page);
     const emailService = new EmailService();
@@ -103,7 +103,6 @@ export class QuickBooksAuth {
     inviteType: string
   ): Promise<void> {
     const browser = new BrowserHelper(this.page);
-
     await this.page.goto(inviteLink);
     await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
     await browser.waitAndFill(

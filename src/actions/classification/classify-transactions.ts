@@ -31,14 +31,14 @@ import type {
 } from '@/types/index';
 
 // Takes: A list of saved Classified Transactions, a list of unclassified 'For Review' transactions, -
-//        A synthetic Login Token object, and the Company Info for use in LLM Classification.
+//        The Company Info for use in LLM Classification, and the Company realm Id.
 // Returns: A record that connects a 'For Review' transaction Id to an array of Classified Elements.
 //    On error, instead returns an error object with an error message.
 export async function classifyTransactions(
   classifiedTransactions: Transaction[],
   unclassifiedTransactions: FormattedForReviewTransaction[],
   companyInfo: CompanyInfo,
-  companyId: string
+  realmId: string
 ): Promise<
   | Record<
       string,
@@ -82,8 +82,9 @@ export async function classifyTransactions(
   }
 
   // Check the User Subscription status using the passed Company realm Id
+  const subscriptionStatus = await checkSubscription(realmId);
+
   // If there is an error getting the SubLocation status or it is invalid, return an error object.
-  const subscriptionStatus = await checkSubscription(companyId);
   if ('error' in subscriptionStatus) {
     return { error: 'Error getting User Subscription status.' };
   }
@@ -92,8 +93,8 @@ export async function classifyTransactions(
   }
 
   try {
-    // Get the valid Categories for Classification from QuickBooks Expense Accounts using a synthetic Login Tokens object.
-    // Pass boolean value to indicate if names will be saved to database to properly parse the Category names.
+    // Get the valid Categories for Classification from QuickBooks Expense Accounts using a Synthetic Login Tokens object.
+    // Pass boolean value to indicate if names will be saved to database for proper name parsing of Categories.
     const validDBCategories: Classification[] =
       await fetchValidCategories(true);
     const validLLMCategories: Classification[] =
@@ -293,7 +294,7 @@ async function fetchValidTaxCodes(
       companyInfo.location.SubLocation
     ) {
       classifyTaxCode = true;
-      // Use the synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
+      // Use the Synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
       const userTaxCodes = JSON.parse(await getTaxCodes());
 
       // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
@@ -304,7 +305,7 @@ async function fetchValidTaxCodes(
       // Check the fetch for the Company Tax Codes was a success.
       if (userTaxCodes[0].result === 'Error') {
         // If an error occured fetching the Tax Codes, log the message and detail from the Query Result.
-        console.log(
+        console.error(
           'Error getting Tax Codes, Message: ' +
             userTaxCodes[0].message +
             ', Detail: ' +

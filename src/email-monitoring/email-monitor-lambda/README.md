@@ -1,6 +1,12 @@
-# Instructions for (1) installing a dependency for the Python lambda locally, (2) installing all dependencies in requirements.txt locally, and (3) replacing requirements.txt contents with current dependencies in ./package.
+# Instructions
 
-## Ensure you are in the same directory as this file before running the following commands
+# (1) installing a dependency for the Python lambda locally,
+
+# (2) installing all dependencies in requirements.txt locally,
+
+# (3) replacing requirements.txt contents with current dependencies in ./package.
+
+## Ensure you are in the same directory as this file before running the commands:
 
 ##### Command for installing dependencies into ./package
 
