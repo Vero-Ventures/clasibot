@@ -22,9 +22,8 @@
   - synthetic-login
     - this is the actual main script to perform the process
 
-## Docker Info
 
-I will add comments to the dockerfile to explain things better, but here I will give a general overview of what is happening during the build.
+## Docker Info
 
 ### Multi-stage Build Info
 
@@ -44,7 +43,8 @@ After that we remap the lambda OS path to the home directory. This is done as ch
 
 Finally at the end, we add something called lambda runtime emulator, which can be used to test lambda functions pre-deployment. I used a shell script as the container entrypoint, ("entrypoint.sh"). This just detects if the container is being run locally or in AWS and if locally, it uses the lambda emulator I mentioned.
 
-## Deployment/IaC - Serverless
+
+## Deployment - Serverless
 
 I have added "Serverless" as a bun dependency in this subdirectory to handle deployment and teardown of all synthetic auth related AWS resources ([docs can be found here](https://www.serverless.com/framework/docs)). All the deployment instructions are contained in a single yaml file, "serverless.yml", located in root of this subdirectory.
 
@@ -52,10 +52,10 @@ I have added "Serverless" as a bun dependency in this subdirectory to handle dep
 
 - Install serverless + all other dependencies contained in package.json of this subdirectory
 - AWS account
-  - serverless will prompt you to provide AWS access key and secret key on first use, [info on how to get these keys from AWS can be found here in the serverless docs](https://www.serverless.com/framework/docs/providers/aws/guide/credentials)
+  - Serverless will prompt you to provide AWS access key and secret key on first use, [info on how to get these keys from AWS can be found here in the serverless docs](https://www.serverless.com/framework/docs/providers/aws/guide/credentials)
 - Serverless account
-  - serverless will also prompt you to login/register with them on first use.
-  - It is a free account and they provide a dashboard which could potentially be useful, so not a big deal.
+  - Serverless will also prompt you to login/register with them on first use.
+  - It is a free account and they provide a dashboard which is potentially useful.
 - Docker
   - for building the docker container locally prior to pushing it to AWS. This will be abstracted away by serverless but the dependency is needed.
 
@@ -107,3 +107,52 @@ EMAIL_PASSWORD
 
 IMAP_HOST
 IMAP_PORT
+
+
+## Temp Setup Command Record
+
+PS C:\Users\coppe> aws config
+
+PS C:\Users\coppe> @"
+{
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Principal": {
+                 "Service": "lambda.amazonaws.com"
+             },
+             "Action": "sts:AssumeRole"
+         }
+     ]
+}"@ | Out-File -FilePath trust-policy.json -Encoding ASCII
+
+PS C:\Users\a> aws iam create-role --role-name synthetic-auth-lambda-role --assume-role-policy-document file://trust-policy.json
+
+PS C:\Users\a> $ROLE_ARN = aws iam get-role --role-name synthetic-auth-lambda-role --query Role.Arn --output text
+
+PS C:\Users\a> aws iam attach-role-policy --role-name synthetic-auth-lambda-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+PS C:\Users\a> aws ecr create-repository --repository-name syntheticauth
+
+PS C:\Users\a> $ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
+
+PS C:\Users\a> aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com"
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0 
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> docker build -t syntheticauth .
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> docker tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/syntheticauth:latest"
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> docker push "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/syntheticauth:latest"
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function `
+--function-name syntheticauth `
+--package-type Image `
+--code ImageUri="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest" `
+--role $ROLE_ARN `
+--memory-size 2048 `
+--timeout 300
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE   
