@@ -90,16 +90,20 @@ As mentioned before, I had encountered issues in previous versions of this code 
 # Env.Example
 
 # Oauth URL used in synthetic auth process.
+
 CLASIBOT_URL
 
 # Quickbooks synthetic bookkeeper credentials.
+
 QB_EMAIL_ADDRESS
 QB_PASSWORD
 
 # Spacemail email account credentials used for synthetic auth.
+
 EMAIL_USER
 EMAIL_PASSWORD
 
 # IMAP protocol envs for connecting to email inbox via code.
+
 IMAP_HOST
 IMAP_PORT
