@@ -1,6 +1,6 @@
-import { addCompanyConnection } from '@/actions/connection-functions/index';
+// import { addCompanyConnection } from '@/actions/connection-functions/index';
 
-import { syntheticLogin } from '@/actions/synthetic-login';
+// import { syntheticLogin } from '@/actions/synthetic-login';
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +14,11 @@ export async function POST(request: Request) {
 
     // Check for body value that authenticates Email Monitor requests.
     const monitorAuth = body.monitorAuth;
+
+    console.log(userName)
+    console.log(companyName)
+    console.log(invite_link)
+    console.log(monitorAuth)
 
     // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
@@ -43,23 +48,25 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
-    const [loginResult, _loginTokens] = await syntheticLogin(
-      process.env.BACKEND_REALM_ID!,
-      'null',
-      invite_link,
-      'company'
-    );
+    // // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
+    // const [loginResult, _loginTokens] = await syntheticLogin(
+    //   process.env.BACKEND_REALM_ID!,
+    //   'null',
+    //   invite_link,
+    //   'company'
+    // );
 
-    // If invite accepting resulted in an error, return an error response before connection update.
-    if (loginResult.result === 'Error') {
-      console.log(loginResult.message);
-      console.log(loginResult.detail);
-      return new Response('Invite Accept Process Failed', { status: 400 });
-    }
+    // // If invite accepting resulted in an error, return an error response before connection update.
+    // if (loginResult.result === 'Error') {
+    //   console.log(loginResult.message);
+    //   console.log(loginResult.detail);
+    //   return new Response('Invite Accept Process Failed', { status: 400 });
+    // }
 
-    // Call handler to update Company connection.
-    await addCompanyConnection(userName, companyName);
+    // console.log('Database Update')
+
+    // // Call handler to update Company connection.
+    // await addCompanyConnection(userName, companyName);
 
     return new Response('Company Connection Successfully Updated.');
   } catch (error) {
