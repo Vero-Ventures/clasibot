@@ -152,3 +152,5 @@ PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function `--fun
 PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE
 
 PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda update-function-code --function-name syntheticauth --image-uri "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda get-function-url-config --function-name syntheticauth

@@ -20,7 +20,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       };
     }
 
-    if (inviteLink === '') {
+    if (inviteLink === 'null') {
+      console.log('Login');
       const tokenData = await syntheticAuth(realmId, firmName);
 
       return {
