@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       process.env.BACKEND_REALM_ID!,
       'null',
       invite_link,
-      'company'
+      'firm'
     );
 
     // If invite accepting resulted in an error, return an error response before connection update.
