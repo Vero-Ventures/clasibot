@@ -166,6 +166,9 @@ export async function changeAccountingFirmCompanyAccess(
   addConnection: boolean
 ): Promise<QueryResult> {
   try {
+    console.log("Add Clients")
+    console.log(addCompanyConnection)
+
     // Create a variable to track the overall update success and array to track failed to connect Company names.
     let success = true;
     const failedCompanies = [];
@@ -227,7 +230,7 @@ export async function changeAccountingFirmCompanyAccess(
             if (user[0]) {
               // Check through the list of found Firms for one with the same full name as the User.
               for (const firm of possibleFirms) {
-                console.log('Matched Firm');
+                console.log('Possible Firm');
                 console.log(firm);
 
                 if (user[0].userName === firm.userName) {
