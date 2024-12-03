@@ -1,6 +1,6 @@
-// import { addAccountingFirmConnection } from '@/actions/connection-functions/index';
+import { addAccountingFirmConnection } from '@/actions/connection-functions/index';
 
-// import { syntheticLogin } from '@/actions/synthetic-login';
+import { syntheticLogin } from '@/actions/synthetic-login';
 
 export async function POST(request: Request) {
   try {
@@ -63,8 +63,8 @@ export async function POST(request: Request) {
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
-    // // Call handler to update Firm connection.
-    // await addAccountingFirmConnection(firmName, userName);
+    // Call handler to update Firm connection.
+    await addAccountingFirmConnection(firmName, userName);
 
     return new Response('User Successfully Connected To Firm.');
   } catch (error) {

@@ -1,4 +1,4 @@
-// import { addAccountingFirmCompanies } from '@/actions/connection-functions/index';
+import { addAccountingFirmCompanies } from '@/actions/connection-functions/index';
 
 export async function POST(request: Request) {
   try {
@@ -44,8 +44,8 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // // Call handler to update Firm Companies connections.
-    // await addAccountingFirmCompanies(firmName, companyNames);
+    // Call handler to update Firm Companies connections.
+    await addAccountingFirmCompanies(firmName, companyNames);
 
     return new Response('Firm Companies Connections Successfully Updated.');
   } catch (error) {
