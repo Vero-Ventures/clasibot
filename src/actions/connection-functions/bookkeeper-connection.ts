@@ -346,7 +346,6 @@ export async function changeAccountingFirmCompanyAccess(
   }
 }
 
-
 // Updates a database Company object to be set as disconnected from the Synthetic Bookkeeper.
 //    Done to prevent us from continuing to access that Company.
 // Returns: A Query Result object.
