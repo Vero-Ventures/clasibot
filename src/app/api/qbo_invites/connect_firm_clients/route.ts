@@ -12,10 +12,9 @@ export async function POST(request: Request) {
     // Check for body value that authenticates Email Monitor requests.
     const monitorAuth = body.monitorAuth;
 
-    console.log(firmName)
-    console.log(companyNames)
-    console.log(monitorAuth)
-
+    console.log(firmName);
+    console.log(companyNames);
+    console.log(monitorAuth);
 
     // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
@@ -45,7 +44,9 @@ export async function POST(request: Request) {
     }
 
     // Call handler to update Firm Companies connections.
-    await addAccountingFirmCompanies(firmName, companyNames);
+    const result = await addAccountingFirmCompanies(firmName, companyNames);
+
+    console.log(result);
 
     return new Response('Firm Companies Connections Successfully Updated.');
   } catch (error) {

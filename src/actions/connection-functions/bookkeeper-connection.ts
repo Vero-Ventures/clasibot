@@ -35,8 +35,8 @@ export async function addCompanyConnection(
 
     // Iterate through the database Users to check their Subscription status and Companies.
     for (const user of databaseUsers) {
-      console.log('User')
-      console.log(user)
+      console.log('User');
+      console.log(user);
 
       // Find the User Subscription in the database from the User Id.
       const userSubscription = await db
@@ -44,8 +44,8 @@ export async function addCompanyConnection(
         .from(Subscription)
         .where(eq(Subscription.userId, user.id));
 
-      console.log('Subscription')
-      console.log(userSubscription)
+      console.log('Subscription');
+      console.log(userSubscription);
 
       // Get the Subscription status from Stripe by checking for Customers with matching Id.
       const subscription = await stripe.subscriptions.list({
@@ -55,8 +55,8 @@ export async function addCompanyConnection(
       // Check the Subscription is active and valid.
       const subStatus = subscription.data[0]?.status;
 
-      console.log('Sub Status')
-      console.log(subStatus)
+      console.log('Sub Status');
+      console.log(subStatus);
 
       // Continue if a valid Subscription is found.
       if (subStatus) {
@@ -68,8 +68,8 @@ export async function addCompanyConnection(
 
         // Iterate through the user Companies for the assosiated one.
         for (const company of userCompanies) {
-          console.log('Company')
-          console.log(company)
+          console.log('Company');
+          console.log(company);
 
           // Check if the Company name matches the passed name.
           if (company.name === companyName) {
@@ -77,10 +77,11 @@ export async function addCompanyConnection(
             const result = await db
               .update(Company)
               .set({ bookkeeperConnected: true })
-              .where(eq(Company.id, company.id)).returning();
+              .where(eq(Company.id, company.id))
+              .returning();
 
-            console.log('Result')
-            console.log(result)
+            console.log('Result');
+            console.log(result);
 
             return {
               result: 'Success',
@@ -132,11 +133,16 @@ export async function addAccountingFirmConnection(
       .where(eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName));
 
     // Check if an existing Firm with that name exists.
-    if (!existingFirm) {
+    if (!existingFirm[0]) {
       // If no existing Firm exists, create it and return a success response.
-      await db
+      const result = await db
         .insert(Firm)
-        .values({ name: connectedFirmName, userName: userName });
+        .values({ name: connectedFirmName, userName: userName })
+        .returning();
+
+      console.log('Firm');
+      console.log(result);
+
       return {
         result: 'Success',
         message: 'Firm Created.',
@@ -206,16 +212,24 @@ export async function addAccountingFirmCompanies(
             // If the matching User has already been found, update the Company.
             if (matchingUser) {
               // Update the Company connection status and set an assosiated Firm name.
-              await db
+              const shortcutUpdateCompany = await db
                 .update(Company)
                 .set({
                   bookkeeperConnected: true,
                   firmName: connectedFirmName,
                 })
-                .where(eq(Company.id, potentialCompany.id));
+                .where(eq(Company.id, potentialCompany.id))
+                .returning();
+
+              console.log('Shortcut Update Company');
+              console.log(shortcutUpdateCompany);
+
               // Skip to the next Company.
               break;
             }
+
+            console.log('Match Company For Name:' + companyName);
+            console.log(potentialCompany);
 
             // Get the database User connected to the Company.
             const user = await db
@@ -223,16 +237,26 @@ export async function addAccountingFirmCompanies(
               .from(User)
               .where(eq(User.id, potentialCompany.userId));
 
+            console.log('Company User');
+            console.log(user);
+
             // Check if a matching User was found.
             if (user[0]) {
               // Check through the list of found Firms for one with the same full name as the User.
               for (const firm of possibleFirms) {
+                console.log('Matched Firm');
+                console.log(firm);
+
                 if (user[0].userName === firm.userName) {
                   // If a match is found, define that User for that Firm by their database Id.
-                  await db
+                  const matchedFirm = await db
                     .update(Firm)
                     .set({ userId: user[0].id })
-                    .where(eq(Firm.id, firm.id));
+                    .where(eq(Firm.id, firm.id))
+                    .returning();
+
+                  console.log('Matched Firm');
+                  console.log(matchedFirm);
 
                   // Find the User Subscription in the database by the database User object Id.
                   const userSubscription = await db
@@ -252,13 +276,17 @@ export async function addAccountingFirmCompanies(
                     matchingUser = User.id;
 
                     // Update the Company connection status and related Firm name.
-                    await db
+                    const updatedCompany = await db
                       .update(Company)
                       .set({
                         bookkeeperConnected: true,
                         firmName: connectedFirmName,
                       })
-                      .where(eq(Company.id, potentialCompany.id));
+                      .where(eq(Company.id, potentialCompany.id))
+                      .returning();
+
+                    console.log('Updated Company');
+                    console.log(updatedCompany);
 
                     // Continue to the next Company.
                     break;

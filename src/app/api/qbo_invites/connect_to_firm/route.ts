@@ -15,10 +15,10 @@ export async function POST(request: Request) {
     // Check for body value that authenticates Email Monitor requests.
     const monitorAuth = body.monitorAuth;
 
-    console.log(firmName)
-    console.log(userName)
-    console.log(invite_link)
-    console.log(monitorAuth)
+    console.log(firmName);
+    console.log(userName);
+    console.log(invite_link);
+    console.log(monitorAuth);
 
     // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
@@ -57,14 +57,16 @@ export async function POST(request: Request) {
 
     // If invite accepting resulted in an error, return an error response before connection update.
     if (loginResult.result === 'Error') {
-      console.log('Company Synthetic')
+      console.log('Company Synthetic');
       console.log(loginResult.message);
       console.log(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
     // Call handler to update Firm connection.
-    await addAccountingFirmConnection(firmName, userName);
+    const result = await addAccountingFirmConnection(firmName, userName);
+
+    console.log(result);
 
     return new Response('User Successfully Connected To Firm.');
   } catch (error) {
