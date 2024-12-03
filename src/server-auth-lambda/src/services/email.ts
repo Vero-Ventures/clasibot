@@ -2,7 +2,6 @@ import Imap from 'imap';
 import { simpleParser } from 'mailparser';
 import type { ParsedMail } from 'mailparser';
 import type { Readable } from 'stream';
-import { JSDOM } from 'jsdom';
 import { CONFIG } from '../config';
 
 export class EmailService {
@@ -10,17 +9,6 @@ export class EmailService {
 
   constructor() {
     this.imap = new Imap(CONFIG.imap);
-  }
-
-  private extractCodeFromHtml(html: string): string | null {
-    const dom = new JSDOM(html);
-    const document = dom.window.document;
-
-    const codeParagraph = Array.from(document.querySelectorAll('p')).find((p) =>
-      p.textContent?.trim().match(/^\d{6}$/)
-    );
-
-    return codeParagraph?.textContent?.trim() ?? null;
   }
 
   async fetchLatestEmail(): Promise<string | null> {
@@ -38,13 +26,14 @@ export class EmailService {
     resolve: (code: string | null) => void,
     reject: (error: Error) => void
   ) {
+    console.log('IMAP Ready');
     this.imap.openBox('INBOX', false, (err: Error | null) => {
       if (err) {
         console.error('Error opening inbox:', err);
         this.imap.end();
         return reject(err);
       }
-
+      console.log('Search IMAP');
       const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
       this.searchEmails(twoMinutesAgo, resolve, reject);
     });
@@ -69,7 +58,7 @@ export class EmailService {
           this.imap.end();
           return err ? reject(err) : resolve(null);
         }
-
+        console.log('Search Emails');
         this.fetchEmail(results[results.length - 1], resolve, reject);
       }
     );
@@ -81,7 +70,7 @@ export class EmailService {
     reject: (error: Error) => void
   ) {
     const fetch = this.imap.fetch(emailId, { bodies: [''], markSeen: false });
-
+    console.log('Fetch Email');
     fetch.on('message', (msg: Imap.ImapMessage) => {
       msg.on('body', (stream: Readable) => {
         this.parseEmail(stream, resolve, reject);
@@ -107,12 +96,20 @@ export class EmailService {
         return reject(err);
       }
 
+      console.log('Parse Email');
+      console.log('TEXT');
+      console.log(parsed.text);
+      console.log(parsed.text?.match(/\b\d{6}\b/));
+
       let code: string | null = null;
-      if (parsed.html) {
-        code = this.extractCodeFromHtml(parsed.html);
-      } else if (parsed.text) {
-        code = this.extractCodeFromHtml(`<p>${parsed.text}</p>`);
+      if (parsed.text) {
+        const match = parsed.text.match(/\b\d{6}\b/);
+        if (match) {
+          code = match[0];
+        }
       }
+
+      console.log(code);
 
       this.imap.end();
       resolve(code);

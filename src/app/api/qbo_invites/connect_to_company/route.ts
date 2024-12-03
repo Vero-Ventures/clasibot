@@ -52,13 +52,14 @@ export async function POST(request: Request) {
     // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
     const [loginResult, _loginTokens] = await syntheticLogin(
       process.env.BACKEND_REALM_ID!,
-      '',
+      'null',
       invite_link,
       'company'
     );
 
     // If invite accepting resulted in an error, return an error response before connection update.
     if (loginResult.result === 'Error') {
+      console.log('Company Synthetic')
       console.log(loginResult.message);
       console.log(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });

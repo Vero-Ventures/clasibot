@@ -55,7 +55,7 @@ export async function addForReview(
     // Check for a Firm name and set it to an empty string if it is not present.
     const firmName = currentCompany[0].firmName
       ? currentCompany[0].firmName
-      : '';
+      : 'null';
 
     // Call Synthetic Login with the Company realm Id and the potential Firm name.
     // Returns: A QueryResult and a Synthetic Login Tokens object.

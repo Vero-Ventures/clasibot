@@ -55,7 +55,6 @@ export const syntheticAccept = async (
   inviteType: string
 ) => {
   const executablePath = await chromium.executablePath();
-
   try {
     const browser = await playwright.launch({
       executablePath,
@@ -74,6 +73,7 @@ export const syntheticAccept = async (
       javaScriptEnabled: true,
       bypassCSP: true,
     });
+
     const page = await context.newPage();
 
     try {
