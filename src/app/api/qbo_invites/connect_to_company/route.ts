@@ -15,6 +15,12 @@ export async function POST(request: Request) {
     // Check for body value that authenticates Email Monitor requests.
     const monitorAuth = body.monitorAuth;
 
+    
+    console.log(userName)
+    console.log(companyName)
+    console.log(invite_link)
+    console.log(monitorAuth)
+
     // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
