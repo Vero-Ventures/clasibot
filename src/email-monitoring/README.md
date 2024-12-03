@@ -81,7 +81,7 @@ This document provides an overview of the dataflow for processing emails with AW
   - **S3 Standard**: $0.005/1000 PUT, COPY, POST, LIST requests; $0.0004/1000 GET, SELECT, and all other requests.
   - **Lambda**: First 6 Billion GB-seconds/month: $0.0000166667 for every GB-second and $0.20 per 1M requests.
 
-3. **AWS IaC**
+3. **AWS IaC**:
 
 - Cloudformation template of the email-monitoring AWS infrastructure primarily comprised of AWS SES, S3, and Lambda was generated on 12/03/2024
   - The generated template was not pushed to the repo due to potential security concerns but is accessible in the account under "templates" in Cloudformation > IaC Generator

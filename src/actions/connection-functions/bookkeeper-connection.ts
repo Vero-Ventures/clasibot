@@ -19,7 +19,7 @@ const stripe = new Stripe(
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes info from a QuickBooks Company invite email and updates the related database Company object.
+// Takes info from a QuickBooks Company invite Email and updates the related database Company object.
 // Takes: The User and Company name from a QBO Company invite.
 // Returns: A Query Result object for finding and updating the Comapany in the database.
 export async function addCompanyConnection(
@@ -27,7 +27,7 @@ export async function addCompanyConnection(
   companyName: string
 ): Promise<QueryResult> {
   try {
-    // Use the passed User email to find the related User from the database.
+    // Use the passed User Email to find the related User from the database.
     const databaseUsers = await db
       .select()
       .from(User)
@@ -35,11 +35,17 @@ export async function addCompanyConnection(
 
     // Iterate through the database Users to check their Subscription status and Companies.
     for (const user of databaseUsers) {
+      console.log('User');
+      console.log(user);
+
       // Find the User Subscription in the database from the User Id.
       const userSubscription = await db
         .select()
         .from(Subscription)
         .where(eq(Subscription.userId, user.id));
+
+      console.log('Subscription');
+      console.log(userSubscription);
 
       // Get the Subscription status from Stripe by checking for Customers with matching Id.
       const subscription = await stripe.subscriptions.list({
@@ -48,6 +54,9 @@ export async function addCompanyConnection(
 
       // Check the Subscription is active and valid.
       const subStatus = subscription.data[0]?.status;
+
+      console.log('Sub Status');
+      console.log(subStatus);
 
       // Continue if a valid Subscription is found.
       if (subStatus) {
@@ -59,13 +68,20 @@ export async function addCompanyConnection(
 
         // Iterate through the user Companies for the assosiated one.
         for (const company of userCompanies) {
+          console.log('Company');
+          console.log(company);
+
           // Check if the Company name matches the passed name.
           if (company.name === companyName) {
             // If a match is found, update the company and return a success Query Result.
-            await db
+            const result = await db
               .update(Company)
               .set({ bookkeeperConnected: true })
-              .where(eq(Company.id, company.id));
+              .where(eq(Company.id, company.id))
+              .returning();
+
+            console.log('Result');
+            console.log(result);
 
             return {
               result: 'Success',
@@ -102,7 +118,7 @@ export async function addCompanyConnection(
   }
 }
 
-// Takes info from a QuickBooks accounting Firm invite email and creates a related database Firm object.
+// Takes info from a QuickBooks accounting Firm invite Email and creates a related database Firm object.
 // Takes: The accounting Firm name and User name from a QBO Firm invite.
 // Returns: A Query Result object for adding the Firm to database.
 export async function addAccountingFirmConnection(
@@ -117,11 +133,16 @@ export async function addAccountingFirmConnection(
       .where(eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName));
 
     // Check if an existing Firm with that name exists.
-    if (!existingFirm) {
+    if (!existingFirm[0]) {
       // If no existing Firm exists, create it and return a success response.
-      await db
+      const result = await db
         .insert(Firm)
-        .values({ name: connectedFirmName, userName: userName });
+        .values({ name: connectedFirmName, userName: userName })
+        .returning();
+
+      console.log('Firm');
+      console.log(result);
+
       return {
         result: 'Success',
         message: 'Firm Created.',
@@ -154,8 +175,8 @@ export async function addAccountingFirmConnection(
   }
 }
 
-// Takes info from a QuickBooks Firm client access email and updates the related database Company objects.
-// Takes: A Firm name and an array of Company names from a QBO client access update email.
+// Takes info from a QuickBooks Firm client access Email and updates the related database Company objects.
+// Takes: A Firm name and an array of Company names from a QBO client access update Email.
 // Returns: A Query Result object.
 export async function addAccountingFirmCompanies(
   connectedFirmName: string,
@@ -177,7 +198,7 @@ export async function addAccountingFirmCompanies(
 
     // Check if any possible Firms were found.
     if (possibleFirms) {
-      // Iterate through the Company names passed from the email.
+      // Iterate through the Company names passed from the Email.
       for (const companyName of companyNames) {
         // Get all Companies with a matching name.
         const matchingCompanies = await db
@@ -191,16 +212,24 @@ export async function addAccountingFirmCompanies(
             // If the matching User has already been found, update the Company.
             if (matchingUser) {
               // Update the Company connection status and set an assosiated Firm name.
-              await db
+              const shortcutUpdateCompany = await db
                 .update(Company)
                 .set({
                   bookkeeperConnected: true,
                   firmName: connectedFirmName,
                 })
-                .where(eq(Company.id, potentialCompany.id));
+                .where(eq(Company.id, potentialCompany.id))
+                .returning();
+
+              console.log('Shortcut Update Company');
+              console.log(shortcutUpdateCompany);
+
               // Skip to the next Company.
               break;
             }
+
+            console.log('Match Company For Name:' + companyName);
+            console.log(potentialCompany);
 
             // Get the database User connected to the Company.
             const user = await db
@@ -208,16 +237,26 @@ export async function addAccountingFirmCompanies(
               .from(User)
               .where(eq(User.id, potentialCompany.userId));
 
+            console.log('Company User');
+            console.log(user);
+
             // Check if a matching User was found.
             if (user[0]) {
               // Check through the list of found Firms for one with the same full name as the User.
               for (const firm of possibleFirms) {
+                console.log('Matched Firm');
+                console.log(firm);
+
                 if (user[0].userName === firm.userName) {
                   // If a match is found, define that User for that Firm by their database Id.
-                  await db
+                  const matchedFirm = await db
                     .update(Firm)
                     .set({ userId: user[0].id })
-                    .where(eq(Firm.id, firm.id));
+                    .where(eq(Firm.id, firm.id))
+                    .returning();
+
+                  console.log('Matched Firm');
+                  console.log(matchedFirm);
 
                   // Find the User Subscription in the database by the database User object Id.
                   const userSubscription = await db
@@ -237,13 +276,17 @@ export async function addAccountingFirmCompanies(
                     matchingUser = User.id;
 
                     // Update the Company connection status and related Firm name.
-                    await db
+                    const updatedCompany = await db
                       .update(Company)
                       .set({
                         bookkeeperConnected: true,
                         firmName: connectedFirmName,
                       })
-                      .where(eq(Company.id, potentialCompany.id));
+                      .where(eq(Company.id, potentialCompany.id))
+                      .returning();
+
+                    console.log('Updated Company');
+                    console.log(updatedCompany);
 
                     // Continue to the next Company.
                     break;
@@ -320,7 +363,7 @@ export async function addAccountingFirmCompanies(
   }
 }
 
-// Updates a database Company object to be set as disconnected from the synthetic bookkeeper.
+// Updates a database Company object to be set as disconnected from the Synthetic Bookkeeper.
 //    Done to prevent us from continuing to access that Company.
 // Returns: A Query Result object.
 export async function makeCompanyIncactive(): Promise<QueryResult> {

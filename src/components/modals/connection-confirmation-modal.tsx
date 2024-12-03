@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 
-export const SBKConfirmationModal = () => {
+export const ConnectionConfirmationModal = () => {
   const router = useRouter();
 
   return (

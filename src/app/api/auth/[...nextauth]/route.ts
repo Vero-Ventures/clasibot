@@ -9,11 +9,11 @@ const handler = NextAuth(options);
 const GET = async (req: Request, res: Response) => {
   // Define the url from the request.
   const url = new URL(req.url || '');
-  // Check if the request is from the correct endpoint '/api/auth/callback/quickbooks'.
+  // Check if the request is from the expected endpoint.
   if (url.pathname === '/api/auth/callback/quickbooks') {
-    // Get the current realmId from the url.
+    // Get the current realm Id from the url.
     const realmId = url.searchParams.get('realmId');
-    // If realmId is present, set it as a secure cookie.
+    // If realm Id is present, set it as a secure cookie.
     if (realmId) {
       cookies().set('realmId', realmId, { secure: true });
     }

@@ -20,8 +20,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       };
     }
 
-    if (inviteLink === '') {
-      const tokenData = await syntheticAuth(realmId, firmName || null);
+    if (inviteLink === 'null') {
+      console.log('Login');
+      const tokenData = await syntheticAuth(realmId, firmName);
 
       return {
         statusCode: 200,

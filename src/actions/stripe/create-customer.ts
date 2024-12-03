@@ -32,7 +32,7 @@ export async function createCustomer(userId: string): Promise<Response> {
 
     // Check for a User Stripe Id in the Subscription object.
     const userStripeId = subscription[0]?.stripeId;
-    // If no Stripe Id is found, create a new Customer with the User email and name.
+    // If no Stripe Id is found, create a new Customer with the User Email and name.
     if (!userStripeId) {
       // Get the User object from the database using the passed User Id.
       const user = await db.select().from(User).where(eq(User.id, userId));
@@ -42,9 +42,9 @@ export async function createCustomer(userId: string): Promise<Response> {
         return Response.json({ error: 'User not found!' });
       }
 
-      // Create a Customer object with a email and name pulled from the database User object.
+      // Create a Customer object with a Email and name pulled from the database User object.
       const customer = await stripe.customers.create({
-        // Asserts a non-null values through the returning on null check above.
+        // Assert non-null values from null value check above.
         email: user[0].email!,
         name: user[0].userName!,
       });

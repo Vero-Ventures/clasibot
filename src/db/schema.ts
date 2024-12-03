@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
+// Defines the base User object that may related to multiple Companies.
 export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   userName: text('user_name'),
@@ -22,6 +23,8 @@ export const UserToCompanyRelations = relations(User, ({ many }) => ({
   companies: many(Company),
 }));
 
+// Defines a potential element of a User indicating they belong to a Firm.
+// Firms have the potential for multiple related Companies.
 export const Firm = pgTable('Firm', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   name: text('name').notNull(),
@@ -29,6 +32,7 @@ export const Firm = pgTable('Firm', {
   userName: text('user_name').notNull(),
 });
 
+// Defines the Stripe Subscription of a User.
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   userId: uuid('user_id')
@@ -38,6 +42,8 @@ export const Subscription = pgTable('Subscription', {
   stripeId: text('stripe_id').unique(),
 });
 
+// A QuickBooks Company that is assosiated with a user.
+// Also defines possible relation to a Firm and Synthetic Bookkeeper connection status.
 export const Company = pgTable('Company', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
   realmId: text('realm_id').notNull().unique(),
@@ -47,9 +53,9 @@ export const Company = pgTable('Company', {
   name: text('name').notNull(),
   firmName: text('firm_name'),
   bookkeeperConnected: boolean('bookkeeper_connected').notNull(),
-  classificationFailed: boolean('classification_failed'),
 });
 
+// Defines a Transaction name to record connected Classifications for Database referencing.
 export const Transaction = pgTable('Transaction', {
   id: serial('id').primaryKey(),
   transactionName: text('transaction_name').unique().notNull(),
@@ -69,6 +75,9 @@ export const TransactionToTaxCodesRelationship = relations(
   })
 );
 
+// Defines the key data needed to store and re-load 'For Review' Transactions.
+// Contains base 'For Review' Transaction object data.
+// Also defines the top Classification methods used for Confidence Values.
 export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   companyId: text('company_id')
@@ -101,6 +110,8 @@ export const ForReviewTransactionToTaxCodesRelationship = relations(
   })
 );
 
+// Defines a Category Classification that can related to either Transaction type.
+// Defines the Category itself and the number of times matched to a Transaction.
 export const Category = pgTable('Category', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
@@ -121,6 +132,8 @@ export const CategoryToForReviewTransactionsRelationship = relations(
   })
 );
 
+// Defines a Tax Code Classification that can related to either Transaction type.
+// Defines the Tax Code itself and the number of times matched to a Transaction.
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('taxCode').unique().notNull(),
@@ -141,6 +154,7 @@ export const TaxCodesToForReviewTransactionsRelationship = relations(
   })
 );
 
+// Table to define many-to-many relationships of Transactions and Categories.
 export const TransactionsToCategories = pgTable(
   'TransactionsToCategories',
   {
@@ -156,6 +170,7 @@ export const TransactionsToCategories = pgTable(
   })
 );
 
+// Table to define many-to-many relationships of Transactions and Tax Codes.
 export const TransactionsToTaxCodes = pgTable(
   'TransactionsToTaxCodes',
   {
@@ -171,6 +186,7 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
+// Table to define many-to-many relationships of 'For Review' Transactions and Categories.
 export const ForReviewTransactionToCategories = pgTable(
   'ForReviewTransactionsToCategories',
   {
@@ -186,6 +202,7 @@ export const ForReviewTransactionToCategories = pgTable(
   })
 );
 
+// Table to define many-to-many relationships of 'For Review' Transactions and Tax Codes.
 export const ForReviewTransactionToTaxCodes = pgTable(
   'ForReviewTransactionsToTaxCodes',
   {

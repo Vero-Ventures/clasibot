@@ -15,7 +15,7 @@ import { getQBObject } from '@/actions/quickbooks/qb-client';
 // Returns: The Company name as a string or 'Error: Name not found'
 export async function getCompanyName(): Promise<string> {
   try {
-    // Define the variable used to make the qbo calls.
+    // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.
@@ -64,7 +64,7 @@ export async function getCompanyName(): Promise<string> {
 // Returns: The Company industry as a string or 'Error' / 'None'
 export async function getCompanyIndustry(): Promise<string> {
   try {
-    // Define the variable used to make the qbo calls.
+    // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.
@@ -124,7 +124,7 @@ export async function getCompanyIndustry(): Promise<string> {
 // Returns: A stringified object that contains the Country and Sub-location.
 export async function getCompanyLocation(): Promise<string> {
   try {
-    // Define the variable used to make the qbo calls.
+    // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
     // Define a type for the QBO response to allow for type checking.

@@ -1,11 +1,10 @@
 /**
- * Defines a formatted version of the saved and Classified Transaction objects returned from the API.
- * Used in Transaction matching and creating a database of possible Classifications.
+ * A formatted version of the Transaction object returned from the QuickBooks API.
  * Seperate from 'For Review' transactions.
  */
 
 export type Transaction = {
-  // Name related to the Transaction (AKA the payee).
+  // Name of the Transaction (AKA payee or description).
   name: string;
   // Total positive OR negative decimal value of the Transaction.
   //    Positive vs Negative depends the type of Account the Transaction is associated with.

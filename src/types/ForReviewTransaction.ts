@@ -1,6 +1,6 @@
 /**
  * Defines several key objects needed for using ' For Review' transactions.
- *    An object defining the important data retruned from the Query.
+ *    The important data elements from the object returned by a 'For Review' query.
  *    The full data object needed to saving the Classified 'For Review' transactions.
  *    A formatted version of the 'For Review' transaction object with the values needed in Classification.
  *    A version of the formatted 'For Review' transaction object that also contains the potential Classifications.
@@ -8,7 +8,7 @@
 
 import type { ClassifiedElement } from './Classification';
 
-// Defines the object recived when calling a 'For Review' transaction from the API.
+// The important data elements from the object returned by a 'For Review' query.
 // Contains the values needed later when saving the 'For Review' transaction to the user Account.
 export type RawForReviewTransaction = {
   id: string;
@@ -25,36 +25,26 @@ export type RawForReviewTransaction = {
   };
 };
 
+// The full data object needed to save the Classified 'For Review' transactions.
 // Defines the full object needed to save a Classified 'For Review' transaction through an API call.
 export type ClassifiedRawForReviewTransaction = {
-  txnList: {
-    olbTxns: [
+  id: string;
+  qboAccountId: string;
+  description: string;
+  origDescription: string;
+  amount: number;
+  olbTxnDate: string;
+  acceptType: string;
+  addAsQboTxn: {
+    details: [
       {
-        id: string;
-        qboAccountId: string;
-        description: string;
-        origDescription: string;
-        amount: number;
-        olbTxnDate: string;
-        acceptType: string;
-        addAsQboTxn: {
-          details: [
-            {
-              categoryId: string;
-              taxCodeId: string;
-            },
-          ];
-          nameId: string | null;
-          txnDate: string;
-          txnTypeId: string;
-        };
+        categoryId: string;
+        taxCodeId: string;
       },
     ];
-  };
-  nextTxnInfo: {
-    accountId: string;
-    nextTransactionIndex: number;
-    reviewState: string;
+    nameId: string | null;
+    txnDate: string;
+    txnTypeId: string;
   };
 };
 

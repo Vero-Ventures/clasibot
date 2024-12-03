@@ -13,11 +13,15 @@ import { eq } from 'drizzle-orm';
 
 import type { RawForReviewTransaction, QueryResult } from '@/types/index';
 
-// Removes a 'For Review' transaction from the database after it is saved to User QuickBooks Transactions.
-// Takes:  A Raw 'For Review' transaction object
-// Returns: A Query Result object for removing the 'For Review' transaction from the database.
+// Removes 'For Review' transactions from the database after they have been saved to QuickBooks Online.
+// Takes:  An array of Raw 'For Review' transaction objects.
+// Returns: A Query Result object for removing the 'For Review' transactions from the database.
 export async function removeSelectedForReviewTransaction(
-  savedTransaction: RawForReviewTransaction
+  savedTransactions: {
+    forReviewTransaction: RawForReviewTransaction;
+    categoryId: string;
+    taxCodeId: string;
+  }[]
 ): Promise<QueryResult> {
   try {
     // Get the session and extract the Company realm Id.
@@ -26,46 +30,50 @@ export async function removeSelectedForReviewTransaction(
 
     // Check if a valid Company realm Id was found.
     if (companyId) {
-      // Get the 'For Review' transaction by the unique combo of Company realm Id and database Transaction Id.
-      const transactionToDelete = await db
-        .select()
-        .from(DatabaseForReviewTransaction)
-        .where(
-          eq(DatabaseForReviewTransaction.companyId, companyId) &&
-            eq(
-              DatabaseForReviewTransaction.reviewTransactionId,
-              savedTransaction.id
-            )
-        );
+      // Iterate over the passed 'For Review' transactions.
+      for (const savedTransaction of savedTransactions) {
+        // Get the 'For Review' transaction by the unique combo of Company realm Id and database Transaction Id.
+        const transactionToDelete = await db
+          .select()
+          .from(DatabaseForReviewTransaction)
+          .where(
+            eq(DatabaseForReviewTransaction.companyId, companyId) &&
+              eq(
+                DatabaseForReviewTransaction.reviewTransactionId,
+                savedTransaction.forReviewTransaction.id
+              )
+          );
 
-      // Use the Id of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
-      await db
-        .delete(ForReviewTransactionToCategories)
-        .where(
-          eq(
-            ForReviewTransactionToCategories.reviewTransactionId,
-            transactionToDelete[0].id
-          )
-        );
-      await db
-        .delete(ForReviewTransactionToTaxCodes)
-        .where(
-          eq(
-            ForReviewTransactionToTaxCodes.reviewTransactionId,
-            transactionToDelete[0].id
-          )
-        );
-
-      // After all Relationships are deleted, delete the 'For Review' transaction from the database.
-      await db
-        .delete(DatabaseForReviewTransaction)
-        .where(
-          eq(DatabaseForReviewTransaction.companyId, companyId) &&
+        // Use the Id of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
+        await db
+          .delete(ForReviewTransactionToCategories)
+          .where(
             eq(
-              DatabaseForReviewTransaction.reviewTransactionId,
-              savedTransaction.id
+              ForReviewTransactionToCategories.reviewTransactionId,
+              transactionToDelete[0].id
             )
-        );
+          );
+
+        await db
+          .delete(ForReviewTransactionToTaxCodes)
+          .where(
+            eq(
+              ForReviewTransactionToTaxCodes.reviewTransactionId,
+              transactionToDelete[0].id
+            )
+          );
+
+        // After all Relationships are deleted, delete the 'For Review' transaction from the database.
+        await db
+          .delete(DatabaseForReviewTransaction)
+          .where(
+            eq(DatabaseForReviewTransaction.companyId, companyId) &&
+              eq(
+                DatabaseForReviewTransaction.reviewTransactionId,
+                savedTransaction.forReviewTransaction.id
+              )
+          );
+      }
 
       // Return a success Query Result.
       return {
@@ -104,8 +112,6 @@ export async function removeSelectedForReviewTransaction(
 }
 
 // Removes all 'For Review' transactions from the database before a new review is done.
-//    Needed to remove any DB transactions that the user classified themselves.
-//    Ensures the saved 'For Review' transactions represent the most up to date list for the user.
 // Takes: The realm Id of the company to delete the 'For Review' transactions for.
 // Returns: A Query Result object for removing the 'For Review' transactions from the database.
 export async function removeAllForReviewTransactions(
@@ -118,9 +124,9 @@ export async function removeAllForReviewTransactions(
       .from(DatabaseForReviewTransaction)
       .where(eq(DatabaseForReviewTransaction.companyId, realmId));
 
-    // Iterate through the transactions, deleting their related values and the transaction itself.
+    // Iterate through the objects, deleting their related Classifications and the object itself.
     for (const databaseTransaction of transactionsToDelete) {
-      // Delete the relationships to Classifications.
+      // Delete the Related Classifications.
       await db
         .delete(ForReviewTransactionToCategories)
         .where(
@@ -138,7 +144,7 @@ export async function removeAllForReviewTransactions(
           )
         );
 
-      // After all Relationships are deleted, delete the original 'For Review' transaction from the database.
+      // After Relationships are deleted, delete the original 'For Review' transaction from the database.
       await db
         .delete(DatabaseForReviewTransaction)
         .where(

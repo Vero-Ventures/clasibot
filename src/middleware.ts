@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
 
   // Define allowed paths for non-logged in users with an array of valid endpoints defined by the site config file.
-  // Footer redirect paths and API endpoints for email monitoring.
+  // Footer redirect paths and API endpoints for Email monitoring.
   const footerPaths = siteConfig.footerItems.map((link) => link.href);
   const emailApiEndpoints = siteConfig.emailEndpoints.map((path) => path.href);
 

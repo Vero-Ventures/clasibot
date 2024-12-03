@@ -5,7 +5,7 @@ import type { QBOTokenData } from './types';
 
 export const syntheticAuth = async (
   realmId: string,
-  firmName: string | null = null
+  firmName: string
 ): Promise<QBOTokenData> => {
   const executablePath = await chromium.executablePath();
 
@@ -55,7 +55,6 @@ export const syntheticAccept = async (
   inviteType: string
 ) => {
   const executablePath = await chromium.executablePath();
-
   try {
     const browser = await playwright.launch({
       executablePath,
@@ -74,6 +73,7 @@ export const syntheticAccept = async (
       javaScriptEnabled: true,
       bypassCSP: true,
     });
+
     const page = await context.newPage();
 
     try {

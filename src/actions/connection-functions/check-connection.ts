@@ -7,7 +7,7 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-// Checks if the current Company is set connected to the synthetic bookkeeper in the database.
+// Checks if the current Company is set connected to the Synthetic Bookkeeper in the database.
 // Returns: A string 'true / false' value for the connection state or an error message string.
 export async function checkCompanyConnection(): Promise<{
   connected: boolean;

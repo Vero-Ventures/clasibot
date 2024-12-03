@@ -26,7 +26,7 @@ export const siteConfig = {
       href: '/privacy-policy',
     },
   ],
-  // Defines the enpoints that are used in email monitoring calls.
+  // Defines the enpoints that are used in Email monitoring calls.
   //    Allows outside handler to call endpoints without being redirected.
   emailEndpoints: [
     {

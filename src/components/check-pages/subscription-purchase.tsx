@@ -1,6 +1,6 @@
 import { PricingTable } from '@/components/site-elements/index';
 
-export default async function SubscriptionPurchase() {
+export default async function SubscriptionPage() {
   let publicKey = '';
   if (process.env.APP_CONFIG === 'production') {
     publicKey = process.env.PROD_STRIPE_PUBLIC_KEY!;
