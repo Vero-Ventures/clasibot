@@ -52,6 +52,9 @@ export async function POST(request: Request) {
 
     // If invite accepting resulted in an error, return an error response before connection update.
     if (loginResult.result === 'Error') {
+      console.log('Company Synthetic')
+      console.log(loginResult.message);
+      console.log(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
