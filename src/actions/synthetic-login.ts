@@ -11,8 +11,8 @@ import type { LoginTokens, QueryResult } from '@/types/index';
 export async function syntheticLogin(
   realmId: string,
   firmName: string,
-  inviteLink: string = '',
-  inviteType: string = ''
+  inviteLink: string = 'null',
+  inviteType: string = 'null'
 ): Promise<[QueryResult, LoginTokens]> {
   // Initialize the Query Result and Login Tokens objects. Sets Query Result to Error by default.
   const loginResult: QueryResult = {

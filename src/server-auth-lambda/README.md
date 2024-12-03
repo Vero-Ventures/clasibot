@@ -22,7 +22,6 @@
   - synthetic-login
     - this is the actual main script to perform the process
 
-
 ## Docker Info
 
 ### Multi-stage Build Info
@@ -42,7 +41,6 @@ In this stage we copy over built source code, and then install all the os depend
 After that we remap the lambda OS path to the home directory. This is done as chrome, or any other browser, will attempt to write to this directory. Since lambda is configured to have HOME be read-only, writing to it will cause the lambda to crash. We instead map HOME to ./tmp directory which can be written to without issue.
 
 Finally at the end, we add something called lambda runtime emulator, which can be used to test lambda functions pre-deployment. I used a shell script as the container entrypoint, ("entrypoint.sh"). This just detects if the container is being run locally or in AWS and if locally, it uses the lambda emulator I mentioned.
-
 
 ## Deployment - Serverless
 
@@ -108,23 +106,22 @@ EMAIL_PASSWORD
 IMAP_HOST
 IMAP_PORT
 
-
 ## Temp Setup Command Record
 
 PS C:\Users\coppe> aws config
 
 PS C:\Users\coppe> @"
 {
-     "Version": "2012-10-17",
-     "Statement": [
-         {
-             "Effect": "Allow",
-             "Principal": {
-                 "Service": "lambda.amazonaws.com"
-             },
-             "Action": "sts:AssumeRole"
-         }
-     ]
+"Version": "2012-10-17",
+"Statement": [
+{
+"Effect": "Allow",
+"Principal": {
+"Service": "lambda.amazonaws.com"
+},
+"Action": "sts:AssumeRole"
+}
+]
 }"@ | Out-File -FilePath trust-policy.json -Encoding ASCII
 
 PS C:\Users\a> aws iam create-role --role-name synthetic-auth-lambda-role --assume-role-policy-document file://trust-policy.json
@@ -137,22 +134,21 @@ PS C:\Users\a> aws ecr create-repository --repository-name syntheticauth
 
 PS C:\Users\a> $ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
 
-PS C:\Users\a> aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com"
+PS C:\Users\a> aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0 
+PS C:\Users\a\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0
 
 PS C:\Users\a\clasibot\src\server-auth-lambda> docker build -t syntheticauth .
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> docker tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/syntheticauth:latest"
+PS C:\Users\a\clasibot\src\server-auth-lambda> docker tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> docker push "$ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/syntheticauth:latest"
+PS C:\Users\a\clasibot\src\server-auth-lambda> docker push "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function `
---function-name syntheticauth `
---package-type Image `
---code ImageUri="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest" `
---role $ROLE_ARN `
---memory-size 2048 `
+PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function `--function-name syntheticauth`
+--package-type Image `--code ImageUri="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"`
+--role $ROLE_ARN `--memory-size 2048`
 --timeout 300
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE   
+PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE
+
+PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda update-function-code --function-name syntheticauth --image-uri "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"

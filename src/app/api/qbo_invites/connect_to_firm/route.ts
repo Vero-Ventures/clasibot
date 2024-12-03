@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     // Call Synthetic Login to login as Synthetic Bookkeeper and accept the invite.
     const [loginResult, _loginTokens] = await syntheticLogin(
       process.env.BACKEND_REALM_ID!,
-      '',
+      'null',
       invite_link,
       'company'
     );

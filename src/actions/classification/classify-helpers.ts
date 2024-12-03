@@ -92,7 +92,7 @@ export async function preformSyntheticLogin(
 ): Promise<{ result: boolean; loginTokens: LoginTokens | null }> {
   try {
     // Check for a passed Firm name and set it to an empty string if it is not present.
-    firmName = firmName ? firmName : '';
+    firmName = firmName ? firmName : 'null';
 
     // Call Synthetic Login with the Company realm Id and the potential Firm name.
     // Returns: A QueryResult and a Synthetic Login Tokens object.
