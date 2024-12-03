@@ -36,7 +36,7 @@ This document provides an overview of the dataflow for processing emails with AW
     - Note the bucket policy currently disallows deletion of objects with prefix /protected-path/ within the existing bucket.
   - **[Lifecycle Rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)**:
     - Manage the lifecycle of email objects (e.g., delete after a set time).
-        - Currently set to delete objects after two weeks following creation.
+        - Currently set to delete S3 objects after three weeks following creation.
   - **[S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/NotificationHowTo.html)**:
     - S3 event notifications enable automatic triggering of Lambda functions when specific events occur in the bucket, such as the creation of a new email object.
     - Ensure the Lambda function has the necessary permissions to be invoked by S3 (IAM role/policy setup).
@@ -73,5 +73,9 @@ This document provides an overview of the dataflow for processing emails with AW
     - **SES**: Inbound email - $0.10/1000 emails
     - **S3 Standard**: $0.005/1000 PUT, COPY, POST, LIST requests; $0.0004/1000 GET, SELECT, and all other requests.
     - **Lambda**: First 6 Billion GB-seconds/month:	$0.0000166667 for every GB-second and $0.20 per 1M requests.
+
+3. **AWS IaC**
+ - Cloudformation template of the email-monitoring AWS infrastructure primarily comprised of AWS SES, S3, and Lambda was generated on 12/03/2024
+    - The generated template was not pushed to the repo due to potential security concerns but is accessible in the account under "templates" in Cloudformation > IaC Generator
 
 ---
