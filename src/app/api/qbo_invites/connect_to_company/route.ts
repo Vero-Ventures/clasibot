@@ -66,7 +66,9 @@ export async function POST(request: Request) {
     }
 
     // Call handler to update Company connection.
-    await addCompanyConnection(userName, companyName);
+    const result = await addCompanyConnection(userName, companyName);
+
+    console.log(result)
 
     return new Response('Company Connection Successfully Updated.');
   } catch (error) {
