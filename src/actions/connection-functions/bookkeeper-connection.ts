@@ -35,17 +35,11 @@ export async function addCompanyConnection(
 
     // Iterate through the database Users to check their Subscription status and Companies.
     for (const user of databaseUsers) {
-      console.log('User');
-      console.log(user);
-
       // Find the User Subscription in the database from the User Id.
       const userSubscription = await db
         .select()
         .from(Subscription)
         .where(eq(Subscription.userId, user.id));
-
-      console.log('Subscription');
-      console.log(userSubscription);
 
       // Get the Subscription status from Stripe by checking for Customers with matching Id.
       const subscription = await stripe.subscriptions.list({
@@ -54,9 +48,6 @@ export async function addCompanyConnection(
 
       // Check the Subscription is active and valid.
       const subStatus = subscription.data[0]?.status;
-
-      console.log('Sub Status');
-      console.log(subStatus);
 
       // Continue if a valid Subscription is found.
       if (subStatus) {
@@ -68,20 +59,14 @@ export async function addCompanyConnection(
 
         // Iterate through the user Companies for the assosiated one.
         for (const company of userCompanies) {
-          console.log('Company');
-          console.log(company);
-
           // Check if the Company name matches the passed name.
           if (company.name === companyName) {
             // If a match is found, update the company and return a success Query Result.
-            const result = await db
+            await db
               .update(Company)
               .set({ bookkeeperConnected: true })
               .where(eq(Company.id, company.id))
               .returning();
-
-            console.log('Result');
-            console.log(result);
 
             return {
               result: 'Success',
@@ -135,13 +120,10 @@ export async function addAccountingFirmConnection(
     // Check if an existing Firm with that name exists.
     if (!existingFirm[0]) {
       // If no existing Firm exists, create it and return a success response.
-      const result = await db
+      await db
         .insert(Firm)
         .values({ name: connectedFirmName, userName: userName })
         .returning();
-
-      console.log('Firm');
-      console.log(result);
 
       return {
         result: 'Success',
@@ -178,9 +160,10 @@ export async function addAccountingFirmConnection(
 // Takes info from a QuickBooks Firm client access Email and updates the related database Company objects.
 // Takes: A Firm name and an array of Company names from a QBO client access update Email.
 // Returns: A Query Result object.
-export async function addAccountingFirmCompanies(
+export async function changeAccountingFirmCompanyAccess(
   connectedFirmName: string,
-  companyNames: string[]
+  companyNames: string[],
+  addConnection: boolean
 ): Promise<QueryResult> {
   try {
     // Create a variable to track the overall update success and array to track failed to connect Company names.
@@ -215,7 +198,7 @@ export async function addAccountingFirmCompanies(
               const shortcutUpdateCompany = await db
                 .update(Company)
                 .set({
-                  bookkeeperConnected: true,
+                  bookkeeperConnected: addConnection,
                   firmName: connectedFirmName,
                 })
                 .where(eq(Company.id, potentialCompany.id))
@@ -279,7 +262,7 @@ export async function addAccountingFirmCompanies(
                     const updatedCompany = await db
                       .update(Company)
                       .set({
-                        bookkeeperConnected: true,
+                        bookkeeperConnected: addConnection,
                         firmName: connectedFirmName,
                       })
                       .where(eq(Company.id, potentialCompany.id))
@@ -362,6 +345,7 @@ export async function addAccountingFirmCompanies(
     }
   }
 }
+
 
 // Updates a database Company object to be set as disconnected from the Synthetic Bookkeeper.
 //    Done to prevent us from continuing to access that Company.

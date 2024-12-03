@@ -5,7 +5,7 @@
 export {
   addCompanyConnection,
   addAccountingFirmConnection,
-  addAccountingFirmCompanies,
+  changeAccountingFirmCompanyAccess,
   makeCompanyIncactive,
 } from './bookkeeper-connection';
 

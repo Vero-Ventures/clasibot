@@ -1,4 +1,4 @@
-import { addAccountingFirmCompanies } from '@/actions/connection-functions/index';
+import { changeAccountingFirmCompanyAccess } from '@/actions/connection-functions/index';
 
 export async function POST(request: Request) {
   try {
@@ -8,13 +8,10 @@ export async function POST(request: Request) {
     // Extract the Firm name and Company names from the request body.
     const firmName: string = body.firmName;
     const companyNames: string[] = body.companyNames || [];
+    const changeType: string = body.changeType || [];
 
     // Check for body value that authenticates Email Monitor requests.
     const monitorAuth = body.monitorAuth;
-
-    console.log(firmName);
-    console.log(companyNames);
-    console.log(monitorAuth);
 
     // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
@@ -44,10 +41,18 @@ export async function POST(request: Request) {
     }
 
     // Call handler to update Firm Companies connections.
-    const result = await addAccountingFirmCompanies(firmName, companyNames);
+    const dbUpdateResult = await changeAccountingFirmCompanyAccess(
+      firmName,
+      companyNames,
+      changeType === 'added'
+    );
 
-    console.log(result);
-
+    if (dbUpdateResult.result === 'Error') {
+      console.error(
+        'Error Updating Database Firm Clients: ' + dbUpdateResult.detail
+      );
+      return new Response('Database Update Process Failed', { status: 400 });
+    }
     return new Response('Firm Companies Connections Successfully Updated.');
   } catch (error) {
     // Catch any errors and log them (include the error message if it is present) and return an error response.
