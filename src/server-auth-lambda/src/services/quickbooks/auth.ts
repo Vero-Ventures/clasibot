@@ -19,7 +19,7 @@ export class QuickBooksAuth {
 
   async authenticate(
     realmId: string,
-    firmName: string | null
+    firmName: string
   ): Promise<QBOTokenData | null> {
     const browserHelper = new BrowserHelper(this.page);
     const emailService = new EmailService();
@@ -85,7 +85,9 @@ export class QuickBooksAuth {
   }
 
   private async initialLogin(browser: BrowserHelper): Promise<void> {
-    await this.page.goto(process.env.CLASIBOT_URL!);
+    await this.page.goto(
+      'https://appcenter.intuit.com/app/connect/oauth2/companyselection?client_id=ABxjXK5CARvx2L80e5SXjXCM509zoH6EU2lBMfsSOiyB6AdXD1&scope=com.intuit.quickbooks.accounting%20openid%20profile%20email%20phone%20address&response_type=code&redirect_uri=https%3A%2F%2Fclasibot.com%2Fapi%2Fauth%2Fcallback%2Fquickbooks&state=PxkOVzUmHjHUwxLnO7XaGkvZvEMdmggxMjfO1S-dGD8&code_challenge=IVy5kuXVmrbURFdfvkwjUCENCjUa4LhkANEi7_r1vGE&code_challenge_method=S256&locale=en-us'
+    );
     await browser.waitAndFill(
       CONFIG.selectors.login.emailInput,
       CONFIG.quickbooks.email
@@ -102,42 +104,64 @@ export class QuickBooksAuth {
     inviteLink: string,
     inviteType: string
   ): Promise<void> {
+    console.log('New Browser');
     const browser = new BrowserHelper(this.page);
 
+    console.log('Go To Page');
     await this.page.goto(inviteLink);
+    console.log('Submit Email');
     await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
+    console.log('Fill Password');
     await browser.waitAndFill(
       CONFIG.selectors.login.passwordInput,
       CONFIG.quickbooks.password
     );
+    console.log('Submit Password');
     await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
-    if (inviteType === 'company') {
-      const firmInput = await this.page.waitForSelector(
-        CONFIG.selectors.firmSelection.inviteSearchInput
-      );
-      await firmInput.click();
-      await firmInput.fill('Clasibot Synthetic Bookkeeper');
 
+    console.log('Handle MFA');
+    const emailService = new EmailService();
+    await this.handleMFA(browser, emailService);
+
+    if (inviteType === 'company') {
+      console.log('Wait For Firm Selector');
+      await browser.waitAndFill(
+        CONFIG.selectors.firmSelection.inviteSearchInput,
+        'Clasibot Synthetic Bookkeeper'
+      );
+      console.log('Find Firm Selection Boxes');
       const options = this.page.locator(
         CONFIG.selectors.firmSelection.inviteListItem
       );
+      console.log('Wait and Click First Firm Box');
       await options.first().waitFor({ state: 'visible' });
       await options.first().click();
+      console.log('Confirm Selection');
       await browser.waitAndClick(
         CONFIG.selectors.firmSelection.inviteFirmAcceptButton
       );
     }
+    console.log('Start Invite Accept Delay');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log('Complete Delay For Invite Process');
+        resolve();
+      }, 5000);
+    });
   }
 
   private async handleMFA(
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
-    await browser.waitAndClick(CONFIG.selectors.login.mfaEmailOption, 30000);
+    console.log('Send Email');
+    await browser.waitAndClick(CONFIG.selectors.login.mfaSMSOption, 30000);
+    console.log('Wait For Email');
     const code = await this.waitForVerificationCode(emailService);
     if (!code) throw new Error('Failed to retrieve verification code');
-
+    console.log('Fill MFA Code');
     await browser.waitAndFill(CONFIG.selectors.login.verificationInput, code);
+    console.log('Submit MFA Code');
     await browser.waitAndClick(CONFIG.selectors.login.verificationSubmit);
   }
 
@@ -150,6 +174,7 @@ export class QuickBooksAuth {
     for (let i = 0; i < maxAttempts; i++) {
       try {
         const code = await emailService.fetchLatestEmail();
+        console.log(code);
         if (code) return code;
       } catch (error) {
         console.error(`Error during attempt ${i + 1}:`, error);

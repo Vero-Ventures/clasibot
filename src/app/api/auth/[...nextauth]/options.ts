@@ -126,34 +126,34 @@ export const options: NextAuthOptions = {
     // Define the behavior of callback function called on frontend sign in.
     async signIn({ user }) {
       try {
-        // Get the email and name of the User.
+        // Get the Email and name of the User.
         const email = user.email;
         const userName = user.name;
 
-        // Check if the realm Id can be found from the cookies and throw an error if it could not.
+        // Check if the realm Id can be found from the cookies.
         if (!cookies().get('realmId')?.value) {
           // Throw an error to be caught and logged at the end of sign in.
           throw 'Company Id could not be found for Company creation.';
         }
 
-        // Only reach this point if realm Id is present so record it as not null.
+        // Only reach this point if realm Id is present so define it as not null.
         const companyId = cookies().get('realmId')!.value;
 
-        // Check if the email was successfuly found from the passed User.
+        // Check if the Email was successfuly found from the passed User.
         if (!email) {
-          // If no email is found, return false to indicate that sign-in failed.
-          console.error('No user email found in session');
+          // If no Email is found, return false to indicate that sign-in failed.
+          console.error('No user Email found in session');
           return false;
         }
 
         // Check if the User name was successful found from passed User.
         if (!userName) {
-          // If no user name is found, false to indicate that sign-in failed.
-          console.error('No user name found in session');
+          // If no User name is found, false to indicate that sign-in failed.
+          console.error('No User name found in session');
           return false;
         }
 
-        // Find the database User object with the User email.
+        // Find the database User object with the User Email.
         const userData = await db
           .select()
           .from(User)
@@ -227,7 +227,6 @@ export const options: NextAuthOptions = {
 
           // Use the current Company realm Id to check if it present in the list of the User database Companies.
           if (!companies.some((company) => company.realmId === companyId)) {
-            // If there is no assosaited database User object for the current Company realm Id -
             // Create a new Company object that is assosaited with the new User.
             const newCompany = {
               realmId: companyId,
@@ -258,7 +257,7 @@ export const options: NextAuthOptions = {
   },
 };
 
-// Define the backend values for the client Id and secret used in synthetic login processes.
+// Define the backend values for the client Id and secret used in Synthetic Login processes.
 // Values are based based on the environment configuration.
 const useIdBackend =
   process.env.APP_CONFIG === 'production'
@@ -349,13 +348,13 @@ export const backendOptions: NextAuthOptions = {
     // Define the behavior of callback function called on backend sign in.
     async signIn({ user }) {
       try {
-        // Get the email of the current User
+        // Get the Email of the current User
         const email = user.email;
 
-        // Check if the email was successfuly found from the passed User.
+        // Check if the Email was successfuly found from the passed User.
         if (!email) {
-          // If no email is found, return false to indicate that sign-in failed.
-          console.error('No user email found in session');
+          // If no Email is found, return false to indicate that sign-in failed.
+          console.error('No user Email found in session');
           return false;
         }
       } catch (error) {

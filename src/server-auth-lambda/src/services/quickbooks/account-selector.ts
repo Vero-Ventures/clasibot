@@ -5,12 +5,9 @@ import type { QBOFirmClientResponse } from '../../types';
 export class AccountSelector {
   constructor(private page: Page) {}
 
-  async selectAccounts(
-    realmId: string,
-    firmName: string | null
-  ): Promise<void> {
+  async selectAccounts(realmId: string, firmName: string): Promise<void> {
     try {
-      if (firmName) {
+      if (firmName !== 'null') {
         await this.searchAndSelectFirm(firmName, realmId);
       } else {
         await this.selectDefaultFirm(realmId);
@@ -31,9 +28,6 @@ export class AccountSelector {
 
     const options = this.page.locator(CONFIG.selectors.firmSelection.listItem);
     await options.first().waitFor({ state: 'visible' });
-    const count = await options.count();
-
-    console.log(`Found ${count} options in dropdown`);
 
     await options.first().click();
     await this.selectCompanyByRealmId(realmId);

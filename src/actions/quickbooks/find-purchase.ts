@@ -7,11 +7,10 @@ import { getQBObject } from '@/actions/quickbooks/qb-client';
 import type { ErrorResponse, Purchase } from '@/types/index';
 
 // Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.
-// Takes: The Id of the Purchase to find from QuickBooks
-//    May also take synthetic Login Tokens and Company realm Id for backend calls.
+// Takes: The Id of the Purchase to find from QuickBooks.
 export async function findFormattedPurchase(id: string): Promise<Purchase> {
   try {
-    // Define the variable used to make the qbo calls.
+    // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
     // Define a success tracking value and the format of QuickBooks and error response objects.
@@ -60,28 +59,29 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
     const queryResult = createQueryResult(success, error);
 
     // Create a Purchase object with all fields set to null.
-    //    Only one Purchase is returned per call, so the Query Result is recorded inside the object.
+    // Only one Purchase is returned per call, so the Query Result is recorded inside the object.
     const formattedResult: Purchase = {
       result_info: queryResult,
       id: '',
       taxCodeId: '',
     };
 
-    // If the query did not encounter an error, get the Id from the response and update the Purchase object.
+    // If the query was successful, get the Id from the response and update the Purchase object.
     if (success) {
       formattedResult.id = response.Id;
-      // Iterate through the line field to find the Tax Code Id.
-      // If present the Tax Code is found in the 'AccountBasedExpenseLineDetail' field.
+      // Iterate through the line field of the response to find the Tax Code Id.
+      // If present, the Tax Code is found in the 'AccountBasedExpenseLineDetail' field.
       for (const line of response.Line) {
         if (line.DetailType === 'AccountBasedExpenseLineDetail') {
-          // Set the Purchase taxCodeId using the value found within the line and break the loop to stop looking.
+          // Set the Purchase taxCodeId and stop iteration.
           formattedResult.taxCodeId =
             line.AccountBasedExpenseLineDetail.TaxCodeRef.value;
           break;
         }
       }
     }
-    // Return the formatted Purchase object as a JSON string.
+
+    // Return the formatted Purchase object.
     return formattedResult;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.

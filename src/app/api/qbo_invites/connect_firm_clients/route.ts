@@ -2,17 +2,21 @@ import { addAccountingFirmCompanies } from '@/actions/connection-functions/index
 
 export async function POST(request: Request) {
   try {
-    // Get request body that contains the email monitor auth code and email data.
+    // Get request body that contains the Email Monitor auth code and Email data.
     const body = await request.json();
-
-    // Check for body value that authenticates email monitor requests.
-    const monitorAuth = body.monitorAuth;
 
     // Extract the Firm name and Company names from the request body.
     const firmName: string = body.firmName;
     const companyNames: string[] = body.companyNames || [];
 
-    // Check for an auth header that matches the expeced value, defined by the EMAIL_ENDPOINT_AUTH env.
+    // Check for body value that authenticates Email Monitor requests.
+    const monitorAuth = body.monitorAuth;
+
+    console.log(firmName);
+    console.log(companyNames);
+    console.log(monitorAuth);
+
+    // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
         'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
@@ -22,8 +26,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // Check if valid Firm name and Company names were passed.
-    // Log error responses for the missing values.
+    // Check if valid Firm name and Company names were passed and log errors for any missing values.
     if (!firmName) {
       console.error(
         'Error Adding Accounting Firm Companies: No Valid Firm Name Passed.'
@@ -40,10 +43,11 @@ export async function POST(request: Request) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
 
-    // Call handler for accounting Firm client access emails.
-    await addAccountingFirmCompanies(firmName, companyNames);
+    // Call handler to update Firm Companies connections.
+    const result = await addAccountingFirmCompanies(firmName, companyNames);
 
-    // Return a success response.
+    console.log(result);
+
     return new Response('Firm Companies Connections Successfully Updated.');
   } catch (error) {
     // Catch any errors and log them (include the error message if it is present) and return an error response.

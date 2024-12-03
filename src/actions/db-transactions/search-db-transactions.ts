@@ -85,11 +85,11 @@ export async function searchDatabaseTransactionCategories(
   } catch (error) {
     // Catch any errors and log them, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error Getting Categories From Database: ' + error.message);
+      console.error('Error Getting Categories From Database: ' + error.message);
     } else {
-      console.log('Unexpected Error Getting Categories From Database.');
+      console.error('Unexpected Error Getting Categories From Database.');
     }
-    // On error, return an empty array to indicate an error sorting the Classificaions.
+    // On error, return an empty array to indicate an error sorting the Classifications.
     return [];
   }
 }
@@ -168,9 +168,9 @@ export async function searchDatabaseTransactionTaxCodes(
   } catch (error) {
     // Catch any errors and log them, include the error message if it is present.
     if (error instanceof Error) {
-      console.log('Error Getting Tax Codes From Database: ' + error.message);
+      console.error('Error Getting Tax Codes From Database: ' + error.message);
     } else {
-      console.log('Unexpected Error Getting Tax Codes From Database.');
+      console.error('Unexpected Error Getting Tax Codes From Database.');
     }
     // On error, return an empty array to indicate no valid Tax Codes were found.
     return [];

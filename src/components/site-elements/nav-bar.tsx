@@ -18,11 +18,11 @@ export async function Navbar() {
   // Check the user's Subscription status and set the connected state with the result.
   const connectionResult = await checkCompanyConnection();
 
-  // Get get the server session and extract the user email.
+  // Get get the server session and extract the user Email.
   const session = await getServerSession(options);
   const userEmail = session?.user?.email ?? '';
 
-  // Define and record the Stripe portal URL using the user's email. Takes user to a profile management page.
+  // Define and record the Stripe portal URL using the user's Email. Takes user to a profile management page.
   const stripeUrl = `${process.env.STRIPE_CUSTOMER_PORTAL}?prefilled_email=${encodeURIComponent(userEmail)}`;
 
   return (

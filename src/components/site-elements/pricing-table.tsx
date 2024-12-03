@@ -7,7 +7,7 @@ import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
 // Defines the Pricing Table UI element that redirects users to payment options.
-// Takes: Stripe Env variables used to define the pricing table.
+// Takes: Stripe Env variables used to define the Pricing Table.
 export function PricingTable({
   publicKey,
   tableId,

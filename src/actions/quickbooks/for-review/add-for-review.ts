@@ -15,13 +15,17 @@ import type {
   QueryResult,
 } from '@/types/index';
 
-// Updates the User QuickBooks to add a 'For Review' transaction to the saved Transactions with the passed Classificaions.
-// Takes: A Raw 'For Review' transaction, and the Id's of its Classificaions.
+// Updates the user QuickBooks account to add an  'For Review' transaction to the saved Transactions with the passed Classifications.
+// Takes: An array of objects containing Raw 'For Review' transactions and the Id's of their Classifications,
+//        And an array of Account Id's the 'For Review' transactions belong to.
 // Returns: A Query Result object for updating the User QuickBooks Transactions.
 export async function addForReview(
-  forReviewTransaction: RawForReviewTransaction,
-  categoryId: string,
-  taxCodeId: string
+  batchAddTransactions: {
+    forReviewTransaction: RawForReviewTransaction;
+    categoryId: string;
+    taxCodeId: string;
+  }[],
+  transactionAccounts: string[]
 ): Promise<QueryResult> {
   try {
     // Get the current session for the Company realm Id of the currently logged in Company.
@@ -37,7 +41,7 @@ export async function addForReview(
     }
 
     // Get the database Company object to check for a potential Firm name.
-    // Needed during synthetic login if access to Company comes through an Firm.
+    // Needed during Synthetic Login if access to Company comes through an Firm.
     const currentCompany = await db
       .select()
       .from(Company)
@@ -48,14 +52,19 @@ export async function addForReview(
       return { result: '', message: '', detail: '' };
     }
 
-    // Call synthetic login with the Company realm Id and the potential Firm name.
-    // Returns: A QueryResult and a synthetic Login Tokens object.
+    // Check for a Firm name and set it to an empty string if it is not present.
+    const firmName = currentCompany[0].firmName
+      ? currentCompany[0].firmName
+      : 'null';
+
+    // Call Synthetic Login with the Company realm Id and the potential Firm name.
+    // Returns: A QueryResult and a Synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(
       session.realmId,
-      currentCompany[0].firmName
+      firmName
     );
 
-    // Check if the synthetic login resulted in an error and return the assosiated Query Result.
+    // Check if the Synthetic Login resulted in an error and return the assosiated Query Result.
     if (loginResult.result === 'Error') {
       return loginResult;
     }
@@ -64,48 +73,46 @@ export async function addForReview(
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${session.realmId}/olb/ng/batchAcceptTransactions`;
 
     // Define static Intuit API key value.
-    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc, ';
+    const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc';
 
-    // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
-    const body = createForReviewUpdateObject(
-      forReviewTransaction,
-      categoryId,
-      taxCodeId
-    );
+    // Repeat the batch add process for each Account Id.
+    for (const accountId of transactionAccounts) {
+      // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
+      const body = createForReviewUpdateObject(batchAddTransactions, accountId);
 
-    // Call the query endpoint while passing the required header cookies.
-    // Pass the 'Update For Review' transaction object as the body, converted to a string.
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-        cookie: `qbn.tkt=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId}; e`,
-      },
+      // Call the query endpoint while passing the required header cookies.
+      // Pass the batch add 'For Review' transactions object as the body, converted to a string.
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
+          cookie: `qbn.tkt=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId}; e`,
+        },
+        body: JSON.stringify(body),
+      });
 
-      body: JSON.stringify(body),
-    });
-
-    // Check if a valid response is received.
-    if (!response.ok) {
-      // Get the response text and return it as the detail of an error Query Result object.
-      const errorText = await response.text();
-      return {
-        result: 'Error',
-        message:
-          'Call made to "Add For Review" endpoint did not return a valid response.',
-        detail: JSON.stringify(errorText),
-      };
-    } else {
-      // Get the response data and return it as the detail of a success Query Result object.
-      const responseData = await response.json();
-      return {
-        result: 'Success',
-        message:
-          'Request made to "Add For Review" endpoint was returned with a valid response',
-        detail: JSON.stringify(responseData),
-      };
+      // Check if a valid response is received.
+      if (!response.ok) {
+        // Get the response text and return it as the detail of an error Query Result object.
+        const errorText = await response.text();
+        return {
+          result: 'Error',
+          message:
+            'Call made to "Add For Review" endpoint did not return a valid response.',
+          detail: JSON.stringify(errorText),
+        };
+      }
     }
+
+    // If the batch addition for each Account was successful, return a succes Query Result.
+    return {
+      result: 'Success',
+      message:
+        'Request made to "Add For Review" endpoint was returned with a valid response',
+      detail:
+        "'For Review' transactions successfully batch added to QuickBooks.",
+    };
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
@@ -125,43 +132,56 @@ export async function addForReview(
   }
 }
 
-// Takes the 'For Review' transaction data, as well as the Id's for the Classificaions.
-// Returns: An formatted 'Update For Review' transaction object.
+// Takes the array of 'For Review' transaction data and converts it to a batch add object for QuickBooks.
+// Returns: An formatted batch add 'For Review' transactions object.
 function createForReviewUpdateObject(
-  responseData: RawForReviewTransaction,
-  categoryId: string,
-  taxCodeId: string
-): ClassifiedRawForReviewTransaction {
-  // Create and API call body using the passed QBO entity Id's and the values in the 'For Review' transaction object.
-  const newUpdateObject: ClassifiedRawForReviewTransaction = {
-    txnList: {
-      olbTxns: [
-        {
-          id: responseData.id,
-          qboAccountId: responseData.qboAccountId,
-          description: responseData.description,
-          origDescription: responseData.origDescription,
-          amount: responseData.amount,
-          olbTxnDate: responseData.olbTxnDate,
-          acceptType: responseData.acceptType,
-          addAsQboTxn: {
-            details: [
-              {
-                categoryId: categoryId,
-                taxCodeId: taxCodeId,
-              },
-            ],
-            nameId: responseData.addAsQboTxn.nameId
-              ? responseData.addAsQboTxn.nameId
-              : null,
-            txnDate: responseData.olbTxnDate,
-            txnTypeId: responseData.addAsQboTxn.txnTypeId,
-          },
+  batchAddTransactions: {
+    forReviewTransaction: RawForReviewTransaction;
+    categoryId: string;
+    taxCodeId: string;
+  }[],
+  accountId: string
+) {
+  // Define the array of 'For Review' transactions to be batch added.
+  const formattedBatchAddTransactions: ClassifiedRawForReviewTransaction[] = [];
+
+  // Iterate over the 'For Review' transactions and add the ones with a matching Account Id.
+  for (const batchAddTransaction of batchAddTransactions) {
+    if (batchAddTransaction.forReviewTransaction.qboAccountId === accountId) {
+      formattedBatchAddTransactions.push({
+        id: batchAddTransaction.forReviewTransaction.id,
+        qboAccountId: batchAddTransaction.forReviewTransaction.qboAccountId,
+        description: batchAddTransaction.forReviewTransaction.description,
+        origDescription:
+          batchAddTransaction.forReviewTransaction.origDescription,
+        amount: batchAddTransaction.forReviewTransaction.amount,
+        olbTxnDate: batchAddTransaction.forReviewTransaction.olbTxnDate,
+        acceptType: batchAddTransaction.forReviewTransaction.acceptType,
+        addAsQboTxn: {
+          details: [
+            {
+              categoryId: batchAddTransaction.categoryId,
+              taxCodeId: batchAddTransaction.taxCodeId,
+            },
+          ],
+          nameId: batchAddTransaction.forReviewTransaction.addAsQboTxn.nameId
+            ? batchAddTransaction.forReviewTransaction.addAsQboTxn.nameId
+            : null,
+          txnDate: batchAddTransaction.forReviewTransaction.olbTxnDate,
+          txnTypeId:
+            batchAddTransaction.forReviewTransaction.addAsQboTxn.txnTypeId,
         },
-      ],
+      });
+    }
+  }
+
+  // Create and return an batch add object for the current Account Id using the selected 'For Review' transaction object array.
+  const newUpdateObject = {
+    txnList: {
+      olbTxns: formattedBatchAddTransactions,
     },
     nextTxnInfo: {
-      accountId: responseData.qboAccountId,
+      accountId: accountId,
       nextTransactionIndex: -1,
       reviewState: 'PENDING',
     },

@@ -17,6 +17,7 @@ export const IntroVideo = () => {
             allowFullScreen></iframe>
         </div>
       </section>
+
       <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
         <div className="flex flex-col items-center md:flex-row">
           <div className="flex flex-col items-center justify-center p-4 px-8 md:w-1/2">
@@ -45,6 +46,7 @@ export const IntroVideo = () => {
                   process.
                 </span>
               </li>
+
               <li className="flex items-start">
                 <span className="mr-2 translate-y-1.5 text-blue-500">
                   <svg
@@ -64,6 +66,7 @@ export const IntroVideo = () => {
                   Shows how Clasibot works with your QuickBooks Online account.
                 </span>
               </li>
+
               <li className="flex items-start">
                 <span className="mr-2 translate-y-1.5 text-blue-500">
                   <svg
@@ -84,6 +87,7 @@ export const IntroVideo = () => {
                   session.
                 </span>
               </li>
+
               <li className="flex items-start">
                 <span className="mr-2 translate-y-1.5 text-blue-500">
                   <svg
@@ -104,6 +108,7 @@ export const IntroVideo = () => {
                   offers.
                 </span>
               </li>
+
               <li className="flex items-start">
                 <span className="mr-2 translate-y-1.5 text-blue-500">
                   <svg

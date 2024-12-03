@@ -9,7 +9,7 @@ export type Classification = {
   type: string;
   // QuickBooks internal Id.
   id: string;
-  // The name of the Category.
+  // The name of the Classification.
   name: string;
 };
 
@@ -22,7 +22,7 @@ export type ClassifiedElement = {
   // The name of the Classification.
   name: string;
   // The method of Classification:
-  // 'Matching', 'Database', or 'LLM'
+  // 'Matching', 'Database', or 'LLM API'
   classifiedBy: string;
 };
 
@@ -38,6 +38,6 @@ export type ClassifiedResult = {
   //    The type of the Classification is defined inside the Classification object.
   possibleClassifications: Classification[];
   // The method of Classification:
-  // 'Matching', 'Database', or 'LLM'
+  // 'Matching', 'Database', or 'LLM API'
   classifiedBy: string;
 };

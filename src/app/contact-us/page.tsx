@@ -34,6 +34,7 @@ const formSchema = z.object({
 
 // Define the 'Contact Us' page and its behavior.
 export default function Page() {
+  // Define loading state and form information as well as the related toast element.
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,6 +46,7 @@ export default function Page() {
   });
   const { toast } = useToast();
 
+  // Define an error element to be displayed if the Email cannot be sent.
   const toastError = (values: z.infer<typeof formSchema>) => {
     toast({
       variant: 'destructive',
@@ -63,16 +65,21 @@ export default function Page() {
     });
   };
 
+  // Define submission handler.
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Update loading state and extract form data.
     setLoading(true);
     const { email, subject, body } = values;
 
     try {
+      // Call the Email handler and check for an error response.
       const response = await sendContactEmail({ email, subject, body });
 
       if (response.message === 'error') {
+        // On error use the toast error element to display an error message to the user.
         toastError(values);
       } else {
+        // Inform the user of the success and reset the form.
         toast({
           title: 'Email sent!',
           description: "We'll get back to you as soon as possible.",
@@ -80,9 +87,11 @@ export default function Page() {
         form.reset();
       }
     } catch (error) {
+      // On error, log a message and display the toast error element.
       console.error('Error Sending Message:', error);
       toastError(values);
     } finally {
+      // Always set loading to be false after submission handling.
       setLoading(false);
     }
   };
@@ -121,6 +130,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="subject"
@@ -142,6 +152,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="body"
@@ -170,6 +181,7 @@ export default function Page() {
                   Return
                 </Button>
               </Link>
+
               <Button
                 type="submit"
                 className={`${

@@ -155,7 +155,7 @@ export async function queryLLM(
   }
 }
 
-// Makes multiple queries to the LLM to predict the Classificaions of multiple 'For Review' transactions.
+// Makes multiple queries to the LLM to predict the Classifications of multiple 'For Review' transactions.
 // Takes: An array of 'For Review' transactions, a record of 'For Review' transaction Id's to arrays of possible Classified elements, -
 // An array of the possible Classifications, the Company Info to be used as context, and the type of Classification being predicted.
 // Returns: An array of Classified Result objects connected to the passed 'For Review' transactions.
@@ -189,7 +189,7 @@ export async function batchQueryLLM(
       );
     } else {
       // Get the context used for Tax Code prediction.
-      // Assert that the Transaction Classificaions are present (always passed on Tax Code type calls).
+      // Assert that the Transaction Classifications are present (always passed on Tax Code type calls).
       contextPromises = await taxCodeContext(
         transactions,
         transactionClassifications!,
