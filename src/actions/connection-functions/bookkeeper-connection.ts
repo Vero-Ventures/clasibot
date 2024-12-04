@@ -228,6 +228,9 @@ export async function changeAccountingFirmCompanyAccess(
 
             // Check if a matching User was found.
             if (user[0]) {
+              // Define tracker for if a firm was found.
+              let foundFirm = false;
+
               // Check through the list of found Firms for one with the same full name as the User.
               for (const firm of possibleFirms) {
                 console.log('Possible Firm');
@@ -274,7 +277,8 @@ export async function changeAccountingFirmCompanyAccess(
                     console.log('Updated Company');
                     console.log(updatedCompany);
 
-                    // Continue to the next Company.
+                    // Track that the matching firm was found and continue to the next Company.
+                    foundFirm = true;
                     break;
                   } else {
                     // If a matching User is found, but the Subscription is invalid, return an error to indicate success with an invalid Subscription.
@@ -287,17 +291,16 @@ export async function changeAccountingFirmCompanyAccess(
                   }
                 }
               }
-              // If no potential related Firms are found, set success to false and push the Company name to the list of failed connections.
-              success = false;
-              failedCompanies.push(potentialCompany.name);
+              if (!foundFirm) {
+                // If no potential related Firms are found, set success to false and push the Company name to the list of failed connections.
+                success = false;
+                failedCompanies.push(potentialCompany.name);
+              }
             } else {
               // If no potential related Users are found, set success to false and push the Company name to the list of failed connections.
               success = false;
               failedCompanies.push(potentialCompany.name);
             }
-            // If no matches were found for the Company name, set success to false and push the Company name to the list of failed connections.
-            success = false;
-            failedCompanies.push(potentialCompany.name);
           }
         } else {
           // If no matching Companies were found, set success to false and push the current Company name to the list of failed connections.
