@@ -89,7 +89,7 @@ As mentioned before, I had encountered issues in previous versions of this code 
 
 # Oauth URL used in synthetic auth process.
 
-CLASIBOT_URL
+LOGIN_URL
 
 # Quickbooks synthetic bookkeeper credentials.
 

@@ -10,7 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       };
     }
 
-    const { realmId, firmName, inviteLink, inviteType } =
+    const { realmId, inviteLink, inviteType } =
       typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
 
     if (!realmId) {
@@ -22,7 +22,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     if (inviteLink === 'null') {
       console.log('Login');
-      const tokenData = await syntheticAuth(realmId, firmName);
+      const tokenData = await syntheticAuth();
 
       return {
         statusCode: 200,
