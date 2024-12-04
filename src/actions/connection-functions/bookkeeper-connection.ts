@@ -166,8 +166,8 @@ export async function changeAccountingFirmCompanyAccess(
   addConnection: boolean
 ): Promise<QueryResult> {
   try {
-    console.log("Add Clients")
-    console.log(addCompanyConnection)
+    console.log('Add Clients');
+    console.log(addCompanyConnection);
 
     // Create a variable to track the overall update success and array to track failed to connect Company names.
     let success = true;
