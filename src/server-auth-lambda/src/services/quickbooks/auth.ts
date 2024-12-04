@@ -104,36 +104,36 @@ export class QuickBooksAuth {
     inviteLink: string,
     inviteType: string
   ): Promise<void> {
-    console.log('New Browser');
     const browser = new BrowserHelper(this.page);
-
     console.log('Go To Page');
     await this.page.goto(inviteLink);
     console.log('Submit Email');
     await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
-    console.log('Fill Password');
+    console.log('Fill & Submit Password');
     await browser.waitAndFill(
       CONFIG.selectors.login.passwordInput,
       CONFIG.quickbooks.password
     );
-    console.log('Submit Password');
     await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
 
-    console.log('Handle MFA');
-    const emailService = new EmailService();
-    await this.handleMFA(browser, emailService);
+    try {
+      console.log('Handle MFA');
+      const emailService = new EmailService();
+      await this.handleMFA(browser, emailService);
+    } catch {
+      console.log('No MFA');
+    }
 
     if (inviteType === 'company') {
-      console.log('Wait For Firm Selector');
+      console.log('Wait And Fill For Firm Search');
       await browser.waitAndFill(
         CONFIG.selectors.firmSelection.inviteSearchInput,
         'Clasibot Synthetic Bookkeeper'
       );
-      console.log('Find Firm Selection Boxes');
+      console.log('Find And Click First Firm Selection Box');
       const options = this.page.locator(
         CONFIG.selectors.firmSelection.inviteListItem
       );
-      console.log('Wait and Click First Firm Box');
       await options.first().waitFor({ state: 'visible' });
       await options.first().click();
       console.log('Confirm Selection');

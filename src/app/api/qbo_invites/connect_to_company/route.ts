@@ -15,11 +15,6 @@ export async function POST(request: Request) {
     // Check for body value that authenticates Email Monitor requests.
     const monitorAuth = body.monitorAuth;
 
-    console.log(userName);
-    console.log(companyName);
-    console.log(invite_link);
-    console.log(monitorAuth);
-
     // If Email Monitor auth is not present, log an eror and return an error response.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
@@ -58,16 +53,21 @@ export async function POST(request: Request) {
 
     // If invite accepting resulted in an error, return an error response before connection update.
     if (loginResult.result === 'Error') {
-      console.log('Company Synthetic');
-      console.log(loginResult.message);
-      console.log(loginResult.detail);
+      console.error('Company Synthetic Invite Accept Failed');
+      console.error(loginResult.message);
+      console.error(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
     // Call handler to update Company connection.
-    const result = await addCompanyConnection(userName, companyName);
+    const dbUpdateResult = await addCompanyConnection(userName, companyName);
 
-    console.log(result);
+    if (dbUpdateResult.result === 'Error') {
+      console.error(
+        'Error Updating Database Companies: ' + dbUpdateResult.detail
+      );
+      return new Response('Database Update Process Failed', { status: 400 });
+    }
 
     return new Response('Company Connection Successfully Updated.');
   } catch (error) {
