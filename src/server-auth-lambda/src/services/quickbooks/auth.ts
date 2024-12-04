@@ -1,29 +1,18 @@
 import type { BrowserContext, Page } from 'playwright-core';
 import { BrowserHelper } from '../browser';
 import { EmailService } from '../email';
-import { AccountSelector } from './account-selector';
 import { CONFIG } from '../../config';
 import type { QBOTokenData } from '../../types';
 
 export class QuickBooksAuth {
-  private authCookies: {
-    qboTicket: string;
-    authId: string;
-    agentId: string;
-  } | null = null;
-
   constructor(
     private context: BrowserContext,
     private page: Page
   ) {}
 
-  async authenticate(
-    realmId: string,
-    firmName: string
-  ): Promise<QBOTokenData | null> {
+  async authenticate(): Promise<QBOTokenData | null> {
     const browserHelper = new BrowserHelper(this.page);
     const emailService = new EmailService();
-    const accountSelector = new AccountSelector(this.page);
 
     try {
       await this.initialLogin(browserHelper);
@@ -37,46 +26,28 @@ export class QuickBooksAuth {
         await this.handleMFA(browserHelper, emailService);
       }
 
+      await this.firmSelection(browserHelper);
+
+      console.log('Start Invite Accept Delay');
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.log('Complete Delay For Invite Process');
+          resolve();
+        }, 3000);
+      });
+
       // Extract QB auth cookies
-      this.authCookies = await this.extractAuthCookies();
-      if (!this.authCookies) {
+      const authCookies = await this.extractAuthCookies();
+      if (!authCookies) {
         throw new Error('Failed to extract authentication cookies');
       }
 
-      await accountSelector.selectAccounts(realmId, firmName);
-
-      try {
-        const isOnConfirmPage = await Promise.race([
-          this.page.waitForURL(
-            (url) =>
-              url.href.includes(
-                'appcenter.intuit.com/app/connect/oauth2/authorize'
-              ),
-            { timeout: 5000 }
-          ),
-          this.page.waitForSelector('button:has-text("Next")', {
-            timeout: 5000,
-          }),
-        ]);
-
-        if (isOnConfirmPage) {
-          console.log('On confirmation page, clicking connect button...');
-          await this.page.click('button:has-text("Connect")');
-        }
-      } catch {
-        console.log('No confirmation page found, proceeding with redirect...');
-      }
-
-      // Wait for redirect and get session token from cookies
-      await this.page.waitForURL((url) => url.href.includes('clasibot'), {
-        timeout: 45000,
-      });
       await this.page.evaluate(() => window.stop());
 
       return {
-        qboTicket: this.authCookies.qboTicket,
-        authId: this.authCookies.authId,
-        agentId: this.authCookies.agentId,
+        qboTicket: authCookies.qboTicket,
+        authId: authCookies.authId,
+        agentId: authCookies.agentId,
       };
     } catch (error) {
       console.error('Authentication failed:', error);
@@ -84,10 +55,44 @@ export class QuickBooksAuth {
     }
   }
 
-  private async initialLogin(browser: BrowserHelper): Promise<void> {
-    await this.page.goto(
-      'https://appcenter.intuit.com/app/connect/oauth2/companyselection?client_id=ABxjXK5CARvx2L80e5SXjXCM509zoH6EU2lBMfsSOiyB6AdXD1&scope=com.intuit.quickbooks.accounting%20openid%20profile%20email%20phone%20address&response_type=code&redirect_uri=https%3A%2F%2Fclasibot.com%2Fapi%2Fauth%2Fcallback%2Fquickbooks&state=PxkOVzUmHjHUwxLnO7XaGkvZvEMdmggxMjfO1S-dGD8&code_challenge=IVy5kuXVmrbURFdfvkwjUCENCjUa4LhkANEi7_r1vGE&code_challenge_method=S256&locale=en-us'
+  async inviteLoginAndAccept(
+    inviteLink: string,
+    inviteType: string
+  ): Promise<void> {
+    const browser = new BrowserHelper(this.page);
+    await this.page.goto(inviteLink);
+    await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
+    await browser.waitAndFill(
+      CONFIG.selectors.login.passwordInput,
+      CONFIG.quickbooks.password
     );
+    await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
+
+    try {
+      const emailService = new EmailService();
+      await this.handleMFA(browser, emailService);
+    } catch {
+      console.log('No MFA');
+    }
+
+    if (inviteType === 'company') {
+      await this.firmSelection(browser, 'invite');
+      await browser.waitAndClick(
+        CONFIG.selectors.firmSelection.firmAcceptButton
+      );
+    }
+
+    console.log('Start Invite Accept Delay');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log('Complete Delay For Invite Process');
+        resolve();
+      }, 5000);
+    });
+  }
+
+  private async initialLogin(browser: BrowserHelper): Promise<void> {
+    await this.page.goto(CONFIG.quickbooks.loginUrl);
     await browser.waitAndFill(
       CONFIG.selectors.login.emailInput,
       CONFIG.quickbooks.email
@@ -98,56 +103,6 @@ export class QuickBooksAuth {
       CONFIG.quickbooks.password
     );
     await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
-  }
-
-  async inviteLoginAndAccept(
-    inviteLink: string,
-    inviteType: string
-  ): Promise<void> {
-    const browser = new BrowserHelper(this.page);
-    console.log('Go To Page');
-    await this.page.goto(inviteLink);
-    console.log('Submit Email');
-    await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
-    console.log('Fill & Submit Password');
-    await browser.waitAndFill(
-      CONFIG.selectors.login.passwordInput,
-      CONFIG.quickbooks.password
-    );
-    await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
-
-    try {
-      console.log('Handle MFA');
-      const emailService = new EmailService();
-      await this.handleMFA(browser, emailService);
-    } catch {
-      console.log('No MFA');
-    }
-
-    if (inviteType === 'company') {
-      console.log('Wait And Fill For Firm Search');
-      await browser.waitAndFill(
-        CONFIG.selectors.firmSelection.inviteSearchInput,
-        'Clasibot Synthetic Bookkeeper'
-      );
-      console.log('Find And Click First Firm Selection Box');
-      const options = this.page.locator(
-        CONFIG.selectors.firmSelection.inviteListItem
-      );
-      await options.first().waitFor({ state: 'visible' });
-      await options.first().click();
-      console.log('Confirm Selection');
-      await browser.waitAndClick(
-        CONFIG.selectors.firmSelection.inviteFirmAcceptButton
-      );
-    }
-    console.log('Start Invite Accept Delay');
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        console.log('Complete Delay For Invite Process');
-        resolve();
-      }, 5000);
-    });
   }
 
   private async handleMFA(
@@ -163,6 +118,31 @@ export class QuickBooksAuth {
     await browser.waitAndFill(CONFIG.selectors.login.verificationInput, code);
     console.log('Submit MFA Code');
     await browser.waitAndClick(CONFIG.selectors.login.verificationSubmit);
+  }
+
+  async firmSelection(
+    browser: BrowserHelper,
+    selectionType: string = ''
+  ): Promise<void> {
+    console.log('Wait And Fill For Firm Search');
+    await browser.waitAndFill(
+      CONFIG.selectors.firmSelection.inviteSearchInput,
+      'Clasibot Synthetic Bookkeeper'
+    );
+    console.log('Find And Click First Firm Selection Box');
+    let firmButtons = this.page.locator(
+      CONFIG.selectors.firmSelection.firmSelectionButtonLogin
+    );
+
+    if (selectionType === 'invite') {
+      firmButtons = this.page.locator(
+        CONFIG.selectors.firmSelection.firmSelectionButtonInvite
+      );
+    }
+
+    console.log(firmButtons.all());
+    await firmButtons.first().waitFor({ state: 'visible' });
+    await firmButtons.first().click();
   }
 
   private async waitForVerificationCode(
@@ -191,22 +171,31 @@ export class QuickBooksAuth {
     authId: string;
     agentId: string;
   } | null> {
-    const cookies = await this.context.cookies();
-    const qbnTkt = cookies.find((cookie) => cookie.name === 'qbn.tkt');
-    const qbnAuthId = cookies.find((cookie) => cookie.name === 'qbn.authid');
-    const qbnAgentId = cookies.find((cookie) => cookie.name === 'qbn.agentId');
+    this.page.on('request', (request) => {
+      console.log(`Request: ${request.method()} ${request.url()}`);
+    });
 
-    if (!qbnTkt || !qbnAuthId || !qbnAgentId) {
+    this.page.on('response', async (response) => {
+      console.log(`Response: ${response.status()} ${response.url()}`);
+    });
+
+    const cookies = await this.context.cookies();
+    console.log(cookies);
+    const qboTkt = cookies.find((cookie) => cookie.name === 'qbo.ticket');
+    const qbnAuthId = cookies.find((cookie) => cookie.name === 'qbn.authid');
+    const qbnAgentId = cookies.find((cookie) => cookie.name === 'qbn.agentid');
+
+    if (!qboTkt || !qbnAuthId || !qbnAgentId) {
       console.error('Required auth cookies not found');
       return null;
     }
 
     console.log(
-      `Found auth cookies - tkt: ${qbnTkt.value}, authId: ${qbnAuthId.value} agentId: ${qbnAgentId.value}`
+      `Found auth cookies - tkt: ${qboTkt.value}, authId: ${qbnAuthId.value} agentId: ${qbnAgentId.value}`
     );
 
     return {
-      qboTicket: qbnTkt.value,
+      qboTicket: qboTkt.value,
       authId: qbnAuthId.value,
       agentId: qbnAgentId.value,
     };

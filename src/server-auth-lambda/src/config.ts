@@ -7,6 +7,7 @@ export const CONFIG = {
     tls: true,
   },
   quickbooks: {
+    loginUrl: process.env.LOGIN_URL!,
     email: process.env.QB_EMAIL_ADDRESS!,
     password: process.env.QB_PASSWORD!,
   },
@@ -26,9 +27,11 @@ export const CONFIG = {
         'input[role="combobox"][placeholder="Search for a company or firm"]',
       inviteSearchInput: 'input[id="idsTxtField1"]',
       listItem: 'li[role="none"]',
-      inviteListItem:
+      firmSelectionButtonInvite:
         'button[class="account-btn accountpicker-account-btn-quickbooks"]',
-      inviteFirmAcceptButton: 'button[id="account-picker-continue-btn"]',
+      firmSelectionButtonLogin:
+        'button[class="account-btn account-btn-focus-quickbooks"]',
+      firmAcceptButton: 'button[id="account-picker-continue-btn"]',
     },
     companySelection: {
       searchInput: 'input[role="combobox"][placeholder="Search for a client"]',

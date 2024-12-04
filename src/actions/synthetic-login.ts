@@ -10,7 +10,6 @@ import type { LoginTokens, QueryResult } from '@/types/index';
 // Returns: A Query Result for the login process and a potentially empty Login Tokens object.
 export async function syntheticLogin(
   realmId: string,
-  firmName: string,
   inviteLink: string = 'null',
   inviteType: string = 'null'
 ): Promise<[QueryResult, LoginTokens]> {
@@ -42,7 +41,6 @@ export async function syntheticLogin(
       },
       body: JSON.stringify({
         realmId: realmId,
-        firmName: firmName,
         inviteLink: inviteLink,
         inviteType: inviteType,
       }),
@@ -56,12 +54,16 @@ export async function syntheticLogin(
       return [loginResult, loginTokens];
     }
 
+    console.log(data);
+
     // If no invite type was specified, call is for Transactions and Login Tokens can be extracted from returned data.
-    if (inviteType === '') {
+    if (inviteType === 'null') {
       loginTokens.ticket = data.qboTicket;
       loginTokens.authId = data.authId;
       loginTokens.agentId = data.authId;
     }
+
+    console.log(loginTokens);
 
     // Set the Query Result to Success and update the message.
     loginResult.result = 'Success';

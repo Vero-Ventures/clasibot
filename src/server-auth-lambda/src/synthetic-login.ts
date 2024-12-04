@@ -3,10 +3,7 @@ import chromium from '@sparticuz/chromium';
 import { QuickBooksAuth } from './services/quickbooks/auth';
 import type { QBOTokenData } from './types';
 
-export const syntheticAuth = async (
-  realmId: string,
-  firmName: string
-): Promise<QBOTokenData> => {
+export const syntheticAuth = async (): Promise<QBOTokenData> => {
   const executablePath = await chromium.executablePath();
 
   try {
@@ -31,7 +28,7 @@ export const syntheticAuth = async (
 
     try {
       const auth = new QuickBooksAuth(context, page);
-      const tokenData = await auth.authenticate(realmId, firmName);
+      const tokenData = await auth.authenticate();
 
       if (!tokenData) {
         throw new Error('No token data received from authentication');
