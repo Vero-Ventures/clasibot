@@ -61,7 +61,7 @@ export async function addDatabaseForReviewTransactions(
           description: rawTransaction.description,
           origDescription: rawTransaction.origDescription,
           date: rawTransaction.olbTxnDate,
-          amount: classifiedTransaction.amount,
+          amount: classifiedTransaction.amount.toFixed(2),
           acceptType: rawTransaction.acceptType,
           payeeNameId: rawTransaction.addAsQboTxn.nameId
             ? rawTransaction.addAsQboTxn.nameId
