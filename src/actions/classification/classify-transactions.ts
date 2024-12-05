@@ -296,7 +296,7 @@ async function fetchValidTaxCodes(
     ) {
       classifyTaxCode = true;
       // Use the Synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
-      const userTaxCodes = JSON.parse(await getTaxCodes());
+      const userTaxCodes = await getTaxCodes();
 
       // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(
@@ -304,17 +304,17 @@ async function fetchValidTaxCodes(
       );
 
       // Check the fetch for the Company Tax Codes was a success.
-      if (userTaxCodes[0].result === 'Error') {
+      if ((userTaxCodes[0] as QueryResult).result === 'Error') {
         // If an error occured fetching the Tax Codes, log the message and detail from the Query Result.
         console.error(
           'Error getting Tax Codes, Message: ' +
-            userTaxCodes[0].message +
+            (userTaxCodes[0] as QueryResult).message +
             ', Detail: ' +
-            userTaxCodes[0].detail
+            (userTaxCodes[0] as QueryResult).detail
         );
       } else {
         // Extract the Company Tax Codes from the result by removing the Query Result from the first index.
-        const userTaxCodeArray = userTaxCodes[0].slice(1) as TaxCode[];
+        const userTaxCodeArray = userTaxCodes.slice(1) as TaxCode[];
 
         // Iterate through Company Tax Codes to check for and record valid Tax Codes.
         for (const taxCode of userTaxCodeArray) {

@@ -219,17 +219,18 @@ async function checkAndFormatTransactions(
           );
 
           // Get the User Tax Codes and parse it to a Query Result and an array of Tax Code objects.
-          const userTaxCodes = JSON.parse(await getTaxCodes());
+          const userTaxCodes = await getTaxCodes();
 
           // Check if either of the fetches resulted in an error Query Result.
           if (
             transactionPurchase.result_info.result === 'Error' ||
-            userTaxCodes[0].result === 'Error'
+            (userTaxCodes[0] as QueryResult).result === 'Error'
           ) {
             // Define values for both Classifications to indicate if that fetch resulted in an error.
             const purchaseError =
               transactionPurchase.result_info.result === 'Error';
-            const taxCodeError = userTaxCodes[0].result === 'Error';
+            const taxCodeError =
+              (userTaxCodes[0] as QueryResult).result === 'Error';
 
             // Log an error indicating an issue with the Transaction.
             console.error(
@@ -248,7 +249,8 @@ async function checkAndFormatTransactions(
             }
             if (taxCodeError) {
               console.error(
-                'Error fetching Tax Code: ' + userTaxCodes[0].detail
+                'Error fetching Tax Code: ' +
+                  (userTaxCodes[0] as QueryResult).detail
               );
             }
           } else {

@@ -80,19 +80,19 @@ export async function getDatabaseTransactions(): Promise<{
     }
 
     // Get the list of Tax Codes for the user.
-    const taxCodesResponse = JSON.parse(await getTaxCodes());
+    const taxCodesResponse = await getTaxCodes();
 
     console.log('Tax Codes');
     console.log(taxCodesResponse);
 
     // Check if the Tax Code fetch resulted in an error.
-    if (taxCodesResponse[0].result === 'Error') {
+    if ((taxCodesResponse[0] as QueryResult).result === 'Error') {
       // Return an error Query Result and an empty array for the 'For Review' transactions.
       return {
         queryResult: {
           result: 'Error',
           message: 'Error Loading User Tax Codes',
-          detail: taxCodesResponse[0].detail,
+          detail: (taxCodesResponse[0] as QueryResult).detail,
         },
         transactions: [],
       };
@@ -303,7 +303,7 @@ async function getTransactionCategories(
 // Returns: An array of Classified Elements for the related Tax Codes.
 async function getTransactionTaxCodes(
   forReviewTransaction: databaseForReviewTransaction,
-  taxCodesResponse: TaxCode[]
+  taxCodesResponse: (QueryResult | TaxCode)[]
 ): Promise<ClassifiedElement[]> {
   try {
     // Get the Transaction to Tax Code Relationships by the Transaction Id.

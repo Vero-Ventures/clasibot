@@ -7,11 +7,11 @@ import { getQBObject } from '@/actions/quickbooks/qb-client';
 import { TaxCodes, LocationsToTaxCodes } from '@/enums/tax-codes';
 import type { Locations } from '@/enums/tax-codes';
 
-import type { ErrorResponse, TaxCode } from '@/types/index';
+import type { ErrorResponse, TaxCode, QueryResult } from '@/types/index';
 
 // Get all valid Canadian Tax Codes for a User location.
 // Returns: An array of Tax Code objects as a string.
-export async function getTaxCodes(): Promise<string> {
+export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
   try {
     // Define the variable used to make the qbo calls.
     const qbo = await getQBObject();
@@ -72,21 +72,25 @@ export async function getTaxCodes(): Promise<string> {
     }
 
     // Return the array with the Query Result and Tax Code objects as a JSON string.
-    return JSON.stringify(results);
+    return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
-      return JSON.stringify({
-        result: 'error',
-        message: 'Unexpected error occured while fetching Accounts.',
-        detail: error.message,
-      });
+      return [
+        {
+          result: 'error',
+          message: 'Unexpected error occured while fetching Accounts.',
+          detail: error.message,
+        },
+      ];
     } else {
-      return JSON.stringify({
-        result: 'error',
-        message: 'Unexpected error occured while fetching Accounts.',
-        detail: 'N/A',
-      });
+      return [
+        {
+          result: 'error',
+          message: 'Unexpected error occured while fetching Accounts.',
+          detail: 'N/A',
+        },
+      ];
     }
   }
 }
