@@ -99,6 +99,8 @@ export default function ReviewPage({
   // Defines a handler for changes to the Classification state.
   useEffect(() => {
     const handleClassificationChangeCall = async () => {
+      console.log('State Update Catch')
+      console.log(classificationState)
       // Calls the handler method to await the new state values.
       const processStates =
         await changeClassificationState(classificationState);

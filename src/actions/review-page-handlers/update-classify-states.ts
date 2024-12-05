@@ -43,16 +43,20 @@ export async function updateClassifyStates(
   if (success) {
     // Update the state to indicate the Classification is finished.
     setClassificationState('Load New Classified Transactions');
+    console.log('State Update');
+    console.log('Load New Classified Transactions');
 
     // Load the newly Classified 'For Review' transactions from the database.
     const loadResult = await getDatabaseTransactions();
 
-    console.log(loadResult)
+    console.log(loadResult);
 
     // Check the loading Query Result for an error.
     if (loadResult.queryResult.result === 'Error') {
       // Update the Classification state to indicate an error.
       setClassificationState('Error');
+      console.log('State Update');
+      console.log('Error');
 
       // Return a value indicating it failed to ensure the loading failure modal is shown.
       // Returned array is set to be empty on failure to load to ensure only valid data is ever shown.
@@ -63,6 +67,8 @@ export async function updateClassifyStates(
     } else {
       // Update the Classification state to indicate Classification was successful.
       setClassificationState('Classify Complete');
+      console.log('State Update');
+      console.log('Classify Complete');
 
       // Return a success loading result to ensure the completion modal is shown.
       // Also return the array of loaded Classified 'For Review' transactions.
@@ -74,6 +80,8 @@ export async function updateClassifyStates(
   }
   // Update the Classification state to indicate an error.
   setClassificationState('Error');
+  console.log('State Update');
+  console.log('Error');
   // Return load failure as false for Classification failure.
   // Classification completion modal will be shown with an error result based.
   // Returned array is set to be empty on failure to load to ensure only valid data is ever shown.
@@ -92,11 +100,13 @@ async function handleBackendProcessStates(
   // Call setup handler to check for for a session and the related database Company object.
   const startResult = await startClassification();
 
-  console.log(startResult)
+  console.log(startResult);
 
   // Check result and either update to Synthetic Login state or return a failure value.
   if (startResult.result) {
     setClassificationState('Synthetic Login');
+    console.log('State Update');
+    console.log('Synthetic Login');
   } else {
     return false;
   }
@@ -104,11 +114,13 @@ async function handleBackendProcessStates(
   // Preform the Synthetic Login process needed for to get the 'For Review' transactions.
   const loginResult = await preformSyntheticLogin(startResult.realmId);
 
-  console.log(loginResult)
+  console.log(loginResult);
 
   // Check result and either update to Get 'For Review' transactions state or return a failure value.
   if (loginResult.result) {
     setClassificationState('Get For Review Transactions');
+    console.log('State Update');
+    console.log('Get For Review Transactions');
   } else {
     return false;
   }
@@ -118,7 +130,7 @@ async function handleBackendProcessStates(
     startResult.realmId
   );
 
-  console.log(clearDbResult)
+  console.log(clearDbResult);
 
   if (clearDbResult.result === 'Error') {
     return false;
@@ -130,11 +142,13 @@ async function handleBackendProcessStates(
     startResult.realmId
   );
 
-  console.log(transactionResults)
+  console.log(transactionResults);
 
   // Check result and either update to Get Saved Transactions state or return a failure value.
   if (transactionResults.result) {
     setClassificationState('Get Saved Transactions');
+    console.log('State Update');
+    console.log('Get Saved Transactions');
   } else {
     return false;
   }
@@ -142,11 +156,13 @@ async function handleBackendProcessStates(
   // Get the Transactions and Comapany Info used in LLM predictions.
   const contextResult = await fetchPredictionContext();
 
-  console.log(contextResult)
+  console.log(contextResult);
 
   // Update state on successfully getting prediction context, otherwise return a failure value.
   if (contextResult.result) {
     setClassificationState('Classify For Review Transactions');
+    console.log('State Update');
+    console.log('Classify For Review Transactions');
   } else {
     return false;
   }
@@ -165,11 +181,13 @@ async function handleBackendProcessStates(
     startResult.realmId
   );
 
-  console.log(classificationsResult)
+  console.log(classificationsResult);
 
   // Update state on successfully starting Classification, otherwise return a failure value.
   if (classificationsResult.result) {
     setClassificationState('Create New Classified Transactions');
+    console.log('State Update');
+    console.log('Create New Classified Transactions');
   } else {
     return false;
   }
@@ -180,11 +198,13 @@ async function handleBackendProcessStates(
     classificationsResult.classificationResults
   );
 
-  console.log(creationResult)
+  console.log(creationResult);
 
   // Update state on successfully creating Classified 'For Review' transactions, otherwise return a failure value.
   if (creationResult.result) {
     setClassificationState('Save New Classified Transactions');
+    console.log('State Update');
+    console.log('Save New Classified Transactions');
   } else {
     return false;
   }
@@ -196,7 +216,7 @@ async function handleBackendProcessStates(
     startResult.realmId
   );
 
-  console.log(addingResult)
+  console.log(addingResult);
 
   // Check Query Result from adding Classified 'For Review' transactions to database.
   // If result value is a success, backend Classification process is complete and a truth value is returned indicate success.
