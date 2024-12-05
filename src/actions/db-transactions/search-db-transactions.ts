@@ -136,7 +136,7 @@ export async function searchDatabaseTransactionTaxCodes(
       .where(eq(Transaction.transactionName, name));
 
     // Check if a matching Transaction was found.
-    if (transaction) {
+    if (transaction[0]) {
       // Get the Transaction to Tax Code Relationships for the found Transaction.
       const transactionTaxCodes = await db
         .select()
