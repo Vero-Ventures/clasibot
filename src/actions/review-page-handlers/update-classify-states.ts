@@ -100,6 +100,8 @@ async function handleBackendProcessStates(
   // Preform the Synthetic Login process needed for to get the 'For Review' transactions.
   const loginResult = await preformSyntheticLogin(startResult.realmId);
 
+  console.log(loginResult)
+
   // Check result and either update to Get 'For Review' transactions state or return a failure value.
   if (loginResult.result) {
     setClassificationState('Get For Review Transactions');
