@@ -324,6 +324,9 @@ export async function changeClassificationState(
   let processMessage = '';
   let completedProcesses = 0;
 
+  console.log('State Handler')
+  console.log(classificationState)
+
   // Use switch case to define behavior based on the state string.
   // States are always set prior to the related action being started.
   switch (classificationState) {
