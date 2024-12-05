@@ -92,8 +92,8 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   acceptType: text('accept_type').notNull(),
   transactionTypeId: text('transaction_type_id').notNull(),
   payeeNameId: text('payee_name_id'),
-  topCategoryClassification: text('top_classification').notNull(),
-  topTaxCodeClassification: text('top_classification').notNull(),
+  topCategoryClassification: text('top_category_classification').notNull(),
+  topTaxCodeClassification: text('top_tax_code_classification').notNull(),
 });
 
 export const ForReviewTransactionToCategoriesRelationship = relations(

@@ -1,0 +1,675 @@
+{
+  "id": "f6ff56fd-194f-4918-805e-3b17ff6dd899",
+  "prevId": "48dc74b9-4f6e-44dd-b4b3-636b0e12c883",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Category": {
+      "name": "Category",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "matches": {
+          "name": "matches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Category_category_unique": {
+          "name": "Category_category_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "category"
+          ]
+        }
+      }
+    },
+    "public.Company": {
+      "name": "Company",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "realm_id": {
+          "name": "realm_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "firm_name": {
+          "name": "firm_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bookkeeper_connected": {
+          "name": "bookkeeper_connected",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Company_user_id_User_id_fk": {
+          "name": "Company_user_id_User_id_fk",
+          "tableFrom": "Company",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Company_realm_id_unique": {
+          "name": "Company_realm_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "realm_id"
+          ]
+        }
+      }
+    },
+    "public.Firm": {
+      "name": "Firm",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_name": {
+          "name": "user_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Firm_user_id_User_id_fk": {
+          "name": "Firm_user_id_User_id_fk",
+          "tableFrom": "Firm",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ForReviewTransaction": {
+      "name": "ForReviewTransaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "review_transaction_id": {
+          "name": "review_transaction_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "orig_description": {
+          "name": "orig_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accept_type": {
+          "name": "accept_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_type_id": {
+          "name": "transaction_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payee_name_id": {
+          "name": "payee_name_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "top_category_classification": {
+          "name": "top_category_classification",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "top_tax_code_classification": {
+          "name": "top_tax_code_classification",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ForReviewTransaction_company_id_Company_realm_id_fk": {
+          "name": "ForReviewTransaction_company_id_Company_realm_id_fk",
+          "tableFrom": "ForReviewTransaction",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "realm_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ForReviewTransactionsToCategories": {
+      "name": "ForReviewTransactionsToCategories",
+      "schema": "",
+      "columns": {
+        "review_transaction_id": {
+          "name": "review_transaction_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ForReviewTransactionsToCategories_review_transaction_id_ForReviewTransaction_id_fk": {
+          "name": "ForReviewTransactionsToCategories_review_transaction_id_ForReviewTransaction_id_fk",
+          "tableFrom": "ForReviewTransactionsToCategories",
+          "tableTo": "ForReviewTransaction",
+          "columnsFrom": [
+            "review_transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ForReviewTransactionsToCategories_category_id_Category_id_fk": {
+          "name": "ForReviewTransactionsToCategories_category_id_Category_id_fk",
+          "tableFrom": "ForReviewTransactionsToCategories",
+          "tableTo": "Category",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ForReviewTransactionsToCategories_review_transaction_id_category_id_pk": {
+          "name": "ForReviewTransactionsToCategories_review_transaction_id_category_id_pk",
+          "columns": [
+            "review_transaction_id",
+            "category_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.ForReviewTransactionsToTaxCodes": {
+      "name": "ForReviewTransactionsToTaxCodes",
+      "schema": "",
+      "columns": {
+        "review_transaction_id": {
+          "name": "review_transaction_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_code_id": {
+          "name": "tax_code_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ForReviewTransactionsToTaxCodes_review_transaction_id_ForReviewTransaction_id_fk": {
+          "name": "ForReviewTransactionsToTaxCodes_review_transaction_id_ForReviewTransaction_id_fk",
+          "tableFrom": "ForReviewTransactionsToTaxCodes",
+          "tableTo": "ForReviewTransaction",
+          "columnsFrom": [
+            "review_transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ForReviewTransactionsToTaxCodes_tax_code_id_TaxCode_id_fk": {
+          "name": "ForReviewTransactionsToTaxCodes_tax_code_id_TaxCode_id_fk",
+          "tableFrom": "ForReviewTransactionsToTaxCodes",
+          "tableTo": "TaxCode",
+          "columnsFrom": [
+            "tax_code_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ForReviewTransactionsToTaxCodes_review_transaction_id_tax_code_id_pk": {
+          "name": "ForReviewTransactionsToTaxCodes_review_transaction_id_tax_code_id_pk",
+          "columns": [
+            "review_transaction_id",
+            "tax_code_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.Subscription": {
+      "name": "Subscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Subscription_user_id_User_id_fk": {
+          "name": "Subscription_user_id_User_id_fk",
+          "tableFrom": "Subscription",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Subscription_user_id_unique": {
+          "name": "Subscription_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        "Subscription_stripe_id_unique": {
+          "name": "Subscription_stripe_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_id"
+          ]
+        }
+      }
+    },
+    "public.TaxCode": {
+      "name": "TaxCode",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "taxCode": {
+          "name": "taxCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "matches": {
+          "name": "matches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaxCode_taxCode_unique": {
+          "name": "TaxCode_taxCode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "taxCode"
+          ]
+        }
+      }
+    },
+    "public.Transaction": {
+      "name": "Transaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "transaction_name": {
+          "name": "transaction_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Transaction_transaction_name_unique": {
+          "name": "Transaction_transaction_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "transaction_name"
+          ]
+        }
+      }
+    },
+    "public.TransactionsToCategories": {
+      "name": "TransactionsToCategories",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TransactionsToCategories_transaction_id_Transaction_id_fk": {
+          "name": "TransactionsToCategories_transaction_id_Transaction_id_fk",
+          "tableFrom": "TransactionsToCategories",
+          "tableTo": "Transaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TransactionsToCategories_category_id_Category_id_fk": {
+          "name": "TransactionsToCategories_category_id_Category_id_fk",
+          "tableFrom": "TransactionsToCategories",
+          "tableTo": "Category",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "TransactionsToCategories_transaction_id_category_id_pk": {
+          "name": "TransactionsToCategories_transaction_id_category_id_pk",
+          "columns": [
+            "transaction_id",
+            "category_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.TransactionsToTaxCodes": {
+      "name": "TransactionsToTaxCodes",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_code_id": {
+          "name": "tax_code_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TransactionsToTaxCodes_transaction_id_Transaction_id_fk": {
+          "name": "TransactionsToTaxCodes_transaction_id_Transaction_id_fk",
+          "tableFrom": "TransactionsToTaxCodes",
+          "tableTo": "Transaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TransactionsToTaxCodes_tax_code_id_TaxCode_id_fk": {
+          "name": "TransactionsToTaxCodes_tax_code_id_TaxCode_id_fk",
+          "tableFrom": "TransactionsToTaxCodes",
+          "tableTo": "TaxCode",
+          "columnsFrom": [
+            "tax_code_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "TransactionsToTaxCodes_transaction_id_tax_code_id_pk": {
+          "name": "TransactionsToTaxCodes_transaction_id_tax_code_id_pk",
+          "columns": [
+            "transaction_id",
+            "tax_code_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.User": {
+      "name": "User",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_name": {
+          "name": "user_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subscription_id": {
+          "name": "subscription_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "User_email_unique": {
+          "name": "User_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "User_subscription_id_unique": {
+          "name": "User_subscription_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "subscription_id"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
