@@ -6,6 +6,7 @@ import {
   uuid,
   text,
   integer,
+  decimal,
   boolean,
   serial,
 } from 'drizzle-orm/pg-core';
@@ -88,7 +89,7 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   description: text('description').notNull(),
   origDescription: text('orig_description').notNull(),
   date: text('date').notNull(),
-  amount: integer('amount').notNull(),
+  amount: decimal('amount').notNull(),
   acceptType: text('accept_type').notNull(),
   transactionTypeId: text('transaction_type_id').notNull(),
   payeeNameId: text('payee_name_id'),
