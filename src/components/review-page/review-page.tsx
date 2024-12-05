@@ -84,8 +84,6 @@ export default function ReviewPage({
         // Otherwise the completion modal (success or failure) is shown.
         setOpenFinishedClassificationModal(true);
       }
-      console.log(classificationResults);
-
       // Update the Classified 'For Review' transaction states with returned values (or empty array on error).
       setLoadedTransactions(classificationResults.loadedTransactions);
     };
@@ -135,12 +133,8 @@ export default function ReviewPage({
   useEffect(() => {
     // Call the helper function to initalize the Classifications for the 'For Review' transactions.
     const handleInitalizeTransactionsCall = async () => {
-      // console.log('Initalize Transactions');
       const initalizeResults =
         await initalizeLoadedTransactions(loadedTransactions);
-      // console.log(initalizeResults.categoryRecord);
-      // console.log(initalizeResults.taxCodeRecord);
-      // console.log(initalizeResults.accountsList);
       setSelectedCategories(initalizeResults.categoryRecord);
       setSelectedTaxCodes(initalizeResults.taxCodeRecord);
       setAccounts(initalizeResults.accountsList);

@@ -94,12 +94,8 @@ export async function preformSyntheticLogin(
     // Returns: A QueryResult and a Synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(realmId);
 
-    console.log('Synthetic Login Return')
-    console.log(loginResult)
-    console.log(loginTokens)
-
     // Check the Synthetic Login call resulted in error.
-    if (loginResult.result === 'Error ') {
+    if (loginResult.result === 'Error') {
       // If the Synthetic Login resulted in error, Log the Query Result, update frontend state, and return a failure boolean.
       console.error(loginResult);
       return { result: false, loginTokens: null };
@@ -135,8 +131,6 @@ export async function fetchTransactionsToClassify(
       loginTokens,
       realmId
     );
-
-    console.log(forReviewResult)
 
     // Check if the 'For Review' transaction call encountered an error.
     // Result is only present in Query Result typing (only returned on error).
@@ -329,9 +323,6 @@ export async function changeClassificationState(
   // Define the base states of the Classification process values.
   let processMessage = '';
   let completedProcesses = 0;
-
-  console.log('State Handler')
-  console.log(classificationState)
 
   // Use switch case to define behavior based on the state string.
   // States are always set prior to the related action being started.

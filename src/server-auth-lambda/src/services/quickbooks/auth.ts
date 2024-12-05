@@ -31,10 +31,8 @@ export class QuickBooksAuth {
 
       await this.firmSelection(browserHelper);
 
-      console.log('Start Invite Accept Delay');
       await new Promise<void>((resolve) => {
         setTimeout(() => {
-          console.log('Complete Delay For Invite Process');
           resolve();
         }, 3000);
       });
@@ -85,10 +83,8 @@ export class QuickBooksAuth {
       );
     }
 
-    console.log('Start Invite Accept Delay');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        console.log('Complete Delay For Invite Process');
         resolve();
       }, 5000);
     });
@@ -112,14 +108,10 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
-    console.log('Send Email');
     await browser.waitAndClick(CONFIG.selectors.login.mfaSMSOption, 30000);
-    console.log('Wait For Email');
     const code = await this.waitForVerificationCode(emailService);
     if (!code) throw new Error('Failed to retrieve verification code');
-    console.log('Fill MFA Code');
     await browser.waitAndFill(CONFIG.selectors.login.verificationInput, code);
-    console.log('Submit MFA Code');
     await browser.waitAndClick(CONFIG.selectors.login.verificationSubmit);
   }
 
@@ -127,12 +119,10 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     selectionType: string = ''
   ): Promise<void> {
-    console.log('Wait And Fill For Firm Search');
     await browser.waitAndFill(
       CONFIG.selectors.firmSelection.firmSearchInput,
       'Clasibot Synthetic Bookkeeper'
     );
-    console.log('Find And Click First Firm Selection Box');
     let firmButtons = this.page.locator(
       CONFIG.selectors.firmSelection.firmSelectionButtonLogin
     );
@@ -143,7 +133,6 @@ export class QuickBooksAuth {
       );
     }
 
-    console.log(firmButtons.all());
     await firmButtons.first().waitFor({ state: 'visible' });
     await firmButtons.first().click();
   }
@@ -157,7 +146,6 @@ export class QuickBooksAuth {
     for (let i = 0; i < maxAttempts; i++) {
       try {
         const code = await emailService.fetchLatestEmail();
-        console.log(code);
         if (code) return code;
       } catch (error) {
         console.error(`Error during attempt ${i + 1}:`, error);
@@ -174,16 +162,7 @@ export class QuickBooksAuth {
     authId: string;
     agentId: string;
   } | null> {
-    this.page.on('request', (request) => {
-      console.log(`Request: ${request.method()} ${request.url()}`);
-    });
-
-    this.page.on('response', async (response) => {
-      console.log(`Response: ${response.status()} ${response.url()}`);
-    });
-
     const cookies = await this.context.cookies();
-    console.log(cookies);
     const qboTkt = cookies.find((cookie) => cookie.name === 'qbo.ticket');
     const qbnAuthId = cookies.find((cookie) => cookie.name === 'qbn.authid');
     const qbnAgentId = cookies.find((cookie) => cookie.name === 'qbn.agentid');
