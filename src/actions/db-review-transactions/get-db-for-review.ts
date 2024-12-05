@@ -108,7 +108,7 @@ export async function getDatabaseTransactions(): Promise<{
           qboAccountId: forReviewTransaction.accountId,
           description: forReviewTransaction.description,
           origDescription: forReviewTransaction.origDescription,
-          amount: forReviewTransaction.amount,
+          amount: Number(forReviewTransaction.amount),
           olbTxnDate: forReviewTransaction.date,
           acceptType: forReviewTransaction.acceptType,
           addAsQboTxn: {
@@ -150,7 +150,7 @@ export async function getDatabaseTransactions(): Promise<{
               date: forReviewTransaction.date,
               account: forReviewTransaction.accountId,
               accountName: account.name,
-              amount: forReviewTransaction.amount,
+              amount: Number(forReviewTransaction.amount),
               categories: transactionCategories,
               categoryConfidence: categoryConfidence,
               taxCodes: transactionTaxCodes,
@@ -215,7 +215,7 @@ type databaseForReviewTransaction = {
   companyId: string;
   reviewTransactionId: string;
   accountId: string;
-  amount: number;
+  amount: string;
   payeeNameId: string | null;
   transactionTypeId: string;
   topCategoryClassification: string;
