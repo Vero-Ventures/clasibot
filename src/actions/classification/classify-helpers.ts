@@ -94,6 +94,10 @@ export async function preformSyntheticLogin(
     // Returns: A QueryResult and a Synthetic Login Tokens object.
     const [loginResult, loginTokens] = await syntheticLogin(realmId);
 
+    console.log('Synthetic Login Return')
+    console.log(loginResult)
+    console.log(loginTokens)
+
     // Check the Synthetic Login call resulted in error.
     if (loginResult.result === 'Error ') {
       // If the Synthetic Login resulted in error, Log the Query Result, update frontend state, and return a failure boolean.
@@ -131,6 +135,8 @@ export async function fetchTransactionsToClassify(
       loginTokens,
       realmId
     );
+
+    console.log(forReviewResult)
 
     // Check if the 'For Review' transaction call encountered an error.
     // Result is only present in Query Result typing (only returned on error).
