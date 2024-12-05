@@ -34,9 +34,6 @@ export async function searchDatabaseTransactionCategories(
         .from(TransactionsToCategories)
         .where(eq(TransactionsToCategories.transactionId, transaction[0].id));
 
-      console.log('Transactions to Categories');
-      console.log(transactionCategories);
-
       // Create an array to store the Categories related to the Transaction.
       const categories: {
         id: number;
@@ -51,8 +48,6 @@ export async function searchDatabaseTransactionCategories(
           .from(Category)
           .where(eq(Category.id, relationship.categoryId));
 
-        console.log('Relationship Category');
-        console.log(category);
         categories.push(category[0]);
       }
 
@@ -64,9 +59,6 @@ export async function searchDatabaseTransactionCategories(
       let validCategoryMap: {
         [key: string]: string;
       } = {};
-
-      console.log('Valid Categoires');
-      console.log(validCategories);
 
       if (validCategories) {
         // Create a dictionary that maps the valid Category names to their Ids.
@@ -87,19 +79,8 @@ export async function searchDatabaseTransactionCategories(
       // Most common Categories will be sorted to the start of the array.
       filteredCategories.sort((a, b) => b.matches - a.matches);
 
-      console.log('Filtered Catagories');
-
       // Take the top 3 (or less) Categories, map the names to their Id's and return them as an array.
       const topCategories = filteredCategories.slice(0, 3);
-
-      console.log('Top Catagories')
-      console.log(topCategories);
-      console.log(
-        topCategories.map((category) => ({
-          id: validCategoryMap[category.category],
-          name: category.category,
-        }))
-      );
 
       return topCategories.map((category) => ({
         id: validCategoryMap[category.category],

@@ -136,10 +136,10 @@ function getClassificationType(
 
   // If a Classification is present all Classification will use the same method.
   // Extracting the Classification method of the first Classification can be used to get the confidence level.
-  if (classifiedTransaction.categories) {
+  if (classifiedTransaction.categories && classifiedTransaction.categories[0]) {
     categoryPredictionType = classifiedTransaction.categories[0].classifiedBy;
   }
-  if (classifiedTransaction.taxCodes) {
+  if (classifiedTransaction.taxCodes && classifiedTransaction.taxCodes[0]) {
     taxCodePredictionType = classifiedTransaction.taxCodes[0].classifiedBy;
   }
 

@@ -56,9 +56,6 @@ export async function classifyTransactions(
       classifiedTransactions
     );
 
-    console.log('Added context transactions')
-    console.log(addTransactionsResult)
-
     // Check if the Query Result from saving the Transactions function resulted in an error.
     if (addTransactionsResult.result === 'Error') {
       // On error Query Result log an error with the message and detail, then return an error object and message.
@@ -108,9 +105,6 @@ export async function classifyTransactions(
     // Also returns a value indicating if Tax Code Classification is possible for the Company (Canadian Companies only).
     const [classifyTaxCodes, validTaxCodes] =
       await fetchValidTaxCodes(companyInfo);
-
-    console.log('Tax Codes')
-    console.log(validTaxCodes)
 
     // Create records that connect a 'For Review' transaction Id to an array of its Classified Elements.
     // Create a seperate record for tracking both Categories and Tax Codes.

@@ -25,46 +25,7 @@ export const syntheticAuth = async (): Promise<QBOTokenData> => {
       bypassCSP: true,
     });
 
-    try {
-      const cookies = await context.cookies();
-      console.log('Startup Cookies');
-      console.log(cookies);
-      context.clearCookies();
-      const storageState = await context.storageState();
-      const localStorage = storageState.origins.flatMap((origin) =>
-        origin.localStorage.map(({ name, value }) => ({ name, value }))
-      );
-      console.log('Local Storage');
-      console.log(localStorage);
-    } catch (error) {
-      console.log('Context Error');
-      console.log(error);
-    }
-
     const page = await context.newPage();
-
-    console.log(page.url());
-
-    try {
-      console.log('Page Local Storage');
-      console.log(window.localStorage);
-      await page.evaluate(() => window.localStorage.clear());
-      console.log('Local Storage Post Clear');
-      console.log(window.localStorage);
-    } catch (error) {
-      console.log('Local Storage Error');
-      console.log(error);
-    }
-
-    try {
-      console.log('Page Session Storage');
-      console.log(window.sessionStorage);
-      await page.evaluate(() => window.sessionStorage.clear());
-      console.log('Session Storage Post Clear');
-      console.log(window.sessionStorage);
-    } catch {
-      console.log('Session Storage Error');
-    }
 
     try {
       const auth = new QuickBooksAuth(context, page);
