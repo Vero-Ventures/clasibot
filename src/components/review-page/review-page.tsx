@@ -48,15 +48,10 @@ export default function ReviewPage({
     const loadForReviewTransactions = async () => {
       // Load the Transactions and check the Query Result for an error.
       const loadResult = await getDatabaseTransactions();
-      console.log('Load Transactions');
       if (loadResult.queryResult.result === 'Error') {
-        console.log(loadResult.queryResult.message);
-        console.log(loadResult.queryResult.detail);
         // If an error was found, open the related error modal.
         setErrorLoadingTransactions(true);
       }
-      console.log(loadResult.queryResult.result);
-      console.log(loadResult.transactions);
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
     };
@@ -73,6 +68,8 @@ export default function ReviewPage({
   // Define the helper function to start the Classification process.
   function handleClassification() {
     const handleClassify = async () => {
+      setOpenClassificationModal(true);
+
       // Calls the handler method to handle Classification and state setting.
       // Also returns the Classification results to be displayed.
       const classificationResults = await updateClassifyStates(
@@ -87,6 +84,7 @@ export default function ReviewPage({
         // Otherwise the completion modal (success or failure) is shown.
         setOpenFinishedClassificationModal(true);
       }
+      console.log(classificationResults);
 
       // Update the Classified 'For Review' transaction states with returned values (or empty array on error).
       setLoadedTransactions(classificationResults.loadedTransactions);

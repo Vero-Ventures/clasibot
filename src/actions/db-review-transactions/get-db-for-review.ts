@@ -45,9 +45,6 @@ export async function getDatabaseTransactions(): Promise<{
     // Get the the Expense and Transaction Accounts from the user.
     const transactionAccountsResult = await getAccounts('Transaction');
     const expenseAccountsResult = await getAccounts('Expense');
-    console.log('Transaction And Expense Accounts');
-    console.log(transactionAccountsResult);
-    console.log(expenseAccountsResult);
 
     // Check if the Account fetches resulted in an error.
     if (
@@ -81,9 +78,6 @@ export async function getDatabaseTransactions(): Promise<{
 
     // Get the list of Tax Codes for the user.
     const taxCodesResponse = await getTaxCodes();
-
-    console.log('Tax Codes');
-    console.log(taxCodesResponse);
 
     // Check if the Tax Code fetch resulted in an error.
     if ((taxCodesResponse[0] as QueryResult).result === 'Error') {
@@ -134,13 +128,6 @@ export async function getDatabaseTransactions(): Promise<{
 
         // Remove the Query Result from the first index to get just the list of Accounts.
         const checkedAccounts = transactionAccountsResult.slice(1) as Account[];
-
-        console.log('Classified Categoires');
-        console.log(transactionCategories);
-        console.log('Classified Tax Codes');
-        console.log(transactionTaxCodes);
-        console.log('Accounts');
-        console.log(checkedAccounts);
 
         // Iterate through the Transaction Accounts to find the one matching the Account Id of the 'For Review' transaction.
         // Needed to record its name to make the Classified 'For Review' transaction object.
