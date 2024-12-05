@@ -53,6 +53,9 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
       });
     });
 
+    console.log('Tax Code Response');
+    console.log(response);
+
     // Create an array to store the Tax Code objects.
     const results = [];
 
