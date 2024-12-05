@@ -30,7 +30,7 @@ export async function searchDatabaseTransactionCategories(
     console.log(transaction);
 
     // Check if a matching Transaction was found.
-    if (transaction) {
+    if (transaction[0]) {
       // Get the Transaction to Category Relationships for the found Transaction.
       const transactionCategories = await db
         .select()
