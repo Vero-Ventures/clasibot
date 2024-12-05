@@ -26,6 +26,7 @@ import type {
   ClassifiedResult,
   CompanyInfo,
   FormattedForReviewTransaction,
+  QueryResult,
   TaxCode,
   Transaction,
 } from '@/types/index';
@@ -223,15 +224,15 @@ async function fetchValidCategories(
 ): Promise<Classification[]> {
   try {
     // Gets a list of valid Category Accounts from QuickBooks using the 'Expense' Accounts type.
-    const validCategoriesResult = JSON.parse(await getAccounts('Expense'));
+    const validCategoriesResult = await getAccounts('Expense');
 
     // Check if the Account fetch Query Result resulted in an error.
-    if (validCategoriesResult[0].result === 'Error') {
+    if ((validCategoriesResult[0] as QueryResult).result === 'Error') {
       // On error Query Result log an error with the message and detail.
       console.error(
-        validCategoriesResult[0].message +
+        (validCategoriesResult[0] as QueryResult).message +
           ', Detail: ' +
-          validCategoriesResult[0].detail
+          (validCategoriesResult[0] as QueryResult).detail
       );
       // On error fetching Accounts, return an empty array of Classifications.
       return [];
@@ -241,26 +242,26 @@ async function fetchValidCategories(
     if (filterToBase) {
       // User info is not stored for security, so only base Category names are saved to the database.
       // Therefore the Account names are filtered before returning to methods that use database matching.
-      return validCategoriesResult
-        .slice(1)
-        .map((category: Account): Classification => {
+      return (validCategoriesResult.slice(1) as Account[]).map(
+        (category: Account): Classification => {
           return {
             type: 'classification',
             id: category.id,
             name: category.account_sub_type,
           };
-        });
+        }
+      );
     } else {
       // If database matching is not being used, return the full Account name for greater prediction accuracy.
-      return validCategoriesResult
-        .slice(1)
-        .map((category: Account): Classification => {
+      return (validCategoriesResult.slice(1) as Account[]).map(
+        (category: Account): Classification => {
           return {
             type: 'classification',
             id: category.id,
             name: category.name,
           };
-        });
+        }
+      );
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.

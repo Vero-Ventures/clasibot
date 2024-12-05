@@ -162,22 +162,22 @@ async function checkAndFormatTransactions(
 ) {
   // Call list of expense Accounts to check the Transaction Classifications against.
   const accounts = await getAccounts('Expense');
-  const accountResults = JSON.parse(accounts);
+  const accountResults = accounts;
 
   // Check the Account fetch Query Result to see if it resulted in an error.
-  if (accountResults[0].result === 'Error') {
+  if ((accountResults[0] as QueryResult).result === 'Error') {
     // Set the to contain an error Query Result with the message from the Account fetch Query Result as the detail.
     results = [
       {
         result: 'error',
         message:
           'Unexpected error occured while fetching expense Accounts for Transaction checking.',
-        detail: accountResults[0].message,
+        detail: (accountResults[0] as QueryResult).message,
       },
     ];
   } else {
     // If the fetch Accounts call was successful, define an array of just the Account objects (no Query Result).
-    const parsedAccounts: Account[] = accountResults.slice(1);
+    const parsedAccounts: Account[] = accountResults.slice(1) as Account[];
 
     // Iterate through the Transaction rows to find and format the Transaction data
     for (const row of rows) {

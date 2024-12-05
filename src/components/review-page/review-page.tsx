@@ -137,12 +137,12 @@ export default function ReviewPage({
   useEffect(() => {
     // Call the helper function to initalize the Classifications for the 'For Review' transactions.
     const handleInitalizeTransactionsCall = async () => {
-      console.log('Initalize Transactions');
+      // console.log('Initalize Transactions');
       const initalizeResults =
         await initalizeLoadedTransactions(loadedTransactions);
-      console.log(initalizeResults.categoryRecord);
-      console.log(initalizeResults.taxCodeRecord);
-      console.log(initalizeResults.accountsList);
+      // console.log(initalizeResults.categoryRecord);
+      // console.log(initalizeResults.taxCodeRecord);
+      // console.log(initalizeResults.accountsList);
       setSelectedCategories(initalizeResults.categoryRecord);
       setSelectedTaxCodes(initalizeResults.taxCodeRecord);
       setAccounts(initalizeResults.accountsList);
