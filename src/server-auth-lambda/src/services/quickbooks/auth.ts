@@ -17,9 +17,12 @@ export class QuickBooksAuth {
     try {
       await this.initialLogin(browserHelper);
       try {
-        await this.page.waitForSelector('text=Please select your company', {
-          timeout: 5000,
-        });
+        await this.page.waitForSelector(
+          CONFIG.selectors.firmSelection.firmSearchInput,
+          {
+            timeout: 5000,
+          }
+        );
         console.log('MFA skipped, proceeding to account selection...');
       } catch {
         console.log('MFA required, handling verification...');
@@ -126,7 +129,7 @@ export class QuickBooksAuth {
   ): Promise<void> {
     console.log('Wait And Fill For Firm Search');
     await browser.waitAndFill(
-      CONFIG.selectors.firmSelection.inviteSearchInput,
+      CONFIG.selectors.firmSelection.firmSearchInput,
       'Clasibot Synthetic Bookkeeper'
     );
     console.log('Find And Click First Firm Selection Box');

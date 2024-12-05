@@ -54,16 +54,12 @@ export async function syntheticLogin(
       return [loginResult, loginTokens];
     }
 
-    console.log(data);
-
     // If no invite type was specified, call is for Transactions and Login Tokens can be extracted from returned data.
     if (inviteType === 'null') {
       loginTokens.ticket = data.qboTicket;
       loginTokens.authId = data.authId;
       loginTokens.agentId = data.authId;
     }
-
-    console.log(loginTokens);
 
     // Set the Query Result to Success and update the message.
     loginResult.result = 'Success';
