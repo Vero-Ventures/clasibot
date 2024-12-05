@@ -121,7 +121,6 @@ async function handleBackendProcessStates(
         resolve();
       }, 1000);
     });
-
     console.log('State Update');
     console.log('Synthetic Login');
   } else {

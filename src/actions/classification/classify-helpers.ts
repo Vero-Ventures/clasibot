@@ -231,6 +231,8 @@ export async function startTransactionClassification(
       realmId
     );
 
+    console.log(classificationResults)
+
     // Check for error object returned by the Classification call.
     if (classificationResults.error) {
       // Return failure result and empty Classification result to the caller.
@@ -328,11 +330,6 @@ export async function changeClassificationState(
   let processMessage = '';
   let completedProcesses = 0;
 
-  console.log('Start State Update')
-  console.log(classificationState)
-  console.log(processMessage)
-  console.log(completedProcesses)
-
   // Use switch case to define behavior based on the state string.
   // States are always set prior to the related action being started.
   switch (classificationState) {
@@ -379,10 +376,6 @@ export async function changeClassificationState(
       completedProcesses = -1;
       break;
   }
-
-  console.log('End State Update')
-  console.log(processMessage)
-  console.log(completedProcesses)
 
   return { displayValue: processMessage, currentProcess: completedProcesses };
 }
