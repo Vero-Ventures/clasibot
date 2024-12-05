@@ -52,6 +52,9 @@ export default function ReviewPage({
         // If an error was found, open the related error modal.
         setErrorLoadingTransactions(true);
       }
+      console.log('Load Transactions')
+      console.log(loadResult.queryResult.result)
+      console.log(loadResult.transactions)
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
     };
@@ -130,10 +133,15 @@ export default function ReviewPage({
 
   // Whenever the loaded 'For Review' transactions are updated, also update the Classifications for each Transaction.
   useEffect(() => {
+    
     // Call the helper function to initalize the Classifications for the 'For Review' transactions.
     const handleInitalizeTransactionsCall = async () => {
+      console.log('Initalize Transactions')
       const initalizeResults =
         await initalizeLoadedTransactions(loadedTransactions);
+      console.log(initalizeResults.categoryRecord)
+      console.log(initalizeResults.taxCodeRecord)
+      console.log(initalizeResults.accountsList)
       setSelectedCategories(initalizeResults.categoryRecord);
       setSelectedTaxCodes(initalizeResults.taxCodeRecord);
       setAccounts(initalizeResults.accountsList);
