@@ -170,6 +170,8 @@ export async function batchQueryLLM(
     // Define the resultScore threshold for the Knowledge Graph API.
     const threshold = 10;
 
+    console.log(classifications)
+
     // Extract valid Classification names from the passed Classification objects.
     const validClassificationNames = classifications.map(
       (classification) => classification.name
