@@ -34,7 +34,7 @@ export const CheckConnectionButton = () => {
       // Optional: Wait for the animation to complete before redirecting
       setTimeout(() => {
         router.push('/home');
-      }, 3000);
+      }, 2000);
     } else {
       // Display failure message and set timeout to reset check button.
       setDisplayFailMessage(true);

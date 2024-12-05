@@ -43,15 +43,16 @@ export async function getDatabaseTransactions(): Promise<{
     )[][] = [];
 
     // Get the the Expense and Transaction Accounts from the user.
-    const transactionAccountsResult = JSON.parse(
-      await getAccounts('Transaction')
-    );
-    const expenseAccountsResult = JSON.parse(await getAccounts('Expense'));
+    const transactionAccountsResult = await getAccounts('Transaction');
+    const expenseAccountsResult = await getAccounts('Expense');
+    console.log('Transaction And Expense Accounts');
+    console.log(transactionAccountsResult);
+    console.log(expenseAccountsResult);
 
     // Check if the Account fetches resulted in an error.
     if (
-      transactionAccountsResult[0].result === 'Error' ||
-      expenseAccountsResult[0].result === 'Error'
+      (transactionAccountsResult[0] as QueryResult).result === 'Error' ||
+      (expenseAccountsResult[0] as QueryResult).result === 'Error'
     ) {
       // Define the Account fetch error Query Result.
       const errorResult: QueryResult = {
@@ -61,17 +62,17 @@ export async function getDatabaseTransactions(): Promise<{
       };
 
       // Add the error detail for both Account queries if they are present.
-      if (transactionAccountsResult[0].result === 'Error') {
+      if ((transactionAccountsResult[0] as QueryResult).result === 'Error') {
         errorResult.detail =
           'Transaction Account Error, Detail:' +
-          transactionAccountsResult[0].detail +
+          (transactionAccountsResult[0] as QueryResult).detail +
           '\n';
       }
-      if (expenseAccountsResult[0].result === 'Error') {
+      if ((expenseAccountsResult[0] as QueryResult).result === 'Error') {
         errorResult.detail =
           errorResult.detail +
           'Expense Account Error, Detail:' +
-          expenseAccountsResult[0].detail;
+          (expenseAccountsResult[0] as QueryResult).detail;
       }
 
       // On Error: Return an error Query Result and an empty array for the 'For Review' transactions.
@@ -80,6 +81,9 @@ export async function getDatabaseTransactions(): Promise<{
 
     // Get the list of Tax Codes for the user.
     const taxCodesResponse = JSON.parse(await getTaxCodes());
+
+    console.log('Tax Codes');
+    console.log(taxCodesResponse);
 
     // Check if the Tax Code fetch resulted in an error.
     if (taxCodesResponse[0].result === 'Error') {
@@ -129,7 +133,14 @@ export async function getDatabaseTransactions(): Promise<{
           await getTransactionTaxCodes(forReviewTransaction, taxCodesResponse);
 
         // Remove the Query Result from the first index to get just the list of Accounts.
-        const checkedAccounts = transactionAccountsResult.slice(1);
+        const checkedAccounts = transactionAccountsResult.slice(1) as Account[];
+
+        console.log('Classified Categoires');
+        console.log(transactionCategories);
+        console.log('Classified Tax Codes');
+        console.log(transactionTaxCodes);
+        console.log('Accounts');
+        console.log(checkedAccounts);
 
         // Iterate through the Transaction Accounts to find the one matching the Account Id of the 'For Review' transaction.
         // Needed to record its name to make the Classified 'For Review' transaction object.
@@ -229,7 +240,7 @@ type databaseForReviewTransaction = {
 // Returns: An array of Classified Elements for the related Categories.
 async function getTransactionCategories(
   forReviewTransaction: databaseForReviewTransaction,
-  expenseAccountsResult: Account[]
+  expenseAccountsResult: (QueryResult | Account)[]
 ): Promise<ClassifiedElement[]> {
   try {
     // Get the Transaction to Category Relationships by the Transaction Id.

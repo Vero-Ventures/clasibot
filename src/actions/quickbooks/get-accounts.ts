@@ -4,14 +4,16 @@ import { checkFaultProperty, createQueryResult } from '@/actions/helpers/index';
 
 import { getQBObject } from '@/actions/quickbooks/qb-client';
 
-import type { Account, ErrorResponse } from '@/types/index';
+import type { Account, ErrorResponse, QueryResult } from '@/types/index';
 
 // Get specific Accounts from the QuickBooks API depending on passed Account type.
 // Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
 // Use 'Expense' to get Accounts for Categorization.
 // Takes: The account type as either a 'Transaction' or 'Expense' string.
 // Returns: An array of objects starting with a Query Result, then containing Purchase objects.
-export async function getAccounts(accountType: string): Promise<string> {
+export async function getAccounts(
+  accountType: string
+): Promise<(QueryResult | Account)[]> {
   try {
     // Define the variable used to make the qbo calls.
     const qbo = await getQBObject();
@@ -84,13 +86,13 @@ export async function getAccounts(accountType: string): Promise<string> {
       ];
     } else {
       // If no valid type was passed, return an error Query Result.
-      return JSON.stringify([
+      return [
         {
           result: 'error',
           message: 'Invalid Transaction Fetch Type Passed',
           detail: `Passed Transaction Type To Fetch Was Not 'Expense' or 'Transaction'`,
         },
-      ]);
+      ];
     }
 
     // Used the defined parameters to fetch specified User Accounts from QuickBooks.
@@ -133,25 +135,25 @@ export async function getAccounts(accountType: string): Promise<string> {
       }
     }
     // Return the array of Account objects with a Query Result in the first index as a JSON string.
-    return JSON.stringify(results);
+    return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
-      return JSON.stringify([
+      return [
         {
           result: 'Error',
           message: 'Unexpected error occured while fetching Accounts.',
           detail: error.message,
         },
-      ]);
+      ];
     } else {
-      return JSON.stringify([
+      return [
         {
           result: 'Error',
           message: 'Unexpected error occured while fetching Accounts.',
           detail: 'N/A',
         },
-      ]);
+      ];
     }
   }
 }
