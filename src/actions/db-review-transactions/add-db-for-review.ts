@@ -33,7 +33,7 @@ export async function addDatabaseForReviewTransactions(
         getClassificationType(classifiedTransaction);
 
       // Extract and define the type of the Raw 'For Review' transaction which contains data for writing to QuickBooks.
-      const rawTransaction = transaction[0] as RawForReviewTransaction;
+      const rawTransaction = transaction[1] as RawForReviewTransaction;
 
       // Check if the current 'For Review' transaction has already been saved into the database.
       // Compares the Company realm Id and 'For Review' transaction Id which is a unique combination (Transaction Id's are unique by Company).
