@@ -24,32 +24,47 @@ export const syntheticAuth = async (): Promise<QBOTokenData> => {
       javaScriptEnabled: true,
       bypassCSP: true,
     });
-    const cookies = context.cookies();
-    console.log('Startup Cookies');
-    console.log(cookies);
-    context.clearCookies();
-    const storageState = await context.storageState();
-    const localStorage = storageState.origins.flatMap((origin) =>
-      origin.localStorage.map(({ name, value }) => ({ name, value }))
-    );
-    console.log('Local Storage');
-    console.log(localStorage);
+
+    try {
+      const cookies = await context.cookies();
+      console.log('Startup Cookies');
+      console.log(cookies);
+      context.clearCookies();
+      const storageState = await context.storageState();
+      const localStorage = storageState.origins.flatMap((origin) =>
+        origin.localStorage.map(({ name, value }) => ({ name, value }))
+      );
+      console.log('Local Storage');
+      console.log(localStorage);
+    } catch (error) {
+      console.log('Context Error');
+      console.log(error);
+    }
 
     const page = await context.newPage();
 
-    console.log('Page Local Storage');
-    console.log(await page.evaluate(() => window.localStorage));
-    console.log('Page Session Storage');
-    console.log(await page.evaluate(() => window.sessionStorage));
+    console.log(page.url());
 
-    await page.evaluate(() => window.localStorage.clear());
-    await page.evaluate(() => window.sessionStorage.clear());
+    try {
+      console.log('Page Local Storage');
+      console.log(window.localStorage);
+      await page.evaluate(() => window.localStorage.clear());
+      console.log('Local Storage Post Clear');
+      console.log(window.localStorage);
+    } catch (error) {
+      console.log('Local Storage Error');
+      console.log(error);
+    }
 
-    console.log('Local Storage Post Clear');
-    console.log(page.evaluate(() => window.localStorage));
-
-    console.log('Session Storage Post Clear');
-    console.log(page.evaluate(() => window.sessionStorage));
+    try {
+      console.log('Page Session Storage');
+      console.log(window.sessionStorage);
+      await page.evaluate(() => window.sessionStorage.clear());
+      console.log('Session Storage Post Clear');
+      console.log(window.sessionStorage);
+    } catch {
+      console.log('Session Storage Error');
+    }
 
     try {
       const auth = new QuickBooksAuth(context, page);

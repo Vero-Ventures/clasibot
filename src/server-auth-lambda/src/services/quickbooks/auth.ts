@@ -15,7 +15,11 @@ export class QuickBooksAuth {
     const emailService = new EmailService();
 
     try {
+      console.log('Pre Login Url');
+      console.log(this.page.url());
       await this.initialLogin(browserHelper);
+      console.log('Post Login Url');
+      console.log(this.page.url());
       try {
         await this.page.waitForSelector(
           CONFIG.selectors.firmSelection.firmSearchInput,
@@ -28,6 +32,9 @@ export class QuickBooksAuth {
         console.log('MFA required, handling verification...');
         await this.handleMFA(browserHelper, emailService);
       }
+
+      console.log('No MFA');
+      console.log(this.page.url());
 
       await this.firmSelection(browserHelper);
 
@@ -74,6 +81,7 @@ export class QuickBooksAuth {
       await this.handleMFA(browser, emailService);
     } catch {
       console.log('No MFA');
+      console.log(this.page.url());
     }
 
     if (inviteType === 'company') {
@@ -91,7 +99,11 @@ export class QuickBooksAuth {
   }
 
   private async initialLogin(browser: BrowserHelper): Promise<void> {
+    console.log('Login Go To Url');
+    console.log(CONFIG.quickbooks.loginUrl);
     await this.page.goto(CONFIG.quickbooks.loginUrl);
+    console.log('Login Visited Url');
+    console.log(this.page.url());
     await browser.waitAndFill(
       CONFIG.selectors.login.emailInput,
       CONFIG.quickbooks.email
@@ -108,6 +120,8 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
+    console.log('MFA Url');
+    console.log(this.page.url());
     await browser.waitAndClick(CONFIG.selectors.login.mfaSMSOption, 30000);
     const code = await this.waitForVerificationCode(emailService);
     if (!code) throw new Error('Failed to retrieve verification code');

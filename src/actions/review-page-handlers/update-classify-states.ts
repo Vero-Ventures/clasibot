@@ -36,6 +36,12 @@ export async function updateClassifyStates(
   // Set the Classification process to be in progress and update the state.
   setClassificationState('Start Classify');
 
+  await new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, 1000);
+  });
+
   // Call function to iterate through primary Classification process steps.
   const success = await handleBackendProcessStates(setClassificationState);
 
@@ -43,6 +49,11 @@ export async function updateClassifyStates(
   if (success) {
     // Update the state to indicate the Classification is finished.
     setClassificationState('Load New Classified Transactions');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
     console.log('State Update');
     console.log('Load New Classified Transactions');
 
@@ -105,6 +116,12 @@ async function handleBackendProcessStates(
   // Check result and either update to Synthetic Login state or return a failure value.
   if (startResult.result) {
     setClassificationState('Synthetic Login');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
+
     console.log('State Update');
     console.log('Synthetic Login');
   } else {
@@ -119,6 +136,11 @@ async function handleBackendProcessStates(
   // Check result and either update to Get 'For Review' transactions state or return a failure value.
   if (loginResult.result) {
     setClassificationState('Get For Review Transactions');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
     console.log('State Update');
     console.log('Get For Review Transactions');
   } else {
@@ -147,6 +169,11 @@ async function handleBackendProcessStates(
   // Check result and either update to Get Saved Transactions state or return a failure value.
   if (transactionResults.result) {
     setClassificationState('Get Saved Transactions');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
     console.log('State Update');
     console.log('Get Saved Transactions');
   } else {
@@ -161,6 +188,11 @@ async function handleBackendProcessStates(
   // Update state on successfully getting prediction context, otherwise return a failure value.
   if (contextResult.result) {
     setClassificationState('Classify For Review Transactions');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
     console.log('State Update');
     console.log('Classify For Review Transactions');
   } else {
@@ -186,6 +218,11 @@ async function handleBackendProcessStates(
   // Update state on successfully starting Classification, otherwise return a failure value.
   if (classificationsResult.result) {
     setClassificationState('Create New Classified Transactions');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
     console.log('State Update');
     console.log('Create New Classified Transactions');
   } else {
@@ -203,6 +240,11 @@ async function handleBackendProcessStates(
   // Update state on successfully creating Classified 'For Review' transactions, otherwise return a failure value.
   if (creationResult.result) {
     setClassificationState('Save New Classified Transactions');
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
     console.log('State Update');
     console.log('Save New Classified Transactions');
   } else {
