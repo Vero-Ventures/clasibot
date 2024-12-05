@@ -56,6 +56,9 @@ export async function classifyTransactions(
       classifiedTransactions
     );
 
+    console.log('Added context transactions')
+    console.log(addTransactionsResult)
+
     // Check if the Query Result from saving the Transactions function resulted in an error.
     if (addTransactionsResult.result === 'Error') {
       // On error Query Result log an error with the message and detail, then return an error object and message.
@@ -106,6 +109,9 @@ export async function classifyTransactions(
     const [classifyTaxCodes, validTaxCodes] =
       await fetchValidTaxCodes(companyInfo);
 
+    console.log('Tax Codes')
+    console.log(validTaxCodes)
+
     // Create records that connect a 'For Review' transaction Id to an array of its Classified Elements.
     // Create a seperate record for tracking both Categories and Tax Codes.
     const categoryResults: Record<string, ClassifiedElement[]> = {};
@@ -144,6 +150,7 @@ export async function classifyTransactions(
 
     // Check if 'For Review' transactions are present in the noMatches array for Category Classification.
     if (noCategoryMatches.length > 0) {
+      console.log('Category LLM')
       // Call the LLM to Classify the Categories of the unmatched 'For Review' transactions.
       await classifyCategoriesWithLLM(
         noCategoryMatches,
@@ -155,6 +162,7 @@ export async function classifyTransactions(
 
     // Check if 'For Review' transactions are present in the noMatches array for Tax Code Classification.
     if (noTaxCodeMatches.length > 0 && classifyTaxCodes) {
+      console.log('Tax Code LLM')
       // Call the LLM to Classify the Tax Codes of the unmatched 'For Review' transactions.
       await classifyTaxCodesWithLLM(
         noTaxCodeMatches,

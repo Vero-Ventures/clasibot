@@ -26,9 +26,6 @@ export async function searchDatabaseTransactionCategories(
       .from(Transaction)
       .where(eq(Transaction.transactionName, name));
 
-    console.log('Transaction');
-    console.log(transaction);
-
     // Check if a matching Transaction was found.
     if (transaction[0]) {
       // Get the Transaction to Category Relationships for the found Transaction.
