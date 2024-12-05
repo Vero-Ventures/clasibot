@@ -110,7 +110,9 @@ export async function getSavedTransactions(
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
 
-    console.log(responseRows)
+    for (const row of responseRows) {
+      console.log(row)
+    }
 
     // Create a formatted Query Result object for the QBO API call.
     // Push the Query Result to the first index of the results array.
@@ -167,6 +169,8 @@ async function checkAndFormatTransactions(
   // Call list of expense Accounts to check the Transaction Classifications against.
   const accounts = await getAccounts('Expense');
   const accountResults = accounts;
+
+  console.log(accounts)
 
   // Check the Account fetch Query Result to see if it resulted in an error.
   if ((accountResults[0] as QueryResult).result === 'Error') {
