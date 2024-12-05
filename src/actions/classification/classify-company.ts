@@ -157,24 +157,23 @@ export async function getForReviewTransactions(
 > {
   try {
     // Get all Accounts that may contain 'For Review' transactions.
-    const response = await getAccounts('Transaction');
-    const result = JSON.parse(response);
+    const result = await getAccounts('Transaction');
 
     // Check if the Account fetch resulted in an error.
-    if (result[0].result === 'Error') {
+    if ((result[0] as QueryResult).result === 'Error') {
       // If the Accounts fetch failed, log an error message and return an error Query Result.
       console.error(
         'Error Getting User Accounts To Fetch Review Transactions:' +
-          result[0].message
+          (result[0] as QueryResult).message
       );
       return {
         result: 'Error',
         message: 'Error Getting User Accounts To Fetch Review Transactions',
-        detail: result[0].message,
+        detail: (result[0] as QueryResult).message,
       };
     } else {
       // Remove the Query Result from the returned values and define results as an array of Account objects.
-      const userAccounts: Account[] = result.slice(1);
+      const userAccounts: Account[] = result.slice(1) as Account[];
 
       // Define an array to contain the fetched 'For Review' transactions.
       let foundTransactions: (
