@@ -50,6 +50,7 @@ export async function addDatabaseForReviewTransactions(
 
       // If no database match was found, continue to save the 'For Review' transaction to the database.
       if (matchingTransactions.length === 0) {
+        console.log(rawTransaction);
         // Define the object to save to the database.
         // Contains the values needed for frontend display and for writing to QuickBooks.
         const databaseObject = {
