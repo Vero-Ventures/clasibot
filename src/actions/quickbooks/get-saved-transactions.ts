@@ -110,6 +110,8 @@ export async function getSavedTransactions(
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
 
+    console.log(responseRows)
+
     // Create a formatted Query Result object for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const QueryResult = createQueryResult(success, error);
@@ -120,6 +122,8 @@ export async function getSavedTransactions(
       // Call helper method to check and format response data into Transactions.
       checkAndFormatTransactions(responseRows, results);
     }
+
+    console.log(results)
 
     // Return the formatted results as a JSON string.
     return results;

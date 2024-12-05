@@ -129,6 +129,14 @@ export async function classifyTransactions(
       'category'
     );
 
+    console.log('Classified From Fuse')
+    console.log(categoryResults)
+    console.log(taxCodeResults)
+
+    console.log('Unclassified From Fuse')
+    console.log(noCategoryMatches)
+    console.log(noTaxCodeMatches)
+
     // Check if Tax Code Classification is possible and valid Tax Codes were found.
     if (classifyTaxCodes && validTaxCodes.length > 0) {
       // Preform Fuse and database matching for the Tax Code Classifications.
