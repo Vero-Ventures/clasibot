@@ -198,9 +198,9 @@ async function checkAndFormatTransactions(
 
       // Define the index values of the rows with important Transaction values.
       const idRow = 0;
-      const nameRow = 1;
-      const categoryRow = 2;
-      const amountRow = 3;
+      const nameRow = 2;
+      const categoryRow = 3;
+      const amountRow = 4;
 
       // Skip Transactions missing a name, Category, or without a negative amount.
       if (
