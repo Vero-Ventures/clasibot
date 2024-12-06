@@ -110,10 +110,6 @@ export async function getSavedTransactions(
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
 
-    for (const row of responseRows) {
-      console.log(row)
-    }
-
     // Create a formatted Query Result object for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const QueryResult = createQueryResult(success, error);
@@ -193,6 +189,8 @@ async function checkAndFormatTransactions(
       if (row.Summary) {
         break;
       }
+
+      console.log(row)
 
       // Define the index values of the rows with important Transaction values.
       const idRow = 0;
