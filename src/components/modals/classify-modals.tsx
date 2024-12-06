@@ -52,7 +52,6 @@ export const ClassifyCompleteModal: React.FC<ClassifyCompleteProps> = ({
   setDisplayState,
   classificationState,
 }: ClassifyCompleteProps) => {
-  classificationState = 'Error';
   return (
     <>
       {
