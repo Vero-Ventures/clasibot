@@ -106,6 +106,8 @@ export async function getSavedTransactions(
       );
     });
 
+    console.log(response);
+
     //  Get the Transaction Row data from the response and create a results array.
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
@@ -117,11 +119,10 @@ export async function getSavedTransactions(
 
     // Check if Transaction rows were found and that the Query Result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {
+      console.log('Call format');
       // Call helper method to check and format response data into Transactions.
-      checkAndFormatTransactions(responseRows, results);
+      await checkAndFormatTransactions(responseRows, results);
     }
-
-    console.log(results)
 
     // Return the formatted results as a JSON string.
     return results;
@@ -166,8 +167,6 @@ async function checkAndFormatTransactions(
   const accounts = await getAccounts('Expense');
   const accountResults = accounts;
 
-  console.log(accounts)
-
   // Check the Account fetch Query Result to see if it resulted in an error.
   if ((accountResults[0] as QueryResult).result === 'Error') {
     // Set the to contain an error Query Result with the message from the Account fetch Query Result as the detail.
@@ -189,8 +188,6 @@ async function checkAndFormatTransactions(
       if (row.Summary) {
         break;
       }
-
-      console.log(row)
 
       // Define the index values of the rows with important Transaction values.
       const idRow = 0;
