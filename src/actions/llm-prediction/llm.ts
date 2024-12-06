@@ -129,6 +129,8 @@ export async function batchQueryLLM(
       (classification) => classification.name
     );
 
+    console.log('extracted classification names')
+
     // Define the context promises variable.
     let contextPromises;
 
@@ -152,6 +154,8 @@ export async function batchQueryLLM(
         threshold
       );
     }
+
+    console.log('got context')
 
     // Wait for all contexts to be generated using the context promises for the 'For Review' transactions.
     const contexts = await Promise.all(contextPromises);
@@ -181,6 +185,9 @@ export async function batchQueryLLM(
           (classification) =>
             responseText.includes(classification.toLowerCase())
         );
+
+        console.log('possible classifications')
+        console.log(possibleValidclassifications)
 
         // Map the possible valid Classifications to the full Classification objects.
         // Iterates through the names to find and add the related Classification object.
@@ -249,6 +256,8 @@ function categoryContext(
 
       // Fetch detailed descriptions from the Knowledge Graph API, which returns an empty array on failure.
       const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
+
+      console.log('fetched knowlege graph')
 
       // Filter the KN descriptions to those with a resultScore (likelyhood of relevance) above the passed threshold.
       const descriptions = kgResults.filter(

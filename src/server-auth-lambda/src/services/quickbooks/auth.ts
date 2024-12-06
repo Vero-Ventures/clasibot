@@ -121,7 +121,8 @@ export class QuickBooksAuth {
   ): Promise<void> {
     await browser.waitAndFill(
       CONFIG.selectors.firmSelection.firmSearchInput,
-      'Clasibot Synthetic Bookkeeper'
+      'Clasibot Synthetic Bookkeeper',
+      5000
     );
     let firmButtons = this.page.locator(
       CONFIG.selectors.firmSelection.firmSelectionButtonLogin

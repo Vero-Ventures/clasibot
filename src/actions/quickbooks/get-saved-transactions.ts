@@ -193,9 +193,6 @@ async function checkAndFormatTransactions(
         break;
       }
 
-      console.log('Row Data')
-      console.log(row)
-
       // Define the index values of the rows with important Transaction values.
       const idRow = 0;
       const nameRow = 2;
@@ -205,8 +202,7 @@ async function checkAndFormatTransactions(
       // Skip Transactions missing a name, Category, or without a negative amount.
       if (
         row.ColData[nameRow].value !== '' &&
-        row.ColData[categoryRow].value !== '' &&
-        Number(row.ColData[amountRow].value) < 0
+        row.ColData[categoryRow].value !== ''
       ) {
         // Only continue if there is an expense Account with the same name as the Transaction Category.
         if (
@@ -273,8 +269,6 @@ async function checkAndFormatTransactions(
                 newFormattedTransaction.taxCodeName = taxCode.Name;
               }
             }
-            console.log('New Transaction')
-            console.log(newFormattedTransaction)
             // Add the new formatted Transaction to the array.
             results.push(newFormattedTransaction);
           }

@@ -160,6 +160,7 @@ export async function classifyTransactions(
         categoryResults,
         companyInfo
       );
+      console.log(categoryResults)
     }
 
     // Check if 'For Review' transactions are present in the noMatches array for Tax Code Classification.
@@ -173,6 +174,7 @@ export async function classifyTransactions(
         taxCodeResults,
         companyInfo
       );
+      console.log(taxCodeResults)
     }
 
     // Create a record to track arrays of the Classified Elements for a 'For Review' transaction.
