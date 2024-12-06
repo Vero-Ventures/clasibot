@@ -66,7 +66,7 @@ export async function getSavedTransactions(
       start_date: startDate,
       end_date: endDate,
       limit: 1000,
-      columns: ['txn_type', 'name', 'other_account'],
+      columns: ['txn_type', 'name', 'other_account', 'memo'],
     };
 
     // Check MultiCurrencyEnabled and add the appropriate parameters for Transaction amount column.
@@ -106,19 +106,26 @@ export async function getSavedTransactions(
       );
     });
 
+    
+
     //  Get the Transaction Row data from the response and create a results array.
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
+
+    console.log(responseRows);
+    
 
     // Create a formatted Query Result object for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const QueryResult = createQueryResult(success, error);
     results.push(QueryResult);
 
+    console.log(QueryResult)
+
     // Check if Transaction rows were found and that the Query Result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {
       // Call helper method to check and format response data into Transactions.
-      checkAndFormatTransactions(responseRows, results);
+      await checkAndFormatTransactions(responseRows, results);
     }
 
     // Return the formatted results as a JSON string.
@@ -162,22 +169,22 @@ async function checkAndFormatTransactions(
 ) {
   // Call list of expense Accounts to check the Transaction Classifications against.
   const accounts = await getAccounts('Expense');
-  const accountResults = JSON.parse(accounts);
+  const accountResults = accounts;
 
   // Check the Account fetch Query Result to see if it resulted in an error.
-  if (accountResults[0].result === 'Error') {
+  if ((accountResults[0] as QueryResult).result === 'Error') {
     // Set the to contain an error Query Result with the message from the Account fetch Query Result as the detail.
     results = [
       {
         result: 'error',
         message:
           'Unexpected error occured while fetching expense Accounts for Transaction checking.',
-        detail: accountResults[0].message,
+        detail: (accountResults[0] as QueryResult).message,
       },
     ];
   } else {
     // If the fetch Accounts call was successful, define an array of just the Account objects (no Query Result).
-    const parsedAccounts: Account[] = accountResults.slice(1);
+    const parsedAccounts: Account[] = accountResults.slice(1) as Account[];
 
     // Iterate through the Transaction rows to find and format the Transaction data
     for (const row of rows) {
@@ -188,15 +195,14 @@ async function checkAndFormatTransactions(
 
       // Define the index values of the rows with important Transaction values.
       const idRow = 0;
-      const nameRow = 1;
-      const categoryRow = 2;
-      const amountRow = 3;
+      const nameRow = 2;
+      const categoryRow = 3;
+      const amountRow = 4;
 
       // Skip Transactions missing a name, Category, or without a negative amount.
       if (
         row.ColData[nameRow].value !== '' &&
-        row.ColData[categoryRow].value !== '' &&
-        Number(row.ColData[amountRow].value) < 0
+        row.ColData[categoryRow].value !== ''
       ) {
         // Only continue if there is an expense Account with the same name as the Transaction Category.
         if (
@@ -219,17 +225,18 @@ async function checkAndFormatTransactions(
           );
 
           // Get the User Tax Codes and parse it to a Query Result and an array of Tax Code objects.
-          const userTaxCodes = JSON.parse(await getTaxCodes());
+          const userTaxCodes = await getTaxCodes();
 
           // Check if either of the fetches resulted in an error Query Result.
           if (
             transactionPurchase.result_info.result === 'Error' ||
-            userTaxCodes[0].result === 'Error'
+            (userTaxCodes[0] as QueryResult).result === 'Error'
           ) {
             // Define values for both Classifications to indicate if that fetch resulted in an error.
             const purchaseError =
               transactionPurchase.result_info.result === 'Error';
-            const taxCodeError = userTaxCodes[0].result === 'Error';
+            const taxCodeError =
+              (userTaxCodes[0] as QueryResult).result === 'Error';
 
             // Log an error indicating an issue with the Transaction.
             console.error(
@@ -248,7 +255,8 @@ async function checkAndFormatTransactions(
             }
             if (taxCodeError) {
               console.error(
-                'Error fetching Tax Code: ' + userTaxCodes[0].detail
+                'Error fetching Tax Code: ' +
+                  (userTaxCodes[0] as QueryResult).detail
               );
             }
           } else {
@@ -261,7 +269,6 @@ async function checkAndFormatTransactions(
                 newFormattedTransaction.taxCodeName = taxCode.Name;
               }
             }
-
             // Add the new formatted Transaction to the array.
             results.push(newFormattedTransaction);
           }

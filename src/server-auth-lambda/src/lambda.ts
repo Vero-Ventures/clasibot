@@ -21,7 +21,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     }
 
     if (inviteLink === 'null') {
-      console.log('Login');
       const tokenData = await syntheticAuth();
 
       return {
@@ -29,7 +28,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         body: JSON.stringify(tokenData),
       };
     } else {
-      console.log('Invite');
       await syntheticAccept(inviteLink, inviteType);
 
       return {

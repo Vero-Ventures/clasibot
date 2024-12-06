@@ -44,7 +44,10 @@ export default async function Page() {
   };
 
   // If the user status is invalid or there is an error, go to the subscription page.
-  if ('error' in subscriptionStatus || !subscriptionStatus.valid) {
+  if (
+    ('error' in subscriptionStatus || !subscriptionStatus.valid) &&
+    process.env.APP_CONFIG === 'production'
+  ) {
     return <SubscriptionPage />;
   } else if (
     !companyHasSBK.connected &&

@@ -26,6 +26,7 @@ import type {
   ClassifiedResult,
   CompanyInfo,
   FormattedForReviewTransaction,
+  QueryResult,
   TaxCode,
   Transaction,
 } from '@/types/index';
@@ -128,6 +129,14 @@ export async function classifyTransactions(
       'category'
     );
 
+    console.log('Classified From Fuse')
+    console.log(categoryResults)
+    console.log(taxCodeResults)
+
+    console.log('Unclassified From Fuse')
+    console.log(noCategoryMatches)
+    console.log(noTaxCodeMatches)
+
     // Check if Tax Code Classification is possible and valid Tax Codes were found.
     if (classifyTaxCodes && validTaxCodes.length > 0) {
       // Preform Fuse and database matching for the Tax Code Classifications.
@@ -143,6 +152,7 @@ export async function classifyTransactions(
 
     // Check if 'For Review' transactions are present in the noMatches array for Category Classification.
     if (noCategoryMatches.length > 0) {
+      console.log('Category LLM')
       // Call the LLM to Classify the Categories of the unmatched 'For Review' transactions.
       await classifyCategoriesWithLLM(
         noCategoryMatches,
@@ -150,10 +160,12 @@ export async function classifyTransactions(
         categoryResults,
         companyInfo
       );
+      console.log(categoryResults)
     }
 
     // Check if 'For Review' transactions are present in the noMatches array for Tax Code Classification.
     if (noTaxCodeMatches.length > 0 && classifyTaxCodes) {
+      console.log('Tax Code LLM')
       // Call the LLM to Classify the Tax Codes of the unmatched 'For Review' transactions.
       await classifyTaxCodesWithLLM(
         noTaxCodeMatches,
@@ -162,6 +174,7 @@ export async function classifyTransactions(
         taxCodeResults,
         companyInfo
       );
+      console.log(taxCodeResults)
     }
 
     // Create a record to track arrays of the Classified Elements for a 'For Review' transaction.
@@ -223,15 +236,15 @@ async function fetchValidCategories(
 ): Promise<Classification[]> {
   try {
     // Gets a list of valid Category Accounts from QuickBooks using the 'Expense' Accounts type.
-    const validCategoriesResult = JSON.parse(await getAccounts('Expense'));
+    const validCategoriesResult = await getAccounts('Expense');
 
     // Check if the Account fetch Query Result resulted in an error.
-    if (validCategoriesResult[0].result === 'Error') {
+    if ((validCategoriesResult[0] as QueryResult).result === 'Error') {
       // On error Query Result log an error with the message and detail.
       console.error(
-        validCategoriesResult[0].message +
+        (validCategoriesResult[0] as QueryResult).message +
           ', Detail: ' +
-          validCategoriesResult[0].detail
+          (validCategoriesResult[0] as QueryResult).detail
       );
       // On error fetching Accounts, return an empty array of Classifications.
       return [];
@@ -241,26 +254,26 @@ async function fetchValidCategories(
     if (filterToBase) {
       // User info is not stored for security, so only base Category names are saved to the database.
       // Therefore the Account names are filtered before returning to methods that use database matching.
-      return validCategoriesResult
-        .slice(1)
-        .map((category: Account): Classification => {
+      return (validCategoriesResult.slice(1) as Account[]).map(
+        (category: Account): Classification => {
           return {
             type: 'classification',
             id: category.id,
             name: category.account_sub_type,
           };
-        });
+        }
+      );
     } else {
       // If database matching is not being used, return the full Account name for greater prediction accuracy.
-      return validCategoriesResult
-        .slice(1)
-        .map((category: Account): Classification => {
+      return (validCategoriesResult.slice(1) as Account[]).map(
+        (category: Account): Classification => {
           return {
             type: 'classification',
             id: category.id,
             name: category.name,
           };
-        });
+        }
+      );
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
@@ -295,7 +308,7 @@ async function fetchValidTaxCodes(
     ) {
       classifyTaxCode = true;
       // Use the Synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
-      const userTaxCodes = JSON.parse(await getTaxCodes());
+      const userTaxCodes = await getTaxCodes();
 
       // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(
@@ -303,17 +316,17 @@ async function fetchValidTaxCodes(
       );
 
       // Check the fetch for the Company Tax Codes was a success.
-      if (userTaxCodes[0].result === 'Error') {
+      if ((userTaxCodes[0] as QueryResult).result === 'Error') {
         // If an error occured fetching the Tax Codes, log the message and detail from the Query Result.
         console.error(
           'Error getting Tax Codes, Message: ' +
-            userTaxCodes[0].message +
+            (userTaxCodes[0] as QueryResult).message +
             ', Detail: ' +
-            userTaxCodes[0].detail
+            (userTaxCodes[0] as QueryResult).detail
         );
       } else {
         // Extract the Company Tax Codes from the result by removing the Query Result from the first index.
-        const userTaxCodeArray = userTaxCodes[0].slice(1) as TaxCode[];
+        const userTaxCodeArray = userTaxCodes.slice(1) as TaxCode[];
 
         // Iterate through Company Tax Codes to check for and record valid Tax Codes.
         for (const taxCode of userTaxCodeArray) {

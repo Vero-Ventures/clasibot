@@ -33,7 +33,7 @@ export async function addDatabaseForReviewTransactions(
         getClassificationType(classifiedTransaction);
 
       // Extract and define the type of the Raw 'For Review' transaction which contains data for writing to QuickBooks.
-      const rawTransaction = transaction[0] as RawForReviewTransaction;
+      const rawTransaction = transaction[1] as RawForReviewTransaction;
 
       // Check if the current 'For Review' transaction has already been saved into the database.
       // Compares the Company realm Id and 'For Review' transaction Id which is a unique combination (Transaction Id's are unique by Company).
@@ -50,6 +50,7 @@ export async function addDatabaseForReviewTransactions(
 
       // If no database match was found, continue to save the 'For Review' transaction to the database.
       if (matchingTransactions.length === 0) {
+        console.log(rawTransaction);
         // Define the object to save to the database.
         // Contains the values needed for frontend display and for writing to QuickBooks.
         const databaseObject = {
@@ -60,9 +61,11 @@ export async function addDatabaseForReviewTransactions(
           description: rawTransaction.description,
           origDescription: rawTransaction.origDescription,
           date: rawTransaction.olbTxnDate,
-          amount: classifiedTransaction.amount,
+          amount: Number(classifiedTransaction.amount).toFixed(2),
           acceptType: rawTransaction.acceptType,
-          payeeNameId: rawTransaction.addAsQboTxn.nameId,
+          payeeNameId: rawTransaction.addAsQboTxn.nameId
+            ? rawTransaction.addAsQboTxn.nameId
+            : null,
           transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
           topCategoryClassification: categoryPredictionType,
           topTaxCodeClassification: taxCodePredictionType,
@@ -136,10 +139,10 @@ function getClassificationType(
 
   // If a Classification is present all Classification will use the same method.
   // Extracting the Classification method of the first Classification can be used to get the confidence level.
-  if (classifiedTransaction.categories) {
+  if (classifiedTransaction.categories && classifiedTransaction.categories[0]) {
     categoryPredictionType = classifiedTransaction.categories[0].classifiedBy;
   }
-  if (classifiedTransaction.taxCodes) {
+  if (classifiedTransaction.taxCodes && classifiedTransaction.taxCodes[0]) {
     taxCodePredictionType = classifiedTransaction.taxCodes[0].classifiedBy;
   }
 

@@ -27,7 +27,7 @@ export async function searchDatabaseTransactionCategories(
       .where(eq(Transaction.transactionName, name));
 
     // Check if a matching Transaction was found.
-    if (transaction) {
+    if (transaction[0]) {
       // Get the Transaction to Category Relationships for the found Transaction.
       const transactionCategories = await db
         .select()
@@ -47,6 +47,7 @@ export async function searchDatabaseTransactionCategories(
           .select()
           .from(Category)
           .where(eq(Category.id, relationship.categoryId));
+
         categories.push(category[0]);
       }
 
@@ -55,13 +56,19 @@ export async function searchDatabaseTransactionCategories(
         return [];
       }
 
-      // Create a dictionary that maps the valid Category names to their Ids.
-      const validCategoryMap = validCategories.reduce<{
+      let validCategoryMap: {
         [key: string]: string;
-      }>((acc, category) => {
-        acc[category.name] = category.id;
-        return acc;
-      }, {});
+      } = {};
+
+      if (validCategories) {
+        // Create a dictionary that maps the valid Category names to their Ids.
+        validCategoryMap = validCategories.reduce<{
+          [key: string]: string;
+        }>((acc, category) => {
+          acc[category.name] = category.id;
+          return acc;
+        }, {});
+      }
 
       // Take the out any database Categories that do not match to a valid Category.
       const filteredCategories = categories.filter((category) =>
@@ -74,6 +81,7 @@ export async function searchDatabaseTransactionCategories(
 
       // Take the top 3 (or less) Categories, map the names to their Id's and return them as an array.
       const topCategories = filteredCategories.slice(0, 3);
+
       return topCategories.map((category) => ({
         id: validCategoryMap[category.category],
         name: category.category,
@@ -109,7 +117,7 @@ export async function searchDatabaseTransactionTaxCodes(
       .where(eq(Transaction.transactionName, name));
 
     // Check if a matching Transaction was found.
-    if (transaction) {
+    if (transaction[0]) {
       // Get the Transaction to Tax Code Relationships for the found Transaction.
       const transactionTaxCodes = await db
         .select()

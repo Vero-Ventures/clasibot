@@ -1,0 +1,2 @@
+ALTER TABLE "ForReviewTransaction" RENAME COLUMN "top_classification" TO "top_category_classification";--> statement-breakpoint
+ALTER TABLE "ForReviewTransaction" ADD COLUMN "top_tax_code_classification" text NOT NULL;

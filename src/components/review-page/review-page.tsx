@@ -68,6 +68,8 @@ export default function ReviewPage({
   // Define the helper function to start the Classification process.
   function handleClassification() {
     const handleClassify = async () => {
+      setOpenClassificationModal(true);
+
       // Calls the handler method to handle Classification and state setting.
       // Also returns the Classification results to be displayed.
       const classificationResults = await updateClassifyStates(
@@ -82,7 +84,6 @@ export default function ReviewPage({
         // Otherwise the completion modal (success or failure) is shown.
         setOpenFinishedClassificationModal(true);
       }
-
       // Update the Classified 'For Review' transaction states with returned values (or empty array on error).
       setLoadedTransactions(classificationResults.loadedTransactions);
     };

@@ -24,6 +24,7 @@ export const syntheticAuth = async (): Promise<QBOTokenData> => {
       javaScriptEnabled: true,
       bypassCSP: true,
     });
+
     const page = await context.newPage();
 
     try {
@@ -39,6 +40,7 @@ export const syntheticAuth = async (): Promise<QBOTokenData> => {
       console.error('Authentication failed:', error);
       throw error;
     } finally {
+      console.log('Close');
       await browser.close();
     }
   } catch (error) {

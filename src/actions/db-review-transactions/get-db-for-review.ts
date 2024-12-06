@@ -43,15 +43,13 @@ export async function getDatabaseTransactions(): Promise<{
     )[][] = [];
 
     // Get the the Expense and Transaction Accounts from the user.
-    const transactionAccountsResult = JSON.parse(
-      await getAccounts('Transaction')
-    );
-    const expenseAccountsResult = JSON.parse(await getAccounts('Expense'));
+    const transactionAccountsResult = await getAccounts('Transaction');
+    const expenseAccountsResult = await getAccounts('Expense');
 
     // Check if the Account fetches resulted in an error.
     if (
-      transactionAccountsResult[0].result === 'Error' ||
-      expenseAccountsResult[0].result === 'Error'
+      (transactionAccountsResult[0] as QueryResult).result === 'Error' ||
+      (expenseAccountsResult[0] as QueryResult).result === 'Error'
     ) {
       // Define the Account fetch error Query Result.
       const errorResult: QueryResult = {
@@ -61,17 +59,17 @@ export async function getDatabaseTransactions(): Promise<{
       };
 
       // Add the error detail for both Account queries if they are present.
-      if (transactionAccountsResult[0].result === 'Error') {
+      if ((transactionAccountsResult[0] as QueryResult).result === 'Error') {
         errorResult.detail =
           'Transaction Account Error, Detail:' +
-          transactionAccountsResult[0].detail +
+          (transactionAccountsResult[0] as QueryResult).detail +
           '\n';
       }
-      if (expenseAccountsResult[0].result === 'Error') {
+      if ((expenseAccountsResult[0] as QueryResult).result === 'Error') {
         errorResult.detail =
           errorResult.detail +
           'Expense Account Error, Detail:' +
-          expenseAccountsResult[0].detail;
+          (expenseAccountsResult[0] as QueryResult).detail;
       }
 
       // On Error: Return an error Query Result and an empty array for the 'For Review' transactions.
@@ -79,16 +77,16 @@ export async function getDatabaseTransactions(): Promise<{
     }
 
     // Get the list of Tax Codes for the user.
-    const taxCodesResponse = JSON.parse(await getTaxCodes());
+    const taxCodesResponse = await getTaxCodes();
 
     // Check if the Tax Code fetch resulted in an error.
-    if (taxCodesResponse[0].result === 'Error') {
+    if ((taxCodesResponse[0] as QueryResult).result === 'Error') {
       // Return an error Query Result and an empty array for the 'For Review' transactions.
       return {
         queryResult: {
           result: 'Error',
           message: 'Error Loading User Tax Codes',
-          detail: taxCodesResponse[0].detail,
+          detail: (taxCodesResponse[0] as QueryResult).detail,
         },
         transactions: [],
       };
@@ -110,7 +108,7 @@ export async function getDatabaseTransactions(): Promise<{
           qboAccountId: forReviewTransaction.accountId,
           description: forReviewTransaction.description,
           origDescription: forReviewTransaction.origDescription,
-          amount: forReviewTransaction.amount,
+          amount: Number(forReviewTransaction.amount),
           olbTxnDate: forReviewTransaction.date,
           acceptType: forReviewTransaction.acceptType,
           addAsQboTxn: {
@@ -129,7 +127,7 @@ export async function getDatabaseTransactions(): Promise<{
           await getTransactionTaxCodes(forReviewTransaction, taxCodesResponse);
 
         // Remove the Query Result from the first index to get just the list of Accounts.
-        const checkedAccounts = transactionAccountsResult.slice(1);
+        const checkedAccounts = transactionAccountsResult.slice(1) as Account[];
 
         // Iterate through the Transaction Accounts to find the one matching the Account Id of the 'For Review' transaction.
         // Needed to record its name to make the Classified 'For Review' transaction object.
@@ -152,7 +150,7 @@ export async function getDatabaseTransactions(): Promise<{
               date: forReviewTransaction.date,
               account: forReviewTransaction.accountId,
               accountName: account.name,
-              amount: forReviewTransaction.amount,
+              amount: Number(forReviewTransaction.amount),
               categories: transactionCategories,
               categoryConfidence: categoryConfidence,
               taxCodes: transactionTaxCodes,
@@ -217,7 +215,7 @@ type databaseForReviewTransaction = {
   companyId: string;
   reviewTransactionId: string;
   accountId: string;
-  amount: number;
+  amount: string;
   payeeNameId: string | null;
   transactionTypeId: string;
   topCategoryClassification: string;
@@ -229,7 +227,7 @@ type databaseForReviewTransaction = {
 // Returns: An array of Classified Elements for the related Categories.
 async function getTransactionCategories(
   forReviewTransaction: databaseForReviewTransaction,
-  expenseAccountsResult: Account[]
+  expenseAccountsResult: (QueryResult | Account)[]
 ): Promise<ClassifiedElement[]> {
   try {
     // Get the Transaction to Category Relationships by the Transaction Id.
@@ -292,7 +290,7 @@ async function getTransactionCategories(
 // Returns: An array of Classified Elements for the related Tax Codes.
 async function getTransactionTaxCodes(
   forReviewTransaction: databaseForReviewTransaction,
-  taxCodesResponse: TaxCode[]
+  taxCodesResponse: (QueryResult | TaxCode)[]
 ): Promise<ClassifiedElement[]> {
   try {
     // Get the Transaction to Tax Code Relationships by the Transaction Id.

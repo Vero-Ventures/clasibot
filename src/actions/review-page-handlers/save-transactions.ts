@@ -12,6 +12,7 @@ import type {
   RawForReviewTransaction,
   ClassifiedForReviewTransaction,
   Transaction,
+  QueryResult,
 } from '@/types/index';
 
 //
@@ -25,19 +26,21 @@ export async function saveSelectedTransactions(
 ): Promise<boolean> {
   try {
     // Call the list of Expense Accounts to get Account Id's from the recorded Account names.
-    const accountResults = JSON.parse(await getAccounts('Expense'));
+    const accountResults = await getAccounts('Expense');
 
     // Initally set Accounts variable to be empty and update it if Accounts fetch was successful.
     let accounts: Account[] = [];
 
     // Check if the Accounts fetch resulted in an error.
-    if (accountResults[0].result === 'Error') {
+    if ((accountResults[0] as QueryResult).result === 'Error') {
       // If Accounts fetch failed, log an error message and throw an error to be caught and displayed.
-      console.error('Error Fetching Accounts: ' + accountResults[0].message);
+      console.error(
+        'Error Fetching Accounts: ' + (accountResults[0] as QueryResult).message
+      );
       throw new Error('Accounts Fetch Failed');
     } else {
       // Set the Accounts variable to the Account results with the Query Result in the first index removed.
-      accounts = accountResults.slice(1);
+      accounts = accountResults.slice(1) as Account[];
     }
 
     // Get the selected Rows in an iterable format [key: selectedRowIndex, value: true]

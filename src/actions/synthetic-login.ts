@@ -48,6 +48,7 @@ export async function syntheticLogin(
 
     // Extract the response data and check for a successful response.
     const data = await response.json();
+
     if (!response.ok) {
       // If response was not successful, set the detail of the Query Result and return it alongside the empty Login Tokens.
       loginResult.detail = data.error || 'Unknown error occurred';

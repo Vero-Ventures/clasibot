@@ -95,7 +95,7 @@ export async function preformSyntheticLogin(
     const [loginResult, loginTokens] = await syntheticLogin(realmId);
 
     // Check the Synthetic Login call resulted in error.
-    if (loginResult.result === 'Error ') {
+    if (loginResult.result === 'Error') {
       // If the Synthetic Login resulted in error, Log the Query Result, update frontend state, and return a failure boolean.
       console.error(loginResult);
       return { result: false, loginTokens: null };
@@ -226,6 +226,8 @@ export async function startTransactionClassification(
       companyInfo,
       realmId
     );
+
+    console.log(classificationResults)
 
     // Check for error object returned by the Classification call.
     if (classificationResults.error) {
@@ -370,5 +372,6 @@ export async function changeClassificationState(
       completedProcesses = -1;
       break;
   }
+
   return { displayValue: processMessage, currentProcess: completedProcesses };
 }

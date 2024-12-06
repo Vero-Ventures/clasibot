@@ -44,7 +44,7 @@ export async function checkSubscription(
       user = await db
         .select()
         .from(User)
-        .where(eq(User.email, userCompany[0].userId));
+        .where(eq(User.id, userCompany[0].userId));
 
       // If no Company realm Id was passed, find the User using frontend method
     } else {

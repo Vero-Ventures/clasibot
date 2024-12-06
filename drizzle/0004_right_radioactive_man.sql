@@ -1,0 +1,1 @@
+ALTER TABLE "ForReviewTransaction" ALTER COLUMN "amount" SET DATA TYPE numeric;
