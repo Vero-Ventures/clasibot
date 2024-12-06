@@ -66,7 +66,7 @@ export async function getSavedTransactions(
       start_date: startDate,
       end_date: endDate,
       limit: 1000,
-      columns: ['txn_type', 'name', 'other_account'],
+      columns: ['txn_type', 'name', 'other_account', 'memo'],
     };
 
     // Check MultiCurrencyEnabled and add the appropriate parameters for Transaction amount column.
@@ -113,6 +113,7 @@ export async function getSavedTransactions(
     const results: (QueryResult | Transaction)[] = [];
 
     console.log(responseRows);
+    
 
     // Create a formatted Query Result object for the QBO API call.
     // Push the Query Result to the first index of the results array.
