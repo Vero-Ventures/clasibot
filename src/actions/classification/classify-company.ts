@@ -251,19 +251,20 @@ export async function getClassifiedPastTransactions(): Promise<Transaction[]> {
 
     // Get the Classified and saved Transactions from QuickBooks.
     const response = await getSavedTransactions(startDate, endDate);
-    const result = response;
+    console.log('Get Classified Response')
+    console.log(response)
 
     // Check if the Transaction fetch resulted in an error.
-    if ((result[0] as QueryResult).result === 'Error') {
+    if ((response[0] as QueryResult).result === 'Error') {
       // If Transaction fetch failed, log an error and return an empty array.
       // Process will continue without saved Transactions to use as context.
       console.error(
-        'Error Loading Saved Transactions: ' + (result[0] as QueryResult).detail
+        'Error Loading Saved Transactions: ' + (response[0] as QueryResult).detail
       );
       return [];
     } else {
       // Remove the Query Result value from the results and return the array of Transactions.
-      return result.slice(1) as Transaction[];
+      return response.slice(1) as Transaction[];
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
