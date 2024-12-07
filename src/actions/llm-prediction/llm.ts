@@ -21,25 +21,25 @@ const provider = process.env.AI_PROVIDER;
 
 //    Category Predictions: Base prediction and prediction for a missing industry for the user Company.
 const baseCategoryPrompt =
-  'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? Categories: $CATEGORIES';
+  'Using only values from the provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? Categories: $CATEGORIES';
 const noIndustyCategoryPrompt =
-  'Using only provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? Categories: $CATEGORIES';
+  'Using only values from the provided list of categories, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? Categories: $CATEGORIES';
 
 //     Tax Code Predictions: Base prediction, missing industry prediction, missing categories prediction, and missing industry + categories prediction.
 const baseTaxCodePrompt =
-  'Using only provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? The transaction took place in $LOCATION and is categorized as $CATEGORY. Tax Codes: $TAX_CODES';
+  'Using only values from the provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? The transaction took place in $LOCATION and is categorized as $CATEGORY. Tax Codes: $TAX_CODES';
 const noIndustyTaxCodePrompt =
-  'Using only provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? The transaction took place in $LOCATION and is categorized as $CATEGORY. Tax Codes: $TAX_CODES';
+  'Using only values from the provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? The transaction took place in $LOCATION and is categorized as $CATEGORY. Tax Codes: $TAX_CODES';
 const noCategoryTaxCodePrompt =
-  'Using only provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? The transaction took place in $LOCATION. Tax Codes: $TAX_CODES';
+  'Using only values from the provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars by a business in the "$INDUSTRY" be? The transaction took place in $LOCATION. Tax Codes: $TAX_CODES';
 const noCategoryAndIndustryTaxCodePrompt =
-  'Using only provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? The transaction took place in $LOCATION. Tax Codes: $TAX_CODES';
+  'Using only values from the provided list of tax codes, What type of business expense would a transaction from "$NAME" for "$AMOUNT" dollars be? The transaction took place in $LOCATION. Tax Codes: $TAX_CODES';
 
 //    Defines the system instructions for the model to use on category prediction prompts.
 const CategorySystemInstructions = `
   You are an assistant that provides concise answers.
   You are helping a user categorize their transaction for accountant business expenses purposes.
-  Only respond with the category that best fits the transaction based on the provided description and categories.
+  Only respond with the category that best fits the transaction based on the provided description and possible categories.
   If no description is provided, try to use the name of the transaction to infer the category.
   `;
 
@@ -47,7 +47,7 @@ const CategorySystemInstructions = `
 const TaxCodeSystemInstructions = `
 You are an assistant that provides concise answers.
 You are helping a user identify the tax code on their transaction for accountant business expenses purposes.
-Only respond with the tax code that best fits the transaction based on the provided description and tax codes.
+Only respond with the tax code that best fits the transaction based on the provided description and possible tax codes.
 If no description is provided, try to use the name of the transaction to infer the tax code.
 `;
 
@@ -122,14 +122,10 @@ export async function batchQueryLLM(
     // Define the resultScore threshold for the Knowledge Graph API.
     const threshold = 10;
 
-    console.log(classifications);
-
     // Extract valid Classification names from the passed Classification objects.
     const validClassificationNames = classifications.map(
       (classification) => classification.name
     );
-
-    console.log('extracted classification names')
 
     // Define the context promises variable.
     let contextPromises;
@@ -154,8 +150,6 @@ export async function batchQueryLLM(
         threshold
       );
     }
-
-    console.log('got context')
 
     // Wait for all contexts to be generated using the context promises for the 'For Review' transactions.
     const contexts = await Promise.all(contextPromises);
@@ -185,9 +179,6 @@ export async function batchQueryLLM(
           (classification) =>
             responseText.includes(classification.toLowerCase())
         );
-
-        console.log('possible classifications')
-        console.log(possibleValidclassifications)
 
         // Map the possible valid Classifications to the full Classification objects.
         // Iterates through the names to find and add the related Classification object.
@@ -224,19 +215,21 @@ export async function batchQueryLLM(
 // Defines the context used for a Category Classification prediction.
 // Take: An array of 'For Review' transactions, the possible Category names, the Company Info context, and the threshold value.
 // Returns: An array of objects (per passed Transaction) with the prompt, Transaction Id, and prediction context.
-function categoryContext(
+async function categoryContext(
   transactions: FormattedForReviewTransaction[],
   validClassificationNames: string[],
   companyInfo: CompanyInfo,
   threshold: number
-): Promise<{
-  prompt: string;
-  transaction_Id: string;
-  context: string;
-}>[] {
+): Promise<
+  {
+    prompt: string;
+    transaction_Id: string;
+    context: string;
+  }[]
+> {
   // Generates and returns the contexts for each 'For Review' transaction.
   // Uses the name, list of valid Categories, and the Company Info for the industry.
-  return transactions.map(
+  const context = transactions.map(
     async (transaction: FormattedForReviewTransaction) => {
       // Define an inital prompt assuming the industry is not present, then check if industry is valid.
       let prompt = noIndustyCategoryPrompt;
@@ -249,15 +242,13 @@ function categoryContext(
       }
 
       // Replace the values present in all prompt types: the Transaction name, amount, and possible Classification Categories.
-      prompt
+      prompt = prompt
         .replace('$NAME', transaction.name)
         .replace('$AMOUNT', Math.abs(transaction.amount).toString())
         .replace('$CATEGORIES', validClassificationNames.join(', '));
 
       // Fetch detailed descriptions from the Knowledge Graph API, which returns an empty array on failure.
       const kgResults = (await fetchKnowledgeGraph(transaction.name)) || [];
-
-      console.log('fetched knowlege graph')
 
       // Filter the KN descriptions to those with a resultScore (likelyhood of relevance) above the passed threshold.
       const descriptions = kgResults.filter(
@@ -282,25 +273,28 @@ function categoryContext(
       };
     }
   );
+  return await Promise.all(context);
 }
 
 // Defines the context used for a Tax Code Classification prediction.
 // Takes: An array of'For Review' transactions, predicted Category names, possible Tax Code names, the Company Info context, and the threshold value.
 // Returns: An array of objects (per passed Transaction) with the prompt, Transaction Id, and prediction context.
-function taxCodeContext(
+async function taxCodeContext(
   transactions: FormattedForReviewTransaction[],
   transactionCategories: Record<string, ClassifiedElement[]>,
   validClassificationNames: string[],
   companyInfo: CompanyInfo,
   threshold: number
-): Promise<{
-  prompt: string;
-  transaction_Id: string;
-  context: string;
-}>[] {
+): Promise<
+  {
+    prompt: string;
+    transaction_Id: string;
+    context: string;
+  }[]
+> {
   // Generates and returns the contexts for each 'For Review' transaction.
   // Uses the name, list of valid Tax Codes, predicted Categories, and the Company Info for an industry.
-  return transactions.map(
+  const context = transactions.map(
     async (transaction: FormattedForReviewTransaction) => {
       // Define an inital prompt assuming the industry and Categories are not present, then check if industry is valid.
       let prompt = noCategoryAndIndustryTaxCodePrompt;
@@ -341,7 +335,7 @@ function taxCodeContext(
       }
 
       // Replace the values present in all prompt types: the Transaction name, its amount, and the possible Classification Tax Codes.
-      prompt
+      prompt = prompt
         .replace('$NAME', transaction.name)
         .replace('$AMOUNT', Math.abs(transaction.amount).toString())
         .replace('$TAX_CODES', validClassificationNames.join(', '));
@@ -372,4 +366,5 @@ function taxCodeContext(
       };
     }
   );
+  return await Promise.all(context);
 }

@@ -96,10 +96,7 @@ export async function classifyTransactions(
   try {
     // Get the valid Categories for Classification from QuickBooks Expense Accounts using a Synthetic Login Tokens object.
     // Pass boolean value to indicate if names will be saved to database for proper name parsing of Categories.
-    const validDBCategories: Classification[] =
-      await fetchValidCategories(true);
-    const validLLMCategories: Classification[] =
-      await fetchValidCategories(false);
+    const validCategories: Classification[] = await fetchValidCategories();
 
     // Get the valid Tax Codes for Classification using the Company Info location.
     // Also returns a value indicating if Tax Code Classification is possible for the Company (Canadian Companies only).
@@ -123,19 +120,11 @@ export async function classifyTransactions(
     await classifyWithFuse(
       unclassifiedTransactions,
       fuse,
-      validDBCategories,
+      validCategories,
       categoryResults,
       noCategoryMatches,
       'category'
     );
-
-    console.log('Classified From Fuse')
-    console.log(categoryResults)
-    console.log(taxCodeResults)
-
-    console.log('Unclassified From Fuse')
-    console.log(noCategoryMatches)
-    console.log(noTaxCodeMatches)
 
     // Check if Tax Code Classification is possible and valid Tax Codes were found.
     if (classifyTaxCodes && validTaxCodes.length > 0) {
@@ -152,20 +141,17 @@ export async function classifyTransactions(
 
     // Check if 'For Review' transactions are present in the noMatches array for Category Classification.
     if (noCategoryMatches.length > 0) {
-      console.log('Category LLM')
       // Call the LLM to Classify the Categories of the unmatched 'For Review' transactions.
       await classifyCategoriesWithLLM(
         noCategoryMatches,
-        validLLMCategories,
+        validCategories,
         categoryResults,
         companyInfo
       );
-      console.log(categoryResults)
     }
 
     // Check if 'For Review' transactions are present in the noMatches array for Tax Code Classification.
     if (noTaxCodeMatches.length > 0 && classifyTaxCodes) {
-      console.log('Tax Code LLM')
       // Call the LLM to Classify the Tax Codes of the unmatched 'For Review' transactions.
       await classifyTaxCodesWithLLM(
         noTaxCodeMatches,
@@ -174,7 +160,6 @@ export async function classifyTransactions(
         taxCodeResults,
         companyInfo
       );
-      console.log(taxCodeResults)
     }
 
     // Create a record to track arrays of the Classified Elements for a 'For Review' transaction.
@@ -231,9 +216,7 @@ export async function classifyTransactions(
 // Finds and uses the User Expense Acccounts to find the possible Categories a Transaction can be connected to.
 // Takes: A boolean value indicating how Account names are parsed.
 // Returns: An array of Classification objects for the valid Catagories from the User Expense Accounts.
-async function fetchValidCategories(
-  filterToBase: boolean
-): Promise<Classification[]> {
+async function fetchValidCategories(): Promise<Classification[]> {
   try {
     // Gets a list of valid Category Accounts from QuickBooks using the 'Expense' Accounts type.
     const validCategoriesResult = await getAccounts('Expense');
@@ -250,31 +233,16 @@ async function fetchValidCategories(
       return [];
     }
 
-    // Check if the Category names need to be filtered prior to being returned.
-    if (filterToBase) {
-      // User info is not stored for security, so only base Category names are saved to the database.
-      // Therefore the Account names are filtered before returning to methods that use database matching.
-      return (validCategoriesResult.slice(1) as Account[]).map(
-        (category: Account): Classification => {
-          return {
-            type: 'classification',
-            id: category.id,
-            name: category.account_sub_type,
-          };
-        }
-      );
-    } else {
-      // If database matching is not being used, return the full Account name for greater prediction accuracy.
-      return (validCategoriesResult.slice(1) as Account[]).map(
-        (category: Account): Classification => {
-          return {
-            type: 'classification',
-            id: category.id,
-            name: category.name,
-          };
-        }
-      );
-    }
+    return (validCategoriesResult.slice(1) as Account[]).map(
+      (category: Account): Classification => {
+        return {
+          type: 'classification',
+          id: category.id,
+          name: category.name,
+          subName: category.account_sub_type,
+        };
+      }
+    );
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
     if (error instanceof Error) {
@@ -336,6 +304,7 @@ async function fetchValidTaxCodes(
               type: 'tax code',
               name: taxCode.Name,
               id: taxCode.Id,
+              subName: '',
             });
           }
         }
@@ -375,7 +344,7 @@ async function classifyWithFuse(
     for (const unclassifiedTransaction of unclassifiedTransactions) {
       try {
         // Use Fuse to search for saved Classified Transactions matching the current 'For Review' transaction name.
-        const matches = fuse.search(unclassifiedTransaction.name);
+        const matches = fuse.search(unclassifiedTransaction.rawName);
 
         // Create a set for the name of valid Classifications that have been found.
         const validMatchedClassificationsSet = new Set<string>();
@@ -399,7 +368,15 @@ async function classifyWithFuse(
             // Iterate through the list of Valid Classification names to see if it contains the Classification name.
             // Ensures that only Classifications with valid names that are not already in the Matched and Valid Set are recorded.
             for (const classification of validClassifications) {
-              if (classification.name === classificationName) {
+              const classNameAndRemoved = classificationName
+                .replace(/\s(&|and)\s/g, ' ')
+                .trim()
+                .toLowerCase();
+              const validNameAndRemoved = classification.name
+                .replace(/\s(&|and)\s/g, ' ')
+                .trim()
+                .toLowerCase();
+              if (classNameAndRemoved === validNameAndRemoved) {
                 // Create a Classified Element for the Classification and push it to array of Valid Matched Classifications.
                 // Record the method of Classification as 'Matching'.
                 validMatchedClassifications.push({
@@ -421,12 +398,12 @@ async function classifyWithFuse(
           let topClassifications;
           if (type === 'category') {
             topClassifications = await searchDatabaseTransactionCategories(
-              unclassifiedTransaction.name,
+              unclassifiedTransaction.rawName,
               validClassifications
             );
           } else {
             topClassifications = await searchDatabaseTransactionTaxCodes(
-              unclassifiedTransaction.name,
+              unclassifiedTransaction.rawName,
               validClassifications
             );
           }

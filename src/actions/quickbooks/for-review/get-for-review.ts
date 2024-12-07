@@ -90,6 +90,7 @@ function formatForReviewTransaction(
       const newTransaction: FormattedForReviewTransaction = {
         transaction_Id: rawTransaction.id,
         name: rawTransaction.description,
+        rawName: rawTransaction.origDescription,
         date: rawTransaction.olbTxnDate.split('T')[0],
         account: rawTransaction.qboAccountId,
         accountName: '',

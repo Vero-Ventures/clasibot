@@ -106,21 +106,14 @@ export async function getSavedTransactions(
       );
     });
 
-    
-
     //  Get the Transaction Row data from the response and create a results array.
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
-
-    console.log(responseRows);
-    
 
     // Create a formatted Query Result object for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const QueryResult = createQueryResult(success, error);
     results.push(QueryResult);
-
-    console.log(QueryResult)
 
     // Check if Transaction rows were found and that the Query Result was not an error.
     if (responseRows && QueryResult.result !== 'Error') {

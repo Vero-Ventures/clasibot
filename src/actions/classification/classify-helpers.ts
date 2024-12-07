@@ -206,7 +206,6 @@ export async function startTransactionClassification(
   contextTransactions: Transaction[],
   reviewTransactions: FormattedForReviewTransaction[],
   companyInfo: CompanyInfo,
-  loginTokens: LoginTokens,
   realmId: string
 ): Promise<{
   result: boolean;
@@ -226,8 +225,6 @@ export async function startTransactionClassification(
       companyInfo,
       realmId
     );
-
-    console.log(classificationResults)
 
     // Check for error object returned by the Classification call.
     if (classificationResults.error) {

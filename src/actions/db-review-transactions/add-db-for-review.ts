@@ -5,8 +5,9 @@ import {
   ForReviewTransaction as DatabaseForReviewTransaction,
   Category,
   TaxCode,
+  ForReviewTransactionToCategories,
+  ForReviewTransactionToTaxCodes,
 } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 
 import type {
   ClassifiedElement,
@@ -35,69 +36,57 @@ export async function addDatabaseForReviewTransactions(
       // Extract and define the type of the Raw 'For Review' transaction which contains data for writing to QuickBooks.
       const rawTransaction = transaction[1] as RawForReviewTransaction;
 
-      // Check if the current 'For Review' transaction has already been saved into the database.
-      // Compares the Company realm Id and 'For Review' transaction Id which is a unique combination (Transaction Id's are unique by Company).
-      const matchingTransactions = await db
-        .select()
-        .from(DatabaseForReviewTransaction)
-        .where(
-          eq(DatabaseForReviewTransaction.companyId, realmId) &&
-            eq(
-              DatabaseForReviewTransaction.reviewTransactionId,
-              classifiedTransaction.transaction_Id
-            )
+      // Define the object to save to the database.
+      // Contains the values needed for frontend display and for writing to QuickBooks.
+      const databaseObject = {
+        companyId: realmId,
+        reviewTransactionId: classifiedTransaction.transaction_Id,
+        accountId: classifiedTransaction.account,
+        accountName: classifiedTransaction.accountName,
+        description: rawTransaction.description,
+        origDescription: rawTransaction.origDescription,
+        date: rawTransaction.olbTxnDate,
+        amount: Number(classifiedTransaction.amount).toFixed(2),
+        acceptType: rawTransaction.acceptType,
+        payeeNameId: rawTransaction.addAsQboTxn.nameId
+          ? rawTransaction.addAsQboTxn.nameId
+          : null,
+        transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
+        topCategoryClassification: categoryPredictionType,
+        topTaxCodeClassification: taxCodePredictionType,
+      };
+
+      // Write the new 'For Review' transaction to the database.
+      const databaseForReviewTransaction = await db
+        .insert(DatabaseForReviewTransaction)
+        .values(databaseObject)
+        .returning();
+
+      // Create variables to track results of the connecting the 'For Review' transaction to its related database Classification objects.
+      let categoryConnectionResult = '';
+      let taxCodeConnectionResult = '';
+
+      // Check if Category and Tax Code Classifications are present.
+      // Then call helper functions to store the related Classificaions in the database.
+      if (classifiedTransaction.categories) {
+        categoryConnectionResult = await handleCategoryConnections(
+          classifiedTransaction.categories,
+          databaseForReviewTransaction[0].id
         );
+      }
+      if (classifiedTransaction.taxCodes) {
+        taxCodeConnectionResult = await handleTaxCodeConnections(
+          classifiedTransaction.taxCodes,
+          databaseForReviewTransaction[0].id
+        );
+      }
 
-      // If no database match was found, continue to save the 'For Review' transaction to the database.
-      if (matchingTransactions.length === 0) {
-        console.log(rawTransaction);
-        // Define the object to save to the database.
-        // Contains the values needed for frontend display and for writing to QuickBooks.
-        const databaseObject = {
-          companyId: realmId,
-          reviewTransactionId: classifiedTransaction.transaction_Id,
-          accountId: classifiedTransaction.account,
-          accountName: classifiedTransaction.accountName,
-          description: rawTransaction.description,
-          origDescription: rawTransaction.origDescription,
-          date: rawTransaction.olbTxnDate,
-          amount: Number(classifiedTransaction.amount).toFixed(2),
-          acceptType: rawTransaction.acceptType,
-          payeeNameId: rawTransaction.addAsQboTxn.nameId
-            ? rawTransaction.addAsQboTxn.nameId
-            : null,
-          transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
-          topCategoryClassification: categoryPredictionType,
-          topTaxCodeClassification: taxCodePredictionType,
-        };
-
-        // Write the new 'For Review' transaction to the database.
-        await db.insert(DatabaseForReviewTransaction).values(databaseObject);
-
-        // Create variables to track results of the connecting the 'For Review' transaction to its related database Classification objects.
-        let categoryConnectionResult = '';
-        let taxCodeConnectionResult = '';
-
-        // Check if Category and Tax Code Classifications are present.
-        // Then call helper functions to store the related Classificaions in the database.
-        if (classifiedTransaction.categories) {
-          categoryConnectionResult = await handleCategoryConnections(
-            classifiedTransaction.categories
-          );
-        }
-        if (classifiedTransaction.taxCodes) {
-          taxCodeConnectionResult = await handleTaxCodeConnections(
-            classifiedTransaction.taxCodes
-          );
-        }
-
-        // Check if theCategory or Tax Code connection resulted in an error and log the errors.
-        if (categoryConnectionResult === 'Error') {
-          console.error(categoryConnectionResult);
-        }
-        if (taxCodeConnectionResult === 'Error') {
-          console.error(taxCodeConnectionResult);
-        }
+      // Check if theCategory or Tax Code connection resulted in an error and log the errors.
+      if (categoryConnectionResult === 'Error') {
+        console.error(categoryConnectionResult);
+      }
+      if (taxCodeConnectionResult === 'Error') {
+        console.error(taxCodeConnectionResult);
       }
     }
     // Once all 'For Review' transactions have been handled, return a success Query Result.
@@ -154,7 +143,8 @@ function getClassificationType(
 // Takes: The Classified Element objects for the of the related Catagory Classifications.
 // Returns: A string with a success or error message.
 async function handleCategoryConnections(
-  newTransactionCategories: ClassifiedElement[]
+  newTransactionCategories: ClassifiedElement[],
+  transactionId: string
 ): Promise<string> {
   try {
     // Get the existing Categories from the database.
@@ -163,19 +153,32 @@ async function handleCategoryConnections(
     // Check all Category Classified Elements connected to the 'For Review' transaction.
     for (const category of newTransactionCategories) {
       // Check if a related Category already exists for the current Category Classified Element.
-      const existingCategory = existingCategories.find(
+      const matchingCategory = existingCategories.find(
         (dbCategory) => dbCategory.category === category.name
       );
 
+      let categoryId;
+
       // If the Category does not exist, create a new one in the database.
-      if (!existingCategory) {
+      if (!matchingCategory) {
         // Number of matches is set to 0, as no Classifications for this Category have been saved yet.
         // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
-        await db.insert(Category).values({
-          category: category.name,
-          matches: 0,
-        });
+        const newForReviewCategory = await db
+          .insert(Category)
+          .values({
+            category: category.name,
+            matches: 0,
+          })
+          .returning();
+        categoryId = newForReviewCategory[0].id;
+      } else {
+        categoryId = matchingCategory.id;
       }
+
+      await db.insert(ForReviewTransactionToCategories).values({
+        reviewTransactionId: transactionId,
+        categoryId: categoryId,
+      });
     }
     // Return a string indicating success.
     return 'Success';
@@ -196,7 +199,8 @@ async function handleCategoryConnections(
 // Takes: The Classified Element objects for the of the related Tax Code Classifications.
 // Returns: A string with a success or error message.
 async function handleTaxCodeConnections(
-  newTransactionTaxCodes: ClassifiedElement[]
+  newTransactionTaxCodes: ClassifiedElement[],
+  transactionId: string
 ): Promise<string> {
   try {
     // Get the existing Tax Codes from the database.
@@ -205,19 +209,32 @@ async function handleTaxCodeConnections(
     // Check all Tax Code Classified Elements connected to the 'For Review' transaction.
     for (const taxCode of newTransactionTaxCodes) {
       // Check if a related Category already exists for the current Category Classified Element.
-      const existingTaxCode = existingTaxCodes.find(
+      const matchingTaxCode = existingTaxCodes.find(
         (dbTaxCode) => dbTaxCode.taxCode === taxCode.name
       );
 
+      let taxCodeId;
+
       // If the Tax Code does not exist, create a new one in the database.
-      if (!existingTaxCode) {
+      if (!matchingTaxCode) {
         // Number of matches is set to 0, as no Classifications for this Tax Code have been saved yet.
         // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
-        await db.insert(TaxCode).values({
-          taxCode: taxCode.name,
-          matches: 0,
-        });
+        const newForReviewTaxCode = await db
+          .insert(TaxCode)
+          .values({
+            taxCode: taxCode.name,
+            matches: 0,
+          })
+          .returning();
+        taxCodeId = newForReviewTaxCode[0].id;
+      } else {
+        taxCodeId = matchingTaxCode.id;
       }
+
+      await db.insert(ForReviewTransactionToTaxCodes).values({
+        reviewTransactionId: transactionId,
+        taxCodeId: taxCodeId,
+      });
     }
     // Return a string indicating success.
     return 'Success';

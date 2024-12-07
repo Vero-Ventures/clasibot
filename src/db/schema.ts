@@ -137,7 +137,7 @@ export const CategoryToForReviewTransactionsRelationship = relations(
 // Defines the Tax Code itself and the number of times matched to a Transaction.
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
-  taxCode: text('taxCode').unique().notNull(),
+  taxCode: text('tax_code').unique().notNull(),
   matches: integer('matches').notNull(),
 });
 

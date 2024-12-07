@@ -11,6 +11,7 @@ export type Classification = {
   id: string;
   // The name of the Classification.
   name: string;
+  subName: string;
 };
 
 // Classification for a 'For Review' transaction that defines the Classification method.
