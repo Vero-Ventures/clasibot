@@ -1,4 +1,4 @@
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
   } catch (error) {
     if (error instanceof Error) {
