@@ -39,10 +39,7 @@ export const siteConfig = {
       href: '/api/qbo_invites/connect_to_firm',
     },
     {
-      href: '/api/qbo_invites/test_accounts',
-    },
-    {
-      href: '/api/qbo_invites/test_transactions',
+      href: '/api/test',
     },
   ],
 };

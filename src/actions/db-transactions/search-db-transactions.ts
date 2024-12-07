@@ -65,14 +65,25 @@ export async function searchDatabaseTransactionCategories(
         validCategoryMap = validCategories.reduce<{
           [key: string]: string;
         }>((acc, category) => {
-          acc[category.name] = category.id;
+          acc[
+            category.subName
+              .replace(/\s(&|and)\s/g, ' ')
+              .trim()
+              .toLowerCase()
+          ] = category.id;
           return acc;
         }, {});
       }
 
       // Take the out any database Categories that do not match to a valid Category.
       const filteredCategories = categories.filter((category) =>
-        Object.hasOwn(validCategoryMap, category.category)
+        Object.hasOwn(
+          validCategoryMap,
+          category.category
+            .replace(/\s(&|and|' ')\s/g, '')
+            .trim()
+            .toLowerCase()
+        )
       );
 
       // Sort the database Categories by number of matches in descending order.
@@ -83,7 +94,12 @@ export async function searchDatabaseTransactionCategories(
       const topCategories = filteredCategories.slice(0, 3);
 
       return topCategories.map((category) => ({
-        id: validCategoryMap[category.category],
+        id: validCategoryMap[
+          category.category
+            .replace(/\s(&|and|' ')\s/g, '')
+            .trim()
+            .toLowerCase()
+        ],
         name: category.category,
       }));
     } else {
@@ -108,7 +124,7 @@ export async function searchDatabaseTransactionCategories(
 export async function searchDatabaseTransactionTaxCodes(
   name: string,
   validTaxCodes: Classification[]
-): Promise<{ id: string; name: string }[]> {
+): Promise<{ id: string; name: string; subName: string }[]> {
   try {
     // Find any Transaction objects in the database with the passed name.
     const transaction = await db
@@ -136,7 +152,8 @@ export async function searchDatabaseTransactionTaxCodes(
         const taxCode = await db
           .select()
           .from(TaxCode)
-          .where(eq(TaxCode.id, relationship.transactionId));
+          .where(eq(TaxCode.id, relationship.taxCodeId));
+
         taxCodes.push(taxCode[0]);
       }
 
@@ -168,6 +185,7 @@ export async function searchDatabaseTransactionTaxCodes(
       return topTaxCodes.map((taxCode) => ({
         id: validTaxCodeMap[taxCode.taxCode],
         name: taxCode.taxCode,
+        subName: '',
       }));
     } else {
       // If no matching Transaction was found, return an empty array as there are no matches.

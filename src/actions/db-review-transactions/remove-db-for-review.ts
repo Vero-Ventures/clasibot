@@ -143,18 +143,12 @@ export async function removeAllForReviewTransactions(
             databaseTransaction.id
           )
         );
-
-      // After Relationships are deleted, delete the original 'For Review' transaction from the database.
-      await db
-        .delete(DatabaseForReviewTransaction)
-        .where(
-          eq(DatabaseForReviewTransaction.companyId, realmId) &&
-            eq(
-              DatabaseForReviewTransaction.reviewTransactionId,
-              databaseTransaction.id
-            )
-        );
     }
+
+    // After Relationships are deleted, delete the original 'For Review' transactions from the database.
+    await db
+      .delete(DatabaseForReviewTransaction)
+      .where(eq(DatabaseForReviewTransaction.companyId, realmId));
 
     // Return a success Query Result.
     return {

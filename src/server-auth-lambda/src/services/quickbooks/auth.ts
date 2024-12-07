@@ -20,7 +20,7 @@ export class QuickBooksAuth {
         await this.page.waitForSelector(
           CONFIG.selectors.firmSelection.firmSearchInput,
           {
-            timeout: 5000,
+            timeout: 30000,
           }
         );
         console.log('MFA skipped, proceeding to account selection...');
@@ -122,7 +122,7 @@ export class QuickBooksAuth {
     await browser.waitAndFill(
       CONFIG.selectors.firmSelection.firmSearchInput,
       'Clasibot Synthetic Bookkeeper',
-      5000
+      30000
     );
     let firmButtons = this.page.locator(
       CONFIG.selectors.firmSelection.firmSelectionButtonLogin
