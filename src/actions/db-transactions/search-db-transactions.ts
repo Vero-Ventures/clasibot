@@ -66,7 +66,7 @@ export async function searchDatabaseTransactionCategories(
           [key: string]: string;
         }>((acc, category) => {
           acc[
-            category.subName
+            category.name
               .replace(/\s(&|and)\s/g, ' ')
               .trim()
               .toLowerCase()

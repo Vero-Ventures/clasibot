@@ -72,12 +72,12 @@ export function ReviewTableDisplay({
                 colSpan={table.getAllColumns().length}
                 className="py-8"></TableCell>
               {loadingTransactions ? (
-                <div className="absolute inset-1/2 text-xl font-semibold text-red-400">
-                  <p className="mt-5 w-40 -translate-x-20">No Results Found</p>
-                </div>
-              ) : (
                 <div className="absolute inset-1/2 text-xl font-semibold text-black">
                   <p className="mt-5 w-40 -translate-x-20">Loading ...</p>
+                </div>
+              ) : (
+                <div className="absolute inset-1/2 text-xl font-semibold text-red-400">
+                  <p className="mt-5 w-40 -translate-x-20">No Results Found</p>
                 </div>
               )}
             </TableRow>
