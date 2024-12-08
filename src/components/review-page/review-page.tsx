@@ -144,25 +144,17 @@ export default function ReviewPage({
 
   // Update the selected Categories state using a 'For Review' transaction Id and the new Category.
   function handleCategoryChange(transactionId: string, category: string) {
-    console.log('New Selected Category')
-    console.log(category)
     setSelectedCategories({
       ...selectedCategories,
       [transactionId]: category,
     });
-    console.log('Selected Categories')
-    console.log(selectedCategories)
   }
   // Update the selected Tax Code state using a 'For Review' transaction Id and the new Tax Code.
   function handleTaxCodeChange(transactionId: string, taxCode: string) {
-    console.log('New Selected Tax Code')
-    console.log(taxCode)
     setSelectedTaxCodes({
       ...selectedTaxCodes,
       [transactionId]: taxCode,
     });
-    console.log('Selected Tax Codes')
-    console.log(selectedTaxCodes)
   }
 
   // Create states to track states of the transaction saving process indicating the state of the page.
