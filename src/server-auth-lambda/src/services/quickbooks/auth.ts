@@ -29,6 +29,8 @@ export class QuickBooksAuth {
         await this.handleMFA(browserHelper, emailService);
       }
 
+      console.log('Firm Selection');
+
       await this.firmSelection(browserHelper);
 
       await new Promise<void>((resolve) => {
@@ -119,11 +121,14 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     selectionType: string = ''
   ): Promise<void> {
+    console.log('Firm Select Content');
+    console.log(this.page.content);
     await browser.waitAndFill(
       CONFIG.selectors.firmSelection.firmSearchInput,
       'Clasibot Synthetic Bookkeeper',
       30000
     );
+
     let firmButtons = this.page.locator(
       CONFIG.selectors.firmSelection.firmSelectionButtonLogin
     );

@@ -25,12 +25,11 @@ export const CONFIG = {
     firmSelection: {
       searchInput:
         'input[role="combobox"][placeholder="Search for a company or firm"]',
-      firmSearchInput: 'input[id="idsTxtField1"]',
+      firmSearchInput: 'input[type="text"]',
       listItem: 'li[role="none"]',
       firmSelectionButtonInvite:
         'button[class="account-btn accountpicker-account-btn-quickbooks"]',
-      firmSelectionButtonLogin:
-        'button[class="account-btn account-btn-focus-quickbooks"]',
+      firmSelectionButtonLogin: 'button[class~="account-btn"]',
       firmAcceptButton: 'button[id="account-picker-continue-btn"]',
     },
     companySelection: {

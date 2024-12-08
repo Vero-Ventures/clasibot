@@ -22,7 +22,7 @@ export class BrowserHelper {
   async waitAndFill(
     selector: string,
     text: string,
-    timeout = 10000
+    timeout: number = 10000
   ): Promise<void> {
     try {
       const element = await this.page.waitForSelector(selector, {

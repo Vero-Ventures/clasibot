@@ -32,6 +32,7 @@ import type {
  * Takes (Callbacks): Handlers for the Classification and saving processes.
  */
 export function ReviewTable({
+  loadingTransactions,
   accountNames,
   classifiedTransactions,
   selectedCategories,
@@ -41,6 +42,7 @@ export function ReviewTable({
   isSaving,
   handleSave,
 }: Readonly<{
+  loadingTransactions: boolean;
   accountNames: string[];
   classifiedTransactions: (
     | RawForReviewTransaction
@@ -179,7 +181,10 @@ export function ReviewTable({
         updateAccountSelection={updateAccountSelection}
       />
 
-      <ReviewTableDisplay table={table} />
+      <ReviewTableDisplay
+        table={table}
+        loadingTransactions={loadingTransactions}
+      />
 
       <TablePaginationAndSave
         table={table}

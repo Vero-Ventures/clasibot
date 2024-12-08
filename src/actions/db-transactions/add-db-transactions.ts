@@ -170,6 +170,9 @@ async function handleCategoryIncrement(
     } else {
       // If there is no existing database Category object for the Classification, create a one.
       // Number of matches is set to one, as there is one valid connection for the Category (the current Transaction).
+      console.log('Add Category');
+      console.log(transaction.category);
+
       const newCategory = await db
         .insert(Category)
         .values({
