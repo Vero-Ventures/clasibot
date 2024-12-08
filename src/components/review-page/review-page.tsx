@@ -35,15 +35,19 @@ export default function ReviewPage({
   companyInfo: CompanyInfo;
 }>) {
   // Create states to track the loaded Transactions and their assosiated Accounts.
+
+  const [loadingTransactions, setLoadingTransactions] =
+    useState<boolean>(false);
+  const [errorLoadingTransactions, setErrorLoadingTransactions] =
+    useState<boolean>(false);
   const [loadedTransactions, setLoadedTransactions] = useState<
     (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   >([]);
   const [accounts, setAccounts] = useState<string[]>([]);
-  const [errorLoadingTransactions, setErrorLoadingTransactions] =
-    useState<boolean>(false);
 
   // On page load, gets the previously Classified and saved Transactions whenever Company Info loading state updates.
   useEffect(() => {
+    setLoadingTransactions(true);
     // Load the Transactions from the database.
     const loadForReviewTransactions = async () => {
       // Load the Transactions and check the Query Result for an error.
@@ -54,6 +58,7 @@ export default function ReviewPage({
       }
       // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
+      setLoadingTransactions(false);
     };
     loadForReviewTransactions();
   }, []);
@@ -205,6 +210,7 @@ export default function ReviewPage({
       </div>
 
       <ReviewTable
+        loadingTransactions={loadingTransactions}
         accountNames={accounts}
         classifiedTransactions={loadedTransactions}
         selectedCategories={selectedCategories}

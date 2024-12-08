@@ -66,7 +66,7 @@ export async function searchDatabaseTransactionCategories(
           [key: string]: string;
         }>((acc, category) => {
           acc[
-            category.subName
+            category.name
               .replace(/\s(&|and)\s/g, ' ')
               .trim()
               .toLowerCase()
@@ -85,6 +85,11 @@ export async function searchDatabaseTransactionCategories(
             .toLowerCase()
         )
       );
+
+      console.log('Filtered Categories');
+      console.log(filteredCategories);
+      console.log('Passed Categories');
+      console.log(validCategories);
 
       // Sort the database Categories by number of matches in descending order.
       // Most common Categories will be sorted to the start of the array.

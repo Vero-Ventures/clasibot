@@ -10,9 +10,7 @@ import {
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-import { getAccounts } from '@/actions/quickbooks/index';
-
-import type { QueryResult, Transaction, Account } from '@/types/index';
+import type { QueryResult, Transaction } from '@/types/index';
 
 // Saves Classified User Transactions to the database for future Classification use.
 // Takes: An array of saved User Transactions.
@@ -21,24 +19,6 @@ export async function addDatabaseTransactions(
   transactions: Transaction[]
 ): Promise<QueryResult> {
   try {
-    // Call the list of Expense Accounts to get Account Id's from the recorded Account names.
-    const accountResults = await getAccounts('Expense');
-
-    // Initally set Accounts variable to be empty and update it if Accounts fetch was successful.
-    let accounts: Account[] = [];
-
-    // Check if the Accounts fetch resulted in an error.
-    if ((accountResults[0] as QueryResult).result === 'Error') {
-      // If Accounts fetch failed, log an error message and throw an error to be caught and displayed.
-      console.error(
-        'Error Fetching Accounts: ' + (accountResults[0] as QueryResult).message
-      );
-      throw new Error('Accounts Fetch Failed');
-    } else {
-      // Set the Accounts variable to the Account results with the Query Result in the first index removed.
-      accounts = accountResults.slice(1) as Account[];
-    }
-
     // Iterate over the passed Transactions.
     for (const transaction of transactions) {
       // Make a variable to track the Id of the current Transaction.
@@ -73,22 +53,6 @@ export async function addDatabaseTransactions(
       const taxCodes = await db.select().from(TaxCode);
 
       // Check the existing database Classifications for ones that match the Transactions Classifications.
-
-      const account = accounts.find(
-        (account: Account) =>
-          account.name
-            .replace(/\s(&|and)\s/g, ' ')
-            .trim()
-            .toLowerCase() ===
-          transaction.category
-            .replace(/\s(&|and)\s/g, ' ')
-            .trim()
-            .toLowerCase()
-      );
-      if (account) {
-        transaction.category = account.account_sub_type;
-      }
-
       const existingCategory = categories.find(
         (category) => category.category === transaction.category
       );
@@ -170,6 +134,9 @@ async function handleCategoryIncrement(
     } else {
       // If there is no existing database Category object for the Classification, create a one.
       // Number of matches is set to one, as there is one valid connection for the Category (the current Transaction).
+      console.log('Add Category');
+      console.log(transaction.category);
+
       const newCategory = await db
         .insert(Category)
         .values({
