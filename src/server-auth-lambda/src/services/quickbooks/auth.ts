@@ -119,6 +119,8 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     selectionType: string = ''
   ): Promise<void> {
+    console.log('Firm Select Content');
+    console.log(await this.page.content());
     await browser.waitAndFill(
       CONFIG.selectors.firmSelection.firmSearchInput,
       'Clasibot Synthetic Bookkeeper',
@@ -134,8 +136,16 @@ export class QuickBooksAuth {
       );
     }
 
-    await firmButtons.first().waitFor({ state: 'visible' });
-    await firmButtons.first().click();
+    try {
+      await firmButtons.first().waitFor({ state: 'visible' });
+      console.log('Firm Select Content Post Enter');
+      console.log(await this.page.content());
+      await firmButtons.first().click();
+    } catch (error) {
+      console.log('Firm Select Content Post Failure');
+      console.log(await this.page.content());
+      throw error;
+    }
   }
 
   private async waitForVerificationCode(

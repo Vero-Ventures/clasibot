@@ -151,6 +151,12 @@ export function ReviewTable({
     }
   }
 
+  useEffect(() => {
+    console.log('Selected Rows Changes');
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    console.log(selectedRows);
+  }, [table]);
+
   // Whenever there is a change to the list of Account names, resets the selected Accounts.
   useEffect(() => {
     setSelectedAccounts(accountNames);
