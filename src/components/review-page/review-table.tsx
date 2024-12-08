@@ -141,6 +141,9 @@ export function ReviewTable({
 
   // A callback function to update the Account selection state for Account based filtering.
   function updateAccountSelection(account: string) {
+    console.log('Selected Rows Changes');
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    console.log(selectedRows);
     // Check if the Account is being added or removed from the filter.
     if (selectedAccounts.includes(account)) {
       // Remove the Account from the list of Accounts to display.
@@ -152,12 +155,6 @@ export function ReviewTable({
       setSelectedAccounts([...selectedAccounts, account]);
     }
   }
-
-  useEffect(() => {
-    console.log('Selected Rows Changes');
-    const selectedRows = table.getFilteredSelectedRowModel().rows;
-    console.log(selectedRows);
-  }, [table, accountNames]);
 
   // Whenever there is a change to the list of Account names, resets the selected Accounts.
   useEffect(() => {
