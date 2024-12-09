@@ -160,8 +160,7 @@ function createForReviewUpdateObject(
   for (const batchAddTransaction of batchAddTransactions) {
     if (batchAddTransaction.forReviewTransaction.qboAccountId === accountId) {
       formattedBatchAddTransactions.push({
-        id: batchAddTransaction.forReviewTransaction.olbTxnId + ':ofx',
-        olbTxnId: batchAddTransaction.forReviewTransaction.olbTxnId,
+        id: batchAddTransaction.forReviewTransaction.olbTxnId,
         qboAccountId: batchAddTransaction.forReviewTransaction.qboAccountId,
         description: batchAddTransaction.forReviewTransaction.description,
         origDescription:

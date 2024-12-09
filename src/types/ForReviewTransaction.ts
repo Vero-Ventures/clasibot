@@ -29,7 +29,6 @@ export type RawForReviewTransaction = {
 // Defines the full object needed to save a Classified 'For Review' transaction through an API call.
 export type ClassifiedRawForReviewTransaction = {
   id: string;
-  olbTxnId: string;
   qboAccountId: string;
   description: string;
   origDescription: string;
