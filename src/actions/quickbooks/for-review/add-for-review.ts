@@ -95,7 +95,7 @@ export async function addForReview(
 
       console.log('Account Add Call Body');
       console.log(body);
-      console.log(body.txnList)
+      console.log(body.txnList);
 
       console.log('Account Add Call Account ID');
       console.log(accountId);
@@ -160,7 +160,8 @@ function createForReviewUpdateObject(
   for (const batchAddTransaction of batchAddTransactions) {
     if (batchAddTransaction.forReviewTransaction.qboAccountId === accountId) {
       formattedBatchAddTransactions.push({
-        id: batchAddTransaction.forReviewTransaction.id,
+        id: batchAddTransaction.forReviewTransaction.olbTxnId + ':ofx',
+        olbTxnId: batchAddTransaction.forReviewTransaction.olbTxnId,
         qboAccountId: batchAddTransaction.forReviewTransaction.qboAccountId,
         description: batchAddTransaction.forReviewTransaction.description,
         origDescription:
@@ -173,7 +174,7 @@ function createForReviewUpdateObject(
             {
               categoryId: batchAddTransaction.categoryId,
               taxCodeId: batchAddTransaction.taxCodeId,
-              taxApplicableOn: "SALES"
+              taxApplicableOn: 'SALES',
             },
           ],
           nameId: batchAddTransaction.forReviewTransaction.addAsQboTxn.nameId

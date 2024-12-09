@@ -84,8 +84,8 @@ export async function saveSelectedTransactions(
 
     // If removing the Transaction resulted in an error, throw the Query Result message as an error.
     if (removeResult.result === 'Error') {
-      console.log('Remove Error Detail')
-      console.log(removeResult.detail)
+      console.log('Remove Error Detail');
+      console.log(removeResult.detail);
       throw new Error(removeResult.message);
     }
 
