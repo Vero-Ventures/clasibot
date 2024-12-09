@@ -173,6 +173,7 @@ function createForReviewUpdateObject(
             {
               categoryId: batchAddTransaction.categoryId,
               taxCodeId: batchAddTransaction.taxCodeId,
+              taxApplicableOn: "SALES"
             },
           ],
           nameId: batchAddTransaction.forReviewTransaction.addAsQboTxn.nameId
