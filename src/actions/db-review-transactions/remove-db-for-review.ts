@@ -43,7 +43,7 @@ export async function removeSelectedForReviewTransaction(
             eq(DatabaseForReviewTransaction.companyId, companyId) &&
               eq(
                 DatabaseForReviewTransaction.reviewTransactionId,
-                savedTransaction.forReviewTransaction.id
+                savedTransaction.forReviewTransaction.olbTxnId
               )
           );
 

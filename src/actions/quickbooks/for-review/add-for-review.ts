@@ -88,13 +88,14 @@ export async function addForReview(
         headers: {
           'Content-Type': 'application/json',
           authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId}; SameSite=None`,
+          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId}; SameSite=None;`,
         },
         body: JSON.stringify(body),
       });
 
       console.log('Account Add Call Body');
       console.log(body);
+      console.log(body.txnList)
 
       console.log('Account Add Call Account ID');
       console.log(accountId);
