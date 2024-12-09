@@ -22,7 +22,7 @@ export function ReviewTableDisplay({
   loadingTransactions: boolean;
 }>) {
   return (
-    <div className="tableMin:w-[280px] tableName:w-[426px] tableAmount:w-[550px] tableCatagories:w-[666px] tableCatConfidence:w-[890px] tableTaxCodes:w-[970px] tableTaxConfidence:w-full mb-1 mt-4 overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
+    <div className="tableMin:w-[280px] tableName:w-[426px] tableAmount:w-[550px] tableCatagories:w-[666px] tableCatConfidence:w-[890px] tableTaxCodes:w-[970px] tableTaxConfidence:min-w-full mb-1 mt-4 overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
       <DisplayTable>
         {/* Table Header */}
         <TableHeader>

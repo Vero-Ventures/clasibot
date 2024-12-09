@@ -26,7 +26,7 @@ export async function initalizeLoadedTransactions(
   for (const transaction of loadedTransactions) {
     const formattedTransaction =
       transaction[0] as ClassifiedForReviewTransaction;
-    accountNames.add(formattedTransaction.account);
+    accountNames.add(formattedTransaction.accountName);
   }
 
   // Define the list of Accounts state with a list of unique Account names from the set.
