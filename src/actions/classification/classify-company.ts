@@ -128,8 +128,6 @@ export async function getClassifiedPastTransactions(): Promise<Transaction[]> {
 
     // Get the Classified and saved Transactions from QuickBooks.
     const response = await getSavedTransactions(startDate, endDate);
-    console.log('Get Classified Response');
-    console.log(response);
 
     // Check if the Transaction fetch resulted in an error.
     if ((response[0] as QueryResult).result === 'Error') {

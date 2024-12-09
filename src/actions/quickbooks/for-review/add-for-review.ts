@@ -47,9 +47,6 @@ export async function addForReview(
       .from(Company)
       .where(eq(Company.realmId, session.realmId));
 
-    console.log('Got Company');
-    console.log(currentCompany);
-
     // If a database Company could not be found, create and return an error Query Result.
     if (!currentCompany[0]) {
       return { result: '', message: '', detail: '' };
@@ -64,17 +61,11 @@ export async function addForReview(
       return loginResult;
     }
 
-    console.log('Login Finished');
-    console.log(loginTokens);
-
     // Define the Account Id for the call and the full endpoint to use.
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${session.realmId}/olb/ng/batchAcceptTransactions`;
 
     // Define static Intuit API key value.
     const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc';
-
-    console.log('Batch Accept Endpoint');
-    console.log(endpoint);
 
     // Repeat the batch add process for each Account Id.
     for (const accountId of transactionAccounts) {
@@ -92,16 +83,6 @@ export async function addForReview(
         },
         body: JSON.stringify(body),
       });
-
-      console.log('Account Add Call Body');
-      console.log(body);
-      console.log(body.txnList);
-
-      console.log('Account Add Call Account ID');
-      console.log(accountId);
-
-      console.log('Account Add Response');
-      console.log(await response.json());
 
       // Check if a valid response is received.
       if (!response.ok) {

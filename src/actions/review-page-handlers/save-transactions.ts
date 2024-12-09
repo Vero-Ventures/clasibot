@@ -47,9 +47,6 @@ export async function saveSelectedTransactions(
     // The key is the index of the Row and the value is true for selected Rows.
     const selectedRowIndices = Object.entries(selectedRows);
 
-    console.log('Selected Rows');
-    console.log(selectedRowIndices);
-
     // Call handler to iterate through the selected rows.
     // Define the array of objects to be batch added to QuickBooks and to be saved to the database for reference.
     const [batchAddTransactions, newDatabaseTransactions, transactionAccounts] =
@@ -61,17 +58,11 @@ export async function saveSelectedTransactions(
         accounts
       );
 
-    console.log('New DB Transactions');
-    console.log(newDatabaseTransactions);
-
     // Call backend method to add the Classified 'For Review' Transactions to QuickBooks.
     const addResult = await addForReview(
       batchAddTransactions,
       transactionAccounts
     );
-
-    console.log('Add Transactions Result');
-    console.log(addResult);
 
     // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
     if (addResult.result === 'Error') {
@@ -84,8 +75,6 @@ export async function saveSelectedTransactions(
 
     // If removing the Transaction resulted in an error, throw the Query Result message as an error.
     if (removeResult.result === 'Error') {
-      console.log('Remove Error Detail');
-      console.log(removeResult.detail);
       throw new Error(removeResult.message);
     }
 

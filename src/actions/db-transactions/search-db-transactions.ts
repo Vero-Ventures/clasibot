@@ -86,11 +86,6 @@ export async function searchDatabaseTransactionCategories(
         )
       );
 
-      console.log('Filtered Categories');
-      console.log(filteredCategories);
-      console.log('Passed Categories');
-      console.log(validCategories);
-
       // Sort the database Categories by number of matches in descending order.
       // Most common Categories will be sorted to the start of the array.
       filteredCategories.sort((a, b) => b.matches - a.matches);

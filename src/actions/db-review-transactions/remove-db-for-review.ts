@@ -32,9 +32,6 @@ export async function removeSelectedForReviewTransaction(
     if (companyId) {
       // Iterate over the passed 'For Review' transactions.
       for (const savedTransaction of savedTransactions) {
-        console.log('Remove Transaction Id');
-        console.log(savedTransaction.forReviewTransaction);
-
         // Get the 'For Review' transaction by the unique combo of Company realm Id and database Transaction Id.
         const transactionToDelete = await db
           .select()
@@ -46,9 +43,6 @@ export async function removeSelectedForReviewTransaction(
                 savedTransaction.forReviewTransaction.olbTxnId
               )
           );
-
-        console.log('For Review Transaction To Delete');
-        console.log(transactionToDelete);
 
         if (transactionToDelete[0]) {
           // Use the Id of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
