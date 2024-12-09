@@ -47,6 +47,9 @@ export async function addForReview(
       .from(Company)
       .where(eq(Company.realmId, session.realmId));
 
+    console.log('Got Company');
+    console.log(currentCompany);
+
     // If a database Company could not be found, create and return an error Query Result.
     if (!currentCompany[0]) {
       return { result: '', message: '', detail: '' };
@@ -60,6 +63,9 @@ export async function addForReview(
     if (loginResult.result === 'Error') {
       return loginResult;
     }
+
+    console.log('Login Finished');
+    console.log(loginTokens);
 
     // Define the Account Id for the call and the full endpoint to use.
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${session.realmId}/olb/ng/batchAcceptTransactions`;
@@ -79,7 +85,7 @@ export async function addForReview(
         headers: {
           'Content-Type': 'application/json',
           authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-          cookie: `qbn.tkt=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId}; e`,
+          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId};`,
         },
         body: JSON.stringify(body),
       });

@@ -1,10 +1,10 @@
 'use server';
 
-// import { addDatabaseTransactions } from '@/actions/db-transactions';
+import { addDatabaseTransactions } from '@/actions/db-transactions';
 
-// import { removeSelectedForReviewTransaction } from '@/actions/db-review-transactions/index';
+import { removeSelectedForReviewTransaction } from '@/actions/db-review-transactions/index';
 
-import { getAccounts } from '@/actions/quickbooks/index';
+import { getAccounts, addForReview } from '@/actions/quickbooks/index';
 
 import type {
   Account,
@@ -61,52 +61,46 @@ export async function saveSelectedTransactions(
         accounts
       );
 
-    console.log('Transactions to Add');
-    console.log(batchAddTransactions);
-
-    console.log('Transactions To Add Accounts');
-    console.log(transactionAccounts);
-
     console.log('New DB Transactions');
     console.log(newDatabaseTransactions);
 
-    // // Call backend method to add the Classified 'For Review' Transactions to QuickBooks.
-    // const addResult = await addForReview(
-    //   batchAddTransactions,
-    //   transactionAccounts
-    // );
+    // Call backend method to add the Classified 'For Review' Transactions to QuickBooks.
+    const addResult = await addForReview(
+      batchAddTransactions,
+      transactionAccounts
+    );
 
-    // // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
-    // if (addResult.result === 'Error') {
-    //   throw new Error(addResult.message);
-    // }
+    // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
+    if (addResult.result === 'Error') {
+      throw new Error(addResult.message);
+    }
 
-    // // Remove the added 'For Review' transactions and their connections from the database.
-    // const removeResult =
-    //   await removeSelectedForReviewTransaction(batchAddTransactions);
+    // Remove the added 'For Review' transactions and their connections from the database.
+    const removeResult =
+      await removeSelectedForReviewTransaction(batchAddTransactions);
 
-    // // If removing the Transaction resulted in an error, throw the Query Result message as an error.
-    // if (removeResult.result === 'Error') {
-    //   throw new Error(removeResult.message);
-    // }
+    // If removing the Transaction resulted in an error, throw the Query Result message as an error.
+    if (removeResult.result === 'Error') {
+      throw new Error(removeResult.message);
+    }
 
-    // // Add all the newly created Transactions to the database.
-    // const addTransactionsResult = await addDatabaseTransactions(
-    //   newDatabaseTransactions
-    // );
+    // Add all the newly created Transactions to the database.
+    const addTransactionsResult = await addDatabaseTransactions(
+      newDatabaseTransactions
+    );
 
-    // // Check the Query Result if returned by the add Transactions function resulted in an error.
-    // if (addTransactionsResult.result === 'Error') {
-    //   // If the result was an error, log the message and detail.
-    //   console.error(
-    //     'Error saving existing Classified Transactions:',
-    //     addTransactionsResult.message,
-    //     ', Detail: ',
-    //     addTransactionsResult.detail
-    //   );
-    //   // Return a failure result.
-    //   return false;
-    // }
+    // Check the Query Result if returned by the add Transactions function resulted in an error.
+    if (addTransactionsResult.result === 'Error') {
+      // If the result was an error, log the message and detail.
+      console.error(
+        'Error saving existing Classified Transactions:',
+        addTransactionsResult.message,
+        ', Detail: ',
+        addTransactionsResult.detail
+      );
+      // Return a failure result.
+      return false;
+    }
 
     // If no errors occured, return true to indicate a success result.
     return true;
