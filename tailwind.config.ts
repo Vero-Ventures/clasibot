@@ -15,7 +15,7 @@ const config = {
       md: '768px',
       lg: '1024px',
       xl: '1280px',
-      xxl: '1480px',
+      xxl: '1440px',
       tableCatConfidence: '922px',
     },
     container: {

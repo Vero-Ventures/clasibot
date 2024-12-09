@@ -22,7 +22,7 @@ export function ReviewTableDisplay({
   loadingTransactions: boolean;
 }>) {
   return (
-    <div className="mb-1 mt-4 w-fit max-w-full overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
+    <div className="mx-auto mb-1 mt-4 w-fit max-w-full overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
       <DisplayTable>
         {/* Table Header */}
         <TableHeader>
@@ -72,11 +72,11 @@ export function ReviewTableDisplay({
                 colSpan={table.getAllColumns().length}
                 className="py-8"></TableCell>
               {loadingTransactions ? (
-                <div className="absolute inset-1/2 text-xl font-semibold text-black">
+                <div className="absolute inset-x-1/2 text-xl font-semibold text-black">
                   <p className="mt-5 w-40 -translate-x-20">Loading ...</p>
                 </div>
               ) : (
-                <div className="absolute inset-1/2 text-xl font-semibold text-red-400">
+                <div className="absolute inset-x-1/2 text-xl font-semibold text-red-400">
                   <p className="mt-5 w-40 -translate-x-20">No Results Found</p>
                 </div>
               )}
