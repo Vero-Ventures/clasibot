@@ -141,9 +141,6 @@ export function ReviewTable({
 
   // A callback function to update the Account selection state for Account based filtering.
   function updateAccountSelection(account: string) {
-    console.log('Selected Rows Changes');
-    const selectedRows = table.getFilteredSelectedRowModel().rows;
-    console.log(selectedRows);
     // Check if the Account is being added or removed from the filter.
     if (selectedAccounts.includes(account)) {
       // Remove the Account from the list of Accounts to display.
