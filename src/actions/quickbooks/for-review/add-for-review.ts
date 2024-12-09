@@ -73,8 +73,8 @@ export async function addForReview(
     // Define static Intuit API key value.
     const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc';
 
-    console.log('Batch Accept Endpoint')
-    console.log(endpoint)
+    console.log('Batch Accept Endpoint');
+    console.log(endpoint);
 
     // Repeat the batch add process for each Account Id.
     for (const accountId of transactionAccounts) {
@@ -88,10 +88,19 @@ export async function addForReview(
         headers: {
           'Content-Type': 'application/json',
           authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId};`,
+          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId};`,
         },
         body: JSON.stringify(body),
       });
+
+      console.log('Account Add Call Body');
+      console.log(body);
+
+      console.log('Account Add Call Account ID');
+      console.log(accountId);
+
+      console.log('Account Add Response');
+      console.log(response);
 
       // Check if a valid response is received.
       if (!response.ok) {
