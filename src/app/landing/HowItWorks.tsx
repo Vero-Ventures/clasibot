@@ -18,7 +18,7 @@ export const HowItWorks = () => (
         iconColor="bg-green-500"
         IconComponent={FaDatabase}
         title="Database Matching"
-        description="We check against our ever-growing database of transactions, finding common classifications and identifying the most likely matches."
+        description="We check against our ever growing database of transactions, finding common classifications and identifying the most likely matches."
       />
 
       <Step

@@ -7,7 +7,7 @@ import { SignInButton } from '@/components/inputs/index';
 export const IntroVideo = () => {
   return (
     <div>
-      <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl md:hidden">
+      {/* <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl md:hidden">
         <div className="h-80 rounded-lg">
           <iframe
             className="absolute left-0 top-0 h-full w-full rounded-lg"
@@ -16,13 +16,16 @@ export const IntroVideo = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen></iframe>
         </div>
-      </section>
+      </section> */}
 
       <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-        <div className="flex flex-col items-center md:flex-row">
-          <div className="flex flex-col items-center justify-center p-4 px-8 md:w-1/2">
+        <div className="flex flex-col items-center tableCatConfidence:flex-row">
+          <div className="flex flex-col items-center justify-center p-4 px-8 tableCatConfidence:w-1/2">
             <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
               Introduction to Clasibot
+            </h2>
+            <h2 className="mb-4 text-center text-xl font-bold italic text-gray-600">
+              Coming Soon
             </h2>
 
             <ul className="mb-6 space-y-4 text-lg text-gray-700">
@@ -132,7 +135,7 @@ export const IntroVideo = () => {
             <SignInButton />
           </div>
 
-          <div className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2">
+          <div className="h-full w-full rounded-lg bg-cover bg-center pr-4 tableCatConfidence:h-96 tableCatConfidence:w-1/2">
             <div className="relative h-full w-full">
               <iframe
                 className="absolute left-0 top-0 h-full w-full rounded-lg"

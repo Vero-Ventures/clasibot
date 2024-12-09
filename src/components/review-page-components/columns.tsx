@@ -96,7 +96,7 @@ const commonColumns = [
   // Define the Account Column.
   // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
   {
-    accessorKey: 'account',
+    accessorKey: 'accountName',
     header: 'Account',
     cell: ({
       row,
@@ -104,7 +104,11 @@ const commonColumns = [
       row:
         | Row<FormattedForReviewTransaction>
         | Row<ClassifiedForReviewTransaction>;
-    }) => row.getValue('account'),
+    }) => (
+      <span className="inline-block max-w-32 overflow-hidden overflow-ellipsis">
+        {row.getValue('accountName')}
+      </span>
+    ),
     // Filter function takes the Row value and an array of Account names (filterValue).
     //    Column Id is needed to match the expected function signature.
     filterFn: (
@@ -121,7 +125,7 @@ const commonColumns = [
       }
       // Check if the Account name is included the array of selected Account names.
       // Return the result as a boolean value to determine Row filtering.
-      return filterValue.includes(row.getValue('account'));
+      return filterValue.includes(row.getValue('accountName'));
     },
     enableSorting: false,
   },
@@ -196,7 +200,11 @@ const commonColumns = [
       row:
         | Row<FormattedForReviewTransaction>
         | Row<ClassifiedForReviewTransaction>;
-    }) => row.getValue('name'),
+    }) => (
+      <span className="inline-block max-w-32 overflow-hidden overflow-ellipsis">
+        {row.getValue('name')}
+      </span>
+    ),
   },
 
   // Define the Amount Column
@@ -257,7 +265,7 @@ export const ReviewColumns = (
       }
       return categories.length > 0 ? (
         <select
-          className="rounded-lg border border-gray-700 px-2 py-1"
+          className="max-w-40 overflow-ellipsis rounded-lg border border-gray-700 px-2 py-1"
           onClick={(e) => e.stopPropagation()}
           // Use a callback function (handleCategoryChange) when the selected Category for a row changes.
           //    Updates the selected Categories for each Transaction in the Review Page.
@@ -319,7 +327,7 @@ export const ReviewColumns = (
       }
       return taxCodes.length > 0 ? (
         <select
-          className="rounded-lg border border-gray-700 px-2 py-1"
+          className="max-w-40 overflow-ellipsis rounded-lg border border-gray-700 px-2 py-1"
           onClick={(e) => e.stopPropagation()}
           // Use a callback function (handleTaxCodeChange) when the selected Tax Code for a row changes.
           //    Updates the selected Tax Codes for each Transaction in the Review Page.

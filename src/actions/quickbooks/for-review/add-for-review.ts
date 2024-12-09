@@ -79,7 +79,7 @@ export async function addForReview(
         headers: {
           'Content-Type': 'application/json',
           authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-          cookie: `qbn.tkt=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId}; e`,
+          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId}; SameSite=None;`,
         },
         body: JSON.stringify(body),
       });
@@ -141,7 +141,7 @@ function createForReviewUpdateObject(
   for (const batchAddTransaction of batchAddTransactions) {
     if (batchAddTransaction.forReviewTransaction.qboAccountId === accountId) {
       formattedBatchAddTransactions.push({
-        id: batchAddTransaction.forReviewTransaction.id,
+        id: batchAddTransaction.forReviewTransaction.olbTxnId,
         qboAccountId: batchAddTransaction.forReviewTransaction.qboAccountId,
         description: batchAddTransaction.forReviewTransaction.description,
         origDescription:
@@ -154,6 +154,7 @@ function createForReviewUpdateObject(
             {
               categoryId: batchAddTransaction.categoryId,
               taxCodeId: batchAddTransaction.taxCodeId,
+              taxApplicableOn: 'SALES',
             },
           ],
           nameId: batchAddTransaction.forReviewTransaction.addAsQboTxn.nameId

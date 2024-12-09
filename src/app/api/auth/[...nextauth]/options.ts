@@ -183,7 +183,18 @@ export const options: NextAuthOptions = {
             };
 
             // Insert the newly created Company object into the database.
-            await db.insert(Company).values(newCompany);
+            try {
+              await db.insert(Company).values(newCompany);
+            } catch {
+              await db
+                .update(Company)
+                .set({
+                  userId: newUser[0].id,
+                  firmName: null,
+                  bookkeeperConnected: false,
+                })
+                .where(eq(Company.id, companyId));
+            }
 
             // Create a blank Subscription in the database for the new User object.
             const newSubscription = await db

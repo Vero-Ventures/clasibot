@@ -4,7 +4,7 @@ import type { HTMLAttributes, ThHTMLAttributes, TdHTMLAttributes } from 'react';
 
 const Table = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
+    <div className="w-fit">
       <table
         ref={ref}
         className={cn('w-full caption-bottom text-sm', className)}
@@ -88,7 +88,7 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn('content-center !px-6 text-center align-middle', className)}
+    className={cn('content-center text-center align-middle', className)}
     {...props}
   />
 ));

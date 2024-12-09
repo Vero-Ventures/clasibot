@@ -108,7 +108,7 @@ export default function ConnectionInstructions({
                 </li>
                 <li className="mb-2.5 marker:font-semibold">
                   Enter the email of the Clasibot bookkeeper:&nbsp;
-                  <strong>synthetic-bookkeeperinvite.clasibot.com</strong>
+                  <strong>synthetic-bookkeeper@invite.clasibot.com</strong>
                 </li>
                 <li className="mb-2.5 marker:font-semibold">
                   Click the invite button to invite the Clasibot bookkeeper.
@@ -234,8 +234,8 @@ export default function ConnectionInstructions({
                 </li>
                 <li className="mb-2.5 marker:font-semibold">
                   Find the user with the&nbsp;
-                  <strong>bookkeeper@invite.clasibot.com</strong> email and the
-                  name you chose to give the Clasibot bookkeeper.
+                  <strong>synthetic-bookkeeper@invite.clasibot.com</strong>{' '}
+                  email and the name you chose to give the Clasibot bookkeeper.
                 </li>
                 <li className="mb-2.5 marker:font-semibold">
                   Check that the invite has been accepted by looking under the

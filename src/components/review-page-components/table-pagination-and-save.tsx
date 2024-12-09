@@ -29,7 +29,7 @@ export function TablePaginationAndSave({
   ) => void;
 }>) {
   return (
-    <div className="flex flex-col items-center justify-between pt-2 sm:flex-row">
+    <div className="flex flex-col items-center justify-between pt-2 sm:flex-row xl:px-12">
       <div className="mb-6 flex h-12 w-full flex-row items-center px-2 mb:px-4 sm:mb-0">
         <div className="mr-2 mt-1 h-fit min-w-[75px] py-2 text-center text-sm text-muted-foreground mb:mr-4 mb:min-w-[90px] sm:mr-0 sm:w-1/5 sm:min-w-[110px] sm:pr-6 lg:w-1/6">
           {table.getState().pagination.pageIndex < 0

@@ -40,39 +40,37 @@ export async function removeSelectedForReviewTransaction(
             eq(DatabaseForReviewTransaction.companyId, companyId) &&
               eq(
                 DatabaseForReviewTransaction.reviewTransactionId,
-                savedTransaction.forReviewTransaction.id
+                savedTransaction.forReviewTransaction.olbTxnId
               )
           );
 
-        // Use the Id of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
-        await db
-          .delete(ForReviewTransactionToCategories)
-          .where(
-            eq(
-              ForReviewTransactionToCategories.reviewTransactionId,
-              transactionToDelete[0].id
-            )
-          );
-
-        await db
-          .delete(ForReviewTransactionToTaxCodes)
-          .where(
-            eq(
-              ForReviewTransactionToTaxCodes.reviewTransactionId,
-              transactionToDelete[0].id
-            )
-          );
-
-        // After all Relationships are deleted, delete the 'For Review' transaction from the database.
-        await db
-          .delete(DatabaseForReviewTransaction)
-          .where(
-            eq(DatabaseForReviewTransaction.companyId, companyId) &&
+        if (transactionToDelete[0]) {
+          // Use the Id of the found 'For Review' transaction to find and delete and Relationships to Categories and to Tax Codes.
+          await db
+            .delete(ForReviewTransactionToCategories)
+            .where(
               eq(
-                DatabaseForReviewTransaction.reviewTransactionId,
-                savedTransaction.forReviewTransaction.id
+                ForReviewTransactionToCategories.reviewTransactionId,
+                transactionToDelete[0].id
               )
-          );
+            );
+
+          await db
+            .delete(ForReviewTransactionToTaxCodes)
+            .where(
+              eq(
+                ForReviewTransactionToTaxCodes.reviewTransactionId,
+                transactionToDelete[0].id
+              )
+            );
+
+          // After all Relationships are deleted, delete the 'For Review' transaction from the database.
+          await db
+            .delete(DatabaseForReviewTransaction)
+            .where(
+              eq(DatabaseForReviewTransaction.id, transactionToDelete[0].id)
+            );
+        }
       }
 
       // Return a success Query Result.

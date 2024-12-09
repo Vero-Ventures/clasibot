@@ -40,6 +40,7 @@ export type ClassifiedRawForReviewTransaction = {
       {
         categoryId: string;
         taxCodeId: string;
+        taxApplicableOn: string;
       },
     ];
     nameId: string | null;

@@ -12,6 +12,8 @@ export { ClassifyProgessModal, ClassifyCompleteModal } from './classify-modals';
 
 export { ConnectionConfirmationModal } from './connection-confirmation-modal';
 
+export { SaveProcessModal } from './saving-modals';
+
 export {
   ErrorLoadingTransactionsModal,
   SaveClassifiedTransactionsModal,

@@ -20,6 +20,7 @@ import {
   ClassifyCompleteModal,
   ErrorLoadingTransactionsModal,
   SaveClassifiedTransactionsModal,
+  SaveProcessModal,
 } from '@/components/modals/index';
 
 import type {
@@ -227,6 +228,8 @@ export default function ReviewPage({
           setDisplayState={setErrorLoadingTransactions}
         />
       }
+
+      {<SaveProcessModal displayState={isSaving} />}
 
       {
         <SaveClassifiedTransactionsModal

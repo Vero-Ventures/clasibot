@@ -29,7 +29,7 @@ export async function getForReview(
       method: 'GET',
       headers: {
         authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-        cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId};  qbn.authid=${loginTokens.authId};`,
+        cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId};`,
       },
     });
 

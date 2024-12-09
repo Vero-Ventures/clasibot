@@ -7,16 +7,16 @@ import quickbooks from './qb.jpg';
 export const WhyClasibot = () => {
   return (
     <section className="mt-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-      <div className="flex flex-col items-center md:flex-row">
+      <div className="flex flex-col items-center tableCatConfidence:flex-row">
         <div
-          className="h-full w-full rounded-lg bg-cover bg-center md:h-96 md:w-1/2"
+          className="h-full w-full rounded-lg bg-cover bg-center tableCatConfidence:h-96 tableCatConfidence:w-1/2"
           style={{
             backgroundImage: `url(${quickbooks.src})`,
 
             backgroundPosition: '16%',
           }}></div>
 
-        <div className="flex flex-col items-center justify-center p-4 md:w-1/2 md:pl-6">
+        <div className="flex flex-col items-center justify-center p-4 tableCatConfidence:w-1/2 tableCatConfidence:pl-6">
           <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
             Why Use Clasibot?
           </h2>

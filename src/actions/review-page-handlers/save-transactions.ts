@@ -4,7 +4,7 @@ import { addDatabaseTransactions } from '@/actions/db-transactions';
 
 import { removeSelectedForReviewTransaction } from '@/actions/db-review-transactions/index';
 
-import { addForReview, getAccounts } from '@/actions/quickbooks/index';
+import { getAccounts, addForReview } from '@/actions/quickbooks/index';
 
 import type {
   Account,
