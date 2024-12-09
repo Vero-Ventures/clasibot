@@ -73,6 +73,9 @@ export async function addForReview(
     // Define static Intuit API key value.
     const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc';
 
+    console.log('Batch Accept Endpoint')
+    console.log(endpoint)
+
     // Repeat the batch add process for each Account Id.
     for (const accountId of transactionAccounts) {
       // Convert the passed 'For Review' transaction to the format needed when calling the update User Transactions endpoint.
