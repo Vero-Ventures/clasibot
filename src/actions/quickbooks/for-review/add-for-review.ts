@@ -100,7 +100,6 @@ export async function addForReview(
       console.log(accountId);
 
       console.log('Account Add Response');
-      console.log(body)
       console.log(await response.json());
 
       // Check if a valid response is received.
