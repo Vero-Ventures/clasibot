@@ -65,7 +65,7 @@ export function ReviewTable({
   // Set the default start date and end date on element load.
   useEffect(() => {
     // Define the default start and end date (two years ago & current date).
-    const startDateTwoYearsPast= new Date();
+    const startDateTwoYearsPast = new Date();
     const endDatePresent = new Date();
     startDateTwoYearsPast.setFullYear(endDatePresent.getFullYear() - 2);
 

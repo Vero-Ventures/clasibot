@@ -234,8 +234,8 @@ export default function ConnectionInstructions({
                 </li>
                 <li className="mb-2.5 marker:font-semibold">
                   Find the user with the&nbsp;
-                  <strong>synthetic-bookkeeper@invite.clasibot.com</strong> email and the
-                  name you chose to give the Clasibot bookkeeper.
+                  <strong>synthetic-bookkeeper@invite.clasibot.com</strong>{' '}
+                  email and the name you chose to give the Clasibot bookkeeper.
                 </li>
                 <li className="mb-2.5 marker:font-semibold">
                   Check that the invite has been accepted by looking under the
