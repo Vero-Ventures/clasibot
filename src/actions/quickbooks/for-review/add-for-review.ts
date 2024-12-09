@@ -88,7 +88,7 @@ export async function addForReview(
         headers: {
           'Content-Type': 'application/json',
           authorization: `Intuit_APIKey intuit_apikey=${apiKey}`,
-          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId};`,
+          cookie: `qbn.ticket=${loginTokens?.ticket}; qbn.agentid=${loginTokens.agentId}; qbn.authid=${loginTokens.authId}; SameSite=None`,
         },
         body: JSON.stringify(body),
       });
