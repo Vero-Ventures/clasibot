@@ -1,14 +1,16 @@
 import { PricingTable } from '@/components/site-elements/index';
 
 export default async function SubscriptionPage() {
+  // Define the table key and Id variables and set them based on app config.
   let publicKey = '';
+  let tableID = '';
+
   if (process.env.APP_CONFIG === 'production') {
     publicKey = process.env.PROD_STRIPE_PUBLIC_KEY!;
   } else {
     publicKey = process.env.DEV_STRIPE_PUBLIC_KEY!;
   }
 
-  let tableID = '';
   if (process.env.APP_CONFIG === 'production') {
     tableID = process.env.PROD_PRICING_TABLE_ID!;
   } else {

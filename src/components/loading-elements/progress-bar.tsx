@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { CheckIcon, XIcon } from 'lucide-react'; // Make sure you have lucide-react installed
+import { CheckIcon, XIcon } from 'lucide-react';
 
 interface ProgressBarProps {
   completedChunks: number;
   maxChunks: number;
 }
 
+// Takes: The number of segments in the bar and the number of segments completed.
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   completedChunks,
   maxChunks,

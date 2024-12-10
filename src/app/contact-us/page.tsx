@@ -7,17 +7,17 @@ import Link from 'next/link';
 
 import { sendContactEmail } from '@/actions/send-contact-email';
 
-import { Button } from '@/components/ui/button';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+  Input,
+  Textarea,
+} from '@/components/ui/index';
 
 import { ToastAction } from '@/components/ui/toasts/toast';
 import { useToast } from '@/components/ui/toasts/use-toast';

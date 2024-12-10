@@ -6,6 +6,7 @@ interface ManageSubscriptionButtonProps {
   stripePortalUrl: string;
 }
 
+// Takes: The url for the Stripe Subscription management page.
 export const ManageSubscriptionButton: React.FC<
   ManageSubscriptionButtonProps
 > = ({ stripePortalUrl }) => {

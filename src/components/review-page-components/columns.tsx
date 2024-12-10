@@ -8,8 +8,7 @@ import type { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
 
 import { ConfidenceBar } from '@/components/site-elements/index';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button, Checkbox } from '@/components/ui/index';
 
 import type {
   Classification,
@@ -33,7 +32,6 @@ function sortableHeader(
       }}
       className="ml-2 px-3 font-semibold hover:!bg-gray-200 hover:!bg-opacity-40">
       {title}
-      {/* Set to inverse of value (Down arrow for ascending) to indicate new direction of sort when clicked. */}
       {column.getIsSorted() === 'asc' ? (
         <ArrowUp
           className={`ml-2 h-5 w-5 ${column.getIsSorted() ? 'stroke-blue-600' : 'stroke-gray-500'}`}
@@ -65,7 +63,7 @@ const commonColumns = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
-        // Convert the checked value to a boolean, then set that as the checked value of all Rows.
+        // Convert the checked value from a string to a boolean, then set that as the checked value of all Rows.
         onCheckedChange={(value: boolean) =>
           table.toggleAllPageRowsSelected(!!value)
         }
@@ -94,7 +92,7 @@ const commonColumns = [
   },
 
   // Define the Account Column.
-  // Uses a custom filter function to work with a dropdown that defines which Accounts are shown.
+  // Uses a custom filter function to enable a Account filtering.
   {
     accessorKey: 'accountName',
     header: 'Account',
@@ -164,7 +162,7 @@ const commonColumns = [
       filterValue: string
     ) => {
       // Use the string  ' to ' to split the passed filter value into a start and end date.
-      // Convert the resulting strings into dates, or null values if the string is empty.
+      // Then converts the resulting strings into dates, or null values if the string is empty.
       const [startDate, endDate] = filterValue
         .split(' to ')
         .map((date: string) => {
@@ -178,7 +176,7 @@ const commonColumns = [
       const rowDate = new Date(row.getValue('date'));
       return (
         // Check if the date is between the start and end dates.
-        //    If the start / end date is not present, count that as valid as well.
+        //    If the start / end date is not present, count that check as valid.
         (!startDate || rowDate >= startDate) && (!endDate || rowDate <= endDate)
       );
     },
@@ -231,14 +229,14 @@ const commonColumns = [
         style: 'currency',
         currency: 'CAD',
       }).format(amount);
-      // Return the formatted Amount.
+      // Display the formatted Amount.
       return <div>{formatted}</div>;
     },
   },
 ];
 
 // Define the Columns for the Review Table.
-// Takes: A record of the Classifications and handlers for updating the selected Classification for a specific Row.
+// Takes: Two records for the Classifications and handlers for updating the selected Classification for a specific Row.
 // Returns: The definition for the Columns to display in the review Table.
 export const ReviewColumns = (
   selectedCategories: Record<string, string>,
@@ -246,7 +244,7 @@ export const ReviewColumns = (
   handleCategoryChange: (transaction_Id: string, category: string) => void,
   handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void
 ): ColumnDef<ClassifiedForReviewTransaction>[] => [
-  // Define the order of the Columns. Start with the select, date, type, payee, and account Columns.
+  // Define the order of the Columns. Start with the select, account, name, date, and amount Columns.
   commonColumns[0],
   commonColumns[1],
   commonColumns[2],

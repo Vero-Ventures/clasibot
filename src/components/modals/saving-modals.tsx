@@ -4,6 +4,7 @@ interface SaveProgressProps {
   displayState: boolean;
 }
 
+// Takes: The modal display state.
 export const SaveProcessModal: React.FC<SaveProgressProps> = ({
   displayState,
 }: SaveProgressProps) => {

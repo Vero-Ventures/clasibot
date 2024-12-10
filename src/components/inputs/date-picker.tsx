@@ -6,15 +6,15 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 
 import { format } from 'date-fns';
 
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import {
+  Button,
+  Calendar,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/components/ui/index';
 
-// Takes: A nullable Date object and a setDate callback function.
+// Takes: A nullable Date object and a date setter callback function.
 export function DatePicker({
   date,
   setDate,
@@ -33,7 +33,6 @@ export function DatePicker({
               !date && 'text-muted-foreground'
             )}>
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {/* Either displays a formatted date, or a message indicating to pick one. */}
             {date !== null && format(date, 'MM/dd/yyyy')}
             {date === null && <span>Pick a date</span>}
           </Button>

@@ -1,5 +1,5 @@
 export const Spinner = () => {
-  // Common classes for the circles
+  // Common formatting for the circles to be animated.
   const circleCommonClasses = 'h-5 w-5 bg-blue-500 rounded-full m-1';
 
   return (

@@ -7,7 +7,7 @@ import Script from 'next/script';
 import { createCustomerSession } from '@/actions/stripe';
 
 // Defines the Pricing Table UI element that redirects users to payment options.
-// Takes: Stripe Env variables used to define the Pricing Table.
+// Takes: Stripe values set depending on app config that define the Pricing Table.
 export function PricingTable({
   publicKey,
   tableId,
@@ -20,7 +20,7 @@ export function PricingTable({
 
   // Define function to fetch and set the Customer session.
   const fetchCustomerSession = async () => {
-    // Create a user Stripe Customer session.
+    // Create a User Stripe Customer session.
     const userStripeCustomerSession = (await createCustomerSession()) as {
       customerSession: string;
     };

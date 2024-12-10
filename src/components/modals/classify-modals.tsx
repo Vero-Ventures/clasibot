@@ -1,6 +1,7 @@
 import { ProgressBar } from '@/components/loading-elements/index';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
+
 import { CheckIcon, XIcon } from 'lucide-react';
 
 interface ClassifyProgressProps {
@@ -10,6 +11,8 @@ interface ClassifyProgressProps {
   maxChunks: number;
 }
 
+// Takes: The display state, the current progress message,
+//        The current number of completed chunks and the max number of chunks.
 export const ClassifyProgessModal: React.FC<ClassifyProgressProps> = ({
   displayState,
   progressMessage,
@@ -47,6 +50,8 @@ interface ClassifyCompleteProps {
   classificationState: string;
 }
 
+// Takes: A state indicating if the modal is shown and the setter to update that state,
+//        As well as the state of the classification to define the close button display.
 export const ClassifyCompleteModal: React.FC<ClassifyCompleteProps> = ({
   displayState,
   setDisplayState,

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { CheckConnectionButton } from '@/components/inputs/index';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
 
 import clsx from 'clsx';
 
@@ -12,9 +12,12 @@ interface ConnectionInstructionsProps {
   showCheckConnectionButton: boolean | null;
 }
 
+// Takes: A state indicating if the check connection button is shown.
 export default function ConnectionInstructions({
   showCheckConnectionButton,
 }: ConnectionInstructionsProps) {
+  // Define state to track which set of instructions is being shown.
+  // True = Company (Default), False = Accounting Firm
   const [isSingleCompany, setIsSingleCompany] = useState(true);
 
   return (
