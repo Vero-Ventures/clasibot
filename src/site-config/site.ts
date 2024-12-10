@@ -39,7 +39,7 @@ export const siteConfig = {
       href: '/api/qbo_invites/connect_to_firm',
     },
     {
-      href: '/api/test',
+      href: '/api/forward_mfa',
     },
   ],
 };

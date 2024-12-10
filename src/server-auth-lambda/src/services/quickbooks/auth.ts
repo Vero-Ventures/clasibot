@@ -23,13 +23,9 @@ export class QuickBooksAuth {
             timeout: 30000,
           }
         );
-        console.log('MFA skipped, proceeding to account selection...');
       } catch {
-        console.log('MFA required, handling verification...');
         await this.handleMFA(browserHelper, emailService);
       }
-
-      console.log('Firm Selection');
 
       await this.firmSelection(browserHelper);
 
@@ -110,6 +106,9 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    console.log('MFA Page Content On Load');
+    console.log(await this.page.content());
     await browser.waitAndClick(CONFIG.selectors.login.mfaSMSOption, 30000);
     const code = await this.waitForVerificationCode(emailService);
     if (!code) throw new Error('Failed to retrieve verification code');
@@ -121,8 +120,6 @@ export class QuickBooksAuth {
     browser: BrowserHelper,
     selectionType: string = ''
   ): Promise<void> {
-    console.log('Firm Select Content');
-    console.log(this.page.content);
     await browser.waitAndFill(
       CONFIG.selectors.firmSelection.firmSearchInput,
       'Clasibot Synthetic Bookkeeper',
