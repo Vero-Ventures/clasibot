@@ -7,6 +7,7 @@ from string_patterns_enum import StringPatterns
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'package'))
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from typing import List
 import re
 import quopri
 import boto3
@@ -49,14 +50,14 @@ def find_company_name_in_from_field(content: str) -> bytes | None:
 def find_company_name_in_body(soup: BeautifulSoup) -> str | None:
     """
     Extracts company's name from the accepted soup object.
-    Looks through all 'p' tags with text matching "access at" and pulls the expected following company name.
+    Looks through all <td> tags with text matching expected string, and pulls the expected following company name.
 
     :param soup: the BeautifulSoup object created from the email contents
     :returns: name of the company, if found
     """
-    all_p_tags = soup.find_all("p")
-    for p_tag in all_p_tags:
-        text = p_tag.get_text()
+    all_td_tags = soup.find_all("td")
+    for td_tag in all_td_tags:
+        text = td_tag.get_text()
         if "changed your access at" in text:
             match = re.search(r'at\s(.*?)\s*:', text)
             if match:
@@ -66,7 +67,7 @@ def find_company_name_in_body(soup: BeautifulSoup) -> str | None:
 def find_sender_name(soup: BeautifulSoup) -> str | None:
     """
     Extracts inviting party's name from content.
-    Looks through all 'p' tags for the first one with a <strong> tag and extracts the text within.
+    Looks through all <p> tags for the first one with a <strong> tag and extracts the text within.
 
     :param soup: the BeautifulSoup object created from the email contents
     :returns: inviting party's personal name, if found
@@ -93,26 +94,24 @@ def find_invite_url(soup: BeautifulSoup) -> str | None:
 def extract_company_names_from_email(soup: BeautifulSoup) -> list | None:
     """
     Extracts list of company names from content.
-    Looks for text "Granted access" encased in a 'strong' tag and extracts company names from the following <em> tags.
+    Looks for <td> tags with italic font style and extracts company names.
 
     :param soup: the BeautifulSoup object created from the email contents
     :returns: the list of companies, if found
     """
     company_names = []
-    for strong_tag in soup.find_all('strong'):
-        if "Granted access" in strong_tag.text:
-            for sibling in strong_tag.find_next_siblings():
-                if sibling.name != 'em':
-                    break
-                company_names.append(sibling.get_text(strip=True))
-            cleaned_company_names = [name.lstrip('to ').strip() for name in company_names]
-            return cleaned_company_names
-
+    for italic_data in soup.find_all('td', attrs={'style': True}):
+        if 'font-style:italic;' in italic_data.attrs['style']:
+            company_names.append(italic_data.get_text(strip=True))
+    cleaned_company_names = [name.lstrip('to ').strip() for name in company_names]
+    return cleaned_company_names
 
 def identify_email_type(soup: BeautifulSoup) -> EmailType:
     """
     Identify the email type.
-    Looks for specific words in the first <p> tag to identify which of the three email types has been received.
+    Looks for specific words in the first <p> tag to identify possible invite type emails.
+    Looks for <td> tags with the style font-weight:bold to identify client access updates.
+    Uses the text inside that <td> tag to then determines the update type (add or remove).
 
     :params soup: the BeautifulSoup object created from the email contents
     :returns: the corresponding enum representation of the email type
@@ -124,8 +123,12 @@ def identify_email_type(soup: BeautifulSoup) -> EmailType:
                 return EmailType.COMPANY_INVITE
             elif "new user" in p_tag.text:
                 return EmailType.ACCOUNTANT_FIRM_INVITE
-            else:
-                return EmailType.FIRM_CLIENTS
+    for bold_data in soup.find_all('td', attrs={'style': True}):
+        if 'font-weight:bold;' in bold_data.attrs['style']:
+            if "granted access" in bold_data.text.lower():
+                return EmailType.ADD_FIRM_CLIENTS
+            if "removed access" in bold_data.text.lower():
+                return EmailType.REMOVE_FIRM_CLIENTS
 
 
 def process_email_parsing(decoded_content: str, soup: BeautifulSoup, email_type: EmailType) -> dict:
@@ -147,11 +150,18 @@ def process_email_parsing(decoded_content: str, soup: BeautifulSoup, email_type:
     :returns: a dictionary of the extracted values
     """
     data = {}
-    if email_type == EmailType.FIRM_CLIENTS:
+    if email_type == EmailType.ADD_FIRM_CLIENTS:
         company_name = find_company_name_in_body(soup)
         list_companies = extract_company_names_from_email(soup)
         data["firmName"] = company_name
         data["companyNames"] = list_companies
+        data["changeType"] = 'added'
+    elif email_type == EmailType.REMOVE_FIRM_CLIENTS:
+        company_name = find_company_name_in_body(soup)
+        list_companies = extract_company_names_from_email(soup)
+        data["firmName"] = company_name
+        data["companyNames"] = list_companies
+        data["changeType"] = 'removed'
     else:
         company_name = find_company_name_in_from_field(decoded_content)
         sender_name = find_sender_name(soup)
@@ -162,8 +172,6 @@ def process_email_parsing(decoded_content: str, soup: BeautifulSoup, email_type:
             data["firmName"] = company_name
         data["userName"] = sender_name
         data["inviteLink"] = invite_url
-    # Log data extraction
-    print("Data extracted: ", data)  
     return data
 
 
@@ -199,35 +207,29 @@ def execute_post_request(data: dict, email_type: EmailType):
 
     :param data: a dict of the extracted data to be sent
     :param email_type: one of three EmailType enums
-    :return: A request status code and relevant body
+    :return: a request status code and relevant body
     """
-    # Define endpoint based on email type enum or empty url if email could not be identified.
     if email_type == EmailType.COMPANY_INVITE:
         url = os.getenv("COMPANY_INVITE_API")
     elif email_type == EmailType.ACCOUNTANT_FIRM_INVITE:
         url = os.getenv("FIRM_INVITE_API")
-    elif email_type == EmailType.FIRM_CLIENTS:
+    elif email_type == EmailType.ADD_FIRM_CLIENTS or email_type == EmailType.REMOVE_FIRM_CLIENTS:
         url = os.getenv("FIRM_CLIENTS_API")
     else:
         url = ""
         print("Could not identify email type")
-    
-    # Return error outcome if data or url is not defined.
-    if not data or not url:
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    if not data or not url or not headers:
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Invalid input: data, url, and headers are required'})
         }
     
-     # Define request headers and append auth value to body for sender verification at endpoint.
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    
     monitor_auth = os.getenv("EMAIL_ENDPOINT_AUTH")
     data['monitorAuth'] = monitor_auth
 
-    # Make request and return an appropriate staus code and body based on the result.
     try:
         response = requests.post(url=url, headers=headers, data=json.dumps(data))
         if response.status_code == 200:
