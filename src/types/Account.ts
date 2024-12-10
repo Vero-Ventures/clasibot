@@ -3,11 +3,11 @@
  */
 
 export type Account = {
-  // QuickBooks internal Id.
+  // The internal QuickBooks Id of the Classification.
   id: string;
-  // Name of the Account.
+  // The name of the Account.
   name: string;
-  // Whether the Account is active.
+  // If user has the Account enabled.
   active: boolean;
   // Defines the higher level Classification of the Account.
   // Used to identify 'Expense' Accounts.

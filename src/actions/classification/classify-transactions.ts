@@ -239,7 +239,6 @@ async function fetchValidCategories(): Promise<Classification[]> {
           type: 'classification',
           id: category.id,
           name: category.name,
-          subName: category.account_sub_type,
         };
       }
     );
@@ -304,7 +303,6 @@ async function fetchValidTaxCodes(
               type: 'tax code',
               name: taxCode.Name,
               id: taxCode.Id,
-              subName: '',
             });
           }
         }

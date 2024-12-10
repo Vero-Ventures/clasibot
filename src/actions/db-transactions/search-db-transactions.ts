@@ -124,7 +124,7 @@ export async function searchDatabaseTransactionCategories(
 export async function searchDatabaseTransactionTaxCodes(
   name: string,
   validTaxCodes: Classification[]
-): Promise<{ id: string; name: string; subName: string }[]> {
+): Promise<{ id: string; name: string }[]> {
   try {
     // Find any Transaction objects in the database with the passed name.
     const transaction = await db
@@ -185,7 +185,6 @@ export async function searchDatabaseTransactionTaxCodes(
       return topTaxCodes.map((taxCode) => ({
         id: validTaxCodeMap[taxCode.taxCode],
         name: taxCode.taxCode,
-        subName: '',
       }));
     } else {
       // If no matching Transaction was found, return an empty array as there are no matches.

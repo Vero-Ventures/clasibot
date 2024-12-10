@@ -4,8 +4,9 @@
 
 export type LoginTokens = {
   // Authorization value from network traffic extracted during Synthetic Login.
+  // Presently static in QBO so not extracted with other tokens.
   intuitApiKey: string;
-  // Cookies extracted during Synthetic Login.
+  // Tokens extracted from cookies during Synthetic Login.
   ticket: string;
   agentId: string;
   authId: string;

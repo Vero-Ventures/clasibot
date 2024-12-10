@@ -5,7 +5,7 @@
 export type TaxCode = {
   // Identifier of the Tax Code, same as the Tax Code Id value in a Purchase object.
   Id: string;
-  // Internal QuickBooks name of the Tax Code.
+  // The internal QuickBooks name of the Tax Code.
   Name: string;
   // If user has the Tax Code enabled.
   Active: boolean;

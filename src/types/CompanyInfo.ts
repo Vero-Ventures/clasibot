@@ -4,11 +4,10 @@
 import type { Locations } from '@/enums/tax-codes';
 
 export type CompanyInfo = {
-  // The Company name.
+  // The internal QuickBooks Company name.
   // On failure: saved as 'Error: Name not found'.
   name: string;
-  // The industry the Company operates in.
-  // Saved as 'None' if not present.
+  // The industry the Company operates in, saved as 'None' if not present.
   // On failure: saved as 'Error'.
   industry: string;
   // Contains the country and Sub-Locations of the country the Company is located in.
