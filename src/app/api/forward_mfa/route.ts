@@ -1,15 +1,19 @@
 'use server';
 
 import nodemailer from 'nodemailer';
+import { URLSearchParams } from 'url';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const params = new URLSearchParams(body);
+    const messageContent: string = params.get('Body') ?? '';
+    const authCode: string = params.get('AccountSid') ?? '';
+    const senderNumber: string = params.get('From') ?? '';
     console.log('Endpoint Body Content');
-    console.log(body);
-    const messageContent: string = body.Body;
-    const authCode: string = body.AccountSid;
-    const senderNumber: string = body.From;
+    console.log(messageContent);
+    console.log(authCode);
+    console.log(senderNumber);
 
     if (!authCode || authCode !== process.env.MFA_FORWARDING_AUTH) {
       console.error(
