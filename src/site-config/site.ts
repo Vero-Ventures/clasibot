@@ -26,9 +26,9 @@ export const siteConfig = {
       href: '/privacy-policy',
     },
   ],
-  // Defines the enpoints that are used in Email monitoring calls.
+  // Defines the enpoints that are used in external systems to call site functionality.
   //    Allows outside handler to call endpoints without being redirected.
-  emailEndpoints: [
+  apiEndpoints: [
     {
       href: '/api/qbo_invites/connect_firm_clients',
     },

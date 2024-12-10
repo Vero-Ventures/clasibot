@@ -59,7 +59,7 @@ export default async function Page() {
   } else {
     // If the user is subscribed and connected, show the Review Page.
     return (
-      <div className="mx-auto w-full px-4 py-8 mb:px-6 sm:px-8 xxl:w-fit">
+      <div className="mx-auto w-full px-4 py-8 mb:px-6 sm:px-8 2xl:w-fit">
         <ReviewPage companyInfo={companyInfo} />
       </div>
     );
