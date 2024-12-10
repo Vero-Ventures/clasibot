@@ -1,7 +1,11 @@
 import type { BrowserContext, Page } from 'playwright-core';
+
 import { BrowserHelper } from '../browser';
+
 import { EmailService } from '../email';
+
 import { CONFIG } from '../../config';
+
 import type { QBOTokenData } from '../../types';
 
 export class QuickBooksAuth {
@@ -10,162 +14,192 @@ export class QuickBooksAuth {
     private page: Page
   ) {}
 
-  async authenticate(): Promise<QBOTokenData | null> {
-    const browserHelper = new BrowserHelper(this.page);
-    const emailService = new EmailService();
-
+  async siteLogin(): Promise<QBOTokenData | null> {
     try {
-      await this.initialLogin(browserHelper);
+      // Create a new browser helper with the page value and an email service object.
+      const browserHelper = new BrowserHelper(this.page);
+      const emailService = new EmailService();
+
+      // Go to the defines site login url and wait for the email input option before filling it.
+      await this.page.goto(CONFIG.quickbooks.loginUrl);
+      await browserHelper.waitAndFill(
+        CONFIG.selectors.login.emailInput,
+        CONFIG.quickbooks.email
+      );
+
+      // Submit the email, wait for the password input before selecting and filling it.
+      await browserHelper.waitAndClick(CONFIG.selectors.login.emailSubmit);
+      await browserHelper.waitAndFill(
+        CONFIG.selectors.login.passwordInput,
+        CONFIG.quickbooks.password
+      );
+
+      // Submit the password option to contiune to MFA or firm selection.
+      await browserHelper.waitAndClick(CONFIG.selectors.login.passwordSubmit);
+
+      // Try to call MFA handler to check if MFA page has appeared and to handle the MFA process.
       try {
-        await this.page.waitForSelector(
-          CONFIG.selectors.firmSelection.firmSearchInput,
-          {
-            timeout: 30000,
-          }
-        );
-      } catch {
         await this.handleMFA(browserHelper, emailService);
+      } catch {
+        // If no MFA page appears, log it and continue without error.
+        console.log('No MFA');
       }
 
+      // Call the firm selection process then wait for the login process to complete.
       await this.firmSelection(browserHelper);
-
       await new Promise<void>((resolve) => {
         setTimeout(() => {
           resolve();
         }, 3000);
       });
 
-      // Extract QB auth cookies
+      // Extract the QBO cookies needed from the Synthetic Login.
       const authCookies = await this.extractAuthCookies();
+
+      // If the auth cookies could not be found, throw an error to the Synthetic Login caller.
       if (!authCookies) {
         throw new Error('Failed to extract authentication cookies');
       }
 
+      // Cease loading the page before returning the fetced QBO auth cookies.
       await this.page.evaluate(() => window.stop());
-
       return {
         qboTicket: authCookies.qboTicket,
         authId: authCookies.authId,
         agentId: authCookies.agentId,
       };
     } catch (error) {
-      console.error('Authentication failed:', error);
+      // Log an error message and throw it to Synthetic Login caller.
+      console.error('Site Login Failed:', error);
       throw error;
     }
   }
 
-  async inviteLoginAndAccept(
-    inviteLink: string,
-    inviteType: string
-  ): Promise<void> {
-    const browser = new BrowserHelper(this.page);
-    await this.page.goto(inviteLink);
-    await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
-    await browser.waitAndFill(
-      CONFIG.selectors.login.passwordInput,
-      CONFIG.quickbooks.password
-    );
-    await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
-
+  async inviteLogin(inviteLink: string, inviteType: string): Promise<void> {
     try {
-      const emailService = new EmailService();
-      await this.handleMFA(browser, emailService);
-    } catch {
-      console.log('No MFA');
-    }
+      // Create a new browser helper with the page value and go the the url passed in the invite link.
+      const browserHelper = new BrowserHelper(this.page);
+      await this.page.goto(inviteLink);
 
-    if (inviteType === 'company') {
-      await this.firmSelection(browser, 'invite');
-      await browser.waitAndClick(
-        CONFIG.selectors.firmSelection.firmAcceptButton
+      // Wait for the email submission option to appear and click continue as it is automatically filled for existing accounts.
+      await browserHelper.waitAndClick(CONFIG.selectors.login.emailSubmit);
+
+      // Wait for the password input option and fill it before waiting and selecting the continue button.
+      await browserHelper.waitAndFill(
+        CONFIG.selectors.login.passwordInput,
+        CONFIG.quickbooks.password
       );
+      await browserHelper.waitAndClick(CONFIG.selectors.login.passwordSubmit);
+
+      // Try to call MFA handler to check if MFA page has appeared and to handle the MFA process.
+      try {
+        const emailService = new EmailService();
+        await this.handleMFA(browserHelper, emailService);
+      } catch {
+        // If no MFA page appears, log it and continue without error.
+        console.log('No MFA');
+      }
+
+      // If the invite is to a company, firm slection is required.
+      if (inviteType === 'company') {
+        // Call the firm selection process then select the continue option.
+        await this.firmSelection(browserHelper, 'invite');
+        await browserHelper.waitAndClick(
+          CONFIG.selectors.firmSelection.firmSelectionAcceptButton
+        );
+      }
+
+      // Preform short wait before ending to ensure accept process completes Successfully.
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 5000);
+      });
+
+      // Cease loading the page before returning.
+      await this.page.evaluate(() => window.stop());
+    } catch (error) {
+      // Log an error message and throw it to Synthetic Login caller.
+      console.error('Invite Login Failed:', error);
+      throw error;
     }
-
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 5000);
-    });
-  }
-
-  private async initialLogin(browser: BrowserHelper): Promise<void> {
-    await this.page.goto(CONFIG.quickbooks.loginUrl);
-    await browser.waitAndFill(
-      CONFIG.selectors.login.emailInput,
-      CONFIG.quickbooks.email
-    );
-    await browser.waitAndClick(CONFIG.selectors.login.emailSubmit);
-    await browser.waitAndFill(
-      CONFIG.selectors.login.passwordInput,
-      CONFIG.quickbooks.password
-    );
-    await browser.waitAndClick(CONFIG.selectors.login.passwordSubmit);
   }
 
   private async handleMFA(
     browser: BrowserHelper,
     emailService: EmailService
   ): Promise<void> {
+    // Wait for possible MFA page to load before waiting and selecing the SMS option for the MFA code.
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    console.log('MFA Page Content On Load');
-    console.log(await this.page.content());
     await browser.waitAndClick(CONFIG.selectors.login.mfaSMSOption, 30000);
+
+    // Call email handler to await verification code. Thow an error to Synthetic Login caller on failure.
     const code = await this.waitForVerificationCode(emailService);
-    if (!code) throw new Error('Failed to retrieve verification code');
-    await browser.waitAndFill(CONFIG.selectors.login.verificationInput, code);
-    await browser.waitAndClick(CONFIG.selectors.login.verificationSubmit);
-  }
-
-  async firmSelection(
-    browser: BrowserHelper,
-    selectionType: string = ''
-  ): Promise<void> {
-    await browser.waitAndFill(
-      CONFIG.selectors.firmSelection.firmSearchInput,
-      'Clasibot Synthetic Bookkeeper',
-      30000
-    );
-
-    let firmButtons = this.page.locator(
-      CONFIG.selectors.firmSelection.firmSelectionButtonLogin
-    );
-
-    if (selectionType === 'invite') {
-      firmButtons = this.page.locator(
-        CONFIG.selectors.firmSelection.firmSelectionButtonInvite
-      );
+    if (!code) {
+      throw new Error('Failed To Retrive MFA Code');
     }
 
-    try {
-      await firmButtons.first().waitFor({ state: 'visible' });
-      console.log('Firm Select Content Post Enter');
-      console.log(await this.page.content());
-      await firmButtons.first().click();
-    } catch (error) {
-      console.log('Firm Select Content Post Failure');
-      console.log(await this.page.content());
-      throw error;
-    }
+    // Wait for the code input to appear before entering the MFA code and submitting it.
+    await browser.waitAndFill(CONFIG.selectors.login.mfaInput, code);
+    await browser.waitAndClick(CONFIG.selectors.login.mfaSubmit);
   }
 
   private async waitForVerificationCode(
     emailService: EmailService,
     maxAttempts = 10
   ): Promise<string | null> {
+    // Wait 10 seconds for email to arrive.
     await new Promise((resolve) => setTimeout(resolve, 10000));
 
+    // Preform check for email a number of times based on maxAttempts values (default 10).
     for (let i = 0; i < maxAttempts; i++) {
+      // Try to fetch the latest email using the email service and return the code if it is found.
       try {
         const code = await emailService.fetchLatestEmail();
         if (code) return code;
       } catch (error) {
-        console.error(`Error during attempt ${i + 1}:`, error);
+        // Log an error that the attempt failed if the attempt resulted in an error.
+        console.error(`Error During Attempt ${i + 1}:`, error);
       }
+      // If there are attempts remaining, wait 5 seconds before next attempt.
       if (i < maxAttempts - 1) {
         await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     }
+    // Return a null value if the code could not be found.
     return null;
+  }
+
+  private async firmSelection(
+    browser: BrowserHelper,
+    selectionType: string = ''
+  ): Promise<void> {
+    try {
+      // Wait for the firm search input which can take a while to load, before inputting the Synthetic Bookkeeper firm name.
+      await browser.waitAndFill(
+        CONFIG.selectors.firmSelection.searchInput,
+        'Clasibot Synthetic Bookkeeper',
+        30000
+      );
+
+      // Identify the firm selection buttons based on the passed selection type.
+      let firmButtons = this.page.locator(
+        CONFIG.selectors.firmSelection.firmSelectionButtonLogin
+      );
+
+      if (selectionType === 'invite') {
+        firmButtons = this.page.locator(
+          CONFIG.selectors.firmSelection.firmSelectionButtonInvite
+        );
+      }
+
+      // Wait for the firm selection button to be visible before selecting the Synthetic Bookkeeper firm.
+      await firmButtons.first().waitFor({ state: 'visible' });
+      await firmButtons.first().click();
+    } catch (error) {
+      // Catch any errors and throw them to the caller.
+      throw error;
+    }
   }
 
   private async extractAuthCookies(): Promise<{
@@ -173,20 +207,19 @@ export class QuickBooksAuth {
     authId: string;
     agentId: string;
   } | null> {
+    // Get the site cookies and find the ones needed as part of Synthetic Login.
     const cookies = await this.context.cookies();
     const qboTkt = cookies.find((cookie) => cookie.name === 'qbo.ticket');
     const qbnAuthId = cookies.find((cookie) => cookie.name === 'qbn.authid');
     const qbnAgentId = cookies.find((cookie) => cookie.name === 'qbn.agentid');
 
+    // If one or more cookies could not be found, log an error and return a null value.
     if (!qboTkt || !qbnAuthId || !qbnAgentId) {
-      console.error('Required auth cookies not found');
+      console.error('Required Synthetic Login Cookies Not Found');
       return null;
     }
 
-    console.log(
-      `Found auth cookies - tkt: ${qboTkt.value}, authId: ${qbnAuthId.value} agentId: ${qbnAgentId.value}`
-    );
-
+    // Return the found cookies to the caller.
     return {
       qboTicket: qboTkt.value,
       authId: qbnAuthId.value,

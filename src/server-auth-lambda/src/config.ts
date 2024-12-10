@@ -13,28 +13,21 @@ export const CONFIG = {
   },
   selectors: {
     login: {
-      appSignInButton: 'button:has-text("Sign in with QuickBooks")',
       emailInput: '#iux-identifier-first-international-email-user-id-input',
       emailSubmit: '[data-testid="IdentifierFirstSubmitButton"]',
       passwordInput: '[data-testid="currentPasswordInput"]',
       passwordSubmit: '[data-testid="passwordVerificationContinueButton"]',
       mfaSMSOption: '[data-testid="challengePickerOption_SMS_OTP"]',
-      verificationInput: '[data-testid="VerifyOtpInput"]',
-      verificationSubmit: '[data-testid="VerifyOtpSubmitButton"]',
+      mfaInput: '[data-testid="VerifyOtpInput"]',
+      mfaSubmit: '[data-testid="VerifyOtpSubmitButton"]',
     },
     firmSelection: {
-      searchInput:
-        'input[role="combobox"][placeholder="Search for a company or firm"]',
-      firmSearchInput: 'input[type="text"]',
-      listItem: 'li[role="none"]',
+      searchInput: 'input[type="text"]',
+      firmSelectionButtonLogin: 'button[class~="account-btn"]',
       firmSelectionButtonInvite:
         'button[class="account-btn accountpicker-account-btn-quickbooks"]',
-      firmSelectionButtonLogin: 'button[class~="account-btn"]',
-      firmAcceptButton: 'button[id="account-picker-continue-btn"]',
-    },
-    companySelection: {
-      searchInput: 'input[role="combobox"][placeholder="Search for a client"]',
-      listItem: 'li[role="none"]',
+
+      firmSelectionAcceptButton: 'button[id="account-picker-continue-btn"]',
     },
   },
 } as const;
