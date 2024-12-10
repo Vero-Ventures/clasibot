@@ -5,7 +5,7 @@ import { URLSearchParams } from 'url';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.text();
     const params = new URLSearchParams(body);
     const messageContent: string = params.get('Body') ?? '';
     const authCode: string = params.get('AccountSid') ?? '';
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!senderNumber || senderNumber !== '88811') {
+    if (!senderNumber || senderNumber !== process.env.MFA_FORWARDING_NUMBER) {
       console.error('Endpoint called with non MFA message..');
       return new Response('Non QBO MFA Message', {
         status: 401,
