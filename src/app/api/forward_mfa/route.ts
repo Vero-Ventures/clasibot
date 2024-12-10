@@ -17,16 +17,16 @@ export async function POST(request: Request) {
 
     if (!authCode || authCode !== process.env.MFA_FORWARDING_AUTH) {
       console.error(
-        'Error Forwarding MFA: Missing Or Invalid Authorization Header.'
+        'Error Forwarding MFA: Missing Or Invalid Twilo Auth Code.'
       );
-      return new Response('Missing Or Invalid Authorization Header', {
+      return new Response('Missing Or Invalid Authorization', {
         status: 401,
       });
     }
 
     if (!senderNumber || senderNumber !== process.env.MFA_FORWARDING_NUMBER) {
-      console.error('Endpoint called with non MFA message..');
-      return new Response('Non QBO MFA Message', {
+      console.error('Endpoint called with non MFA Number.');
+      return new Response('Non QBO MFA Number', {
         status: 401,
       });
     }
