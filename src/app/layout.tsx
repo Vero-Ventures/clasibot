@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // Navbar -> Main Content -> Footer.
-  // Also defines two  unseen elements: the toaster and vercel analytics handlers.
+  // Also defines two unseen elements: the Toaster and Vercel Analytics handlers.
   return (
     <html lang="en">
       <body className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-gray-100">

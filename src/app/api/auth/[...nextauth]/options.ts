@@ -186,6 +186,10 @@ export const options: NextAuthOptions = {
             try {
               await db.insert(Company).values(newCompany);
             } catch {
+              // If an error was caught inserting the Company, it already exists.
+              // (New user logged into existing Company with admin change)
+
+              // Update the existing Company with the new user Id, unset the firm name, and set it to unconnected.
               await db
                 .update(Company)
                 .set({

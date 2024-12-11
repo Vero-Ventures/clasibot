@@ -4,7 +4,7 @@ import { syntheticLogin } from '@/actions/synthetic-login';
 
 export async function POST(request: Request) {
   try {
-    // Get request body that contains the Email Monitor auth code and Email data.
+    // Get request body that contains the Email auth code and Email data.
     const body = await request.json();
 
     // Extract the Username, Company name, and invite URL from the request body.
@@ -12,10 +12,10 @@ export async function POST(request: Request) {
     const userName: string = body.userName;
     const invite_link: string = body.inviteLink;
 
-    // Check for body value that authenticates Email Monitor requests.
+    // Check for body value that authenticates Email monitoring requests.
     const monitorAuth = body.monitorAuth;
 
-    // If Email Monitor auth is not present, log an eror and return an error response.
+    // Check if the Email monitoring auth code is missing or does not match the expected value.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
         'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Return an error response if either of the values are missing.
+    // Return an error response if either the Firm or User name values are missing
     if (!firmName || !userName) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
@@ -49,28 +49,27 @@ export async function POST(request: Request) {
       'firm'
     );
 
-    // If invite accepting resulted in an error, return an error response before connection update.
+    // If Synthetic Login resulted in an error, return an error response before connection update.
     if (loginResult.result === 'Error') {
-      console.error('Firm Synthetic Invite Accept Failed');
-      console.error(loginResult.message);
-      console.error(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
-    // Call handler to update Firm connection.
+    // Call handler to create Firm.
     const dbUpdateResult = await addAccountingFirmConnection(
       firmName,
       userName
     );
 
-    if (dbUpdateResult.result === 'Error') {
+    // If the update was successful, return a success response. in
+    if (dbUpdateResult.result !== 'Error') {
+      return new Response('User Firm Created Successfully.');
+    } else {
+      // On error updating the clients, log an error and return an error response.
       console.error('Error Updating Database Firms: ' + dbUpdateResult.detail);
       return new Response('Database Update Process Failed', { status: 400 });
     }
-
-    return new Response('User Successfully Connected To Firm.');
   } catch (error) {
-    // Catch any errors and log them (include the error message if it is present) and return an error response.
+    // Catch any errors and log them (include the error message if it is present), then return an error response.
     if (error instanceof Error) {
       console.error(
         'Error Adding Accounting Firm Connection: ' + error.message

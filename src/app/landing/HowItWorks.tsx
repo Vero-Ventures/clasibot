@@ -31,6 +31,8 @@ export const HowItWorks = () => (
   </section>
 );
 
+// Takes: The background color of the icon, the image to display in the icon,
+//        The title for the icon and its description.
 interface StepProps {
   iconColor: string;
   IconComponent: React.ElementType;

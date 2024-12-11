@@ -11,7 +11,7 @@ export const IntroVideo = () => {
         <div className="h-80 rounded-lg">
           <iframe
             className="absolute left-0 top-0 h-full w-full rounded-lg"
-            src="https://www.youtube.com/embed/qytiCd-tAUo"
+            src=""
             title="Clasibot Demo Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen></iframe>

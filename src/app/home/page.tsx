@@ -36,7 +36,7 @@ export default async function Page() {
   const userCompanyIndustry = await getCompanyIndustry();
   const userCompanyLocation = JSON.parse(await getCompanyLocation());
 
-  // Record the collected Company Info as an object to be passed to the review page.
+  // Record the collected Company Info as an object to be passed to the Review Page.
   const companyInfo: CompanyInfo = {
     name: userCompanyName,
     industry: userCompanyIndustry,
@@ -53,8 +53,7 @@ export default async function Page() {
     !companyHasSBK.connected &&
     process.env.APP_CONFIG === 'production'
   ) {
-    // Checks if the the app is in production and the user is not Connected to the Synthetic Bookkeeper.
-    // Shows the Connection required message that redirects to the Connection page.
+    // Checks if the user is not Connected to the Synthetic Bookkeeper shows the Connection needed modal.
     return <ConnectionConfirmationModal />;
   } else {
     // If the user is subscribed and connected, show the Review Page.
