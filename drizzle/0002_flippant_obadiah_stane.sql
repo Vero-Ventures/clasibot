@@ -1,1 +1,0 @@
-ALTER TABLE "Company" DROP COLUMN IF EXISTS "classification_failed";

@@ -1,5 +1,5 @@
 {
-  "id": "255bcd0e-7d00-478e-867f-62c30e6c6a8d",
+  "id": "316ea57e-6697-4450-8ae1-ad09a5907539",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -69,8 +69,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "industry": {
-          "name": "industry",
+        "firm_name": {
+          "name": "firm_name",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -80,18 +80,6 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true
-        },
-        "firm_name": {
-          "name": "firm_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "classification_failed": {
-          "name": "classification_failed",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},
@@ -187,8 +175,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "transaction_id": {
-          "name": "transaction_id",
+        "review_transaction_id": {
+          "name": "review_transaction_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -219,7 +207,7 @@
         },
         "amount": {
           "name": "amount",
-          "type": "integer",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },
@@ -241,8 +229,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "top_classification": {
-          "name": "top_classification",
+        "top_category_classification": {
+          "name": "top_category_classification",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "top_tax_code_classification": {
+          "name": "top_tax_code_classification",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -271,8 +265,8 @@
       "name": "ForReviewTransactionsToCategories",
       "schema": "",
       "columns": {
-        "transaction_id": {
-          "name": "transaction_id",
+        "review_transaction_id": {
+          "name": "review_transaction_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -286,12 +280,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "ForReviewTransactionsToCategories_transaction_id_ForReviewTransaction_id_fk": {
-          "name": "ForReviewTransactionsToCategories_transaction_id_ForReviewTransaction_id_fk",
+        "ForReviewTransactionsToCategories_review_transaction_id_ForReviewTransaction_id_fk": {
+          "name": "ForReviewTransactionsToCategories_review_transaction_id_ForReviewTransaction_id_fk",
           "tableFrom": "ForReviewTransactionsToCategories",
           "tableTo": "ForReviewTransaction",
           "columnsFrom": [
-            "transaction_id"
+            "review_transaction_id"
           ],
           "columnsTo": [
             "id"
@@ -314,10 +308,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "ForReviewTransactionsToCategories_transaction_id_category_id_pk": {
-          "name": "ForReviewTransactionsToCategories_transaction_id_category_id_pk",
+        "ForReviewTransactionsToCategories_review_transaction_id_category_id_pk": {
+          "name": "ForReviewTransactionsToCategories_review_transaction_id_category_id_pk",
           "columns": [
-            "transaction_id",
+            "review_transaction_id",
             "category_id"
           ]
         }
@@ -328,8 +322,8 @@
       "name": "ForReviewTransactionsToTaxCodes",
       "schema": "",
       "columns": {
-        "transaction_id": {
-          "name": "transaction_id",
+        "review_transaction_id": {
+          "name": "review_transaction_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -343,12 +337,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "ForReviewTransactionsToTaxCodes_transaction_id_ForReviewTransaction_id_fk": {
-          "name": "ForReviewTransactionsToTaxCodes_transaction_id_ForReviewTransaction_id_fk",
+        "ForReviewTransactionsToTaxCodes_review_transaction_id_ForReviewTransaction_id_fk": {
+          "name": "ForReviewTransactionsToTaxCodes_review_transaction_id_ForReviewTransaction_id_fk",
           "tableFrom": "ForReviewTransactionsToTaxCodes",
           "tableTo": "ForReviewTransaction",
           "columnsFrom": [
-            "transaction_id"
+            "review_transaction_id"
           ],
           "columnsTo": [
             "id"
@@ -371,10 +365,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "ForReviewTransactionsToTaxCodes_transaction_id_tax_code_id_pk": {
-          "name": "ForReviewTransactionsToTaxCodes_transaction_id_tax_code_id_pk",
+        "ForReviewTransactionsToTaxCodes_review_transaction_id_tax_code_id_pk": {
+          "name": "ForReviewTransactionsToTaxCodes_review_transaction_id_tax_code_id_pk",
           "columns": [
-            "transaction_id",
+            "review_transaction_id",
             "tax_code_id"
           ]
         }
@@ -449,8 +443,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "taxCode": {
-          "name": "taxCode",
+        "tax_code": {
+          "name": "tax_code",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -466,11 +460,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "TaxCode_taxCode_unique": {
-          "name": "TaxCode_taxCode_unique",
+        "TaxCode_tax_code_unique": {
+          "name": "TaxCode_tax_code_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "taxCode"
+            "tax_code"
           ]
         }
       }
@@ -630,14 +624,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "first_name": {
-          "name": "first_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_name": {
-          "name": "last_name",
+        "user_name": {
+          "name": "user_name",
           "type": "text",
           "primaryKey": false,
           "notNull": false
