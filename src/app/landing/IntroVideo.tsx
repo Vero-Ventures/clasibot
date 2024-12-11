@@ -7,16 +7,16 @@ import { SignInButton } from '@/components/inputs/index';
 export const IntroVideo = () => {
   return (
     <div>
-      {/* <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl md:hidden">
+      <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl md:hidden">
         <div className="h-80 rounded-lg">
           <iframe
             className="absolute left-0 top-0 h-full w-full rounded-lg"
-            src="https://www.youtube.com/embed/qytiCd-tAUo"
+            src="https://www.youtube.com/embed/0I1EGkkGTQk"
             title="Clasibot Demo Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen></iframe>
         </div>
-      </section> */}
+      </section>
 
       <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
         <div className="flex flex-col items-center tableCatConfidence:flex-row">
@@ -139,7 +139,7 @@ export const IntroVideo = () => {
             <div className="relative h-full w-full">
               <iframe
                 className="absolute left-0 top-0 h-full w-full rounded-lg"
-                src="https://www.youtube.com/embed/qytiCd-tAUo"
+                src="https://www.youtube.com/embed/0I1EGkkGTQk"
                 title="Clasibot Demo Video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen></iframe>
