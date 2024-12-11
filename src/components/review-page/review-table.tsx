@@ -189,7 +189,7 @@ export function ReviewTable({
       <TablePaginationAndSave
         table={table}
         rowSelection={rowSelection}
-        categorizedTransactions={classifiedTransactions}
+        classifiedTransactions={classifiedTransactions}
         isSaving={isSaving}
         handleSave={handleSave}
       />
