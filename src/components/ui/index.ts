@@ -1,3 +1,4 @@
+'use client';
 /**
  * Define the exports for generic UI components files in a single file.
  */
