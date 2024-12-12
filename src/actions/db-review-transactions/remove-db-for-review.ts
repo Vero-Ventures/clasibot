@@ -14,8 +14,8 @@ import { eq } from 'drizzle-orm';
 import type { RawForReviewTransaction, QueryResult } from '@/types/index';
 
 // Removes 'For Review' transactions from the database after they have been saved to QuickBooks Online.
-// Takes:  An array of Raw 'For Review' transaction objects.
-// Returns: A Query Result object for removing the 'For Review' transactions from the database.
+// Takes:  An array of Raw 'For Review' transactions.
+// Returns: A Query Result for removing the 'For Review' transactions.
 export async function removeSelectedForReviewTransaction(
   savedTransactions: {
     forReviewTransaction: RawForReviewTransaction;
@@ -64,7 +64,7 @@ export async function removeSelectedForReviewTransaction(
               )
             );
 
-          // After all Relationships are deleted, delete the 'For Review' transaction from the database.
+          // After all Relationships are deleted, delete the 'For Review' transaction.
           await db
             .delete(DatabaseForReviewTransaction)
             .where(
@@ -109,9 +109,9 @@ export async function removeSelectedForReviewTransaction(
   }
 }
 
-// Removes all 'For Review' transactions from the database before a new review is done.
+// Removes all 'For Review' transactions before a new review is done.
 // Takes: The realm Id of the company to delete the 'For Review' transactions for.
-// Returns: A Query Result object for removing the 'For Review' transactions from the database.
+// Returns: A Query Result for removing the 'For Review' transactions.
 export async function removeAllForReviewTransactions(
   realmId: string
 ): Promise<QueryResult> {
@@ -122,7 +122,7 @@ export async function removeAllForReviewTransactions(
       .from(DatabaseForReviewTransaction)
       .where(eq(DatabaseForReviewTransaction.companyId, realmId));
 
-    // Iterate through the objects, deleting their related Classifications and the object itself.
+    // Iterate through the 'For Review' transactions, deleting their related Classifications and the object itself.
     for (const databaseTransaction of transactionsToDelete) {
       // Delete the Related Classifications.
       await db
@@ -143,7 +143,7 @@ export async function removeAllForReviewTransactions(
         );
     }
 
-    // After Relationships are deleted, delete the original 'For Review' transactions from the database.
+    // After Relationships are deleted, delete the original 'For Review' transactions.
     await db
       .delete(DatabaseForReviewTransaction)
       .where(eq(DatabaseForReviewTransaction.companyId, realmId));

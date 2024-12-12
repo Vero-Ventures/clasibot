@@ -16,7 +16,7 @@ import type {
 
 // Get all past saved Transaction from the QuickBooks API.
 // Takes: Optional values for a start date and end date.
-// Returns: An array of objects starting with a Query Result, then containing Transaction objects.
+// Returns: An array of objects starting with a Query Result, then containing Transactions.
 export async function getSavedTransactions(
   startDate = '',
   endDate = ''
@@ -41,7 +41,7 @@ export async function getSavedTransactions(
       },
     };
 
-    // Define a type for the response object to allow for type checking.
+    // Define a type for the response to allow for type checking.
     type PreferenceResponse = {
       CurrencyPrefs: {
         MultiCurrencyEnabled: boolean;
@@ -110,7 +110,7 @@ export async function getSavedTransactions(
     const responseRows = response.Rows.Row;
     const results: (QueryResult | Transaction)[] = [];
 
-    // Create a formatted Query Result object for the QBO API call.
+    // Create a formatted Query Result for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const QueryResult = createQueryResult(success, error);
     results.push(QueryResult);
@@ -149,7 +149,7 @@ export async function getSavedTransactions(
 
 // Formats the response rows into Transactions.
 // Takes: The QuickBooks response rows and a results array.
-// Returns: A results array containing a Query Result in the first index and the formatted Transaction objects.
+// Returns: A results array containing a Query Result in the first index and the formatted Transactions.
 async function checkAndFormatTransactions(
   rows: {
     ColData: {
@@ -176,7 +176,7 @@ async function checkAndFormatTransactions(
       },
     ];
   } else {
-    // If the fetch Accounts call was successful, define an array of just the Account objects (no Query Result).
+    // If the fetch Accounts call was successful, define an array of just the Accounts (no Query Result).
     const parsedAccounts: Account[] = accountResults.slice(1) as Account[];
 
     // Iterate through the Transaction rows to find and format the Transaction data
@@ -203,7 +203,7 @@ async function checkAndFormatTransactions(
             (account) => account.name === row.ColData[categoryRow].value
           )
         ) {
-          // Use the values from Transaction rows to create the Transaction object.
+          // Use the values from Transaction rows to create the Transaction.
           //    Explicitly defined types due to values being passed as either strings or numbers.
           const newFormattedTransaction: Transaction = {
             name: String(row.ColData[nameRow].value),
@@ -217,7 +217,7 @@ async function checkAndFormatTransactions(
             String(row.ColData[idRow].id)
           );
 
-          // Get the User Tax Codes and parse it to a Query Result and an array of Tax Code objects.
+          // Get the User Tax Codes and parse it to a Query Result and an array of Tax Codes.
           const userTaxCodes = await getTaxCodes();
 
           // Check if either of the fetches resulted in an error Query Result.
@@ -256,7 +256,7 @@ async function checkAndFormatTransactions(
             // If both fetches were successful, iterate through the user Tax Codes.
             // Skips the Query Result in the first index.
             for (const taxCode of userTaxCodes.slice(1) as TaxCode[]) {
-              // Find the Tax Code that matches the one in the Puchase object for the Transaction.
+              // Find the Tax Code that matches the one in the Puchase for the Transaction.
               if (taxCode.Id == transactionPurchase.taxCodeId) {
                 // Update the formatted Transaction with the Tax Code name.
                 newFormattedTransaction.taxCodeName = taxCode.Name;

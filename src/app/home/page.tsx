@@ -36,7 +36,7 @@ export default async function Page() {
   const userCompanyIndustry = await getCompanyIndustry();
   const userCompanyLocation = JSON.parse(await getCompanyLocation());
 
-  // Record the collected Company Info as an object to be passed to the Review Page.
+  // Record the collected Company Info to be passed to the Review Page.
   const companyInfo: CompanyInfo = {
     name: userCompanyName,
     industry: userCompanyIndustry,

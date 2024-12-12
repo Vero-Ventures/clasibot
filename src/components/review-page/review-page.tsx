@@ -29,7 +29,7 @@ import type {
   ClassifiedForReviewTransaction,
 } from '@/types/index';
 
-// Takes: A Company Info object.
+// Takes: The Company Info.
 export default function ReviewPage({
   companyInfo,
 }: Readonly<{

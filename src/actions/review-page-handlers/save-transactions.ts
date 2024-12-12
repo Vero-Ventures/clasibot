@@ -48,7 +48,7 @@ export async function saveSelectedTransactions(
     const selectedRowIndices = Object.entries(selectedRows);
 
     // Call handler to iterate through the selected rows.
-    // Define the array of objects to be batch added to QuickBooks and to be saved to the database for reference.
+    // Define the array of objects to be batch added to QuickBooks and to be saved for reference.
     const [batchAddTransactions, newDatabaseTransactions, transactionAccounts] =
       parseSelectedRows(
         selectedRowIndices,
@@ -71,7 +71,7 @@ export async function saveSelectedTransactions(
       throw new Error(addResult.message);
     }
 
-    // Remove the added 'For Review' transactions and their connections from the database.
+    // Remove the added 'For Review' transactions and their connections.
     const removeResult =
       await removeSelectedForReviewTransaction(batchAddTransactions);
 
@@ -80,7 +80,7 @@ export async function saveSelectedTransactions(
       throw new Error(removeResult.message);
     }
 
-    // Add all the newly created Transactions to the database.
+    // Add all the newly created Transactions.
     const addTransactionsResult = await addDatabaseTransactions(
       newDatabaseTransactions
     );
@@ -149,7 +149,7 @@ function parseSelectedRows(
     // Iterate through the selected Rows, using only values where selected = true.
     selectedRowIndices.forEach(async ([index, selected]) => {
       if (selected) {
-        // Get the Row index as a number, as well as the Classified and Raw 'For Review' transaction objects.
+        // Get the Row index as a number, as well as the Classified and Raw 'For Review' transactions.
         const numericalIndex = Number(index);
         const classifiedTransaction = transactions[
           numericalIndex
@@ -182,7 +182,7 @@ function parseSelectedRows(
         }
 
         if (category && taxCode) {
-          // Create a new Transaction object to be saved using the Classified Transaction and its Classifications.
+          // Create a new Transaction to be saved using the Classified Transaction and its Classifications.
           const newDatabaseTransaction: Transaction = {
             name: classifiedTransaction.name,
             amount: classifiedTransaction.amount,
@@ -210,14 +210,14 @@ function parseSelectedRows(
             }
           }
 
-          // Push the Raw 'For Review' transaction object and its Classification Id's to the array for batch adding to QuickBooks.
+          // Push the Raw 'For Review' transaction and its Classification Id's to the array for batch adding to QuickBooks.
           batchAddTransactions.push({
             forReviewTransaction: rawTransaction,
             categoryId: category.id,
             taxCodeId: taxCode.id,
           });
 
-          // Push the new Transaction object to the array of Classified Transactions to be saved to the database.
+          // Push the new Transaction to the array of Classified Transactions to be saved.
           newDatabaseTransactions.push(newDatabaseTransaction);
 
           // Check if the 'For Review' transaction Account is already in the list of related Accounts.
@@ -233,7 +233,7 @@ function parseSelectedRows(
       }
     });
 
-    // Return the 'For Review' transactions to be batch added and Classified Transactions to be saved to the database.
+    // Return the 'For Review' transactions to be batch added and Classified Transactions to be saved.
     // Also returns the array of Account Id's for the 'For Review' transactions.
     return [batchAddTransactions, newDatabaseTransactions, transactionAccounts];
   } catch (error) {

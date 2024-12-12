@@ -14,13 +14,13 @@ import type { Classification } from '@/types/index';
 
 // Search the database for potential Categories that match a passed Transaction name.
 // Takes: The name of the Transaction and the valid Categories for Classification.
-// Returns: An array of matching Classifications from the database that are contained within the array of valid Categories.
+// Returns: An array of matching Classifications that are contained within the array of valid Categories.
 export async function searchDatabaseTransactionCategories(
   name: string,
   validCategories: Classification[]
 ): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any Transaction objects in the database with the passed name.
+    // Find any Transactions with the passed name.
     const transaction = await db
       .select()
       .from(Transaction)
@@ -51,7 +51,7 @@ export async function searchDatabaseTransactionCategories(
         categories.push(category[0]);
       }
 
-      // If no database Categories are found, return an empty array.
+      // If no Categories are found, return an empty array.
       if (categories.length === 0) {
         return [];
       }
@@ -75,7 +75,7 @@ export async function searchDatabaseTransactionCategories(
         }, {});
       }
 
-      // Take the out any database Categories that do not match to a valid Category.
+      // Take the out any Categories that do not match to a valid Category.
       const filteredCategories = categories.filter((category) =>
         Object.hasOwn(
           validCategoryMap,
@@ -86,7 +86,7 @@ export async function searchDatabaseTransactionCategories(
         )
       );
 
-      // Sort the database Categories by number of matches in descending order.
+      // Sort the Categories by number of matches in descending order.
       // Most common Categories will be sorted to the start of the array.
       filteredCategories.sort((a, b) => b.matches - a.matches);
 
@@ -120,13 +120,13 @@ export async function searchDatabaseTransactionCategories(
 
 // Search the database for potential Tax Codes that match a passed Transaction name.
 // Takes: The name of the Transaction and the valid Tax Codes for Classification.
-// Returns: An array of matching Classifications from the database that are contained within the array of valid ax Codes.
+// Returns: An array of matching Classifications that are contained within the array of valid Tax Codes.
 export async function searchDatabaseTransactionTaxCodes(
   name: string,
   validTaxCodes: Classification[]
 ): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any Transaction objects in the database with the passed name.
+    // Find any Transactions with the passed name.
     const transaction = await db
       .select()
       .from(Transaction)
@@ -157,7 +157,7 @@ export async function searchDatabaseTransactionTaxCodes(
         taxCodes.push(taxCode[0]);
       }
 
-      // If no database Tax Code are found, return an empty array
+      // If no Tax Code are found, return an empty array
       if (taxCodes.length === 0) {
         return [];
       }
@@ -171,12 +171,12 @@ export async function searchDatabaseTransactionTaxCodes(
         {}
       );
 
-      // Take the out any database Tax Codes that do not match to a valid Tax Code.
+      // Take the out any Tax Codes that do not match to a valid Tax Code.
       const filtedTaxCodes = taxCodes.filter((taxCode) =>
         Object.hasOwn(validTaxCodeMap, taxCode.taxCode)
       );
 
-      // Sort the database Tax Codes by number of matches in descending order.
+      // Sort the Tax Codes by number of matches in descending order.
       // Most common Tax Codes will be sorted to the start of the array.
       filtedTaxCodes.sort((a, b) => b.matches - a.matches);
 

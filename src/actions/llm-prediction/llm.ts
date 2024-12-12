@@ -110,7 +110,7 @@ export async function queryLLM(
 // Makes multiple queries to the LLM to predict the Classifications of multiple 'For Review' transactions.
 // Takes: An array of 'For Review' transactions, a record of 'For Review' transaction Id's to arrays of possible Classified elements, -
 // An array of the possible Classifications, the Company Info to be used as context, and the type of Classification being predicted.
-// Returns: An array of Classified Result objects connected to the passed 'For Review' transactions.
+// Returns: An array of Classified Results connected to the passed 'For Review' transactions.
 export async function batchQueryLLM(
   transactions: FormattedForReviewTransaction[],
   classifications: Classification[],
@@ -122,7 +122,7 @@ export async function batchQueryLLM(
     // Define the resultScore threshold for the Knowledge Graph API.
     const threshold = 10;
 
-    // Extract valid Classification names from the passed Classification objects.
+    // Extract valid Classification names from the passed Classifications.
     const validClassificationNames = classifications.map(
       (classification) => classification.name
     );
@@ -180,8 +180,8 @@ export async function batchQueryLLM(
             responseText.includes(classification.toLowerCase())
         );
 
-        // Map the possible valid Classifications to the full Classification objects.
-        // Iterates through the names to find and add the related Classification object.
+        // Map the possible valid Classifications to the full Classifications.
+        // Iterates through the names to find and add the related Classification.
         possibleClassifications = possibleValidclassifications.map(
           (classificationName) =>
             classifications.find(

@@ -49,14 +49,14 @@ export async function startClassification(): Promise<{
       };
     }
 
-    // Get the current Company from the database to check for a Firm name.
+    // Get the current Company to check for a Firm name.
     const currentCompany = await db
       .select()
       .from(Company)
       .where(eq(Company.realmId, session.realmId));
 
-    // Check that a matching database Company object was found.
-    // Return result object and preform error logging if needed.
+    // Check that a matching Company was found.
+    // Return a result object and preform error logging if needed.
     if (!currentCompany[0]) {
       console.error('Backend Classification: Company Not Found In Database.');
       return {
@@ -91,7 +91,7 @@ export async function preformSyntheticLogin(
 ): Promise<{ result: boolean; loginTokens: LoginTokens | null }> {
   try {
     // Call Synthetic Login with the Company realm Id and the potential Firm name.
-    // Returns: A QueryResult and a Synthetic Login Tokens object.
+    // Returns: A QueryResult and the Synthetic Login Tokens.
     const [loginResult, loginTokens] = await syntheticLogin(realmId);
 
     // Check the Synthetic Login call resulted in error.
@@ -200,13 +200,12 @@ export async function fetchPredictionContext(): Promise<{
 
 // Begins the Classification process on the 'For Review' transactions.
 // Takes: The context Transactions, the 'For Review' transactions to be Classified,
-//        The context Company Info, the Login Tokens from Synthetic Login, and the Company realm Id.
+//        The context Company Info, and the Login Tokens from Synthetic Login.
 // Returns: Boolean value for success / failure, the record of Transaction Id to Classifications.
 export async function startTransactionClassification(
   contextTransactions: Transaction[],
   reviewTransactions: FormattedForReviewTransaction[],
-  companyInfo: CompanyInfo,
-  realmId: string
+  companyInfo: CompanyInfo
 ): Promise<{
   result: boolean;
   classificationResults: Record<
@@ -222,11 +221,10 @@ export async function startTransactionClassification(
     const classificationResults = await classifyTransactions(
       contextTransactions,
       reviewTransactions,
-      companyInfo,
-      realmId
+      companyInfo
     );
 
-    // Check for error object returned by the Classification call.
+    // Check for error returned by the Classification call.
     if (classificationResults.error) {
       // Return failure result and empty Classification result to the caller.
       return {
@@ -278,7 +276,7 @@ export async function createClassifiedTransactions(
   transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][];
 }> {
   try {
-    // Use Classification results to create Classified 'For Review' transaction objects.
+    // Use Classification results to create Classified 'For Review' transactions.
     const classifiedForReviewTransactions =
       await createClassifiedForReviewTransactions(
         forReviewTransactions,

@@ -98,7 +98,7 @@ export function ReviewTable({
     // Extract the formatted Transactions from the [Classified, Raw] formatted array.
     const extractedTransactions = [];
     for (const transaction of classifiedTransactions) {
-      // Assert the object type as it is being added to the array.
+      // Assert the type as it is being added to the array.
       extractedTransactions.push(
         transaction[0] as ClassifiedForReviewTransaction
       );

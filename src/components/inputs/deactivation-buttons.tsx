@@ -49,11 +49,10 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
     setConfirmModalOpen(true);
   }
 
-  // Deactivate database Company object handler.
+  // Deactivate Company handler.
   async function deactivateCompany() {
     // Get the deactivation result and check for an error.
     const deactivationResult = await makeCompanyIncactive();
-
     if (deactivationResult.result === 'Error') {
       // Close the confirmation modal and open the error modal.
       setConfirmModalOpen(false);
@@ -139,11 +138,10 @@ export const MobileDeactivationButton: React.FC<
     setConfirmModalOpen(true);
   }
 
-  // Deactivate database Company object handler.
+  // Deactivate Company handler.
   async function deactivateCompany() {
-    // Get the deactivation result and check for an error.
+    // Set the Company to inactive and check for an error.
     const deactivationResult = await makeCompanyIncactive();
-
     if (deactivationResult.result === 'Error') {
       // Close the confirmation modal and open the error modal.
       setConfirmModalOpen(false);

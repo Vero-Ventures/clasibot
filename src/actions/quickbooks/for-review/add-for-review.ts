@@ -18,7 +18,7 @@ import type {
 // Updates the user QuickBooks account to add an  'For Review' transaction to the saved Transactions with the passed Classifications.
 // Takes: An array of objects containing Raw 'For Review' transactions and the Id's of their Classifications,
 //        And an array of Account Id's the 'For Review' transactions belong to.
-// Returns: A Query Result object for updating the User QuickBooks Transactions.
+// Returns: A Query Result for updating the User QuickBooks Transactions.
 export async function addForReview(
   batchAddTransactions: {
     forReviewTransaction: RawForReviewTransaction;
@@ -40,20 +40,20 @@ export async function addForReview(
       };
     }
 
-    // Get the database Company object to check for a potential Firm name.
+    // Get the Company to check for a potential Firm name.
     // Needed during Synthetic Login if access to Company comes through an Firm.
     const currentCompany = await db
       .select()
       .from(Company)
       .where(eq(Company.realmId, session.realmId));
 
-    // If a database Company could not be found, create and return an error Query Result.
+    // If a Company could not be found, create and return an error Query Result.
     if (!currentCompany[0]) {
       return { result: '', message: '', detail: '' };
     }
 
     // Call Synthetic Login with the Company realm Id and the potential Firm name.
-    // Returns: A QueryResult and a Synthetic Login Tokens object.
+    // Returns: A QueryResult and a Synthetic Login Tokens.
     const [loginResult, loginTokens] = await syntheticLogin(session.realmId);
 
     // Check if the Synthetic Login resulted in an error and return the assosiated Query Result.
@@ -73,7 +73,7 @@ export async function addForReview(
       const body = createForReviewUpdateObject(batchAddTransactions, accountId);
 
       // Call the query endpoint while passing the required header cookies.
-      // Pass the batch add 'For Review' transactions object as the body, converted to a string.
+      // Pass the batch add 'For Review' transactions as the body, converted to a string.
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -86,7 +86,7 @@ export async function addForReview(
 
       // Check if a valid response is received.
       if (!response.ok) {
-        // Get the response text and return it as the detail of an error Query Result object.
+        // Get the response text and return it as the detail of an error Query Result.
         const errorText = await response.text();
         return {
           result: 'Error',
@@ -125,7 +125,7 @@ export async function addForReview(
 }
 
 // Takes the array of 'For Review' transaction data and converts it to a batch add object for QuickBooks.
-// Returns: An formatted batch add 'For Review' transactions object.
+// Returns: An formatted batch add 'For Review' transactions.
 function createForReviewUpdateObject(
   batchAddTransactions: {
     forReviewTransaction: RawForReviewTransaction;
@@ -168,7 +168,7 @@ function createForReviewUpdateObject(
     }
   }
 
-  // Create and return an batch add object for the current Account Id using the selected 'For Review' transaction object array.
+  // Create and return an batch add object for the current Account Id using the selected 'For Review' transaction array.
   const newUpdateObject = {
     txnList: {
       olbTxns: formattedBatchAddTransactions,

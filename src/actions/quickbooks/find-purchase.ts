@@ -6,7 +6,7 @@ import { getQBObject } from '@/actions/quickbooks/qb-client';
 
 import type { ErrorResponse, Purchase } from '@/types/index';
 
-// Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.
+// Find a specific Purchase by its QuickBooks Id and return a formatted Purchase.
 // Takes: The Id of the Purchase to find from QuickBooks.
 export async function findFormattedPurchase(id: string): Promise<Purchase> {
   try {
@@ -58,7 +58,7 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
     // Create a formatted Query Result object for the QBO API call.
     const queryResult = createQueryResult(success, error);
 
-    // Create a Purchase object with all fields set to null.
+    // Create a Purchase with all fields set to null.
     // Only one Purchase is returned per call, so the Query Result is recorded inside the object.
     const formattedResult: Purchase = {
       result_info: queryResult,
@@ -66,7 +66,7 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
       taxCodeId: '',
     };
 
-    // If the query was successful, get the Id from the response and update the Purchase object.
+    // If the query was successful, get the Id from the response and update the Purchase.
     if (success) {
       formattedResult.id = response.Id;
       // Iterate through the line field of the response to find the Tax Code Id.
@@ -81,7 +81,7 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
       }
     }
 
-    // Return the formatted Purchase object.
+    // Return the formatted Purchase.
     return formattedResult;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.

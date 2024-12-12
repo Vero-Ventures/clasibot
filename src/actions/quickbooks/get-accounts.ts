@@ -10,7 +10,7 @@ import type { Account, ErrorResponse, QueryResult } from '@/types/index';
 // Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
 // Use 'Expense' to get Accounts for Categorization.
 // Takes: The account type as either a 'Transaction' or 'Expense' string.
-// Returns: An array of objects starting with a Query Result, then containing Purchase objects.
+// Returns: An array of objects starting with a Query Result, then containing Purchases.
 export async function getAccounts(
   accountType: string
 ): Promise<(QueryResult | Account)[]> {
@@ -115,7 +115,7 @@ export async function getAccounts(
     const accounts = response.QueryResponse.Account;
     const results = [];
 
-    // Create a formatted Query Result object for the QBO API call.
+    // Create a formatted Query Result for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const queryResult = createQueryResult(success, error);
     results.push(queryResult);
@@ -123,7 +123,7 @@ export async function getAccounts(
     // Iterate through the returned Accounts and ignore any that are marked as inactive.
     for (const account of accounts) {
       if (account.Active) {
-        // Create an Account object for the current Account response and push it to the results array.
+        // Create an Account for the current Account response and push it to the results array.
         const newFormattedAccount: Account = {
           id: account.Id,
           name: account.Name,
@@ -134,7 +134,7 @@ export async function getAccounts(
         results.push(newFormattedAccount);
       }
     }
-    // Return the array of Account objects with a Query Result in the first index as a JSON string.
+    // Return the array of Accounts with a Query Result in the first index as a JSON string.
     return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.

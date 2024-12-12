@@ -55,7 +55,7 @@ export async function updateClassifyStates(
       }, 1000);
     });
 
-    // Load the newly Classified 'For Review' transactions from the database.
+    // Load the newly Classified 'For Review' transactions.
     const loadResult = await getDatabaseTransactions();
 
     // Check the loading Query Result for an error.
@@ -98,7 +98,7 @@ export async function updateClassifyStates(
 async function handleBackendProcessStates(
   setClassificationState: (newState: string) => void
 ): Promise<boolean> {
-  // Call setup handler to check for for a session and the related database Company object.
+  // Call setup handler to check for for a session and the related Company.
   const startResult = await startClassification();
 
   // Check result and either update to Synthetic Login state or return a failure value.
@@ -128,7 +128,7 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Before updating the users 'For Review' transactions, remove all old objects for the Company from the database.
+  // Before updating the users 'For Review' transactions, remove all old objects for the Company.
   const clearDbResult = await removeAllForReviewTransactions(
     startResult.realmId
   );
@@ -178,8 +178,7 @@ async function handleBackendProcessStates(
   const classificationsResult = await startTransactionClassification(
     contextResult.transactions,
     formattedReviewTransactions,
-    contextResult.companyInfo!,
-    startResult.realmId
+    contextResult.companyInfo!
   );
 
   // Update state on successfully starting Classification, otherwise return a failure value.
@@ -194,7 +193,7 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Take the created Classifications and use them to create Classified 'For Review' transaction objects.
+  // Take the created Classifications and use them to create Classified 'For Review' transactions.
   const creationResult = await createClassifiedTransactions(
     transactionResults.transactions,
     classificationsResult.classificationResults
@@ -212,14 +211,14 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Save the Classified 'For Review' transactions to the database.
+  // Save the Classified 'For Review' transactions.
   // Return the resulting Query Result created by the save function.
   const addingResult = await addDatabaseForReviewTransactions(
     creationResult.transactions,
     startResult.realmId
   );
 
-  // Check Query Result from adding Classified 'For Review' transactions to database.
+  // Check Query Result from adding Classified 'For Review' transactions.
   // If result value is a success, backend Classification process is complete and a truth value is returned indicate success.
   if (addingResult.result === 'Success') {
     return true;

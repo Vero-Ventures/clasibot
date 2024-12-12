@@ -49,7 +49,7 @@ export async function getForReviewTransactions(
         detail: (result[0] as QueryResult).message,
       };
     } else {
-      // Remove the Query Result from the returned values and define results as an array of Account objects.
+      // Remove the Query Result from the returned values and define results as an array of Accounts.
       const userAccounts: Account[] = result.slice(1) as Account[];
 
       // Define an array to contain the fetched 'For Review' transactions.
@@ -89,7 +89,7 @@ export async function getForReviewTransactions(
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    // Also return an error Query Result object.
+    // Also return an error Query Result.
     if (error instanceof Error) {
       console.error('Error Getting "For Review" Transactions:' + error.message);
       return {
@@ -111,7 +111,7 @@ export async function getForReviewTransactions(
 }
 
 // Gets the saved and Classified Transactions from the Company for use in LLM prediction.
-// Returns: An array of Transactions objects for the User Classified Transactions.
+// Returns: An array of Transactionss for the User Classified Transactions.
 export async function getClassifiedPastTransactions(): Promise<Transaction[]> {
   try {
     // Define the range of dates to fetch Transactions from.
@@ -156,7 +156,7 @@ export async function getClassifiedPastTransactions(): Promise<Transaction[]> {
 }
 
 // Gets the Company Info that is used in Transaction Classification.
-// Returns: The relevant Company Info object.
+// Returns: The relevant Company Info.
 export async function getCompanyInfo(): Promise<CompanyInfo> {
   try {
     // Get the Company Info values from the current Company.
@@ -164,7 +164,7 @@ export async function getCompanyInfo(): Promise<CompanyInfo> {
     const userCompanyIndustry = await getCompanyIndustry();
     const userCompanyLocation = await getCompanyLocation();
 
-    // Return the formatted Company Info object.
+    // Return the formatted Company Info.
     return {
       name: userCompanyName,
       industry: userCompanyIndustry,
@@ -172,7 +172,7 @@ export async function getCompanyInfo(): Promise<CompanyInfo> {
     };
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    // Also return a Company Info object with the default error values.
+    // Also return the Company Info with the default error values.
     if (error instanceof Error) {
       console.error('Error Fetching Company Info: ' + error.message);
       return {

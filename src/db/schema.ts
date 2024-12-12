@@ -12,7 +12,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// Defines the base User object that may related to multiple Companies.
+// Defines the base User that may related to multiple Companies.
 /**
  * id: Auto assigned, used for database identification.
  * userName: QuickBooks Online name of the User.

@@ -11,31 +11,30 @@ import { Stripe } from 'stripe';
 
 import type { QueryResult } from '@/types/index';
 
-// Create a new Stripe object with the private key.
-// Used to check the User Subscription before updating database.
+// Create a Stripe object with the private key, used to check the User Subscription.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Takes info from a QuickBooks Company invite Email and updates the related database Company object.
+// Takes info from a QuickBooks Company invite Email and updates the related Company.
 // Takes: The User and Company name from a QBO Company invite.
-// Returns: A Query Result object for finding and updating the Comapany in the database.
+// Returns: A Query Result for finding and updating the Comapany.
 export async function addCompanyConnection(
   userName: string,
   companyName: string
 ): Promise<QueryResult> {
   try {
-    // Use the passed User Email to find the related User from the database.
+    // Use the passed User Email to find the related User.
     const databaseUsers = await db
       .select()
       .from(User)
       .where(eq(User.userName, userName));
 
-    // Iterate through the database Users to check their Subscription status and Companies.
+    // Iterate through the Users to check their Subscription status and Companies.
     for (const user of databaseUsers) {
-      // Find the User Subscription in the database from the User Id.
+      // Find the User Subscription from the User Id.
       const userSubscription = await db
         .select()
         .from(Subscription)
@@ -103,9 +102,9 @@ export async function addCompanyConnection(
   }
 }
 
-// Takes info from a QuickBooks accounting Firm invite Email and creates a related database Firm object.
+// Takes info from a QuickBooks accounting Firm invite Email and creates a related Firm.
 // Takes: The accounting Firm name and User name from a QBO Firm invite.
-// Returns: A Query Result object for adding the Firm to database.
+// Returns: A Query Result for adding the Firm.
 export async function addAccountingFirmConnection(
   connectedFirmName: string,
   userName: string
@@ -157,9 +156,9 @@ export async function addAccountingFirmConnection(
   }
 }
 
-// Takes info from a QuickBooks Firm client access Email and updates the related database Company objects.
+// Takes info from a QuickBooks Firm client access Email and updates the related Companies.
 // Takes: A Firm name and an array of Company names from a QBO client access update Email.
-// Returns: A Query Result object.
+// Returns: A Query Result.
 export async function changeAccountingFirmCompanyAccess(
   connectedFirmName: string,
   companyNames: string[],
@@ -208,7 +207,7 @@ export async function changeAccountingFirmCompanyAccess(
               break;
             }
 
-            // Get the database User connected to the Company.
+            // Get the User connected to the Company.
             const user = await db
               .select()
               .from(User)
@@ -229,7 +228,7 @@ export async function changeAccountingFirmCompanyAccess(
                     .where(eq(Firm.id, firm.id))
                     .returning();
 
-                  // Find the User Subscription in the database by the database User object Id.
+                  // Find the User Subscription by the User Id.
                   const userSubscription = await db
                     .select()
                     .from(Subscription)
@@ -331,9 +330,9 @@ export async function changeAccountingFirmCompanyAccess(
   }
 }
 
-// Updates a database Company object to be set as disconnected from the Synthetic Bookkeeper.
+// Updates a Company to be set as disconnected from the Synthetic Bookkeeper.
 //    Done to prevent us from continuing to access that Company.
-// Returns: A Query Result object.
+// Returns: A Query Result.
 export async function makeCompanyIncactive(): Promise<QueryResult> {
   try {
     // Get the current session to get the Company realm Id.
@@ -350,7 +349,7 @@ export async function makeCompanyIncactive(): Promise<QueryResult> {
       };
     }
 
-    // Find the Company in the database with the matching Id.
+    // Find the Company with the matching Id.
     const company = await db
       .select()
       .from(Company)

@@ -1,7 +1,7 @@
 import { PricingTable } from '@/components/site-elements/index';
 
 export default async function SubscriptionPage() {
-  // Define the table key and Id variables and set them based on app config.
+  // Define the Table key and Id variables and set them based on app config.
   let publicKey = '';
   let tableID = '';
 

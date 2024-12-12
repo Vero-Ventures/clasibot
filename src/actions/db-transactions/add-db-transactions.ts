@@ -12,9 +12,9 @@ import { eq } from 'drizzle-orm';
 
 import type { QueryResult, Transaction } from '@/types/index';
 
-// Saves Classified User Transactions to the database for future Classification use.
+// Saves Classified User Transactions for future Classification use.
 // Takes: An array of saved User Transactions.
-// Returns: A Query Result object for saving the Transactions to the database.
+// Returns: A Query Result for saving the Transaction.
 export async function addDatabaseTransactions(
   transactions: Transaction[]
 ): Promise<QueryResult> {
@@ -25,15 +25,15 @@ export async function addDatabaseTransactions(
       // The Id is used to update the Relationship tables.
       let transactionId = 0;
 
-      // Check for any existing Transactions in the database with the same name.
+      // Check for any existing Transactions with the same name.
       const existingTransaction = await db
         .select()
         .from(DrizzleTransaction)
         .where(eq(DrizzleTransaction.transactionName, transaction.name));
 
-      // Check if there is no existing database Transaction for the Transaction name.
+      // Check if there is no existing Transaction for the Transaction name.
       if (!existingTransaction[0]) {
-        // Create a new database Transaction that name.
+        // Create a new Transaction with that name.
         const newTransaction = await db
           .insert(DrizzleTransaction)
           .values({
@@ -41,10 +41,10 @@ export async function addDatabaseTransactions(
           })
           .returning();
 
-        // Record the Id of the new database Transaction object.
+        // Record the Id of the new Transaction.
         transactionId = newTransaction[0].id;
       } else {
-        // If an existing database Transaction object is found for that name, record the Id.
+        // If an existing Transaction is found for that name, record the Id.
         transactionId = existingTransaction[0].id;
       }
 
@@ -52,7 +52,7 @@ export async function addDatabaseTransactions(
       const categories = await db.select().from(Category);
       const taxCodes = await db.select().from(TaxCode);
 
-      // Check the existing database Classifications for ones that match the Transactions Classifications.
+      // Check the existing Classifications for ones that match the Transactions Classifications.
       const existingCategory = categories.find(
         (category) => category.category === transaction.category
       );
@@ -89,8 +89,8 @@ export async function addDatabaseTransactions(
   }
 }
 
-// Either increments the number of matches for an existing Category or makes a new database Category object with 1 match.
-// Takes: A potentially undefined existing Category, the Transaction being saved, and the Id of the database Transaction object.
+// Either increments the number of matches for an existing Category or makes a new Category with 1 match.
+// Takes: A potentially undefined existing Category, the Transaction being saved, and the Id of the Transaction.
 async function handleCategoryIncrement(
   existingCategory:
     | {
@@ -111,13 +111,13 @@ async function handleCategoryIncrement(
         .from(TransactionsToCategories)
         .where(eq(TransactionsToCategories.transactionId, transactionId));
 
-      // Check to see if the Transaction object has a Relationship with the Category object.
+      // Check to see if the Transaction has a Relationship with the Category.
       const existingRelationship = transactionCategories.find(
         (relationship) => relationship.categoryId === existingCategory.id
       );
 
       if (!existingRelationship) {
-        // If there is no existing Relationship, Create a new one between the Transaction and Category objects.
+        // If there is no existing Relationship, Create a new one between the Transactions and Categories.
         await db.insert(TransactionsToCategories).values({
           transactionId: transactionId,
           categoryId: existingCategory.id,
@@ -132,7 +132,7 @@ async function handleCategoryIncrement(
         })
         .where(eq(Category.id, existingCategory.id));
     } else {
-      // If there is no existing database Category object for the Classification, create a one.
+      // If there is no existing Category for the Classification, create a one.
       // Number of matches is set to one, as there is one valid connection for the Category (the current Transaction).
       const newCategory = await db
         .insert(Category)
@@ -142,7 +142,7 @@ async function handleCategoryIncrement(
         })
         .returning();
 
-      // Set the Relationship between the database Transaction object and new database Category object.
+      // Set the Relationship between the Transaction and new Category.
       await db.insert(TransactionsToCategories).values({
         transactionId: transactionId,
         categoryId: newCategory[0].id,
@@ -160,8 +160,8 @@ async function handleCategoryIncrement(
   }
 }
 
-// Either increments the number of matches for an existing Tax Code or makes a new database Tax Code object with 1 match.
-// Takes: A potentially undefined existing Tax Code, the Transaction being saved, and the Id of the database Transaction object.
+// Either increments the number of matches for an existing Tax Code or makes a new Tax Code with 1 match.
+// Takes: A potentially undefined existing Tax Code, the Transaction being saved, and the Id of the Transaction.
 async function handleTaxCodeIncrement(
   existingTaxCode:
     | {
@@ -182,13 +182,13 @@ async function handleTaxCodeIncrement(
         .from(TransactionsToTaxCodes)
         .where(eq(TransactionsToTaxCodes.transactionId, transactionId));
 
-      // Check to see if the Transaction object has a Relationship with the Tax Code object.
+      // Check to see if the Transaction has a Relationship with the Tax Code.
       const existingRelationship = transactionsToTaxCodes.find(
         (relationship) => relationship.taxCodeId === existingTaxCode.id
       );
 
       if (!existingRelationship) {
-        // If there is no existing Relationship, Create a new one between the Transaction and Tax Code objects.
+        // If there is no existing Relationship, Create a new one between the Transaction and Tax Codes.
         await db.insert(TransactionsToTaxCodes).values({
           transactionId: transactionId,
           taxCodeId: existingTaxCode.id,
@@ -203,7 +203,7 @@ async function handleTaxCodeIncrement(
         })
         .where(eq(TaxCode.id, existingTaxCode.id));
     } else {
-      // If there is no existing database Tax Code object for the Classification, create a one.
+      // If there is no existing Tax Code for the Classification, create a one.
       // Number of matches is set to one, as there is one valid connection for the Tax Code (the current Transaction).
       const newTaxCode = await db
         .insert(TaxCode)
@@ -213,7 +213,7 @@ async function handleTaxCodeIncrement(
         })
         .returning();
 
-      // Set the Relationship between the database Transaction object and new database Tax Code object.
+      // Set the Relationship between the Transaction and new Tax Code.
       await db.insert(TransactionsToTaxCodes).values({
         transactionId: transactionId,
         taxCodeId: newTaxCode[0].id,

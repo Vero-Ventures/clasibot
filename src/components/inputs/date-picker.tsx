@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/index';
 
-// Takes: A nullable Date object and a date setter callback function.
+// Takes: A nullable Date and a date setter callback function.
 export function DatePicker({
   date,
   setDate,

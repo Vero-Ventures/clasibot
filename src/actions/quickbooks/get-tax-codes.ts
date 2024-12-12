@@ -10,7 +10,7 @@ import type { Locations } from '@/enums/tax-codes';
 import type { ErrorResponse, TaxCode, QueryResult } from '@/types/index';
 
 // Get all valid Canadian Tax Codes for a User location.
-// Returns: An array of Tax Code objects as a string.
+// Returns: An array of Tax Codes as a string.
 export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
   try {
     // Define the variable used to make the qbo calls.
@@ -41,7 +41,7 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
       },
     };
 
-    // Get all User Tax Code objects from QuickBooks.
+    // Get all User Tax Codes from QuickBooks.
     const response: TaxCodeResponse = await new Promise((resolve) => {
       qbo.findTaxCodes((err: ErrorResponse, data: TaxCodeResponse) => {
         if (err && checkFaultProperty(err)) {
@@ -53,10 +53,10 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
       });
     });
 
-    // Create an array to store the Tax Code objects.
+    // Create an array to store the Tax Codes.
     const results = [];
 
-    // Create a formatted Query Result object for the QBO API call.
+    // Create a formatted Query Result for the QBO API call.
     // Push the Query Result to the first index of the results array.
     const queryResult = createQueryResult(success, error);
     results.push(queryResult);
@@ -71,7 +71,7 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
       }
     }
 
-    // Return the array with the Query Result and Tax Code objects as a JSON string.
+    // Return the array with the Query Result and Tax Codes as a JSON string.
     return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
@@ -117,18 +117,18 @@ export async function getTaxCodesByLocation(
   return taxCodeNames;
 }
 
-// Converts QuickBooks Tax Codes to a formatted Tax Code objects.
-// Takes: A QuickBooks Tax Code object.
-// Returns: A formatted Tax Code object.
+// Converts QuickBooks Tax Codes to a formatted Tax Codes.
+// Takes: A QuickBooks Tax Code.
+// Returns: A formatted Tax Code.
 function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
-  // Create object with relevant elements from the passed raw API Tax Code object.
+  // Create a Tax Code with relevant elements from the passed raw API Tax Code.
   const formattedTaxCode: TaxCode = {
     Id: taxCodeResponse.Id,
     Name: taxCodeResponse.Name,
     Active: taxCodeResponse.Active,
   };
 
-  // Return the formatted Tax Code object.
+  // Return the formatted Tax Code.
   return formattedTaxCode;
 }
 

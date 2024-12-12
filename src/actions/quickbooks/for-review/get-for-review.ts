@@ -9,7 +9,7 @@ import type {
 
 // Checks a specific Account for 'For Review' transactions, then formats and returns them.
 // Takes: The Id of Account to check, a set of Synthetic Login Tokens, and the Company realm Id.
-// Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
+// Returns: A Query Result with the found 'For Review' transactions in the detail field (only on success).
 //    Returned 'For Review' transactions are an array of Sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
   accountId: string,
@@ -35,7 +35,7 @@ export async function getForReview(
 
     // Check if a valid response is received.
     if (!response.ok) {
-      // On error, get the response text and return it as the detail of an error Query Result object.
+      // On error, get the response text and return it as the detail of an error Query Result.
       const errorText = await response.text();
       return {
         result: 'Error',

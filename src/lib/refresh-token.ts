@@ -1,8 +1,8 @@
 import type { TokenSet } from 'next-auth';
 
-// Takes a passed TokenSet object and updates the access token.
+// Takes a passed TokenSet and updates the access token.
 export async function refreshToken(token: TokenSet): Promise<TokenSet> {
-  // Extract the refresh token from the token object.
+  // Extract the refresh token from the token.
   const currentRefreshToken = token?.refreshToken;
 
   // Define the variables for the QuickBooks client Id and secret.
@@ -51,7 +51,7 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
       throw responseData;
     }
 
-    // Return a token object with the new access token, refresh token, and a set expiration time.
+    // Return a token with the new access token, refresh token, and a set expiration time.
     return {
       ...token,
       accessToken: responseData.access_token,
@@ -59,7 +59,7 @@ export async function refreshToken(token: TokenSet): Promise<TokenSet> {
       expiresAt: Date.now() / 1000 + responseData.expires_in,
     } as TokenSet;
   } catch (error) {
-    // Catch any errors and log them, then return the original token object.
+    // Catch any errors and log them, then return the original token.
     console.error('Error refreshing token:', error);
     return token;
   }
