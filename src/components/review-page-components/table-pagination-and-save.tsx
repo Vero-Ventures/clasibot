@@ -9,7 +9,7 @@ import type {
 
 import { Button } from '@/components/ui/index';
 
-// Takes: The table component, the selected rows, the Classified Transactions,
+// Takes: The Table component, the selected rows, the Classified Transactions,
 //        If saving is in progess and the handler function for saving.
 export function TablePaginationAndSave({
   table,

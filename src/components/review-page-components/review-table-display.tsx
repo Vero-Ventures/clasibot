@@ -14,7 +14,7 @@ import {
 
 import type { ClassifiedForReviewTransaction } from '@/types/index';
 
-// Takes: The table component and a state indicating transactions are currently being loaded.
+// Takes: The Table component and a state indicating transactions are currently being loaded.
 export function ReviewTableDisplay({
   table,
   loadingTransactions,

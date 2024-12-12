@@ -61,7 +61,7 @@ export type FormattedForReviewTransaction = {
   date: string;
   // The Account that the 'For Review' transaction was pulled from.
   account: string;
-  // The name of the Account, used for table filtering on the review page.
+  // The name of the Account, used for Table filtering on the review page.
   accountName: string;
   // Total value of the Purchase as a negative decimal.
   amount: number;
@@ -77,7 +77,7 @@ export type ClassifiedForReviewTransaction = {
   date: string;
   // The Account that the 'For Review' transaction was pulled from.
   account: string;
-  // The name of the Account, used for table filtering on the review page.
+  // The name of the Account, used for Table filtering on the review page.
   accountName: string;
   // Total value of the Purchase as a negative decimal.
   amount: number;

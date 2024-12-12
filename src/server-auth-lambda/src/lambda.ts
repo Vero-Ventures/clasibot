@@ -23,7 +23,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       };
     }
 
-    // If no invite link is passed, continue with synthetic site login.
+    // If no invite link is passed, continue with Synthetic site login.
     if (inviteLink === 'null') {
       const tokenData = await siteLogin();
 

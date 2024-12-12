@@ -66,8 +66,8 @@ export async function saveSelectedTransactions(
 
     // If adding the new Transactions resulted in an error, throw the Query Result message as an error.
     if (addResult.result === 'Error') {
-      console.log('Add Error')
-      console.log(addResult.detail)
+      console.log('Add Error');
+      console.log(addResult.detail);
       throw new Error(addResult.message);
     }
 

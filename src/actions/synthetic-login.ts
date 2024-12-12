@@ -30,7 +30,7 @@ export async function syntheticLogin(
     // Check that lambda url is defined before calling Synthetic Login lambda process.
     const lambdaUrl = process.env.SYNTH_AUTH_LAMBDA_URL;
     if (!lambdaUrl) {
-      throw new Error('Lambda url environment variable is not defined');
+      throw new Error('Lambda URL Not Defined');
     }
 
     // Call the Synthetic Login Lambda handler and await a response.
@@ -51,7 +51,7 @@ export async function syntheticLogin(
 
     if (!response.ok) {
       // If response was not successful, set the detail of the Query Result and return it alongside the empty Login Tokens.
-      loginResult.detail = data.error || 'Unknown error occurred';
+      loginResult.detail = data.error || 'Unknown Error Occurred';
       return [loginResult, loginTokens];
     }
 
@@ -64,11 +64,13 @@ export async function syntheticLogin(
 
     // Set the Query Result to Success and update the message.
     loginResult.result = 'Success';
-    loginResult.message = 'Successfully completed synthetic auth process';
+    loginResult.message = 'Successfully Completed Synthetic Login Process';
   } catch (error) {
     // Catch any errors and update the Query Result detail based on the error type.
     loginResult.detail =
-      error instanceof Error ? error.message : 'An unexpected error occurred';
+      error instanceof Error
+        ? 'An Error Occurred: ' + error.message
+        : 'An Unexpected Error Occurred: ';
   }
 
   // Return the Query Result and Login Tokens objects.

@@ -17,7 +17,7 @@ import {
   Input,
 } from '@/components/ui/index';
 
-// Takes: The table component, the start date and end date for filtering and their setters,
+// Takes: The Table component, the start date and end date for filtering and their setters,
 //        A list of account names as strings, the list of selected accounts and the setter to update it.
 export function ReviewTableFilters({
   startDate,

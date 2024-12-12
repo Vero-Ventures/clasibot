@@ -7,8 +7,8 @@ import { CheckIcon, XIcon } from 'lucide-react';
 interface ClassifyProgressProps {
   displayState: boolean;
   progressMessage: string;
-  completedChunks: number;
   maxChunks: number;
+  completedChunks: number;
 }
 
 // Takes: The display state, the current progress message,
@@ -16,8 +16,8 @@ interface ClassifyProgressProps {
 export const ClassifyProgessModal: React.FC<ClassifyProgressProps> = ({
   displayState,
   progressMessage,
-  completedChunks,
   maxChunks,
+  completedChunks,
 }: ClassifyProgressProps) => {
   return (
     <>
