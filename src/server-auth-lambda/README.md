@@ -60,36 +60,45 @@ PS C:\Users\user> aws ecr create-repository --repository-name syntheticauth
 
 ### Docker Build
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0
+PS C:\Users\user\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> docker build -t syntheticauth .
+PS C:\Users\user\clasibot\src\server-auth-lambda> docker build -t syntheticauth .
 
 ### AWS Login For Deployment
 
-PS C:\Users\a> $ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
+PS C:\Users\user> $ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
 
-PS C:\Users\a> aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
+PS C:\Users\user> aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
+
+### Alternative AWS Login
+
+PS C:\Users\user> $ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
+
+PS C:\Users\user> $AWS_PASS = aws ecr get-login-password --region us-east-1
+
+PS C:\Users\user> docker login -u AWS -p $AWS_PASS  980921738004.dkr.ecr.us-east-1.amazonaws.com
+
 
 ### Docker Deployment To AWS
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> docker tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+PS C:\Users\user\clasibot\src\server-auth-lambda> docker tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> docker push "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+PS C:\Users\user\clasibot\src\server-auth-lambda> docker push "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
 ### AWS Lambda Function Creation
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function `--function-name syntheticauth`
+PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda create-function `--function-name syntheticauth`
 --package-type Image `--code ImageUri="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"`
 --role $ROLE_ARN `--memory-size 2048`
 --timeout 300
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE
+PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE
 
 ### AWS Lambda Update Status Check & URL Get Command
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda update-function-code --function-name syntheticauth --image-uri "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda update-function-code --function-name syntheticauth --image-uri "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
-PS C:\Users\a\clasibot\src\server-auth-lambda> aws lambda get-function-url-config --function-name syntheticauth
+PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda get-function-url-config --function-name syntheticauth
 
 # Env.Example
 
@@ -111,3 +120,8 @@ LOGIN_URL=
 
 QB_EMAIL_ADDRESS=
 QB_PASSWORD=
+
+## Phone Number Id and API Key For MFA Code Handler.
+
+MFA_NUMBER_ID=
+MFA_API_KEY=
