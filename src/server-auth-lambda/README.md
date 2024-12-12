@@ -111,3 +111,8 @@ LOGIN_URL=
 
 QB_EMAIL_ADDRESS=
 QB_PASSWORD=
+
+## Phone Number Id and API Key For MFA Code Handler.
+
+MFA_NUMBER_ID=
+MFA_API_KEY=
