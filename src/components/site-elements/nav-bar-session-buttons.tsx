@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import {
-  SignOutButton,
   ChangeCompanyButton,
   DeactivationButton,
-  ManageSubscriptionButton,
   MobileDeactivationButton,
+  ManageSubscriptionButton,
+  SignOutButton,
 } from '@/components/inputs/index';
 
 // Takes: The current connection status and the url for the Stripe subscription managment page.

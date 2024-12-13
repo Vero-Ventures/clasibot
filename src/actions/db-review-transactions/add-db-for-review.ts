@@ -140,7 +140,7 @@ function getClassificationType(
 }
 
 // Creates Categories for any new Catagories being saved with the Classified 'For Review' transactions.
-// Takes: The Classified Elements for the of the related Catagory Classifications.
+// Takes: The Classified Elements for the of the related Category Classifications.
 // Returns: A string with a success or error message.
 async function handleCategoryConnections(
   newTransactionCategories: ClassifiedElement[],

@@ -8,4 +8,4 @@ export { ReviewTableDisplay } from './review-table-display';
 
 export { ReviewTableFilters } from './review-table-filters';
 
-export { TablePaginationAndSave } from './table-pagination-and-save';
+export { ReviewTablePagesAndSave } from './review-table-pages-and-save';

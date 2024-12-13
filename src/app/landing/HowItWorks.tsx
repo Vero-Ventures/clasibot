@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaSearch, FaDatabase, FaRobot } from 'react-icons/fa';
+
+import { FaDatabase, FaRobot, FaSearch } from 'react-icons/fa';
 
 export const HowItWorks = () => (
   <section className="mt-8 transform rounded-lg bg-white px-8 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">

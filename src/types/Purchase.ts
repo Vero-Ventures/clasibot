@@ -6,7 +6,7 @@ import type { QueryResult } from './QueryResult';
 
 export type Purchase = {
   // A Query Result object that is included as part of the returned Purchase object.
-  result_info: QueryResult;
+  resultInfo: QueryResult;
   // The internal QuickBooks Id for the Purchase.
   id: string;
   // The Tax Code Id of the Transaction related to the Purchase.

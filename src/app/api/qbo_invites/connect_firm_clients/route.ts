@@ -48,15 +48,15 @@ export async function POST(request: Request) {
       changeType === 'added'
     );
 
-    // If the update was successful, return a success response. in
-    if (dbUpdateResult.result !== 'Error') {
-      return new Response('Firm Companies Connections Successfully Updated.');
-    } else {
-      // On error updating the clients, log an error and return an error response.
+    // On error updating the clients, log an error and return an error response.
+    if (dbUpdateResult.result === 'Error') {
       console.error(
         'Error Updating Database Firm Clients: ' + dbUpdateResult.detail
       );
       return new Response('Database Update Process Failed', { status: 400 });
+    } else {
+      // If the update was successful, return a success response.
+      return new Response('Firm Companies Connections Successfully Updated.');
     }
   } catch (error) {
     // Catch any errors and log them (include the error message if it is present), then return an error response.

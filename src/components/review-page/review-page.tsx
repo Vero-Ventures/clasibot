@@ -7,8 +7,8 @@ import { getDatabaseTransactions } from '@/actions/db-review-transactions/index'
 
 import {
   initalizeLoadedTransactions,
-  saveSelectedTransactions,
   updateClassifyStates,
+  saveSelectedTransactions,
 } from '@/actions/review-page-handlers/index';
 
 import { ReviewTable } from '@/components/review-page/review-table';
@@ -25,8 +25,8 @@ import {
 
 import type {
   CompanyInfo,
-  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
+  RawForReviewTransaction,
 } from '@/types/index';
 
 // Takes: The Company Info.

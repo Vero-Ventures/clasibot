@@ -15,8 +15,8 @@ import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import {
   ReviewColumns,
   ReviewTableFilters,
-  TablePaginationAndSave,
   ReviewTableDisplay,
+  ReviewTablePagesAndSave,
 } from '@/components/review-page-components/index';
 
 import type {
@@ -190,7 +190,7 @@ export function ReviewTable({
         loadingTransactions={loadingTransactions}
       />
 
-      <TablePaginationAndSave
+      <ReviewTablePagesAndSave
         table={table}
         rowSelection={rowSelection}
         classifiedTransactions={classifiedTransactions}

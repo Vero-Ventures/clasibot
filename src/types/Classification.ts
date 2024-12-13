@@ -5,7 +5,7 @@
 
 // Basic Classification value that contains key values for both Classification types.
 export type Classification = {
-  // Either 'category' or 'tax code'
+  // Either 'Category' or 'Tax Code'
   type: string;
   // The internal QuickBooks Id of the Classification.
   id: string;
@@ -15,14 +15,14 @@ export type Classification = {
 
 // Classification for a 'For Review' transaction that defines the Classification method.
 export type ClassifiedElement = {
-  // Either 'category' or 'tax code'
+  // Either 'Category' or 'Tax Code'
   type: string;
   // The internal QuickBooks Id of the Classification.
   id: string;
   // The name of the Classification.
   name: string;
   // The method of Classification:
-  // 'Matching', 'Database', or 'LLM API'
+  // 'Matching', 'Database', or 'LLM'
   classifiedBy: string;
 };
 
@@ -38,6 +38,6 @@ export type ClassifiedResult = {
   //    The type of the Classification is defined inside the Classification object.
   possibleClassifications: Classification[];
   // The method of Classification:
-  // 'Matching', 'Database', or 'LLM API'
+  // 'Matching', 'Database', or 'LLM'
   classifiedBy: string;
 };

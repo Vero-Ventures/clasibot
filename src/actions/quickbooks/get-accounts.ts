@@ -6,35 +6,21 @@ import { getQBObject } from '@/actions/quickbooks/qb-client';
 
 import type { Account, ErrorResponse, QueryResult } from '@/types/index';
 
-// Get specific Accounts from the QuickBooks API depending on passed Account type.
-// Use 'Transaction' to fetch Accounts that contain 'For Review' Transactions.
-// Use 'Expense' to get Accounts for Categorization.
-// Takes: The account type as either a 'Transaction' or 'Expense' string.
-// Returns: An array of objects starting with a Query Result, then containing Purchases.
+// Takes: The Account type as either a 'Transaction' or 'Expense' string.
+// 'Transaction': fetch Accounts that contain 'For Review' Transactions.
+// 'Expense': fetch Accounts that define Categorization options.
+// Returns: An array of objects starting with a Query Result, then containing Accounts.
 export async function getAccounts(
   accountType: string
 ): Promise<(QueryResult | Account)[]> {
   try {
-    // Define the variable used to make the qbo calls.
+    // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
-    // Define a success tracking value and the format of QuickBooks and error response objects.
+    // Define a success tracking value used in error handling.
     let success = true;
-    let error: ErrorResponse = {
-      Fault: {
-        Error: [
-          {
-            Message: '',
-            Detail: '',
-            code: '',
-            element: '',
-          },
-        ],
-        type: '',
-      },
-    };
 
-    // Define a type for the QBO response to allow for type checking.
+    // Also define the format of the QuickBooks data and error response objects.
     type AccountResponse = {
       QueryResponse: {
         Account: {
@@ -51,12 +37,25 @@ export async function getAccounts(
         Detail: string;
       }[];
     };
+    let error: ErrorResponse = {
+      Fault: {
+        Error: [
+          {
+            Message: '',
+            Detail: '',
+            code: '',
+            element: '',
+          },
+        ],
+        type: '',
+      },
+    };
 
-    // Define a parameters variable, then check the passed Transaction type to set the it accordingly.
+    // Define a parameters variable and check the Account type to set its values.
     let parameters;
     if (accountType === 'Expense') {
       // Define the query parameters for 'Expense' Account fetching.
-      // Fetches Accounts with Classification set to 'Expense' (Represent a possible Transaction Category).
+      // Fetches Accounts with Classification set to 'Expense' (Define a possible Category).
       parameters = [
         {
           field: 'Classification',
@@ -85,24 +84,24 @@ export async function getAccounts(
         },
       ];
     } else {
-      // If no valid type was passed, return an error Query Result.
+      // If no valid type was passed, return an array with only the error Query Result.
       return [
         {
-          result: 'error',
+          result: 'Error',
           message: 'Invalid Transaction Fetch Type Passed',
           detail: `Passed Transaction Type To Fetch Was Not 'Expense' or 'Transaction'`,
         },
       ];
     }
 
-    // Used the defined parameters to fetch specified User Accounts from QuickBooks.
+    // Use the defined parameters to fetch specified Accounts from QuickBooks.
     const response: AccountResponse = await new Promise((resolve) => {
       qbo.findAccounts(
         parameters,
         (err: ErrorResponse, data: AccountResponse) => {
           // If there is an error, check if it has a 'Fault' property.
           if (err && checkFaultProperty(err)) {
-            // Define success as false and record the error.
+            // Set the success value to false and record the error.
             success = false;
             error = err;
           }
@@ -111,14 +110,14 @@ export async function getAccounts(
       );
     });
 
-    //  Get the Account data from the response and create a results array.
-    const accounts = response.QueryResponse.Account;
-    const results = [];
-
-    // Create a formatted Query Result for the QBO API call.
+    // Create the results array and create a formatted Query Result for the call.
     // Push the Query Result to the first index of the results array.
+    const results = [];
     const queryResult = createQueryResult(success, error);
     results.push(queryResult);
+
+    //  Get the Account data from the call response.
+    const accounts = response.QueryResponse.Account;
 
     // Iterate through the returned Accounts and ignore any that are marked as inactive.
     for (const account of accounts) {
@@ -134,7 +133,7 @@ export async function getAccounts(
         results.push(newFormattedAccount);
       }
     }
-    // Return the array of Accounts with a Query Result in the first index as a JSON string.
+    // Return the array of Accounts with the Query Result in the first index.
     return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.

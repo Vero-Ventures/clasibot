@@ -84,7 +84,7 @@ export async function classifyTransactions(
   // Check the User Subscription status using the passed Company realm Id
   const subscriptionStatus = await checkSubscription();
 
-  // If there is an error getting the SubLocation status or it is invalid, return an error object.
+  // If there is an error getting the Sub-Location status or it is invalid, return an error object.
   if ('error' in subscriptionStatus) {
     return { error: 'Error getting User Subscription status.' };
   }
@@ -121,7 +121,7 @@ export async function classifyTransactions(
       validCategories,
       categoryResults,
       noCategoryMatches,
-      'category'
+      'Category'
     );
 
     // Check if Tax Code Classification is possible and valid Tax Codes were found.
@@ -133,7 +133,7 @@ export async function classifyTransactions(
         validTaxCodes,
         taxCodeResults,
         noTaxCodeMatches,
-        'tax code'
+        'Tax Code'
       );
     }
 
@@ -266,7 +266,7 @@ async function fetchValidTaxCodes(
     const taxCodes: Classification[] = [];
 
     // Check if Tax Code Classification is possible by locational check on Company Info.
-    // Presently only allow Canadian Companies with a valid Sub-location.
+    // Presently only allow Canadian Companies with a valid Sub-Location.
     if (
       companyInfo.location.Country === 'CA' &&
       companyInfo.location.SubLocation
@@ -275,7 +275,7 @@ async function fetchValidTaxCodes(
       // Use the Synthetic Login Tokens and Company realm Id to get the Company Tax Codes.
       const userTaxCodes = await getTaxCodes();
 
-      // Fetch the list of potentially valid Tax Codes for the Company using their Sub-location.
+      // Fetch the list of potentially valid Tax Codes for the Company using their Sub-Location.
       const validLocationalTaxCodes = await getTaxCodesByLocation(
         companyInfo.location.SubLocation
       );
@@ -298,7 +298,7 @@ async function fetchValidTaxCodes(
           // If the current Company Tax Code name is contained in the list of valid Tax Codes, push it to the array of Tax Codes.
           if (validLocationalTaxCodes.includes(taxCode.Name)) {
             taxCodes.push({
-              type: 'tax code',
+              type: 'Tax Code',
               name: taxCode.Name,
               id: taxCode.Id,
             });
@@ -352,7 +352,7 @@ async function classifyWithFuse(
         for (const match of matches) {
           // Define the Classification name, then extract its value from the match using the Classification type.
           let classificationName;
-          if (type === 'category') {
+          if (type === 'Category') {
             classificationName = match.item.category;
           } else {
             classificationName = match.item.taxCodeName;
@@ -392,7 +392,7 @@ async function classifyWithFuse(
           // Define the value to store the array of possibile Classification name and Id.
           // Get the Classifications depending on the Classification type
           let topClassifications;
-          if (type === 'category') {
+          if (type === 'Category') {
             topClassifications = await searchDatabaseTransactionCategories(
               unclassifiedTransaction.rawName,
               validClassifications
@@ -497,7 +497,7 @@ function orderClassificationsByAmount(
     matches.map((match) => {
       // Define the Classifications for the current match and set its value based on the Classification type.
       let matchClassification;
-      if (type === 'category') {
+      if (type === 'Category') {
         matchClassification = match.item.category;
       } else {
         matchClassification = match.item.taxCodeName;
@@ -565,7 +565,7 @@ function orderClassificationsByAmount(
   }
 }
 
-// Helper method to Classify 'For Review' transaction Categories using the LLM API.
+// Helper method to Classify 'For Review' transaction Categories using the LLM.
 // Takes: The array of unmatched 'For Review' transactions, the valid Categories,
 //        The current Classification results array, and the Company Info.
 // Returns: Does not return, instead modifies the passed results array.
@@ -577,41 +577,38 @@ async function classifyCategoriesWithLLM(
 ): Promise<void> {
   let llmApiResponse: ClassifiedResult[];
   try {
-    // Call the LLM API with the array of unmatched 'For Review' transactions, -
+    // Call the LLM with the array of unmatched 'For Review' transactions, -
     // The list of valid Categories, the Company Info, and the type of Classification.
     llmApiResponse = await batchQueryLLM(
       noMatches,
       validCategories,
       companyInfo,
-      'category'
+      'Category'
     );
 
     // If a response is received from the LLM, iterate over the response data.
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
         // Add the LLM Category Classification for the current 'For Review' transaction to the results record.
-        // Record the method of Classification as 'LLM API'.
+        // Record the method of Classification as 'LLM'.
         results[llmResult.transaction_Id] =
           llmResult.possibleClassifications.map((category) => ({
             ...category,
-            classifiedBy: 'LLM API',
+            classifiedBy: 'LLM',
           }));
       }
     }
   } catch (error) {
     // Catch any errors and log them to the console. Include the error message if it is present.
     if (error instanceof Error) {
-      console.error(
-        'Error from LLM API Category Classification: ',
-        error.message
-      );
+      console.error('Error From LLM Category Classification: ', error.message);
     } else {
-      console.error('Uncexpected Error From LLM API Category Classification');
+      console.error('Uncexpected Error From LLM Category Classification');
     }
   }
 }
 
-// Helper method to Classify 'For Review' transaction Tax Codes using the LLM API.
+// Helper method to Classify 'For Review' transaction Tax Codes using the LLM.
 // Takes: The array of unmatched 'For Review' transactions, the results of the Category Classification
 //        The valid Tax Codes, The current Classification results array, and the Company Info.
 // Returns: Does not return, instead modifies the passed results array.
@@ -624,14 +621,14 @@ async function classifyTaxCodesWithLLM(
 ): Promise<void> {
   let llmApiResponse: ClassifiedResult[];
   try {
-    // Call the LLM API with the array of unmatched 'For Review' transactions, the list of valid Tax Codes, -
+    // Call the LLM with the array of unmatched 'For Review' transactions, the list of valid Tax Codes, -
     // The Company Info, the type of Classification, and the Category Classifications -.
     // The Category Classifications are used as part of Tax Code prediction.
     llmApiResponse = await batchQueryLLM(
       noMatches,
       validTaxCodes,
       companyInfo,
-      'tax code',
+      'Tax Code',
       categoryResults
     );
 
@@ -639,23 +636,20 @@ async function classifyTaxCodesWithLLM(
     if (llmApiResponse) {
       for (const llmResult of llmApiResponse) {
         // Add the LLM Tax Code Classification for the current 'For Review' transaction to the results record.
-        // Record the method of Classification as 'LLM API'.
+        // Record the method of Classification as 'LLM'.
         results[llmResult.transaction_Id] =
           llmResult.possibleClassifications.map((category) => ({
             ...category,
-            classifiedBy: 'LLM API',
+            classifiedBy: 'LLM',
           }));
       }
     }
   } catch (error) {
     // Catch any errors and log them to the console. Include the error message if it is present.
     if (error instanceof Error) {
-      console.error(
-        'Error from LLM API Tax Code Classification: ',
-        error.message
-      );
+      console.error('Error from LLM Tax Code Classification: ', error.message);
     } else {
-      console.error('Uncexpected Error From LLM API Tax Code Classification');
+      console.error('Uncexpected Error From LLM Tax Code Classification');
     }
   }
 }

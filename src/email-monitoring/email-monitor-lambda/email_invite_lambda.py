@@ -8,10 +8,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'package'))
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from typing import List
-import re
-import quopri
+
 import boto3
 import json
+import quopri
+import re
 import requests
 
 

@@ -2,15 +2,15 @@
 
 import { google } from 'googleapis';
 
-// Define an interface for the found and returned Knowledge Graph results.
+// Define an interface for the Knowledge Graph results.
 interface KnowledgeGraphResult {
   name: string;
-  resultScore: number;
+  relevanceScore: number;
   detailedDescription: string;
 }
-// Generates context for LLM using Google Knowledge Graph.
+
 // Takes: A search query for a 'For Review' transaction.
-// Returns an array of Knowledge Graph conext results.
+// Returns: An array of Knowledge Graph conext results with a single value.
 export async function fetchKnowledgeGraph(
   query: string
 ): Promise<KnowledgeGraphResult[]> {
@@ -19,7 +19,7 @@ export async function fetchKnowledgeGraph(
   const apiKey = process.env.GOOGLE_API_KEY;
 
   try {
-    // Fetch Knowledge Graph context by defining the types of entities to search for.
+    // Fetch Knowledge Graph context using the query and by defining the entity types to search for.
     // Limited to a single result for clearer use in predictions.
     const response = await kgsearch.entities.search({
       query,
@@ -39,21 +39,26 @@ export async function fetchKnowledgeGraph(
           };
           resultScore: number;
         }) => {
-          // Define an inital empty description, then update it if a detailed description was returned.
+          // Define an inital empty description and a relevance score of 0.
           let description = '';
+          let relevanceScore = 0;
+
+          // Update the relevance and description if a detailed description was returned.
           if (item.result.detailedDescription) {
             description = item.result.detailedDescription.articleBody;
+            relevanceScore = item.resultScore;
           }
+
           // Return the Knowledge Graph results as a formatted Knowledge Graph Result object.
           return {
             name: item.result.name,
-            resultScore: item.resultScore,
+            relevanceScore: relevanceScore,
             detailedDescription: description,
           };
         }
       );
     } else {
-      // If no response is returned, return an empty array as the Knowledge Graph Result object.
+      // If no response is returned, return an empty array.
       return [];
     }
   } catch (error) {
@@ -63,7 +68,7 @@ export async function fetchKnowledgeGraph(
     } else {
       console.error('Unexpected error fetching Knowledge Graph.');
     }
-    // On error, return an empty array as the Knowledge Graph Result object.
+    // On error, return an empty array.
     return [];
   }
 }

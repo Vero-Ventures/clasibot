@@ -11,8 +11,7 @@ import { checkFaultProperty } from '@/actions/helpers/index';
 
 import { getQBObject } from '@/actions/quickbooks/qb-client';
 
-// Get the Company name from the QuickBooks API.
-// Returns: The Company name as a string or 'Error: Name not found'
+// Returns: The Company Name as a string, On Error: 'Error: Name not found'
 export async function getCompanyName(): Promise<string> {
   try {
     // Define the variable used to make the QBO calls.
@@ -23,7 +22,7 @@ export async function getCompanyName(): Promise<string> {
       QueryResponse: { CompanyInfo: [{ CompanyName: string }] };
     };
 
-    // Search for the User Company Info.
+    // Search for the Company Info.
     const response: CompanyInfoResponse = await new Promise((resolve) => {
       qbo.findCompanyInfos((err: Error, data: CompanyInfoResponse) => {
         // If there is an error, check if it has a 'Fault' property
@@ -42,7 +41,7 @@ export async function getCompanyName(): Promise<string> {
     // Get the current session for the Company realm Id.
     const session = await getServerSession(options);
 
-    // Update the company name using the fetched realm Id.
+    // Update the Company name using the fetched realm Id.
     if (session?.realmId) {
       await db
         .update(Company)
@@ -50,18 +49,17 @@ export async function getCompanyName(): Promise<string> {
         .where(eq(Company.realmId, session.realmId));
     }
 
-    // Return the name value from the Company Info.
+    // Return the Name value from the Company Info.
     return response.QueryResponse.CompanyInfo[0].CompanyName;
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    console.error('Error finding Company name:', error);
+    console.error('Error Finding Company Name:', error);
     // On error, return the default error object that indicates failure to find.
     return 'Error: Name not found';
   }
 }
 
-// Get the Company industry from the QuickBooks API.
-// Returns: The Company industry as a string or 'Error' / 'None'
+// Returns: The Company Industry as a string, On Error / Null: 'Error' / 'None'
 export async function getCompanyIndustry(): Promise<string> {
   try {
     // Define the variable used to make the QBO calls.
@@ -99,29 +97,29 @@ export async function getCompanyIndustry(): Promise<string> {
       });
     });
 
-    // Get the array of objects containing the dictionaries that include the industry type.
+    // Get the array of objects containing the Industry type.
     const companyNameValueArray =
       response.QueryResponse.CompanyInfo[0].NameValue;
 
-    // Iterate through the values to look for the one containingw the industry type.
+    // Iterate through the values to look for the one containing the Industry type.
     for (const item of companyNameValueArray) {
-      // If the industry type is found, return it to the caller.
+      // If the Industry type is found, return it to the caller.
       if (item.Name === 'QBOIndustryType' || item.Name === 'IndustryType') {
         return item.Value;
       }
     }
-    // If no match was found for dictionaries that contain industry type, return 'None'.
+    // If no match was found for the Industry type, return 'None'.
     return 'None';
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    console.error('Error finding industry:', error);
+    console.error('Error Finding Industry:', error);
     // On error, return the default error object that indicates failure to find.
     return 'Error';
   }
 }
 
-// Get the Company location from the QBO API, return the country and the Sub-location for Canadian Companies.
-// Returns: A stringified object that contains the Country and Sub-location.
+// Returns: A stringified object that contains the Country and Sub-Location.
+//          On Error: { Country: '', SubLocation: null }
 export async function getCompanyLocation(): Promise<string> {
   try {
     // Define the variable used to make the QBO calls.
@@ -154,27 +152,25 @@ export async function getCompanyLocation(): Promise<string> {
       });
     });
 
-    // Countries should be defined by either a 3 letter '3166-1 alpha-3' code or by the full name.
-    // Example: Either 'CAN' or 'Canada'
-    //    NOTE: QuickBooks presently uses 'CA' for Canada so the range of possible values are unclear.
+    // Countries should be defined by either a 3 letter '3166-1 alpha-3' code or by the full name. ('CAN' or 'Canada')
+    // Note: QuickBooks presently uses 'CA' for Canada so range of possible values is unclear.
     const companyCountry =
       response.QueryResponse.CompanyInfo[0].CompanyAddr.Country;
 
-    // Exact list of Sub-locations is undefined, presently only working with Canadian values.
-    // Currenly assume that Sub-locations use standardized 2 letter abbreviations (taxes enum).
+    // Get Company Sub-Location, assume that it uses standardized 2 letter abbreviations (Taxes Enum).
     const companySubLocation =
       response.QueryResponse.CompanyInfo[0].CompanyAddr.CountrySubDivisionCode;
 
-    // Check if the Company is Canadian (check value against known possible values for Canada).
+    // Check if the Company Country is contained in the list of possible Canadian values.
     if (
       companyCountry === 'CA' ||
       companyCountry === 'Canada' ||
       companyCountry == 'CAN'
     ) {
-      // Return Company Country and Sub-location name.
+      // Return Company Country and Sub-Location name.
       return JSON.stringify({ Country: 'CA', SubLocation: companySubLocation });
     } else {
-      // If the country is not Canadian, just return the country string.
+      // If the Country is not Canadian, just return the Country string.
       return JSON.stringify({
         Country: companyCountry,
         SubLocation: null,

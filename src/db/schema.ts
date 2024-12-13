@@ -4,11 +4,11 @@ import {
   pgTable,
   primaryKey,
   uuid,
-  text,
-  integer,
-  decimal,
   boolean,
+  decimal,
+  integer,
   serial,
+  text,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 

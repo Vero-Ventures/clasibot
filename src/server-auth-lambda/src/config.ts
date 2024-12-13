@@ -30,7 +30,6 @@ export const CONFIG = {
       firmSelectionButtonLogin: 'button[class~="account-btn"]',
       firmSelectionButtonInvite:
         'button[class="account-btn accountpicker-account-btn-quickbooks"]',
-
       firmSelectionAcceptButton: 'button[id="account-picker-continue-btn"]',
     },
   },

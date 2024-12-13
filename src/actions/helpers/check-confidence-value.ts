@@ -3,7 +3,7 @@
 export function checkConfidenceValue(classificationMethod: string) {
   // Create a dictionary to connect the strings to their related values.
   const confidenceValueDictionary: { [key: string]: number } = {
-    'LLM API': 1,
+    LLM: 1,
     Database: 2,
     Matching: 3,
   };

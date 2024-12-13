@@ -3,15 +3,15 @@
 import type { Table } from '@tanstack/react-table';
 
 import type {
-  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
+  RawForReviewTransaction,
 } from '@/types/index';
 
 import { Button } from '@/components/ui/index';
 
 // Takes: The Table component, the selected rows, the Classified Transactions,
 //        If saving is in progess and the handler function for saving.
-export function TablePaginationAndSave({
+export function ReviewTablePagesAndSave({
   table,
   rowSelection,
   classifiedTransactions,

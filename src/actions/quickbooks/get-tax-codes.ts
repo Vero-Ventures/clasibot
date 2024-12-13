@@ -9,24 +9,16 @@ import type { Locations } from '@/enums/tax-codes';
 
 import type { ErrorResponse, TaxCode, QueryResult } from '@/types/index';
 
-// Get all valid Canadian Tax Codes for a User location.
 // Returns: An array of Tax Codes as a string.
 export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
   try {
-    // Define the variable used to make the qbo calls.
+    // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
-    // Define a type for the QBO response to allow for type checking.
-    type TaxCodeResponse = {
-      QueryResponse: { TaxCode: TaxCode[] };
-      Error: {
-        Message: string;
-        Detail: string;
-      }[];
-    };
-
-    // Define a success tracking value and the format of QuickBooks and error response objects.
+    // Define a success tracking value used in error handling.
     let success = true;
+
+    // Also defines the format of the QuickBooks data and error response objects.
     let error: ErrorResponse = {
       Fault: {
         Error: [
@@ -40,12 +32,19 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
         type: '',
       },
     };
+    type TaxCodeResponse = {
+      QueryResponse: { TaxCode: TaxCode[] };
+      Error: {
+        Message: string;
+        Detail: string;
+      }[];
+    };
 
-    // Get all User Tax Codes from QuickBooks.
+    // Fetch the Tax Codes from QuickBooks.
     const response: TaxCodeResponse = await new Promise((resolve) => {
       qbo.findTaxCodes((err: ErrorResponse, data: TaxCodeResponse) => {
         if (err && checkFaultProperty(err)) {
-          // Define success as false and record the error.
+          // Set the success value to false and record the error.
           success = false;
           error = err;
         }
@@ -53,32 +52,29 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
       });
     });
 
-    // Create an array to store the Tax Codes.
-    const results = [];
-
-    // Create a formatted Query Result for the QBO API call.
+    // Create the results array and create a formatted Query Result for the call.
     // Push the Query Result to the first index of the results array.
+    const results = [];
     const queryResult = createQueryResult(success, error);
     results.push(queryResult);
 
-    // Iterate through the responses to filter, format, and push the Tax Codes to the array.
+    // Iterate through the fetched Tax Codes to filter, format, and push them to the array.
     for (const taxCode of response.QueryResponse.TaxCode) {
-      // Ignore inactive Tax Codes, then filter out invalid Tax Codes.
-      //    Filters out non-Canadian Tax Codes and Canadian Tax Codes that are no longer in use.
+      // Ignore inactive Tax Codes, then filter out invalid (Non-Canadian / Inactive) Tax Codes.
       if (taxCode.Active === true && checkForCurrentTaxCode(taxCode.Name)) {
         // Call helper method to format the Tax Code, then push it to the results array.
         results.push(formatTaxCode(taxCode));
       }
     }
 
-    // Return the array with the Query Result and Tax Codes as a JSON string.
+    // Return the array of Tax Codes with the Query Result in the first index.
     return results;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
     if (error instanceof Error) {
       return [
         {
-          result: 'error',
+          result: 'Error',
           message: 'Unexpected error occured while fetching Accounts.',
           detail: error.message,
         },
@@ -86,7 +82,7 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
     } else {
       return [
         {
-          result: 'error',
+          result: 'Error',
           message: 'Unexpected error occured while fetching Accounts.',
           detail: 'N/A',
         },
@@ -95,21 +91,20 @@ export async function getTaxCodes(): Promise<(QueryResult | TaxCode)[]> {
   }
 }
 
-// Finds the valid Tax Codes for a User by their specific Canadian Sub-location.
-// Takes: A Canadian sub-location name defined by the Locations enum.
-// Returns: An array of the Tax Code names used by the Sub-location.
+// Takes: A Canadian Sub-Location name defined by the Locations enum.
+// Returns: An array of the Tax Code names used by the Sub-Location.
 export async function getTaxCodesByLocation(
   LocationName: Locations
 ): Promise<string[]> {
-  // Define the array of valid Tax Code name strings for the country Canada.
+  // Define the array of valid Tax Code name strings for all Canadian Sub-Locations.
   const taxCodeNames = LocationsToTaxCodes.Canada;
 
-  // Check for Sub-locational Tax Code and save them.
+  // Check for Sub-Locational Tax Code names and save them.
   const subLocationCodes = LocationsToTaxCodes[LocationName];
 
-  // If Sub-location codes are found, push them onto the array of Tax Code strings.
+  // If Sub-Location codes are found, push them onto the array of Tax Code strings.
   if (subLocationCodes) {
-    // Push the array of strings for the sub-location onto the existing array.
+    // Push the array of Tax Code names for the Sub-Location onto the existing array.
     taxCodeNames.push(...subLocationCodes);
   }
 
@@ -117,11 +112,10 @@ export async function getTaxCodesByLocation(
   return taxCodeNames;
 }
 
-// Converts QuickBooks Tax Codes to a formatted Tax Codes.
 // Takes: A QuickBooks Tax Code.
 // Returns: A formatted Tax Code.
 function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
-  // Create a Tax Code with relevant elements from the passed raw API Tax Code.
+  // Create a Tax Code from the QuickBooks Tax Code.
   const formattedTaxCode: TaxCode = {
     Id: taxCodeResponse.Id,
     Name: taxCodeResponse.Name,
@@ -132,10 +126,9 @@ function formatTaxCode(taxCodeResponse: TaxCode): TaxCode {
   return formattedTaxCode;
 }
 
-// Check Tax Code names to see if they are currently valid for use.
 // Takes: A Tax Code name as a string.
 // Returns: The Tax Code validity as a boolean value.
 function checkForCurrentTaxCode(taxCodeName: string): boolean {
-  // Check the Tax Code name against the Enum of valid Tax Codes.
+  // Check the Tax Code name against the Enum of currently valid Tax Codes.
   return (Object.values(TaxCodes) as string[]).includes(taxCodeName);
 }

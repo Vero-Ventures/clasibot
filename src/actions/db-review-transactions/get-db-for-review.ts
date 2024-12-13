@@ -260,9 +260,9 @@ async function getTransactionCategories(
         // Check if the Account has the a matching name.
         if (expenseAccount.name === fullCategory[0].category) {
           // Use the Tax Code and Transaction to create the Classified Element.
-          // Push the defined Classification with the type 'category'.
+          // Push the defined Classification with the type 'Category'.
           classifiedCategories.push({
-            type: 'category',
+            type: 'Category',
             id: expenseAccount.id,
             name: expenseAccount.name,
             classifiedBy: forReviewTransaction.topCategoryClassification,
@@ -323,9 +323,9 @@ async function getTransactionTaxCodes(
         // Check if the Tax Code has the a matching name.
         if (qboTaxCode.Name === fullTaxCode[0].taxCode) {
           // Use the Account and Transaction to create the Classified Element.
-          // Push the defined Classification to the database with the type 'tax code'.
+          // Push the defined Classification to the database with the type 'Tax Code'.
           classifiedTaxCodes.push({
-            type: 'tax code',
+            type: 'Tax Code',
             id: qboTaxCode.Id,
             name: qboTaxCode.Name,
             classifiedBy: forReviewTransaction.topTaxCodeClassification,
