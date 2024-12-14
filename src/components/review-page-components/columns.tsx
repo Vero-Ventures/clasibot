@@ -244,7 +244,7 @@ export const ReviewColumns = (
   handleCategoryChange: (transaction_Id: string, category: string) => void,
   handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void
 ): ColumnDef<ClassifiedForReviewTransaction>[] => [
-  // Define the order of the Columns. Start with the select, account, name, date, and amount Columns.
+  // Define the order of the Columns. Start with the Select, Account, Name, Date, and Amount Columns.
   commonColumns[0],
   commonColumns[1],
   commonColumns[2],

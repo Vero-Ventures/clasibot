@@ -173,7 +173,7 @@ export async function classifyTransactions(
     // Iterate through the passed 'For Review' transactions.
     for (const transaction of unclassifiedTransactions) {
       // Define a new object to be stored in the results array for the current 'For Review' transaction.
-      // Values are initally set to null to account for failed or disallowed Classification.
+      // Values are initally set to null to allow for failed or disallowed Classification.
       const transactionResults: {
         category: ClassifiedElement[] | null;
         taxCode: ClassifiedElement[] | null;

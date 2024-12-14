@@ -240,7 +240,7 @@ function parseSelectedRows(
     } else {
       console.error('Unexpected Error Saving Classified Transactions.');
     }
-    // On error, return empty arrays for the Transactions to be saved (and account names).
+    // On error, return empty arrays for the Transactions to be saved (and Account names).
     return [[], [], []];
   }
 }
