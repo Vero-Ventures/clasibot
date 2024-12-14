@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
 
 interface DeactivateInfoProps {
   displayState: boolean;
@@ -10,6 +10,7 @@ interface DeactivateInfoProps {
   switchToInfoModal: () => void;
 }
 
+// Takes: The modal display state and its setter as well as a handler for switching to the confirmation modal.
 export const DeactivateInfoModal: React.FC<DeactivateInfoProps> = ({
   displayState,
   setDisplayState,
@@ -72,6 +73,7 @@ interface DeactivateConfirmProps {
   deactivateCompany: () => void;
 }
 
+// Takes: The modal display state and its setter as well as the deactivate Company handler.
 export const DeactivateConfirmModal: React.FC<DeactivateConfirmProps> = ({
   displayState,
   setDisplayState,
@@ -113,6 +115,7 @@ interface DeactivateErrorProps {
   setDisplayState: (displayState: boolean) => void;
 }
 
+// Takes: The modal display state and its setter.
 export const DeactivateErrorModal: React.FC<DeactivateErrorProps> = ({
   displayState,
   setDisplayState,

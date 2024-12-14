@@ -1,6 +1,7 @@
 import { signOut } from 'next-auth/react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
+
 import { CheckIcon, XIcon } from 'lucide-react';
 
 interface ErrorLoadingTransactionsProps {
@@ -8,6 +9,7 @@ interface ErrorLoadingTransactionsProps {
   setDisplayState: (newState: boolean) => void;
 }
 
+// Takes: The modal display state and its setter.
 export const ErrorLoadingTransactionsModal: React.FC<
   ErrorLoadingTransactionsProps
 > = ({ displayState, setDisplayState }: ErrorLoadingTransactionsProps) => {
@@ -56,6 +58,7 @@ interface SaveClassifiedTransactionsProps {
   errorMessage: string;
 }
 
+// Takes: The modal display state and an error message.
 export const SaveClassifiedTransactionsModal: React.FC<
   SaveClassifiedTransactionsProps
 > = ({ displayState, errorMessage }: SaveClassifiedTransactionsProps) => {
@@ -103,7 +106,6 @@ export const SaveClassifiedTransactionsModal: React.FC<
               </>
             )}
 
-            {/* Define button to return with text based on the error message state. */}
             <div className="flex justify-evenly gap-4">
               <Button
                 id="ReturnButton"
@@ -114,8 +116,6 @@ export const SaveClassifiedTransactionsModal: React.FC<
                 }}>
                 {errorMessage !== '' ? 'Retry Selection' : 'Continue'}
               </Button>
-
-              {/* Define button to finish the session by logging the user out. */}
 
               <Button
                 id="SignOutButton"

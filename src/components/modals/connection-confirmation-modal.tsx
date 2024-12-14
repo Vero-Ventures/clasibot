@@ -2,11 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
 
 export const ConnectionConfirmationModal = () => {
   const router = useRouter();
-
   return (
     <div
       className={`fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50`}>

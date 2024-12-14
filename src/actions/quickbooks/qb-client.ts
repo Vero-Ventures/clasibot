@@ -5,20 +5,16 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 
 import QB from 'node-quickbooks';
 
-// Create a QuickBooks client object for frontend functions.
 // Returns: A QuickBooks object used for API calls.
 export async function getQBObject() {
-  // Define variables for the QuickBooks client Id and secret.
-  let useId;
-  let useSecret;
+  // Define default development values for the QuickBooks client Id and secret.
+  let useId = process.env.DEV_CLIENT_ID;
+  let useSecret = process.env.DEV_CLIENT_SECRET;
 
-  // Set the QuickBooks client Id and secret based on the environment.
+  // Update the QuickBooks client Id and secret if using production configuration.
   if (process.env.APP_CONFIG === 'production') {
     useId = process.env.PROD_CLIENT_ID;
     useSecret = process.env.PROD_CLIENT_SECRET;
-  } else {
-    useId = process.env.DEV_CLIENT_ID;
-    useSecret = process.env.DEV_CLIENT_SECRET;
   }
 
   // Get the server to find values needed for QB object creation.
@@ -29,13 +25,13 @@ export async function getQBObject() {
   const realmId = session?.realmId;
   const refreshToken = session?.refreshToken;
 
-  // Determine sandbox status using ENV.
+  // Determine sandbox status using app configuration.
   const useSandbox = process.env.APP_CONFIG !== 'production';
 
   // Define the API version used by the current codebase.
   const minorVersion = 73;
 
-  // Create the QuickBooks API calls object.
+  // Create and return the QuickBooks API calls object.
   const qbo = new QB(
     useId,
     useSecret,
@@ -48,6 +44,5 @@ export async function getQBObject() {
     '2.0',
     refreshToken
   );
-
   return qbo;
 }

@@ -4,7 +4,7 @@ import { syntheticLogin } from '@/actions/synthetic-login';
 
 export async function POST(request: Request) {
   try {
-    // Get request body that contains the Email Monitor auth code and Email data.
+    // Get request body that contains the Email auth code and Email data.
     const body = await request.json();
 
     // Extract the Username, Company name, and invite URL from the request body.
@@ -12,10 +12,10 @@ export async function POST(request: Request) {
     const companyName: string = body.companyName;
     const invite_link: string = body.inviteLink;
 
-    // Check for body value that authenticates Email Monitor requests.
+    // Check for body value that authenticates Email monitoring requests.
     const monitorAuth = body.monitorAuth;
 
-    // If Email Monitor auth is not present, log an eror and return an error response.
+    // Check if the Email monitoring auth code is missing or does not match the expected value.
     if (!monitorAuth || monitorAuth !== process.env.EMAIL_ENDPOINT_AUTH) {
       console.error(
         'Error Adding Company Connection: Missing Or Invalid Authorization Header.'
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Return an error response if either of the values are missing.
+    // Return an error response if either the User or Company name values are missing
     if (!userName || !companyName) {
       return new Response('Missing Required Value In Body', { status: 400 });
     }
@@ -50,27 +50,26 @@ export async function POST(request: Request) {
       'company'
     );
 
-    // If invite accepting resulted in an error, return an error response before connection update.
+    // If Synthetic Login resulted in an error, return an error response before connection update.
     if (loginResult.result === 'Error') {
-      console.error('Company Synthetic Invite Accept Failed');
-      console.error(loginResult.message);
-      console.error(loginResult.detail);
       return new Response('Invite Accept Process Failed', { status: 400 });
     }
 
     // Call handler to update Company connection.
     const dbUpdateResult = await addCompanyConnection(userName, companyName);
 
+    // On error updating the clients, log an error and return an error response.
     if (dbUpdateResult.result === 'Error') {
       console.error(
         'Error Updating Database Companies: ' + dbUpdateResult.detail
       );
       return new Response('Database Update Process Failed', { status: 400 });
+    } else {
+      // If the update was successful, return a success response.
+      return new Response('Company Connection Successfully Updated.');
     }
-
-    return new Response('Company Connection Successfully Updated.');
   } catch (error) {
-    // Catch any errors and log them (include the error message if it is present) and return an error response.
+    // Catch any errors and log them (include the error message if it is present), then return an error response.
     if (error instanceof Error) {
       console.error('Error Adding Company Connection: ' + error.message);
     } else {

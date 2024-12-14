@@ -6,15 +6,27 @@ import { getQBObject } from '@/actions/quickbooks/qb-client';
 
 import type { ErrorResponse, Purchase } from '@/types/index';
 
-// Find a specific Purchase by its QuickBooks Id and return a formatted Purchase object.
 // Takes: The Id of the Purchase to find from QuickBooks.
 export async function findFormattedPurchase(id: string): Promise<Purchase> {
   try {
     // Define the variable used to make the QBO calls.
     const qbo = await getQBObject();
 
-    // Define a success tracking value and the format of QuickBooks and error response objects.
+    // Define a success tracking value used in error handling.
     let success = true;
+
+    // Also define the format of the QuickBooks data and error response objects.
+    type PurchaseResponse = {
+      Id: string;
+      Line: [
+        {
+          DetailType: string;
+          AccountBasedExpenseLineDetail: {
+            TaxCodeRef: { value: string; name: string };
+          };
+        },
+      ];
+    };
     let error: ErrorResponse = {
       Fault: {
         Error: [
@@ -29,25 +41,12 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
       },
     };
 
-    // Define a type for the response object to allow for type checking.
-    type PurchaseResponse = {
-      Id: string;
-      Line: [
-        {
-          DetailType: string;
-          AccountBasedExpenseLineDetail: {
-            TaxCodeRef: { value: string; name: string };
-          };
-        },
-      ];
-    };
-
-    // Search for a specific Purchase object using the passed Purchase Id.
+    // Search for a specific QuickBooks Purchase using the passed Purchase Id.
     const response: PurchaseResponse = await new Promise((resolve) => {
       qbo.getPurchase(id, (err: ErrorResponse, data: PurchaseResponse) => {
         // If there is an error, check if it has a 'Fault' property
         if (err && checkFaultProperty(err)) {
-          // Define success as false and record the error.
+          // Set the success value to false and record the error.
           success = false;
           error = err;
         }
@@ -55,18 +54,18 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
       });
     });
 
-    // Create a formatted Query Result object for the QBO API call.
+    // Create a formatted Query Result object using the success value and potential error object.
     const queryResult = createQueryResult(success, error);
 
-    // Create a Purchase object with all fields set to null.
-    // Only one Purchase is returned per call, so the Query Result is recorded inside the object.
+    // Create a Purchase with all fields set to null.
+    // Only the single Purchase object is returned, so the Query Result is recorded inside the Purchase.
     const formattedResult: Purchase = {
-      result_info: queryResult,
+      resultInfo: queryResult,
       id: '',
       taxCodeId: '',
     };
 
-    // If the query was successful, get the Id from the response and update the Purchase object.
+    // If the call was successful, get the Id from the response and update the Purchase.
     if (success) {
       formattedResult.id = response.Id;
       // Iterate through the line field of the response to find the Tax Code Id.
@@ -81,15 +80,15 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
       }
     }
 
-    // Return the formatted Purchase object.
+    // Return the formatted Purchase with the Query Result inside.
     return formattedResult;
   } catch (error) {
     // Catch any errors and return an error Query Result, include the error message if it is present.
-    // Include Query Result in the result_info field of an empty Purchase to match expected return typing.
+    // Includes the Query Result in the resultInfo field of an empty Purchase to match expected return typing.
     if (error instanceof Error) {
       return {
-        result_info: {
-          result: 'error',
+        resultInfo: {
+          result: 'Error',
           message: 'Unexpected error occured while fetching Purchase.',
           detail: error.message,
         },
@@ -98,8 +97,8 @@ export async function findFormattedPurchase(id: string): Promise<Purchase> {
       };
     } else {
       return {
-        result_info: {
-          result: 'error',
+        resultInfo: {
+          result: 'Error',
           message: 'Unexpected error occured while fetching Purchase.',
           detail: 'N/A',
         },

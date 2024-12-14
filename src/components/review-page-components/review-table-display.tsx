@@ -10,10 +10,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/index';
 
 import type { ClassifiedForReviewTransaction } from '@/types/index';
 
+// Takes: The Table component and a state indicating transactions are currently being loaded.
 export function ReviewTableDisplay({
   table,
   loadingTransactions,
@@ -24,7 +25,6 @@ export function ReviewTableDisplay({
   return (
     <div className="mx-auto mb-1 mt-4 w-fit max-w-full overflow-x-auto rounded-md border-4 border-gray-400 bg-white shadow-lg md:mb-2">
       <DisplayTable>
-        {/* Table Header */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
@@ -46,7 +46,6 @@ export function ReviewTableDisplay({
           ))}
         </TableHeader>
 
-        {/* Table Body */}
         <TableBody className="divide-y-8 divide-gray-200">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (

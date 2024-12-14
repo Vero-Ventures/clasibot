@@ -1,7 +1,10 @@
 import Imap from 'imap';
+
 import { simpleParser } from 'mailparser';
 import type { ParsedMail } from 'mailparser';
+
 import type { Readable } from 'stream';
+
 import { CONFIG } from '../config';
 
 export class EmailService {
@@ -26,7 +29,6 @@ export class EmailService {
   ) {
     this.imap.openBox('INBOX', false, (err: Error | null) => {
       if (err) {
-        console.error('Error opening inbox:', err);
         this.imap.end();
         return reject(err);
       }
@@ -37,7 +39,6 @@ export class EmailService {
 
   private handleImapError(reject: (error: Error) => void) {
     return (err: Error) => {
-      console.error('IMAP connection error:', err);
       reject(err);
     };
   }
@@ -72,7 +73,6 @@ export class EmailService {
     });
 
     fetch.once('error', (err: Error) => {
-      console.error('Fetch error:', err);
       this.imap.end();
       reject(err);
     });
@@ -85,7 +85,6 @@ export class EmailService {
   ) {
     simpleParser(stream, (err: Error | null, parsed: ParsedMail) => {
       if (err) {
-        console.error('Error parsing email:', err);
         this.imap.end();
         return reject(err);
       }

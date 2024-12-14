@@ -28,7 +28,7 @@ export default async function Page() {
   // Get user subscription and check their status.
   const subscriptionStatus = await checkSubscription();
 
-  // Check if the Synthetic BookKeeper is connected to the account.
+  // Check if the Synthetic BookKeeper is connected to the Company.
   const companyHasSBK = await checkCompanyConnection();
 
   // Get the Company Info from the QuickBooks functions.
@@ -36,7 +36,7 @@ export default async function Page() {
   const userCompanyIndustry = await getCompanyIndustry();
   const userCompanyLocation = JSON.parse(await getCompanyLocation());
 
-  // Record the collected Company Info as an object to be passed to the review page.
+  // Record the collected Company Info to be passed to the Review Page.
   const companyInfo: CompanyInfo = {
     name: userCompanyName,
     industry: userCompanyIndustry,
@@ -53,13 +53,12 @@ export default async function Page() {
     !companyHasSBK.connected &&
     process.env.APP_CONFIG === 'production'
   ) {
-    // Checks if the the app is in production and the user is not Connected to the Synthetic Bookkeeper.
-    // Shows the Connection required message that redirects to the Connection page.
+    // Checks if the user is not Connected to the Synthetic Bookkeeper shows the Connection needed modal.
     return <ConnectionConfirmationModal />;
   } else {
     // If the user is subscribed and connected, show the Review Page.
     return (
-      <div className="mx-auto w-full px-4 py-8 mb:px-6 sm:px-8 xxl:w-fit">
+      <div className="mx-auto w-full px-4 py-8 mb:px-6 sm:px-8 2xl:w-fit">
         <ReviewPage companyInfo={companyInfo} />
       </div>
     );

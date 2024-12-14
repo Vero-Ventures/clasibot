@@ -3,8 +3,8 @@
 import { db } from '@/db/index';
 import {
   Transaction,
-  TransactionsToCategories,
   Category,
+  TransactionsToCategories,
   TaxCode,
   TransactionsToTaxCodes,
 } from '@/db/schema';
@@ -12,15 +12,16 @@ import { eq } from 'drizzle-orm';
 
 import type { Classification } from '@/types/index';
 
-// Search the database for potential Categories that match a passed Transaction name.
 // Takes: The name of the Transaction and the valid Categories for Classification.
-// Returns: An array of matching Classifications from the database that are contained within the array of valid Categories.
+// Returns: An array of Valid Classifications matching the Transaction name.
+// Category names are filted to address naming differences from different QBO elements.
+//          Classification may be 'Dues and subscriptions' but belongs to the Account 'Dues & Subscriptions'.
 export async function searchDatabaseTransactionCategories(
   name: string,
   validCategories: Classification[]
 ): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any Transaction objects in the database with the passed name.
+    // Find the matching Transaction by the matching the passed name to the unique name value.
     const transaction = await db
       .select()
       .from(Transaction)
@@ -43,6 +44,7 @@ export async function searchDatabaseTransactionCategories(
 
       // For each Relationship, get the related Category and push it to the Categories array.
       for (const relationship of transactionCategories) {
+        // Find and record the related Category by with unique Id from the Relationship.
         const category = await db
           .select()
           .from(Category)
@@ -51,7 +53,7 @@ export async function searchDatabaseTransactionCategories(
         categories.push(category[0]);
       }
 
-      // If no database Categories are found, return an empty array.
+      // If no Categories are found, return an empty array.
       if (categories.length === 0) {
         return [];
       }
@@ -62,6 +64,7 @@ export async function searchDatabaseTransactionCategories(
 
       if (validCategories) {
         // Create a dictionary that maps the valid Category names to their Ids.
+        // Converts the names to lowercase with 'and' / '&' removed for standardization.
         validCategoryMap = validCategories.reduce<{
           [key: string]: string;
         }>((acc, category) => {
@@ -75,7 +78,8 @@ export async function searchDatabaseTransactionCategories(
         }, {});
       }
 
-      // Take the out any database Categories that do not match to a valid Category.
+      // Take the out any Categories that do not match to a valid Category.
+      // Converts the Category names to lowercase with 'and' / '&' removed for standardization.
       const filteredCategories = categories.filter((category) =>
         Object.hasOwn(
           validCategoryMap,
@@ -86,13 +90,13 @@ export async function searchDatabaseTransactionCategories(
         )
       );
 
-      // Sort the database Categories by number of matches in descending order.
-      // Most common Categories will be sorted to the start of the array.
+      // Sort the Categories by number of matches in descending order. (Most common in the first index)
       filteredCategories.sort((a, b) => b.matches - a.matches);
 
       // Take the top 3 (or less) Categories, map the names to their Id's and return them as an array.
       const topCategories = filteredCategories.slice(0, 3);
 
+      // Return the Id from the valid Categories and the actual Category name.
       return topCategories.map((category) => ({
         id: validCategoryMap[
           category.category
@@ -103,7 +107,7 @@ export async function searchDatabaseTransactionCategories(
         name: category.category,
       }));
     } else {
-      // If no matching Transaction was found, return an empty array as there are no matches.
+      // If no matching Transaction was found, return an empty array indicating there are no matches.
       return [];
     }
   } catch (error) {
@@ -113,20 +117,19 @@ export async function searchDatabaseTransactionCategories(
     } else {
       console.error('Unexpected Error Getting Categories From Database.');
     }
-    // On error, return an empty array to indicate an error sorting the Classifications.
+    // On error, return an empty array.
     return [];
   }
 }
 
-// Search the database for potential Tax Codes that match a passed Transaction name.
 // Takes: The name of the Transaction and the valid Tax Codes for Classification.
-// Returns: An array of matching Classifications from the database that are contained within the array of valid ax Codes.
+// Returns: An array of matching Classifications that are contained within the array of valid Tax Codes.
 export async function searchDatabaseTransactionTaxCodes(
   name: string,
   validTaxCodes: Classification[]
-): Promise<{ id: string; name: string; subName: string }[]> {
+): Promise<{ id: string; name: string }[]> {
   try {
-    // Find any Transaction objects in the database with the passed name.
+    // Find the matching Transaction by the matching the passed name to the unique name value.
     const transaction = await db
       .select()
       .from(Transaction)
@@ -149,6 +152,7 @@ export async function searchDatabaseTransactionTaxCodes(
 
       // For each Relationship, get the related Tax Code and push it to the Tax Codes array.
       for (const relationship of transactionTaxCodes) {
+        // Find the related Tax Code by with unique Id from the Relationship.
         const taxCode = await db
           .select()
           .from(TaxCode)
@@ -157,7 +161,7 @@ export async function searchDatabaseTransactionTaxCodes(
         taxCodes.push(taxCode[0]);
       }
 
-      // If no database Tax Code are found, return an empty array
+      // If no Tax Code are found, return an empty array
       if (taxCodes.length === 0) {
         return [];
       }
@@ -171,13 +175,12 @@ export async function searchDatabaseTransactionTaxCodes(
         {}
       );
 
-      // Take the out any database Tax Codes that do not match to a valid Tax Code.
+      // Filter out any Tax Codes that do not match to a valid Tax Code.
       const filtedTaxCodes = taxCodes.filter((taxCode) =>
         Object.hasOwn(validTaxCodeMap, taxCode.taxCode)
       );
 
-      // Sort the database Tax Codes by number of matches in descending order.
-      // Most common Tax Codes will be sorted to the start of the array.
+      // Sort the Tax Codes by number of matches in descending order. (Most common in the first index)
       filtedTaxCodes.sort((a, b) => b.matches - a.matches);
 
       // Take the top 3 (or less) Tax Codes, map the names to the Id's and return them as an array.
@@ -185,10 +188,9 @@ export async function searchDatabaseTransactionTaxCodes(
       return topTaxCodes.map((taxCode) => ({
         id: validTaxCodeMap[taxCode.taxCode],
         name: taxCode.taxCode,
-        subName: '',
       }));
     } else {
-      // If no matching Transaction was found, return an empty array as there are no matches.
+      // If no matching Transaction was found, return an empty array indicating there are no matches.
       return [];
     }
   } catch (error) {
@@ -198,7 +200,7 @@ export async function searchDatabaseTransactionTaxCodes(
     } else {
       console.error('Unexpected Error Getting Tax Codes From Database.');
     }
-    // On error, return an empty array to indicate no valid Tax Codes were found.
+    // On error, return an empty array.
     return [];
   }
 }

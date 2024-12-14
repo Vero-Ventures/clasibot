@@ -7,17 +7,17 @@ import Link from 'next/link';
 
 import { sendContactEmail } from '@/actions/send-contact-email';
 
-import { Button } from '@/components/ui/button';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+  Input,
+  Textarea,
+} from '@/components/ui/index';
 
 import { ToastAction } from '@/components/ui/toasts/toast';
 import { useToast } from '@/components/ui/toasts/use-toast';
@@ -32,9 +32,8 @@ const formSchema = z.object({
   body: z.string().min(1, { message: 'Message body is required' }),
 });
 
-// Define the 'Contact Us' page and its behavior.
 export default function Page() {
-  // Define loading state and form information as well as the related toast element.
+  // Define loading state and form information.
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,6 +43,7 @@ export default function Page() {
       body: '',
     },
   });
+
   const { toast } = useToast();
 
   // Define an error element to be displayed if the Email cannot be sent.

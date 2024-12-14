@@ -114,7 +114,7 @@ export const options: NextAuthOptions = {
 
     // Define the session callback to get the session data.
     async session({ session, token }) {
-      // Set the session fields data from the passed token and return the session object.
+      // Set the session fields data from the passed token and return the session.
       session.userId = token.userId;
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
@@ -153,16 +153,16 @@ export const options: NextAuthOptions = {
           return false;
         }
 
-        // Find the database User object with the User Email.
+        // Find the User by the unique Email.
         const userData = await db
           .select()
           .from(User)
           .where(eq(User.email, email));
 
-        // Check for any existing database User objects matching the current User.
+        // Check for any existing Users matching the current User.
         if (userData.length === 0) {
           try {
-            // If no matching database User exists (new User), create a new User object in the database.
+            // If no matching User exists (new User), create a new User.
             const newUser = await db
               .insert(User)
               .values({
@@ -172,7 +172,7 @@ export const options: NextAuthOptions = {
               })
               .returning();
 
-            // Create a Company object that is assosaited with the new User.
+            // Create a Company that is assosaited with the new User.
             const newCompany = {
               realmId: companyId,
               userId: newUser[0].id,
@@ -182,10 +182,14 @@ export const options: NextAuthOptions = {
               firmName: null,
             };
 
-            // Insert the newly created Company object into the database.
+            // Insert the newly created Company.
             try {
               await db.insert(Company).values(newCompany);
             } catch {
+              // If an error was caught inserting the Company, it already exists.
+              // (New user logged into existing Company with admin change)
+
+              // Update the existing Company with the new user Id, unset the Firm name, and set it to unconnected.
               await db
                 .update(Company)
                 .set({
@@ -196,7 +200,7 @@ export const options: NextAuthOptions = {
                 .where(eq(Company.id, companyId));
             }
 
-            // Create a blank Subscription in the database for the new User object.
+            // Create a blank Subscription for the new User.
             const newSubscription = await db
               .insert(Subscription)
               .values({
@@ -205,13 +209,13 @@ export const options: NextAuthOptions = {
               })
               .returning();
 
-            // Update the database to connect the User and Subscription objects.
+            // Update the User to connect it to the Subscription.
             await db
               .update(User)
               .set({ subscriptionId: newSubscription[0].id })
               .where(eq(User.id, newUser[0].id));
 
-            // Create a Stripe Customer Id for the User and update the database Subscription object with it.
+            // Create a Stripe Customer Id for the User and update the Subscription with it.
             const createdCustomer = await createCustomer(newUser[0].id);
             const createdCustomerResult = await createdCustomer.json();
 
@@ -230,15 +234,15 @@ export const options: NextAuthOptions = {
             return false;
           }
         } else {
-          // If the User already exists in the database, get the database Companies connected to the current User.
+          // If the User already exists, get the Companies connected to the current User.
           const companies = await db
             .select()
             .from(Company)
             .where(eq(Company.userId, userData[0].id));
 
-          // Use the current Company realm Id to check if it present in the list of the User database Companies.
+          // Use the current realm Id to check if it present in the list of the User Companies.
           if (!companies.some((company) => company.realmId === companyId)) {
-            // Create a new Company object that is assosaited with the new User.
+            // Create a new Company that is assosaited with the new User.
             const newCompany = {
               realmId: companyId,
               userId: userData[0].id,
@@ -248,7 +252,7 @@ export const options: NextAuthOptions = {
               firmName: null,
             };
 
-            // Insert the newly created Company object into the database.
+            // Insert the newly created Company.
             await db.insert(Company).values(newCompany);
           }
         }

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
 
 import { MiniSpinner } from '@/components/loading-elements/index';
 
@@ -13,14 +13,16 @@ import { checkCompanyConnection } from '@/actions/connection-functions/index';
 export const CheckConnectionButton = () => {
   const router = useRouter();
 
-  // Define states to track checking for connection, if a connection is found, and a possible failure message.
+  // Define states to track checking for connection, if a connection is found.
   const [checkingForConnection, setCheckingForConnection] = useState(false);
   const [connectionExists, setConnectionExists] = useState<boolean | null>(
     null
   );
+
+  // Additional state to track if a failure message should be shown.
   const [displayFailMessage, setDisplayFailMessage] = useState<boolean>(false);
 
-  // Helper function that checks for the connection, updates the states
+  // Helper function that checks for the connection and updates the related states.
   const handleCheckConnection = async () => {
     // Define the check process as started and get the connection value.
     setCheckingForConnection(true);
@@ -31,7 +33,7 @@ export const CheckConnectionButton = () => {
     setCheckingForConnection(false);
 
     if (connectionCheck.connected) {
-      // Optional: Wait for the animation to complete before redirecting
+      // Wait for the animation to complete before redirecting
       setTimeout(() => {
         router.push('/home');
       }, 2000);

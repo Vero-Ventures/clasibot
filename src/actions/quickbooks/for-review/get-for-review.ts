@@ -7,9 +7,8 @@ import type {
   QueryResult,
 } from '@/types/index';
 
-// Checks a specific Account for 'For Review' transactions, then formats and returns them.
-// Takes: The Id of Account to check, a set of Synthetic Login Tokens, and the Company realm Id.
-// Returns: A Query Result object with the found 'For Review' transactions in the detail field (only on success).
+// Takes: The  realm Id, Id of Account to check, and a set of Synthetic Login Tokens.
+// Returns: A Query Result, on success returns the found 'For Review' transactions array as the detail.
 //    Returned 'For Review' transactions are an array of Sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
   accountId: string,
@@ -17,14 +16,13 @@ export async function getForReview(
   realmId: string
 ): Promise<QueryResult> {
   try {
-    // Define the endpoint for the GET call.
-    // Uses the Id of the Company and the Id of the Account to fetch the 'For Review' transactions from.
+    // Define the endpoint using the realm Id and the Id of the Account to fetch the 'For Review' transactions from.
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/getTransactions?accountId=${accountId}&sort=-amount&reviewState=PENDING&ignoreMatching=false`;
 
-    // Define static Intuit API key value.
+    // Define the static Intuit API key value.
     const apiKey = 'prdakyresxaDrhFXaSARXaUdj1S8M7h6YK7YGekc';
 
-    // Call the query endpoint while passing the required header cookies.
+    // Call the get 'For Review' transactions endpoint while passing the required header cookies.
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
@@ -33,9 +31,9 @@ export async function getForReview(
       },
     });
 
-    // Check if a valid response is received.
+    // Check if a valid response was received.
     if (!response.ok) {
-      // On error, get the response text and return it as the detail of an error Query Result object.
+      // On error, get the response text and return it as the detail of an error Query Result.
       const errorText = await response.text();
       return {
         result: 'Error',
@@ -64,7 +62,7 @@ export async function getForReview(
       return {
         result: 'Error',
         message: 'Call made to "Get For Review" endpoint resulted in error.',
-        detail: 'Error' + error.message,
+        detail: 'Error: ' + error.message,
       };
     } else {
       return {
@@ -77,7 +75,6 @@ export async function getForReview(
   }
 }
 
-// Takes Raw 'For Review' transactions, formats them and stores them in an array of Sub-arrays for each Transaction.
 // Take: An array of Raw 'For Review' transactions data.
 // Returns: An array of Sub-arrays for the results in the format: [FormattedForReviewTransaction, ForReviewTransaction].
 function formatForReviewTransaction(
@@ -85,7 +82,7 @@ function formatForReviewTransaction(
 ): (FormattedForReviewTransaction | RawForReviewTransaction)[][] {
   const transactions = [];
   for (const rawTransaction of responseData) {
-    // Only record expense Transactions (check that money left the Account).
+    // Only record expense Transactions (Negative value = money left Account).
     if (rawTransaction.amount < 0) {
       const newTransaction: FormattedForReviewTransaction = {
         transaction_Id: rawTransaction.id,

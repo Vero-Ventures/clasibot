@@ -5,13 +5,14 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import {
-  SignOutButton,
   ChangeCompanyButton,
   DeactivationButton,
-  ManageSubscriptionButton,
   MobileDeactivationButton,
+  ManageSubscriptionButton,
+  SignOutButton,
 } from '@/components/inputs/index';
 
+// Takes: The current connection status and the url for the Stripe subscription managment page.
 export function NavBarSesssionButtons({
   connectionStatus,
   stripeUrl,
@@ -19,12 +20,12 @@ export function NavBarSesssionButtons({
   connectionStatus: boolean;
   stripeUrl: string;
 }>) {
-  // Define state to show NavBar options correctly on smaller screens.
-  const [showOptions, setShowOptions] = useState(false);
+  // Define states used to show NavBar options dropdown used for smaller screens.
+  const [showOptionsDropdown, setShowOptionsDropdown] = useState(false);
   const [showMobileDeactivateModal, setShowMobileDeactivateModal] =
     useState(false);
 
-  // State trackers to indicate which deactivation modals should be displayed to the user.
+  // Define states to track which deactivation modals should be displayed to the user (if any).
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
@@ -34,25 +35,25 @@ export function NavBarSesssionButtons({
       <div className="flex flex-col items-center md:hidden">
         <button
           className="mb-4 mt-6 flex w-fit min-w-48 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-1 text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:mt-8 md:hidden"
-          onClick={() => setShowOptions(!showOptions)}>
+          onClick={() => setShowOptionsDropdown(!showOptionsDropdown)}>
           <span className="mr-2 text-lg font-semibold">Options</span>
-          <span className={`${showOptions ? '' : 'hidden'}`}>
+          <span className={`${showOptionsDropdown ? '' : 'hidden'}`}>
             <ChevronUp className="mt-1 h-6 w-6" />
           </span>
-          <span className={`${showOptions ? 'hidden' : ''}`}>
+          <span className={`${showOptionsDropdown ? 'hidden' : ''}`}>
             <ChevronDown className="mt-1 h-6 w-6" />
           </span>
         </button>
 
         <div
-          className={`w-[272px] justify-center rounded-lg bg-gray-600 px-8 ${showOptions ? 'h-[212px] scale-y-100' : 'h-0 scale-y-0'} origin-top overflow-hidden transition-all duration-500 ease-out`}>
+          className={`w-[272px] justify-center rounded-lg bg-gray-600 px-8 ${showOptionsDropdown ? 'h-[212px] scale-y-100' : 'h-0 scale-y-0'} origin-top overflow-hidden transition-all duration-500 ease-out`}>
           <div className="mt-4 flex flex-col gap-y-6">
             <div
-              className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
+              className={`w-fit ${showOptionsDropdown ? 'scale-y-100' : 'scale-y-0'} `}>
               <ManageSubscriptionButton stripePortalUrl={stripeUrl} />
             </div>
             <div
-              className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
+              className={`w-fit ${showOptionsDropdown ? 'scale-y-100' : 'scale-y-0'} `}>
               <button
                 onClick={() => {
                   setShowMobileDeactivateModal(true);
@@ -63,7 +64,7 @@ export function NavBarSesssionButtons({
               </button>
             </div>
             <div
-              className={`w-fit ${showOptions ? 'scale-y-100' : 'scale-y-0'} `}>
+              className={`w-fit ${showOptionsDropdown ? 'scale-y-100' : 'scale-y-0'} `}>
               <ChangeCompanyButton />
             </div>
           </div>
@@ -104,7 +105,7 @@ export function NavBarSesssionButtons({
       </div>
 
       <div
-        className={` ${showOptions ? 'mt-4' : 'mt-2'} w-fit mb:mt-7 md:mt-6`}>
+        className={` ${showOptionsDropdown ? 'mt-4' : 'mt-2'} w-fit mb:mt-7 md:mt-6`}>
         <SignOutButton />
       </div>
     </div>

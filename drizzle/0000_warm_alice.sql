@@ -10,10 +10,8 @@ CREATE TABLE IF NOT EXISTS "Company" (
 	"realm_id" text NOT NULL,
 	"user_id" uuid NOT NULL,
 	"name" text NOT NULL,
-	"industry" text,
-	"bookkeeper_connected" boolean NOT NULL,
 	"firm_name" text,
-	"classification_failed" boolean,
+	"bookkeeper_connected" boolean NOT NULL,
 	CONSTRAINT "Company_realm_id_unique" UNIQUE("realm_id")
 );
 --> statement-breakpoint
@@ -27,28 +25,29 @@ CREATE TABLE IF NOT EXISTS "Firm" (
 CREATE TABLE IF NOT EXISTS "ForReviewTransaction" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"company_id" text NOT NULL,
-	"transaction_id" text NOT NULL,
+	"review_transaction_id" text NOT NULL,
 	"account_id" text NOT NULL,
 	"description" text NOT NULL,
 	"orig_description" text NOT NULL,
 	"date" text NOT NULL,
-	"amount" integer NOT NULL,
+	"amount" numeric NOT NULL,
 	"accept_type" text NOT NULL,
 	"transaction_type_id" text NOT NULL,
 	"payee_name_id" text,
-	"top_classification" text NOT NULL
+	"top_category_classification" text NOT NULL,
+	"top_tax_code_classification" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ForReviewTransactionsToCategories" (
-	"transaction_id" uuid NOT NULL,
+	"review_transaction_id" uuid NOT NULL,
 	"category_id" integer NOT NULL,
-	CONSTRAINT "ForReviewTransactionsToCategories_transaction_id_category_id_pk" PRIMARY KEY("transaction_id","category_id")
+	CONSTRAINT "ForReviewTransactionsToCategories_review_transaction_id_category_id_pk" PRIMARY KEY("review_transaction_id","category_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ForReviewTransactionsToTaxCodes" (
-	"transaction_id" uuid NOT NULL,
+	"review_transaction_id" uuid NOT NULL,
 	"tax_code_id" integer NOT NULL,
-	CONSTRAINT "ForReviewTransactionsToTaxCodes_transaction_id_tax_code_id_pk" PRIMARY KEY("transaction_id","tax_code_id")
+	CONSTRAINT "ForReviewTransactionsToTaxCodes_review_transaction_id_tax_code_id_pk" PRIMARY KEY("review_transaction_id","tax_code_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Subscription" (
@@ -61,9 +60,9 @@ CREATE TABLE IF NOT EXISTS "Subscription" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TaxCode" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"taxCode" text NOT NULL,
+	"tax_code" text NOT NULL,
 	"matches" integer NOT NULL,
-	CONSTRAINT "TaxCode_taxCode_unique" UNIQUE("taxCode")
+	CONSTRAINT "TaxCode_tax_code_unique" UNIQUE("tax_code")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Transaction" (
@@ -86,8 +85,7 @@ CREATE TABLE IF NOT EXISTS "TransactionsToTaxCodes" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "User" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"first_name" text,
-	"last_name" text,
+	"user_name" text,
 	"email" text NOT NULL,
 	"subscription_id" uuid,
 	CONSTRAINT "User_email_unique" UNIQUE("email"),
@@ -113,7 +111,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "ForReviewTransactionsToCategories" ADD CONSTRAINT "ForReviewTransactionsToCategories_transaction_id_ForReviewTransaction_id_fk" FOREIGN KEY ("transaction_id") REFERENCES "public"."ForReviewTransaction"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "ForReviewTransactionsToCategories" ADD CONSTRAINT "ForReviewTransactionsToCategories_review_transaction_id_ForReviewTransaction_id_fk" FOREIGN KEY ("review_transaction_id") REFERENCES "public"."ForReviewTransaction"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -125,7 +123,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "ForReviewTransactionsToTaxCodes" ADD CONSTRAINT "ForReviewTransactionsToTaxCodes_transaction_id_ForReviewTransaction_id_fk" FOREIGN KEY ("transaction_id") REFERENCES "public"."ForReviewTransaction"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "ForReviewTransactionsToTaxCodes" ADD CONSTRAINT "ForReviewTransactionsToTaxCodes_review_transaction_id_ForReviewTransaction_id_fk" FOREIGN KEY ("review_transaction_id") REFERENCES "public"."ForReviewTransaction"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

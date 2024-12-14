@@ -8,17 +8,17 @@ import { DatePicker } from '@/components/inputs/index';
 
 import type { ClassifiedForReviewTransaction } from '@/types/index';
 
-import { Button } from '@/components/ui/button';
-
-import { Input } from '@/components/ui/input';
-
 import {
+  Button,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Input,
+} from '@/components/ui/index';
 
+// Takes: The Table component, the start date and end date for filtering and their setters,
+//        A list of Account names as strings, the list of selected Accounts, and the setter to update it.
 export function ReviewTableFilters({
   startDate,
   endDate,
@@ -43,9 +43,7 @@ export function ReviewTableFilters({
       <div className="mt-6 flex flex-grow px-6">
         <Input
           placeholder="Search by transaction description..."
-          // Set the input value to the name filter value from the table (or an empty string).
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          // When the input value changes, update the name filter value with the new value.
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
@@ -79,13 +77,11 @@ export function ReviewTableFilters({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center">
-                {/* Gets a list of the Columns and filters out the ones that cannot be hidden. */}
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
                   .map((column) => {
                     let field = column.id;
-                    // Replace column ID names with spaced versions where needed.
                     if (field === 'taxCodes') {
                       field = 'Tax Codes';
                     }
@@ -96,13 +92,10 @@ export function ReviewTableFilters({
                       field = 'Tax Code Confidence';
                     }
                     return (
-                      // Create a checkbox item for each Column that can be hidden.
                       <DropdownMenuCheckboxItem
                         key={column.id}
                         className="w-[130px] capitalize focus:bg-blue-300"
-                        // Checked status is determined by the associated Column's visibility state.
                         checked={column.getIsVisible()}
-                        // On change, toggle the visibility of the associated Column.
                         onCheckedChange={(value: boolean) =>
                           column.toggleVisibility(!!value)
                         }>
@@ -125,7 +118,6 @@ export function ReviewTableFilters({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center">
-                {/* For each Account, create a checkbox item in the dropdown menu. */}
                 {accountNames.map((account) => {
                   return (
                     <DropdownMenuCheckboxItem

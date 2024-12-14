@@ -7,8 +7,8 @@ import {
 } from '@/actions/db-review-transactions/index';
 
 import {
-  preformSyntheticLogin,
   startClassification,
+  preformSyntheticLogin,
   fetchTransactionsToClassify,
   fetchPredictionContext,
   startTransactionClassification,
@@ -16,12 +16,11 @@ import {
 } from '@/actions/classification/index';
 
 import type {
-  ClassifiedForReviewTransaction,
   RawForReviewTransaction,
   FormattedForReviewTransaction,
+  ClassifiedForReviewTransaction,
 } from '@/types/index';
 
-// Preforms inital and final Classification process handling while calling helper for internal process handling.
 // Takes: A state setter callback function to update the Classification state.
 // Returns: A boolean indicating failure to load and an array of loaded Classified and Raw 'For Review' transactions.
 export async function updateClassifyStates(
@@ -33,9 +32,8 @@ export async function updateClassifyStates(
     | RawForReviewTransaction
   )[][];
 }> {
-  // Set the Classification process to be in progress and update the state.
+  // Set the Classification process to be in progress and wait a second for frontend to update.
   setClassificationState('Start Classify');
-
   await new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
@@ -45,9 +43,9 @@ export async function updateClassifyStates(
   // Call function to iterate through primary Classification process steps.
   const success = await handleBackendProcessStates(setClassificationState);
 
-  // Check if the Classification process was successful.
+  // Check if the primary Classification process was successful.
   if (success) {
-    // Update the state to indicate the Classification is finished.
+    // Update the state to indicate the primary Classification is finished and wait a second for frontend to update.
     setClassificationState('Load New Classified Transactions');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -55,7 +53,7 @@ export async function updateClassifyStates(
       }, 1000);
     });
 
-    // Load the newly Classified 'For Review' transactions from the database.
+    // Load the newly Classified 'For Review' transactions.
     const loadResult = await getDatabaseTransactions();
 
     // Check the loading Query Result for an error.
@@ -63,8 +61,8 @@ export async function updateClassifyStates(
       // Update the Classification state to indicate an error.
       setClassificationState('Error');
 
-      // Return a value indicating it failed to ensure the loading failure modal is shown.
-      // Returned array is set to be empty on failure to load to ensure only valid data is ever shown.
+      // Return a value indicating the Classification process failed.
+      // Returned array is set to empty on failure to load to ensure no invalid data is ever shown.
       return {
         loadFailure: true,
         loadedTransactions: [],
@@ -73,7 +71,7 @@ export async function updateClassifyStates(
       // Update the Classification state to indicate Classification was successful.
       setClassificationState('Classify Complete');
 
-      // Return a success loading result to ensure the completion modal is shown.
+      // Return a value indicating the Classification process succeeded.
       // Also return the array of loaded Classified 'For Review' transactions.
       return {
         loadFailure: false,
@@ -83,26 +81,26 @@ export async function updateClassifyStates(
   }
   // Update the Classification state to indicate an error.
   setClassificationState('Error');
-  // Return load failure as false for Classification failure.
-  // Classification completion modal will be shown with an error result based.
-  // Returned array is set to be empty on failure to load to ensure only valid data is ever shown.
+
+  // Return a value indicating the Classification process failed.
+  // Returned array is set to empty on failure to load to ensure no invalid data is ever shown.
   return {
     loadFailure: false,
     loadedTransactions: [],
   };
 }
 
-// Runs through the backend Classification process by Classification step handlers and updating the state in between.
 // Takes: A state setter callback function to update the Classification state.
 // Returns: A boolean value indicating if the backend Classification was successful.
 async function handleBackendProcessStates(
   setClassificationState: (newState: string) => void
 ): Promise<boolean> {
-  // Call setup handler to check for for a session and the related database Company object.
+  // Call setup handler to check for for a session and the related Company.
   const startResult = await startClassification();
 
   // Check result and either update to Synthetic Login state or return a failure value.
   if (startResult.result) {
+    // Update the Classification state and wait a second for frontend to update.
     setClassificationState('Synthetic Login');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -113,11 +111,12 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Preform the Synthetic Login process needed for to get the 'For Review' transactions.
+  // Preform the Synthetic Login process needed to get the 'For Review' transactions.
   const loginResult = await preformSyntheticLogin(startResult.realmId);
 
   // Check result and either update to Get 'For Review' transactions state or return a failure value.
   if (loginResult.result) {
+    // Update the Classification state and wait a second for frontend to update.
     setClassificationState('Get For Review Transactions');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -128,11 +127,12 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Before updating the users 'For Review' transactions, remove all old objects for the Company from the database.
+  // Before updating the users 'For Review' transactions, remove all old 'For Review' transactions from the database.
   const clearDbResult = await removeAllForReviewTransactions(
     startResult.realmId
   );
 
+  // Check if the database clearing process resulted in an error and return a failure boolean if it did.
   if (clearDbResult.result === 'Error') {
     return false;
   }
@@ -145,6 +145,7 @@ async function handleBackendProcessStates(
 
   // Check result and either update to Get Saved Transactions state or return a failure value.
   if (transactionResults.result) {
+    // Update the Classification state and wait a second for frontend to update.
     setClassificationState('Get Saved Transactions');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -157,8 +158,10 @@ async function handleBackendProcessStates(
 
   // Get the Transactions and Comapany Info used in LLM predictions.
   const contextResult = await fetchPredictionContext();
-  // Update state on successfully getting prediction context, otherwise return a failure value.
+
+  // Check result and either update to Classify 'For Review' state or return a failure value.
   if (contextResult.result) {
+    // Update the Classification state and wait a second for frontend to update.
     setClassificationState('Classify For Review Transactions');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -169,7 +172,7 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Extract the formatted 'For Review' transactions from the fetch results for Classification.
+  // Extract the formatted 'For Review' transactions from the fetched results.
   const formattedReviewTransactions = transactionResults.transactions.map(
     (subArray) => subArray[0] as FormattedForReviewTransaction
   );
@@ -178,12 +181,12 @@ async function handleBackendProcessStates(
   const classificationsResult = await startTransactionClassification(
     contextResult.transactions,
     formattedReviewTransactions,
-    contextResult.companyInfo!,
-    startResult.realmId
+    contextResult.companyInfo!
   );
 
-  // Update state on successfully starting Classification, otherwise return a failure value.
+  // Check result and either update to Creating Classified Transactions state or return a failure value.
   if (classificationsResult.result) {
+    // Update the Classification state and wait a second for frontend to update.
     setClassificationState('Create New Classified Transactions');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -194,14 +197,15 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Take the created Classifications and use them to create Classified 'For Review' transaction objects.
+  // Take the created Classifications and use them to create Classified 'For Review' transactions.
   const creationResult = await createClassifiedTransactions(
     transactionResults.transactions,
     classificationsResult.classificationResults
   );
 
-  // Update state on successfully creating Classified 'For Review' transactions, otherwise return a failure value.
+  // Check result and either update to Saving Classified Transactions state or return a failure value.
   if (creationResult.result) {
+    // Update the Classification state and wait a second for frontend to update.
     setClassificationState('Save New Classified Transactions');
     await new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -212,15 +216,13 @@ async function handleBackendProcessStates(
     return false;
   }
 
-  // Save the Classified 'For Review' transactions to the database.
-  // Return the resulting Query Result created by the save function.
+  // Save the Classified 'For Review' transactions.
   const addingResult = await addDatabaseForReviewTransactions(
     creationResult.transactions,
     startResult.realmId
   );
 
-  // Check Query Result from adding Classified 'For Review' transactions to database.
-  // If result value is a success, backend Classification process is complete and a truth value is returned indicate success.
+  // Check Query Result from adding Classified 'For Review' transactions and return a success boolean.
   if (addingResult.result === 'Success') {
     return true;
   } else {

@@ -15,8 +15,8 @@ import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import {
   ReviewColumns,
   ReviewTableFilters,
-  TablePaginationAndSave,
   ReviewTableDisplay,
+  ReviewTablePagesAndSave,
 } from '@/components/review-page-components/index';
 
 import type {
@@ -26,23 +26,28 @@ import type {
 
 /**
  * Takes (Variables):
+ * Boolean value to indicate when loading and saving,
+ * A list of Classified 'For Review' transactions and their Account names,
  * A list of Account names, A list of Classified 'For Review' transactions,
- * A record of the selected Classifications, and a bolean value to indicate when saving.
+ * And a record of the selected Classifications (Category and Tax Code).
  *
- * Takes (Callbacks): Handlers for the Classification and saving processes.
+ * Takes (Callbacks):
+ * Handlers for updating the selected Classification for a row,
+ * Helper method for the processes of saving the selected rows.
  */
 export function ReviewTable({
   loadingTransactions,
+  isSaving,
   accountNames,
   classifiedTransactions,
   selectedCategories,
   selectedTaxCodes,
   handleCategoryChange,
   handleTaxCodeChange,
-  isSaving,
   handleSave,
 }: Readonly<{
   loadingTransactions: boolean;
+  isSaving: boolean;
   accountNames: string[];
   classifiedTransactions: (
     | RawForReviewTransaction
@@ -52,17 +57,16 @@ export function ReviewTable({
   selectedTaxCodes: Record<string, string>;
   handleCategoryChange: (transaction_Id: string, category: string) => void;
   handleTaxCodeChange: (transaction_Id: string, taxCode: string) => void;
-  isSaving: boolean;
   handleSave: (
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
 }>) {
-  // Create states to track and set the start and end values for the date filter.
+  // Define states for the start and end values of date range filtering.
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  // Set the default start date and end date on element load.
+  // Set the default start date and end date on load.
   useEffect(() => {
     // Define the default start and end date (two years ago & current date).
     const startDateTwoYearsPast = new Date();
@@ -74,7 +78,7 @@ export function ReviewTable({
     setEndDate(endDatePresent);
   }, []);
 
-  // Define helper functions to handle change to the date selection and update the filters.
+  // Define helper functions to handle change to date selection and update the Table.
   function changeStartDate(date: Date | null) {
     table.getColumn('date')?.setFilterValue(`${date} to ${endDate}`);
     setStartDate(date);
@@ -89,12 +93,12 @@ export function ReviewTable({
     ClassifiedForReviewTransaction[]
   >([]);
 
-  // Extract the Classified Transactions and update state on change to passed Classified Transactions value.
+  // Extract the Classified Transactions and update state on change to Classified Transactions value.
   useEffect(() => {
     // Extract the formatted Transactions from the [Classified, Raw] formatted array.
     const extractedTransactions = [];
     for (const transaction of classifiedTransactions) {
-      // Assert the object type as it is being added to the array.
+      // Assert the type as it is being added to the array.
       extractedTransactions.push(
         transaction[0] as ClassifiedForReviewTransaction
       );
@@ -111,7 +115,7 @@ export function ReviewTable({
 
   // Creates the React Table using the passed data, helper functions, and states.
   const table = useReactTable({
-    // Pass the Transactions as data, a list of Columns, and the Classification update handlers.
+    // Pass the formatted Transactions as data, a list of Columns, and the Classification update handlers.
     data: formattedTransactions,
     columns: ReviewColumns(
       selectedCategories,
@@ -136,29 +140,29 @@ export function ReviewTable({
     },
   });
 
-  // Define account selection tracking state and its related functions.
+  // Define Account selection tracker.
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
-  // A callback function to update the Account selection state for Account based filtering.
+  // Define a callback function to update the Account selection state for Account based filtering.
   function updateAccountSelection(account: string) {
-    // Check if the Account is being added or removed from the filter.
+    // Check if the Account is being added or removed from the filter array.
     if (selectedAccounts.includes(account)) {
-      // Remove the Account from the list of Accounts to display.
+      // If removing, filter out the Account from the list of Accounts to display.
       setSelectedAccounts(
         selectedAccounts.filter((arrayAccount) => arrayAccount !== account)
       );
     } else {
-      // Add the Account to the list of Accounts to display.
+      // Otherwise, add the Account to the list of Accounts to display.
       setSelectedAccounts([...selectedAccounts, account]);
     }
   }
 
-  // Whenever there is a change to the list of Account names, resets the selected Accounts.
+  // Whenever there is a change to the list of Account names, sets all Accounts as selected.
   useEffect(() => {
     setSelectedAccounts(accountNames);
   }, [accountNames]);
 
-  // Whenever the selected Account or table changes, updates the Account based filtering.
+  // Whenever the selected Accounts or Table changes, updates the Account based filtering.
   useEffect(() => {
     // If no Accounts are selected, set the Account filter false which shows all results.
     if (selectedAccounts.length === 0) {
@@ -186,10 +190,10 @@ export function ReviewTable({
         loadingTransactions={loadingTransactions}
       />
 
-      <TablePaginationAndSave
+      <ReviewTablePagesAndSave
         table={table}
         rowSelection={rowSelection}
-        categorizedTransactions={classifiedTransactions}
+        classifiedTransactions={classifiedTransactions}
         isSaving={isSaving}
         handleSave={handleSave}
       />

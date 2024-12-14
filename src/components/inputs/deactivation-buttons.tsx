@@ -22,6 +22,9 @@ interface DeactivationButtonProps {
   setErrorModalOpen: (newState: boolean) => void;
 }
 
+// Takes: A setter to indicate the modals are being shown,
+//        States indicating if the modal is shown for each of the 3 modals (info, confirm, error)
+//        Setters for the display states for each of the 3 modals (info, confirm, error).
 export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   setShowModal,
   connectionStatus,
@@ -32,7 +35,7 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
   setConfirmModalOpen,
   setErrorModalOpen,
 }) => {
-  // Helper function to close the modals and the info modal to closed as well.
+  // Helper function to close all modals and set the show modal tracker to false.
   function hideModals(hideState: boolean) {
     setShowModal(hideState);
     setInfoModalOpen(hideState);
@@ -40,17 +43,16 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
     setErrorModalOpen(hideState);
   }
 
-  // Helper function to allow buttons to switch from info to confirmation modal through single call.
+  // Helper function to switch from info modal to confirmation modal.
   function openConfirmationModal() {
     setInfoModalOpen(false);
     setConfirmModalOpen(true);
   }
 
-  // Deactivate database Company object handler.
+  // Deactivate Company handler.
   async function deactivateCompany() {
     // Get the deactivation result and check for an error.
     const deactivationResult = await makeCompanyIncactive();
-
     if (deactivationResult.result === 'Error') {
       // Close the confirmation modal and open the error modal.
       setConfirmModalOpen(false);
@@ -75,6 +77,83 @@ export const DeactivationButton: React.FC<DeactivationButtonProps> = ({
         </button>
       }
 
+      {
+        <DeactivateInfoModal
+          displayState={infoModalOpen}
+          setDisplayState={hideModals}
+          switchToInfoModal={openConfirmationModal}></DeactivateInfoModal>
+      }
+
+      {
+        <DeactivateConfirmModal
+          displayState={confirmModalOpen}
+          setDisplayState={hideModals}
+          deactivateCompany={deactivateCompany}></DeactivateConfirmModal>
+      }
+
+      {
+        <DeactivateErrorModal
+          displayState={errorModalOpen}
+          setDisplayState={hideModals}></DeactivateErrorModal>
+      }
+    </>
+  );
+};
+
+interface MobileDeactivationButtonProps {
+  setShowModal: (newState: boolean) => void;
+  infoModalOpen: boolean;
+  confirmModalOpen: boolean;
+  errorModalOpen: boolean;
+  setInfoModalOpen: (newState: boolean) => void;
+  setConfirmModalOpen: (newState: boolean) => void;
+  setErrorModalOpen: (newState: boolean) => void;
+}
+
+// Takes: A setter to indicate the modals are being shown,
+//        States indicating if the modal is shown for each of the 3 modals (info, confirm, error)
+//        Setters for the display states for each of the 3 modals (info, confirm, error).
+export const MobileDeactivationButton: React.FC<
+  MobileDeactivationButtonProps
+> = ({
+  setShowModal,
+  infoModalOpen,
+  confirmModalOpen,
+  errorModalOpen,
+  setInfoModalOpen,
+  setConfirmModalOpen,
+  setErrorModalOpen,
+}) => {
+  // Helper function to close all modals and set the show modal tracker to false.
+  function hideModals(hideState: boolean) {
+    setShowModal(hideState);
+    setInfoModalOpen(hideState);
+    setConfirmModalOpen(hideState);
+    setErrorModalOpen(hideState);
+  }
+
+  // Helper function to switch from info modal to confirmation modal.
+  function openConfirmationModal() {
+    setInfoModalOpen(false);
+    setConfirmModalOpen(true);
+  }
+
+  // Deactivate Company handler.
+  async function deactivateCompany() {
+    // Set the Company to inactive and check for an error.
+    const deactivationResult = await makeCompanyIncactive();
+    if (deactivationResult.result === 'Error') {
+      // Close the confirmation modal and open the error modal.
+      setConfirmModalOpen(false);
+      setErrorModalOpen(true);
+    } else {
+      // If no error occured, sign the user out.
+      signOut({ callbackUrl: '/' });
+    }
+  }
+
+  return (
+    <>
       {
         <DeactivateInfoModal
           displayState={infoModalOpen}

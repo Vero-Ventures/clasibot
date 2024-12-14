@@ -3,8 +3,9 @@ from enum import Enum
 
 class EmailType(Enum):
     """
-    Enumeration class for strings used in identifying Email invite / update type.
+    Enumeration class for identifying which
     """
     COMPANY_INVITE = "company"
     ACCOUNTANT_FIRM_INVITE = "accountant firm"
-    FIRM_CLIENTS = "access change"
+    ADD_FIRM_CLIENTS = "access addition"
+    REMOVE_FIRM_CLIENTS = "access removal"

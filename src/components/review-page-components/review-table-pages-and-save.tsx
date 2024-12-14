@@ -3,22 +3,24 @@
 import type { Table } from '@tanstack/react-table';
 
 import type {
-  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
+  RawForReviewTransaction,
 } from '@/types/index';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
 
-export function TablePaginationAndSave({
+// Takes: The Table component, the selected rows, the Classified Transactions,
+//        If saving is in progess and the handler function for saving.
+export function ReviewTablePagesAndSave({
   table,
   rowSelection,
-  categorizedTransactions,
+  classifiedTransactions,
   isSaving,
   handleSave,
 }: Readonly<{
   table: Table<ClassifiedForReviewTransaction>;
   rowSelection: Record<number, boolean>;
-  categorizedTransactions: (
+  classifiedTransactions: (
     | ClassifiedForReviewTransaction
     | RawForReviewTransaction
   )[][];
@@ -57,7 +59,7 @@ export function TablePaginationAndSave({
 
       <div className="flex w-full justify-center sm:mr-4 sm:w-1/4 md:mr-8">
         <Button
-          onClick={() => handleSave(rowSelection, categorizedTransactions)}
+          onClick={() => handleSave(rowSelection, classifiedTransactions)}
           disabled={
             isSaving || table.getFilteredSelectedRowModel().rows.length === 0
           }

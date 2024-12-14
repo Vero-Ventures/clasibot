@@ -4,71 +4,43 @@ import { getServerSession } from 'next-auth/next';
 import { options } from '@/app/api/auth/[...nextauth]/options';
 
 import { db } from '@/db/index';
-import { User, Subscription, Company } from '@/db/schema';
+import { User, Subscription } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 import { Stripe } from 'stripe';
 
-// Create a new Stripe object with the private key.
-// Used to check the User Subscription status.
+// Create a Stripe object with the private key, used to check the User Subscription status.
 const stripe = new Stripe(
   process.env.APP_CONFIG === 'production'
     ? (process.env.PROD_STRIPE_PRIVATE_KEY ?? '')
     : (process.env.DEV_STRIPE_PRIVATE_KEY ?? '')
 );
 
-// Check the Subscription status of the current User using the session.
-// Takes: An optional Company realm Id to support backend functions.
-// Returns: An object with a status string and a validity boolean or an error object with a string value.
-export async function checkSubscription(
-  realmId: string | null = null
-): Promise<{ status: string; valid: boolean } | { error: string }> {
+// Returns: An object with a status string and a validity boolean or an error object.
+export async function checkSubscription(): Promise<
+  { status: string; valid: boolean } | { error: string }
+> {
   try {
-    // Define the User variable to be retrived by frontend or backend check.
-    let user;
+    // Get the current session.
+    const session = await getServerSession(options);
 
-    // Check if a Company realm Id was passed and find the User using backend method.
-    if (realmId) {
-      // Get the database Company using the passed realm Id.
-      const userCompany = await db
-        .select()
-        .from(Company)
-        .where(eq(Company.realmId, realmId));
-
-      // If a Company cannot be found, return an error object.
-      if (!userCompany[0]) {
-        return { error: 'Error getting Company' };
-      }
-
-      // Get the User from the database by the related User Id value in the fetched Company.
-      user = await db
-        .select()
-        .from(User)
-        .where(eq(User.id, userCompany[0].userId));
-
-      // If no Company realm Id was passed, find the User using frontend method
-    } else {
-      // Get the current session.
-      const session = await getServerSession(options);
-
-      // If the current session does not have an Email value, return an error.
-      if (!session?.user?.email) {
-        return { error: 'Error getting session' };
-      }
-
-      // Get the User from the database using the Email pulled from the session.
-      user = await db
-        .select()
-        .from(User)
-        .where(eq(User.email, session.user?.email));
+    // If the current session does not have an Email value, return an error.
+    if (!session?.user?.email) {
+      return { error: 'Error getting session' };
     }
 
-    // If the fetched database User object does not exist, return an error.
+    // Find the User using the unqiue Email from the session.
+    const user = await db
+      .select()
+      .from(User)
+      .where(eq(User.email, session.user?.email));
+
+    // If the fetched User does not exist, return an error object.
     if (!user[0]?.id) {
       return { error: 'User not found!' };
     }
 
-    // Find the User Subscription object by matching the to the User Id value.
+    // Find the Subscription by the unqiue User Id value.
     const userSubscription = await db
       .select()
       .from(Subscription)
@@ -79,7 +51,7 @@ export async function checkSubscription(
       return { error: 'User Subscription not found!' };
     }
 
-    // Get the Subscription status from Stripe using the Stripe Id value in the Subscription object.
+    // Get the Subscription status from Stripe using the Stripe Id value in the Subscription.
     const subscription = await stripe.subscriptions.list({
       customer: userSubscription[0].stripeId,
     });

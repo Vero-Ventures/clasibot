@@ -8,9 +8,13 @@ interface MiniSpinnerProps {
   success: boolean | null;
 }
 
+// Takes: A nullable boolean indicating loading, success, or error.
 export const MiniSpinner = ({ success }: MiniSpinnerProps) => {
+  // Define state to track if the loading animation is shown or the success / error icons.
   const [animationState, setAnimationState] = useState('loading');
 
+  // Based on success value update the animation state.
+  // Null: loading, True: success, False: error.
   useEffect(() => {
     if (success === true) {
       setAnimationState('success');
@@ -19,6 +23,7 @@ export const MiniSpinner = ({ success }: MiniSpinnerProps) => {
     }
   }, [success]);
 
+  // Common formatting for the circles to be animated.
   const circleCommonClasses = 'h-3 w-3 bg-blue-500 rounded-full m-1';
 
   return (

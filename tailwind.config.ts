@@ -15,21 +15,12 @@ const config = {
       md: '768px',
       lg: '1024px',
       xl: '1280px',
-      xxl: '1440px',
-      tableCatConfidence: '922px',
+      '2xl': '1440px',
+      landingImg: '922px',
     },
     container: {
       center: true,
       padding: '2rem',
-      screens: {
-        tableMin: '320px',
-        tableName: '466px',
-        tableAmount: '590px',
-        tableCatagories: '706px',
-        tableCatConfidence: '922px',
-        tableTaxCodes: '1010px',
-        tableTaxConfidence: '1225px',
-      },
     },
     extend: {
       // Add custom border sizing for 3 px width.

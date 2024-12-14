@@ -1,7 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/index';
 
+// Takes: The handler of the review function.
 export function ReviewButton({
   handleReview,
 }: Readonly<{

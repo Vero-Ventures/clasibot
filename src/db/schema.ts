@@ -4,15 +4,21 @@ import {
   pgTable,
   primaryKey,
   uuid,
-  text,
-  integer,
-  decimal,
   boolean,
+  decimal,
+  integer,
   serial,
+  text,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// Defines the base User object that may related to multiple Companies.
+// Defines the base User that may related to multiple Companies.
+/**
+ * id: Auto assigned, used for database identification.
+ * userName: QuickBooks Online name of the User.
+ * email: Email address that the User used to log into the app through QuickBooks Online.
+ * subscriptionId: Connects the User to their database Subscription by its database Id.
+ */
 export const User = pgTable('User', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   userName: text('user_name'),
@@ -26,6 +32,12 @@ export const UserToCompanyRelations = relations(User, ({ many }) => ({
 
 // Defines a potential element of a User indicating they belong to a Firm.
 // Firms have the potential for multiple related Companies.
+/**
+ * id: Auto assigned, used for database identification.
+ * name: Name of the QuickBooks Online Firm.
+ * userId: Database Id of the related User.
+ * userName: QuickBooks Online name of the realted User.
+ */
 export const Firm = pgTable('Firm', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   name: text('name').notNull(),
@@ -34,6 +46,11 @@ export const Firm = pgTable('Firm', {
 });
 
 // Defines the Stripe Subscription of a User.
+/**
+ * id: Auto assigned, used for database identification.
+ * userId: The FK that connects to the database User by their userId.
+ * stripeId: Stripe based Id that allows access to the User's Subscription.
+ */
 export const Subscription = pgTable('Subscription', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   userId: uuid('user_id')
@@ -45,6 +62,14 @@ export const Subscription = pgTable('Subscription', {
 
 // A QuickBooks Company that is assosiated with a user.
 // Also defines possible relation to a Firm and Synthetic Bookkeeper connection status.
+/**
+ * id: Auto assigned, used for database identification.
+ * realmId: QuickBooks Online Id for the company.
+ * userId: The FK that connects to the database User by their userId.
+ * name: The name of the QuickBooks Online Company.
+ * firmName: Potentially null name of the Firm that provided access to the Company.
+ * bookkeeperConnected: Indicates if the Synthetic Bookkeeper is connected to the Company.
+ */
 export const Company = pgTable('Company', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
   realmId: text('realm_id').notNull().unique(),
@@ -57,6 +82,10 @@ export const Company = pgTable('Company', {
 });
 
 // Defines a Transaction name to record connected Classifications for Database referencing.
+/**
+ * id: Auto assigned, used for database identification.
+ * transactionName: The name of the Transaction.
+ */
 export const Transaction = pgTable('Transaction', {
   id: serial('id').primaryKey(),
   transactionName: text('transaction_name').unique().notNull(),
@@ -77,8 +106,21 @@ export const TransactionToTaxCodesRelationship = relations(
 );
 
 // Defines the key data needed to store and re-load 'For Review' Transactions.
-// Contains base 'For Review' Transaction object data.
-// Also defines the top Classification methods used for Confidence Values.
+/**
+ * id: Auto assigned, used for database identification.
+ * companyId: The FK that connects the FR Transaction to the Company it came from.
+ * reviewTransactionId: The QuickBooks Online Id of the FR Transaction.
+ * accountId: The QuickBooks Online Id of the Account the FR Transaction came from.
+ * description: The 'name' of the FR Transaction.
+ * origDescription: Value used only in re-submitting the FR Transaction.
+ * date: The date of the FR Transaction.
+ * amount: The amount of the FR Transaction.
+ * acceptType: Value used only in re-submitting the FR Transaction.
+ * transactionTypeId: Value used only in re-submitting the FR Transaction.
+ * payeeNameId: Value used only in re-submitting the FR Transaction.
+ * topCategoryClassification: The method used to idenfity the best Category Classification.
+ * topCategoryClassification: The method used to idenfity the best Tax Code Classification.
+ */
 export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
   companyId: text('company_id')
@@ -112,7 +154,11 @@ export const ForReviewTransactionToTaxCodesRelationship = relations(
 );
 
 // Defines a Category Classification that can related to either Transaction type.
-// Defines the Category itself and the number of times matched to a Transaction.
+/**
+ * id: Auto assigned, used for database identification.
+ * category: The name of the Category
+ * matches: The number of times a Transaction was saved to QBO with the Category.
+ */
 export const Category = pgTable('Category', {
   id: serial('id').primaryKey(),
   category: text('category').unique().notNull(),
@@ -134,7 +180,11 @@ export const CategoryToForReviewTransactionsRelationship = relations(
 );
 
 // Defines a Tax Code Classification that can related to either Transaction type.
-// Defines the Tax Code itself and the number of times matched to a Transaction.
+/**
+ * id: Auto assigned, used for database identification.
+ * taxCode: The name of the Tax Code.
+ * matches: The number of times a Transaction was saved to QBO with the Tax Code.
+ */
 export const TaxCode = pgTable('TaxCode', {
   id: serial('id').primaryKey(),
   taxCode: text('tax_code').unique().notNull(),
@@ -155,7 +205,7 @@ export const TaxCodesToForReviewTransactionsRelationship = relations(
   })
 );
 
-// Table to define many-to-many relationships of Transactions and Categories.
+// Table to define many-to-many Relationships of Transactions and Categories.
 export const TransactionsToCategories = pgTable(
   'TransactionsToCategories',
   {
@@ -171,7 +221,7 @@ export const TransactionsToCategories = pgTable(
   })
 );
 
-// Table to define many-to-many relationships of Transactions and Tax Codes.
+// Table to define many-to-many Relationships of Transactions and Tax Codes.
 export const TransactionsToTaxCodes = pgTable(
   'TransactionsToTaxCodes',
   {
@@ -187,7 +237,7 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-// Table to define many-to-many relationships of 'For Review' Transactions and Categories.
+// Table to define many-to-many Relationships of 'For Review' Transactions and Categories.
 export const ForReviewTransactionToCategories = pgTable(
   'ForReviewTransactionsToCategories',
   {
@@ -203,7 +253,7 @@ export const ForReviewTransactionToCategories = pgTable(
   })
 );
 
-// Table to define many-to-many relationships of 'For Review' Transactions and Tax Codes.
+// Table to define many-to-many Relationships of 'For Review' Transactions and Tax Codes.
 export const ForReviewTransactionToTaxCodes = pgTable(
   'ForReviewTransactionsToTaxCodes',
   {

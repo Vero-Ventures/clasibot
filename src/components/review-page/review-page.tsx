@@ -7,8 +7,8 @@ import { getDatabaseTransactions } from '@/actions/db-review-transactions/index'
 
 import {
   initalizeLoadedTransactions,
-  saveSelectedTransactions,
   updateClassifyStates,
+  saveSelectedTransactions,
 } from '@/actions/review-page-handlers/index';
 
 import { ReviewTable } from '@/components/review-page/review-table';
@@ -25,47 +25,50 @@ import {
 
 import type {
   CompanyInfo,
-  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
+  RawForReviewTransaction,
 } from '@/types/index';
 
-// Takes: A Company Info object and boolean indicating when the Company Info is loaded.
+// Takes: The Company Info.
 export default function ReviewPage({
   companyInfo,
 }: Readonly<{
   companyInfo: CompanyInfo;
 }>) {
-  // Create states to track the loaded Transactions and their assosiated Accounts.
-
+  // Define states to track if Transactions are loading and if it resulted in an error.
   const [loadingTransactions, setLoadingTransactions] =
     useState<boolean>(false);
   const [errorLoadingTransactions, setErrorLoadingTransactions] =
     useState<boolean>(false);
+
+  // Define states to contain the loaded Transactions and the names of their Accounts.
   const [loadedTransactions, setLoadedTransactions] = useState<
     (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   >([]);
   const [accounts, setAccounts] = useState<string[]>([]);
 
-  // On page load, gets the previously Classified and saved Transactions whenever Company Info loading state updates.
+  // On page load, gets the previously Classified and saved Transactions.
   useEffect(() => {
     setLoadingTransactions(true);
-    // Load the Transactions from the database.
     const loadForReviewTransactions = async () => {
       // Load the Transactions and check the Query Result for an error.
       const loadResult = await getDatabaseTransactions();
       if (loadResult.queryResult.result === 'Error') {
-        // If an error was found, open the related error modal.
+        // If an error was found, set the related error modal to be shown.
         setErrorLoadingTransactions(true);
       }
-      // Update the loaded Transactions state regardless of outcome. Array is set to be empty on error.
+      // Update the loaded Transactions state regardless of outcome and set loading to be complete.
+      // Array is set to be empty on error.
       setLoadedTransactions(loadResult.transactions);
       setLoadingTransactions(false);
     };
     loadForReviewTransactions();
   }, []);
 
-  // Create states to track the states of a Classification process.
+  // Define states to track the current stage of the Classification process.
   const [classificationState, setClassificationState] = useState<string>('');
+
+  // Define states to track if the Classification process and error modals should be shown.
   const [openClassificationModal, setOpenClassificationModal] =
     useState<boolean>(false);
   const [openFinishedClassificationModal, setOpenFinishedClassificationModal] =
@@ -74,20 +77,21 @@ export default function ReviewPage({
   // Define the helper function to start the Classification process.
   function handleClassification() {
     const handleClassify = async () => {
+      // Set the Classification process modal to be shown when starting the process.
       setOpenClassificationModal(true);
 
-      // Calls the handler method to handle Classification and state setting.
-      // Also returns the Classification results to be displayed.
+      // Call handler method for Classification and state setting, returns the Classification results.
       const classificationResults = await updateClassifyStates(
         setClassificationState
       );
 
-      // Check if the Classification failed on loading Classified 'For Review' transactions.
+      // Check if the Classification failed while loading Classified 'For Review' transactions.
       if (classificationResults.loadFailure) {
         // If failure to load occurred, show the error loading modal.
         setErrorLoadingTransactions(true);
       } else {
-        // Otherwise the completion modal (success or failure) is shown.
+        // Otherwise the completion modal is shown which handles success state or error state.
+        // Error state is shown when error was not caused by loading Classified 'For Review' transactions.
         setOpenFinishedClassificationModal(true);
       }
       // Update the Classified 'For Review' transaction states with returned values (or empty array on error).
@@ -96,7 +100,8 @@ export default function ReviewPage({
     handleClassify();
   }
 
-  // Create states used in the frontend display of the Classification state.
+  // Define states and values used in the frontend display of the Classification state.
+  // The current process step message, the number of completed steps, and the constant number of steps.
   const [classificationModalMessage, setClassificationModalMessage] =
     useState<string>('');
   const [numCompletedProcesses, setNumCompletedProcesses] = useState<number>(0);
@@ -105,7 +110,7 @@ export default function ReviewPage({
   // Defines a handler for changes to the Classification state.
   useEffect(() => {
     const handleClassificationChangeCall = async () => {
-      // Calls the handler method to await the new state values.
+      // Handler gets the process stage message and stage number based on Classification state string.
       const processStates =
         await changeClassificationState(classificationState);
 
@@ -118,6 +123,7 @@ export default function ReviewPage({
         processStates.currentProcess === -1 ||
         processStates.currentProcess === 8
       ) {
+        // Set timeout so error state is briefly visible before modal change.
         setTimeout(() => {
           setOpenClassificationModal(false);
           setNumCompletedProcesses(0);
@@ -127,7 +133,7 @@ export default function ReviewPage({
     handleClassificationChangeCall();
   }, [classificationState]);
 
-  // Create states to track the selected Classifications for each row.
+  // Define states to track the selected Classifications for each row.
   const [selectedCategories, setSelectedCategories] = useState<
     Record<string, string>
   >({});
@@ -148,14 +154,14 @@ export default function ReviewPage({
     handleInitalizeTransactionsCall();
   }, [loadedTransactions]);
 
-  // Update the selected Categories state using a 'For Review' transaction Id and the new Category.
+  // Handlers to update the selected Classification states.
+  // Takes the'For Review' transaction Id and the new Classification.
   function handleCategoryChange(transactionId: string, category: string) {
     setSelectedCategories({
       ...selectedCategories,
       [transactionId]: category,
     });
   }
-  // Update the selected Tax Code state using a 'For Review' transaction Id and the new Tax Code.
   function handleTaxCodeChange(transactionId: string, taxCode: string) {
     setSelectedTaxCodes({
       ...selectedTaxCodes,
@@ -163,7 +169,8 @@ export default function ReviewPage({
     });
   }
 
-  // Create states to track states of the transaction saving process indicating the state of the page.
+  // Create states to track the saving process values.
+  // If saving is in progress, if the save complete modal is shown, if there is an error message to display.
   const [isSaving, setIsSaving] = useState(false);
   const [openSaveModal, setOpenSaveModal] = useState(false);
   const [savingErrorMessage, setSavingErrorMessage] = useState<string>('');
@@ -173,10 +180,10 @@ export default function ReviewPage({
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) {
-    // Set saving state to be true to lock review table actions.
+    // Set saving state to true to prevent further review Table actions.
     setIsSaving(true);
 
-    // Call the save 'For Review' transactions function and track the returned success value.
+    // Call the save 'For Review' transactions helper function.
     const savingResult = await saveSelectedTransactions(
       selectedRows,
       transactions,
@@ -184,7 +191,7 @@ export default function ReviewPage({
       selectedTaxCodes
     );
 
-    // If the returned result was untrue, log an error message.
+    // If the returned result was an error (false), log an error message.
     if (!savingResult) {
       setSavingErrorMessage(
         'An error occurred while saving. Please try again.'
@@ -194,7 +201,7 @@ export default function ReviewPage({
       setSavingErrorMessage('');
     }
 
-    // Update saving state on completion and show the saving completion modal.
+    // Unset saving state on completion and show the save complete modal.
     setIsSaving(false);
     setOpenSaveModal(true);
   }
@@ -212,13 +219,13 @@ export default function ReviewPage({
 
       <ReviewTable
         loadingTransactions={loadingTransactions}
-        accountNames={accounts}
+        isSaving={isSaving}
         classifiedTransactions={loadedTransactions}
+        accountNames={accounts}
         selectedCategories={selectedCategories}
         selectedTaxCodes={selectedTaxCodes}
         handleCategoryChange={handleCategoryChange}
         handleTaxCodeChange={handleTaxCodeChange}
-        isSaving={isSaving}
         handleSave={handleSave}
       />
 
@@ -242,8 +249,8 @@ export default function ReviewPage({
         <ClassifyProgessModal
           displayState={openClassificationModal}
           progressMessage={classificationModalMessage}
-          completedChunks={numCompletedProcesses}
           maxChunks={numClassificationStates}
+          completedChunks={numCompletedProcesses}
         />
       }
 

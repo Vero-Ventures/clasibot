@@ -8,13 +8,14 @@ export { CheckConnectionButton } from './check-connection-button';
 
 export { DatePicker } from './date-picker';
 
-export { DeactivationButton } from './deactivation-button';
+export {
+  DeactivationButton,
+  MobileDeactivationButton,
+} from './deactivation-buttons';
 
 export { ReturnButton } from './return-button';
 
 export { ManageSubscriptionButton } from './manage-subscription-button';
-
-export { MobileDeactivationButton } from './mobile-deactivation-handler';
 
 export { SignInButton } from './sign-in-button';
 

@@ -2,18 +2,15 @@
 
 import type { LoginTokens, QueryResult } from '@/types/index';
 
-// Logs into the backend Clasibot app as the Synthetic Bookkeeper.
-// Handles both login for getting 'For Review' transactions and for accepting Invites.
-// Takes: The Company realm Id -
-// Takes (Transactions): Takes a name of a Firm that contains the Company (set to empty if not needed).
-// Takes (Invite): Takes the Invite link and a string defining the type of Invite (set to empty string for transactions).
-// Returns: A Query Result for the login process and a potentially empty Login Tokens object.
+// Takes: The realm Id,
+// Takes (Invite): Takes the Invite link and a string defining the type of Invite.
+// Returns: A Query Result for the login process and the potentially empty Login Tokens.
 export async function syntheticLogin(
   realmId: string,
   inviteLink: string = 'null',
   inviteType: string = 'null'
 ): Promise<[QueryResult, LoginTokens]> {
-  // Initialize the Query Result and Login Tokens objects. Sets Query Result to Error by default.
+  // Initialize the Query Result and Login Tokens. Set the Query Result to Error by default.
   const loginResult: QueryResult = {
     result: 'Error',
     message: 'Failed to complete auth process',
@@ -27,13 +24,13 @@ export async function syntheticLogin(
   };
 
   try {
-    // Check that lambda url is defined before calling Synthetic Login lambda process.
+    // Check that Lambda url is defined before calling Synthetic Login Lambda process.
     const lambdaUrl = process.env.SYNTH_AUTH_LAMBDA_URL;
     if (!lambdaUrl) {
-      throw new Error('Lambda url environment variable is not defined');
+      throw new Error('Lambda URL Not Defined');
     }
 
-    // Call the Synthetic Login Lambda handler and await a response.
+    // Call the Synthetic Login Lambda handler url and await a response.
     const response = await fetch(lambdaUrl, {
       method: 'POST',
       headers: {
@@ -46,31 +43,33 @@ export async function syntheticLogin(
       }),
     });
 
-    // Extract the response data and check for a successful response.
+    // Extract the response data from the Synthetic Login Lambda and check for a success response.
     const data = await response.json();
 
     if (!response.ok) {
-      // If response was not successful, set the detail of the Query Result and return it alongside the empty Login Tokens.
-      loginResult.detail = data.error || 'Unknown error occurred';
+      // If response is not successful, set the detail of the Query Result and return it with the empty Login Tokens.
+      loginResult.detail = data.error || 'Unknown Error Occurred';
       return [loginResult, loginTokens];
     }
 
-    // If no invite type was specified, call is for Transactions and Login Tokens can be extracted from returned data.
+    // If no invite type was specified, call is for site login and Login Tokens can be extracted.
     if (inviteType === 'null') {
       loginTokens.ticket = data.qboTicket;
       loginTokens.authId = data.authId;
       loginTokens.agentId = data.authId;
     }
 
-    // Set the Query Result to Success and update the message.
+    // Set the Query Result as a Success and update the message.
     loginResult.result = 'Success';
-    loginResult.message = 'Successfully completed synthetic auth process';
+    loginResult.message = 'Successfully Completed Synthetic Login Process';
   } catch (error) {
     // Catch any errors and update the Query Result detail based on the error type.
     loginResult.detail =
-      error instanceof Error ? error.message : 'An unexpected error occurred';
+      error instanceof Error
+        ? 'An Error Occurred: ' + error.message
+        : 'An Unexpected Error Occurred: ';
   }
 
-  // Return the Query Result and Login Tokens objects.
+  // Return the Query Result and Login Tokens.
   return [loginResult, loginTokens];
 }

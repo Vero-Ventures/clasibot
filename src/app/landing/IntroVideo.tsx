@@ -19,8 +19,8 @@ export const IntroVideo = () => {
       </section>
 
       <section className="my-8 transform rounded-lg bg-white px-4 py-10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-        <div className="flex flex-col items-center tableCatConfidence:flex-row">
-          <div className="flex flex-col items-center justify-center p-4 px-8 tableCatConfidence:w-1/2">
+        <div className="flex flex-col items-center landingImg:flex-row">
+          <div className="flex flex-col items-center justify-center p-4 px-8 landingImg:w-1/2">
             <h2 className="mb-4 text-center text-3xl font-bold text-gray-800">
               Introduction to Clasibot
             </h2>
@@ -135,7 +135,7 @@ export const IntroVideo = () => {
             <SignInButton />
           </div>
 
-          <div className="h-full w-full rounded-lg bg-cover bg-center pr-4 tableCatConfidence:h-96 tableCatConfidence:w-1/2">
+          <div className="h-full w-full rounded-lg bg-cover bg-center pr-4 landingImg:h-96 landingImg:w-1/2">
             <div className="relative h-full w-full">
               <iframe
                 className="absolute left-0 top-0 h-full w-full rounded-lg"
