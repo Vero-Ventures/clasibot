@@ -1,13 +1,13 @@
-// Takes: The string Classification method of a 'For Review' transaction.
-// Returns: A numberical representation of the confidence value.
+// Takes: The Classification method of a 'For Review' transaction.
+// Returns: The Confidence Value of the Classification method.
 export function checkConfidenceValue(classificationMethod: string) {
-  // Create a dictionary to connect the strings to their related values.
+  // Create a dictionary to connect the Classification methods to their Confidence Values.
   const confidenceValueDictionary: { [key: string]: number } = {
     LLM: 1,
     Database: 2,
     Matching: 3,
   };
 
-  // Return the value related to the passed string.
+  // Return the Confidence Values of the Classification method.
   return confidenceValueDictionary[classificationMethod];
 }

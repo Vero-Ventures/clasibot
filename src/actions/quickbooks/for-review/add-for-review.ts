@@ -23,19 +23,19 @@ export async function addForReview(
   transactionAccounts: string[]
 ): Promise<QueryResult> {
   try {
-    // Get the current session for the Company realm Id of the currently logged in Company.
+    // Get the current session for the realm Id of the currently logged in Company.
     const session = await getServerSession(options);
 
-    // If session or Company realm Id are not found return an error Query Result.
+    // If session or realm Id are not found return an error Query Result.
     if (!session?.realmId) {
       return {
         result: 'Error',
-        message: 'Unable to find Company realm Id from session.',
-        detail: 'Session or realm Id could not be found.',
+        message: 'Unable to find realm Id from session.',
+        detail: 'Session Or Realm Id Could Not Be Found.',
       };
     }
 
-    // Call Synthetic Login with the Company realm Id to get the Synthetic Login Tokens.
+    // Call Synthetic Login with the realm Id to get the Synthetic Login Tokens.
     const [loginResult, loginTokens] = await syntheticLogin(session.realmId);
 
     // Check if the Synthetic Login resulted in an error Query Result and return it if it did.
@@ -93,7 +93,7 @@ export async function addForReview(
       return {
         result: 'Error',
         message: 'Call made to "Add For Review" endpoint resulted in error.',
-        detail: 'Error' + error.message,
+        detail: 'Error: ' + error.message,
       };
     } else {
       return {

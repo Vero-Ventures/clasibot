@@ -19,7 +19,7 @@ export const siteLogin = async (): Promise<QBOTokenData> => {
 
       // Check for a valid set of token data to be returned and throw an error if they are not found.
       if (!tokenData) {
-        throw new Error('No token data received from authentication');
+        throw new Error('No Token Data Received From Authentication.');
       }
 
       // Return the token data to the lamda caller.

@@ -34,7 +34,7 @@ export const UserToCompanyRelations = relations(User, ({ many }) => ({
 // Firms have the potential for multiple related Companies.
 /**
  * id: Auto assigned, used for database identification.
- * name: Name of the QuickBooks Online firm.
+ * name: Name of the QuickBooks Online Firm.
  * userId: Database Id of the related User.
  * userName: QuickBooks Online name of the realted User.
  */
@@ -205,7 +205,7 @@ export const TaxCodesToForReviewTransactionsRelationship = relations(
   })
 );
 
-// Table to define many-to-many relationships of Transactions and Categories.
+// Table to define many-to-many Relationships of Transactions and Categories.
 export const TransactionsToCategories = pgTable(
   'TransactionsToCategories',
   {
@@ -221,7 +221,7 @@ export const TransactionsToCategories = pgTable(
   })
 );
 
-// Table to define many-to-many relationships of Transactions and Tax Codes.
+// Table to define many-to-many Relationships of Transactions and Tax Codes.
 export const TransactionsToTaxCodes = pgTable(
   'TransactionsToTaxCodes',
   {
@@ -237,7 +237,7 @@ export const TransactionsToTaxCodes = pgTable(
   })
 );
 
-// Table to define many-to-many relationships of 'For Review' Transactions and Categories.
+// Table to define many-to-many Relationships of 'For Review' Transactions and Categories.
 export const ForReviewTransactionToCategories = pgTable(
   'ForReviewTransactionsToCategories',
   {
@@ -253,7 +253,7 @@ export const ForReviewTransactionToCategories = pgTable(
   })
 );
 
-// Table to define many-to-many relationships of 'For Review' Transactions and Tax Codes.
+// Table to define many-to-many Relationships of 'For Review' Transactions and Tax Codes.
 export const ForReviewTransactionToTaxCodes = pgTable(
   'ForReviewTransactionsToTaxCodes',
   {

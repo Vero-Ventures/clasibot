@@ -1,14 +1,11 @@
 'use server';
 
 import type {
-  ClassifiedElement,
   RawForReviewTransaction,
   ClassifiedForReviewTransaction,
+  ClassifiedElement,
 } from '@/types/index';
 
-// Takes a set of loaded 'For Review' transactions either from inital page load or finishing Classification.
-// Initalizes the inital selected Category and Tax Code for each 'For Review' transaction.
-// Also creates a set of Account names from within the passed 'For Review' transactions.
 // Takes: The loaded 'For Review' transactions.
 // Returns: The record of selected Classifications as well as the list of unique Account names.
 export async function initalizeLoadedTransactions(
@@ -29,12 +26,14 @@ export async function initalizeLoadedTransactions(
     accountNames.add(formattedTransaction.accountName);
   }
 
-  // Define the list of Accounts state with a list of unique Account names from the set.
+  // Define the list of Accounts from the Account names set.
   const foundAccounts = Array.from(accountNames);
 
   // Initialize the selected Classifications for each 'For Review' transaction.
   const initialCategories: Record<string, string> = {};
   const initialTaxCodes: Record<string, string> = {};
+
+  // Iterate over the passed 'For Review' transactions.
   loadedTransactions.forEach((transaction) => {
     // Assert the formatted 'For Review' transaction type and extract its Classifications.
     const classifiedTransaction =
@@ -48,7 +47,7 @@ export async function initalizeLoadedTransactions(
     };
 
     // Check if each of the Classifications are present.
-    // If they are, set the inital Classification of that type for the 'For Review' transaction to the value in the first index.
+    // If they are, set the inital Classification of that type to the value in the first index.
     if (classifications.categories) {
       initialCategories[classifiedTransaction.transaction_Id] =
         classifications.categories[0].name;

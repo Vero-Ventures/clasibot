@@ -153,7 +153,7 @@ export const options: NextAuthOptions = {
           return false;
         }
 
-        // Find the User with the User Email.
+        // Find the User by the unique Email.
         const userData = await db
           .select()
           .from(User)
@@ -189,7 +189,7 @@ export const options: NextAuthOptions = {
               // If an error was caught inserting the Company, it already exists.
               // (New user logged into existing Company with admin change)
 
-              // Update the existing Company with the new user Id, unset the firm name, and set it to unconnected.
+              // Update the existing Company with the new user Id, unset the Firm name, and set it to unconnected.
               await db
                 .update(Company)
                 .set({
@@ -209,7 +209,7 @@ export const options: NextAuthOptions = {
               })
               .returning();
 
-            // Update the User to it to the Subscription.
+            // Update the User to connect it to the Subscription.
             await db
               .update(User)
               .set({ subscriptionId: newSubscription[0].id })
@@ -240,7 +240,7 @@ export const options: NextAuthOptions = {
             .from(Company)
             .where(eq(Company.userId, userData[0].id));
 
-          // Use the current Company realm Id to check if it present in the list of the User Companies.
+          // Use the current realm Id to check if it present in the list of the User Companies.
           if (!companies.some((company) => company.realmId === companyId)) {
             // Create a new Company that is assosaited with the new User.
             const newCompany = {

@@ -1,13 +1,13 @@
 import type { ErrorResponse, QueryResult } from '@/types/index';
 
-// Takes: An unknown type object called error.
+// Takes: An unknown typed error object.
 // Returns: Boolean value indicating if passed object was an error object with a 'fault' propery.
 export function checkFaultProperty(
   error: unknown
 ): error is { Fault: unknown } {
   // If a non-null object was passed check if it has a 'Fault' property.
   if (typeof error === 'object' && error !== null) {
-    // Return the presence of the 'Fault' propertu as a boolean.
+    // Return the presence of the 'Fault' property as a boolean.
     return 'Fault' in error;
   }
   // If the error is not an object, return false.

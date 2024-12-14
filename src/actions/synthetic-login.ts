@@ -2,7 +2,7 @@
 
 import type { LoginTokens, QueryResult } from '@/types/index';
 
-// Takes: The Company realm Id,
+// Takes: The realm Id,
 // Takes (Invite): Takes the Invite link and a string defining the type of Invite.
 // Returns: A Query Result for the login process and the potentially empty Login Tokens.
 export async function syntheticLogin(

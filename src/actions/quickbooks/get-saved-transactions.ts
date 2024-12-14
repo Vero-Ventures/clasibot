@@ -229,7 +229,7 @@ async function checkAndFormatTransactions(
               (userTaxCodes[0] as QueryResult).result === 'Error';
 
             console.error(
-              'Error getting Transaction tax details,\nPurchase Failure: ' +
+              'Error Getting Transaction Tax Details,\nPurchase Failure: ' +
                 purchaseError +
                 ', Tax Code Failure: ' +
                 taxCodeError
@@ -244,7 +244,7 @@ async function checkAndFormatTransactions(
             }
             if (taxCodeError) {
               console.error(
-                'Error fetching Tax Code: ' +
+                'Error Fetching Tax Code: ' +
                   (userTaxCodes[0] as QueryResult).detail
               );
             }

@@ -41,12 +41,12 @@ export async function sendContactEmail({
       return { message: 'success' };
     } catch (error) {
       // Catch and log any errors from sending the Email, then return an error message.
-      console.error('Error sending email:', error);
+      console.error('Error Sending Email:', error);
       return { message: 'error' };
     }
   } catch (error) {
     // Catch and log any errors creating the Transporter, then return an error message.
-    console.error('Error creating transporter:', error);
+    console.error('Error Creating Transporter:', error);
     return { message: 'error' };
   }
 }

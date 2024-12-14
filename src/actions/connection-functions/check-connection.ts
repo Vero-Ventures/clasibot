@@ -7,27 +7,26 @@ import { db } from '@/db/index';
 import { Company } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-// Checks if the current Company is set as connected to the Synthetic Bookkeeper.
-// Returns: A string 'true / false' value for the connection state or an error message string.
+// Returns: A boolean value for the connection state, a result string, and a message string.
 export async function checkCompanyConnection(): Promise<{
   connected: boolean;
   result: string;
   message: string;
 }> {
   try {
-    // Get the current session and use it to get the Company realm Id.
+    // Get the current session and use it to get the realm Id.
     const session = await getServerSession(options);
     const realmId = session?.realmId;
 
-    // Check the Company realm Id could be found.
+    // Check the realm Id could be found.
     if (realmId) {
-      // Check for a Company with the same Company realm Id.
+      // Find the matching Company with the unique realm Id.
       const currentCompany = await db
         .select()
         .from(Company)
         .where(eq(Company.realmId, realmId));
 
-      // Return the connection status for the Company as a string ('true' or 'false').
+      // Return the connection status of the Company.
       if (currentCompany.length > 0) {
         return {
           connected: currentCompany[0].bookkeeperConnected,

@@ -29,7 +29,7 @@ export async function createCustomerSession(): Promise<
       return { error: 'Error getting session' };
     }
 
-    // Find the User using the session Email.
+    // Find the User using the unqiue Email from the session.
     const user = await db
       .select()
       .from(User)
@@ -40,7 +40,7 @@ export async function createCustomerSession(): Promise<
       return { error: 'User not found!' };
     }
 
-    // Find the related Subscription by the Id from the User.
+    // Find the related Subscription by the unqiue Id from the User.
     const userSubscription = await db
       .select()
       .from(Subscription)

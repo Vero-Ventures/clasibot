@@ -34,7 +34,7 @@ export class QuickBooksAuth {
         CONFIG.quickbooks.password
       );
 
-      // Submit the password option to contiune to MFA or firm selection.
+      // Submit the password option to contiune to MFA or Firm selection.
       await browserHelper.waitAndClick(CONFIG.selectors.login.passwordSubmit);
 
       // Try to call MFA handler to check if MFA page has appeared and to handle the MFA process.
@@ -45,7 +45,7 @@ export class QuickBooksAuth {
         console.log('No MFA');
       }
 
-      // Call the firm selection process then wait for the login process to complete.
+      // Call the Firm selection process then wait for the login process to complete.
       await this.firmSelection(browserHelper);
       await new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -100,9 +100,9 @@ export class QuickBooksAuth {
         console.log('No MFA');
       }
 
-      // If the invite is to a company, firm slection is required.
+      // If the invite is to a company, Firm slection is required.
       if (inviteType === 'company') {
-        // Call the firm selection process then select the continue option.
+        // Call the Firm selection process then select the continue option.
         await this.firmSelection(browserHelper, 'invite');
         await browserHelper.waitAndClick(
           CONFIG.selectors.firmSelection.firmSelectionAcceptButton
@@ -250,14 +250,14 @@ export class QuickBooksAuth {
     selectionType: string = ''
   ): Promise<void> {
     try {
-      // Wait for the firm search input which can take a while to load, before inputting the Synthetic Bookkeeper firm name.
+      // Wait for the Firm search input which can take a while to load, before inputting the Synthetic Bookkeeper Firm name.
       await browser.waitAndFill(
         CONFIG.selectors.firmSelection.searchInput,
         'Clasibot Synthetic Bookkeeper',
         30000
       );
 
-      // Identify the firm selection buttons based on the passed selection type.
+      // Identify the Firm selection buttons based on the passed selection type.
       let firmButtons = this.page.locator(
         CONFIG.selectors.firmSelection.firmSelectionButtonLogin
       );
@@ -268,7 +268,7 @@ export class QuickBooksAuth {
         );
       }
 
-      // Wait for the firm selection button to be visible before selecting the Synthetic Bookkeeper firm.
+      // Wait for the Firm selection button to be visible before selecting the Synthetic Bookkeeper Firm.
       await firmButtons.first().waitFor({ state: 'visible' });
       await firmButtons.first().click();
     } catch (error) {

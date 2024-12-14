@@ -38,10 +38,10 @@ export async function getCompanyName(): Promise<string> {
       });
     });
 
-    // Get the current session for the Company realm Id.
+    // Get the current session for the realm Id.
     const session = await getServerSession(options);
 
-    // Update the Company name using the fetched realm Id.
+    // Update the Company name using the unqiue realm Id from the session.
     if (session?.realmId) {
       await db
         .update(Company)
@@ -178,7 +178,7 @@ export async function getCompanyLocation(): Promise<string> {
     }
   } catch (error) {
     // Catch and log any errors, include the error message if it is present.
-    console.error('Error finding Company location:', error);
+    console.error('Error Finding Company Location:', error);
     // On error, return the default error object that indicates failure to find.
     return JSON.stringify({ Country: '', SubLocation: null });
   }

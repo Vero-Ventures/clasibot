@@ -7,7 +7,7 @@ import type {
   QueryResult,
 } from '@/types/index';
 
-// Takes: The  Company realm Id, Id of Account to check, and a set of Synthetic Login Tokens.
+// Takes: The  realm Id, Id of Account to check, and a set of Synthetic Login Tokens.
 // Returns: A Query Result, on success returns the found 'For Review' transactions array as the detail.
 //    Returned 'For Review' transactions are an array of Sub-arrays in the format [FormattedForReviewTransaction, ForReviewTransaction].
 export async function getForReview(
@@ -16,7 +16,7 @@ export async function getForReview(
   realmId: string
 ): Promise<QueryResult> {
   try {
-    // Define the endpoint using the Company realm Id and the Id of the Account to fetch the 'For Review' transactions from.
+    // Define the endpoint using the realm Id and the Id of the Account to fetch the 'For Review' transactions from.
     const endpoint = `https://qbo.intuit.com/api/neo/v1/company/${realmId}/olb/ng/getTransactions?accountId=${accountId}&sort=-amount&reviewState=PENDING&ignoreMatching=false`;
 
     // Define the static Intuit API key value.
@@ -62,7 +62,7 @@ export async function getForReview(
       return {
         result: 'Error',
         message: 'Call made to "Get For Review" endpoint resulted in error.',
-        detail: 'Error' + error.message,
+        detail: 'Error: ' + error.message,
       };
     } else {
       return {

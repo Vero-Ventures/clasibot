@@ -17,7 +17,7 @@ const stripe = new Stripe(
 // Returns: A response object containing a success message or an error.
 export async function createCustomer(userId: string): Promise<Response> {
   try {
-    // Find the Subscription by matching the User Id to the passed value.
+    // Find the Subscription by the unique passed User Id.
     const subscription = await db
       .select()
       .from(Subscription)
@@ -32,7 +32,7 @@ export async function createCustomer(userId: string): Promise<Response> {
     const userStripeId = subscription[0]?.stripeId;
     // If no Stripe Id is found, create a new Customer with the User Email and name.
     if (!userStripeId) {
-      // Get the User using the passed User Id.
+      // Get the User by the unique passed User Id.
       const user = await db.select().from(User).where(eq(User.id, userId));
 
       // If the fetched User does not exist, return an error.

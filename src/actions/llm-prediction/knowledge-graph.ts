@@ -64,9 +64,9 @@ export async function fetchKnowledgeGraph(
   } catch (error) {
     // Catch and log any errors that occured, include the error message if it is present.
     if (error instanceof Error) {
-      console.error('Error fetching Knowledge Graph search: ' + error);
+      console.error('Error Fetching Knowledge Graph: ' + error);
     } else {
-      console.error('Unexpected error fetching Knowledge Graph.');
+      console.error('Unexpected Error Fetching Knowledge Graph.');
     }
     // On error, return an empty array.
     return [];

@@ -96,9 +96,9 @@ export async function queryLLM(
   } catch (error) {
     // Catch any errors and log them (include the error message if it is present).
     if (error instanceof Error) {
-      console.error('Error sending query to llm: ' + error.message);
+      console.error('Error Sending Query To LLM: ' + error.message);
     } else {
-      console.error('Unexpected error sending query to llm.');
+      console.error('Unexpected Error Sending Query To LLM.');
     }
     // On error return an empty string.
     return '';

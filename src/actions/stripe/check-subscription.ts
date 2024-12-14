@@ -29,7 +29,7 @@ export async function checkSubscription(): Promise<
       return { error: 'Error getting session' };
     }
 
-    // Get the User using the Email pulled from the session.
+    // Find the User using the unqiue Email from the session.
     const user = await db
       .select()
       .from(User)
@@ -40,7 +40,7 @@ export async function checkSubscription(): Promise<
       return { error: 'User not found!' };
     }
 
-    // Find the User Subscription by matching the to the User Id value.
+    // Find the Subscription by the unqiue User Id value.
     const userSubscription = await db
       .select()
       .from(Subscription)

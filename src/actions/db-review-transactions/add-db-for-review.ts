@@ -4,40 +4,37 @@ import { db } from '@/db/index';
 import {
   ForReviewTransaction as DatabaseForReviewTransaction,
   Category,
-  TaxCode,
   ForReviewTransactionToCategories,
+  TaxCode,
   ForReviewTransactionToTaxCodes,
 } from '@/db/schema';
 
 import type {
   ClassifiedElement,
-  RawForReviewTransaction,
   ClassifiedForReviewTransaction,
+  RawForReviewTransaction,
   QueryResult,
 } from '@/types/index';
 
-// Saves the newly Classified 'For Review' transactions to be pulled and shown to User for review on the frontend.
-// Takes: An array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction] as well as a Company realm Id.
+// Takes: A realm Id and an array of 'For Review' transaction Sub-arrays in format [ClassifiedForReviewTransaction, ForReviewTransaction].
 // Returns: A Query Result for saving the 'For Review' transactions.
 export async function addDatabaseForReviewTransactions(
   transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][],
   realmId: string
 ): Promise<QueryResult> {
   try {
-    // Iterate through the passed 'For Review' transactions, extracting and defining the type of the ClassifiedForReviewTransaction.
+    // Iterate through the passed 'For Review' transactions.
     for (const transaction of transactions) {
+      // Extract and define the types of the ClassifiedForReviewTransaction and  Raw 'For Review' transaction.
       const classifiedTransaction =
         transaction[0] as ClassifiedForReviewTransaction;
+      const rawTransaction = transaction[1] as RawForReviewTransaction;
 
       // Find the Classification type of the predictions in the the Classified 'For Review' transaction.
       const [categoryPredictionType, taxCodePredictionType] =
         getClassificationType(classifiedTransaction);
 
-      // Extract and define the type of the Raw 'For Review' transaction which contains data for writing to QuickBooks.
-      const rawTransaction = transaction[1] as RawForReviewTransaction;
-
-      // Define the object to save.
-      // Contains the values needed for frontend display and for writing to QuickBooks.
+      // Define the object to save, contains the values needed for the Review Table and for writing to QuickBooks.
       const databaseObject = {
         companyId: realmId,
         reviewTransactionId: classifiedTransaction.transaction_Id,
@@ -62,12 +59,11 @@ export async function addDatabaseForReviewTransactions(
         .values(databaseObject)
         .returning();
 
-      // Create variables to track results of the connecting the 'For Review' transaction to its related Classifications.
+      // Define trackers for the results of the connecting the 'For Review' transaction to its Classifications.
       let categoryConnectionResult = '';
       let taxCodeConnectionResult = '';
 
-      // Check if Category and Tax Code Classifications are present.
-      // Then call helper functions to save the related Classificaions.
+      // Check if the Classification is present, then call a helper functions to save the related Classificaions.
       if (classifiedTransaction.categories) {
         categoryConnectionResult = await handleCategoryConnections(
           classifiedTransaction.categories,
@@ -110,24 +106,22 @@ export async function addDatabaseForReviewTransactions(
         result: 'Error',
         message:
           'An error occurred while saving newly Classified Transaction to the database.',
-        detail: 'Unexpected error occurred.',
+        detail: 'Unexpected Error Occurred.',
       };
     }
   }
 }
 
-// Gets the Classification type of the predictions in a Classified 'For Review' transaction.
 // Takes: A Classified 'For Review' transaction.
-// Returns: An array of the Classificaion Types in the format [categoryConfidence, taxCodeConfidence].
+// Returns: An array of the Classificaion methods. Format: [categoryConfidence, taxCodeConfidence].
 function getClassificationType(
   classifiedTransaction: ClassifiedForReviewTransaction
 ): [string, string] {
-  // Define a value to track the Classification method for each type.
+  // Define a value to track the method for each Classification type.
   let categoryPredictionType = 'None';
   let taxCodePredictionType = 'None';
 
-  // If a Classification is present all Classification will use the same method.
-  // Extracting the Classification method of the first Classification can be used to get the confidence level.
+  // Check the Classificaion is persent and extract the Classification method from the first Classification.
   if (classifiedTransaction.categories && classifiedTransaction.categories[0]) {
     categoryPredictionType = classifiedTransaction.categories[0].classifiedBy;
   }
@@ -135,13 +129,12 @@ function getClassificationType(
     taxCodePredictionType = classifiedTransaction.taxCodes[0].classifiedBy;
   }
 
-  // Return the Confidence Value strings in an array.
+  // Return the Classification methods.
   return [categoryPredictionType, taxCodePredictionType];
 }
 
-// Creates Categories for any new Catagories being saved with the Classified 'For Review' transactions.
-// Takes: The Classified Elements for the of the related Category Classifications.
-// Returns: A string with a success or error message.
+// Takes: The Classified Elements for the Category Classifications.
+// Returns: A string with a 'Success' or 'Error' message.
 async function handleCategoryConnections(
   newTransactionCategories: ClassifiedElement[],
   transactionId: string
@@ -152,17 +145,17 @@ async function handleCategoryConnections(
 
     // Check all Category Classified Elements connected to the 'For Review' transaction.
     for (const category of newTransactionCategories) {
-      // Check if a related Category already exists for the current Category Classified Element.
+      // Check if a related Category already exists for the current Classified Element.
       const matchingCategory = existingCategories.find(
         (dbCategory) => dbCategory.category === category.name
       );
 
+      // Make a variable to track the Id of the current Category, used in updating the Relationships.
       let categoryId;
 
       // If the Category does not exist, create a new one.
       if (!matchingCategory) {
-        // Number of matches is set to 0, as no Classifications for this Category have been saved yet.
-        // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
+        // Number of matches is set to 0, as no 'For Review' transactions have been saved with this Category yet.
         const newForReviewCategory = await db
           .insert(Category)
           .values({
@@ -170,11 +163,14 @@ async function handleCategoryConnections(
             matches: 0,
           })
           .returning();
+
+        // Record the Id of the Category for Relationship updating.
         categoryId = newForReviewCategory[0].id;
       } else {
         categoryId = matchingCategory.id;
       }
 
+      // Create a new Relationship using the recorded Category Id and passed Transaction Id
       await db.insert(ForReviewTransactionToCategories).values({
         reviewTransactionId: transactionId,
         categoryId: categoryId,
@@ -183,21 +179,24 @@ async function handleCategoryConnections(
     // Return a string indicating success.
     return 'Success';
   } catch (error) {
-    // Catch any errors and return an error string, include the error message if it is present.
+    // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error && error.message) {
-      return (
-        'Error creating Category connection for the Transaction: ' +
-        error.message
+      console.error(
+        'Error Creating Category Connection For The Transaction: ' +
+          error.message
       );
     } else {
-      return 'Error creating Category connection for the Transaction: Unexpected Error';
+      console.error(
+        'Unexpected Error Creating Category Connection For The Transaction.'
+      );
     }
+    // Return a string indicating an error was encountered.
+    return 'Error';
   }
 }
 
-// Creates Tax Codes for any new Tax Code being saved with the Classified 'For Review' transactions.
-// Takes: The Classified Element for the of the related Tax Code Classifications.
-// Returns: A string with a success or error message.
+// Takes: The Classified Elements for the Tax Code Classifications.
+// Returns: A string with a 'Success' or 'Error' message.
 async function handleTaxCodeConnections(
   newTransactionTaxCodes: ClassifiedElement[],
   transactionId: string
@@ -208,17 +207,17 @@ async function handleTaxCodeConnections(
 
     // Check all Tax Code Classified Elements connected to the 'For Review' transaction.
     for (const taxCode of newTransactionTaxCodes) {
-      // Check if a related Category already exists for the current Category Classified Element.
+      // Check if a related Tax Code already exists for the current Tax Code Classified Element.
       const matchingTaxCode = existingTaxCodes.find(
         (dbTaxCode) => dbTaxCode.taxCode === taxCode.name
       );
 
+      // Make a variable to track the Id of the current Tax Code, used in updating the Relationships.
       let taxCodeId;
 
       // If the Tax Code does not exist, create a new one.
       if (!matchingTaxCode) {
-        // Number of matches is set to 0, as no Classifications for this Tax Code have been saved yet.
-        // If the User saves the 'For Review' transaction with this Classification, the save function will increment the matches.
+        // Number of matches is set to 0, as no 'For Review' transactions have been saved with this Tax Code yet.
         const newForReviewTaxCode = await db
           .insert(TaxCode)
           .values({
@@ -226,11 +225,14 @@ async function handleTaxCodeConnections(
             matches: 0,
           })
           .returning();
+
+        // Record the Id of the Tax Code for Relationship updating.
         taxCodeId = newForReviewTaxCode[0].id;
       } else {
         taxCodeId = matchingTaxCode.id;
       }
 
+      // Create a new Relationship using the recorded Category Id and passed Transaction Id
       await db.insert(ForReviewTransactionToTaxCodes).values({
         reviewTransactionId: transactionId,
         taxCodeId: taxCodeId,
@@ -239,14 +241,18 @@ async function handleTaxCodeConnections(
     // Return a string indicating success.
     return 'Success';
   } catch (error) {
-    // Catch any errors and return an error string, include the error message if it is present.
+    // Catch any errors and log an error, include the error message if it is present.
     if (error instanceof Error && error.message) {
-      return (
-        'Error creating Tax Code connection for the Transaction: ' +
-        error.message
+      console.error(
+        'Error Creating Tax Code Connection For The Transaction: ' +
+          error.message
       );
     } else {
-      return 'Error creating Tax Code connection for the Transaction: Unexpected Error';
+      console.error(
+        'Unexpected Error Creating Tax Code Connection For The Transaction.'
+      );
     }
+    // Return a string indicating an error was encountered.
+    return 'Error';
   }
 }
