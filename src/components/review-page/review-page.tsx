@@ -36,8 +36,7 @@ export default function ReviewPage({
   companyInfo: CompanyInfo;
 }>) {
   // Define states to track if Transactions are loading and if it resulted in an error.
-  const [loadingTransactions, setLoadingTransactions] =
-    useState<boolean>(false);
+  const [loadingTransactions, setLoadingTransactions] = useState<boolean>(true);
   const [errorLoadingTransactions, setErrorLoadingTransactions] =
     useState<boolean>(false);
 
