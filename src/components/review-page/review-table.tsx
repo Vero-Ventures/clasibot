@@ -122,7 +122,7 @@ export function ReviewTable({
   const handlePageSizeChange = (size: number) => {
     setPagination((prev) => ({
       ...prev,
-      pageSize: size, // Set the new page size
+      pageSize: size,
     }));
   };
 
@@ -145,6 +145,7 @@ export function ReviewTable({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     // Pass the relevant states to the Table.
     state: {
       sorting,
@@ -208,7 +209,7 @@ export function ReviewTable({
 
       <ReviewTablePagesAndSave
         table={table}
-        pageSize={pagination.pageIndex}
+        pageSize={pagination.pageSize}
         rowSelection={rowSelection}
         classifiedTransactions={classifiedTransactions}
         isSaving={isSaving}

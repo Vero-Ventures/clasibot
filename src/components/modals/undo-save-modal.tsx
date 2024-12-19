@@ -56,8 +56,8 @@ export const UndoSaveModal: React.FC<UndoSaveModalProps> = ({
               Confirm Undo Last Save
             </h2>
             <p className="mb-6 text-center text-xl font-semibold text-gray-700">
-              Are you sure you want to undo your last save. The transactions will
-              be removed from the categorized section on QuickBooks.
+              Are you sure you want to undo your last save. The transactions
+              will be removed from the categorized section on QuickBooks.
             </p>
             {!showLoadingAnimation ? (
               <div className="mx-auto flex w-full flex-row justify-evenly mb:gap-6">
