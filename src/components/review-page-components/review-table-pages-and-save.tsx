@@ -1,6 +1,10 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import type { Table } from '@tanstack/react-table';
+
+import { checkForUndoTransactions } from '@/actions/db-review-transactions/index';
 
 import type {
   ClassifiedForReviewTransaction,
@@ -13,6 +17,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/index';
+import { undoForReviewSave } from '@/actions/quickbooks/for-review/undo-for-review';
 
 // Takes: The Table component, the selected rows, the Classified Transactions,
 //        If saving is in progess and the handler function for saving.
@@ -37,6 +42,17 @@ export function ReviewTablePagesAndSave({
     transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
 }>) {
+  // Define state to track if there are recently saved 'For Review' transactions to undo.
+  const [enableUndo, setEnableUndo] = useState<boolean>(false);
+
+  // On element load, check if there are 'For Review' transactions to undo.
+  useEffect(() => {
+    const checkForUndo = async () => {
+      setEnableUndo(await checkForUndoTransactions());
+    };
+    checkForUndo();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-between pt-2 sm:flex-row xl:px-12">
       <div className="mb-6 flex h-12 w-full flex-row items-center px-2 mb:px-4 sm:mb-0">
@@ -77,6 +93,12 @@ export function ReviewTablePagesAndSave({
       </div>
 
       <div className="flex w-full justify-center sm:mr-4 sm:w-1/4 md:mr-8">
+        <Button
+          onClick={() => undoForReviewSave()}
+          disabled={enableUndo}
+          className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 font-sans text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48">
+          Undo Save
+        </Button>
         <Button
           onClick={() => handleSave(rowSelection, classifiedTransactions)}
           disabled={
