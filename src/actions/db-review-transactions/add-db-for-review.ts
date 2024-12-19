@@ -2,7 +2,7 @@
 
 import { db } from '@/db/index';
 import {
-  ForReviewTransaction as DatabaseForReviewTransaction,
+  ForReviewTransaction,
   Category,
   ForReviewTransactionToCategories,
   TaxCode,
@@ -56,7 +56,7 @@ export async function addDatabaseForReviewTransactions(
 
       // Save the new 'For Review' transaction.
       const databaseForReviewTransaction = await db
-        .insert(DatabaseForReviewTransaction)
+        .insert(ForReviewTransaction)
         .values(databaseObject)
         .returning();
 

@@ -5,7 +5,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 
 import { db } from '@/db/index';
 import {
-  ForReviewTransaction as DatabaseForReviewTransaction,
+  ForReviewTransaction,
   Category,
   ForReviewTransactionToCategories,
   TaxCode as DatabaseTaxCode,
@@ -96,8 +96,8 @@ export async function getDatabaseTransactions(): Promise<{
       // Use the unique realm Id to get the 'For Review' transactions.
       const classifiedForReviewTransactions = await db
         .select()
-        .from(DatabaseForReviewTransaction)
-        .where(eq(DatabaseForReviewTransaction.companyId, session!.realmId));
+        .from(ForReviewTransaction)
+        .where(eq(ForReviewTransaction.companyId, session!.realmId));
 
       // Iterate through the fetched 'For Review' transactions.
       for (const forReviewTransaction of classifiedForReviewTransactions) {
@@ -204,7 +204,7 @@ export async function getDatabaseTransactions(): Promise<{
 }
 
 // Define the data formatting of the 'For Review' transactions fetched from the database.
-type databaseForReviewTransaction = {
+type DatabaseForReviewTransaction = {
   date: string;
   id: string;
   description: string;
@@ -223,7 +223,7 @@ type databaseForReviewTransaction = {
 // Takes: A database 'For Review' transaction and the 'Expense' Accounts.
 // Returns: An array of Classified Elements for the related Categories.
 async function getTransactionCategories(
-  forReviewTransaction: databaseForReviewTransaction,
+  forReviewTransaction: DatabaseForReviewTransaction,
   expenseAccountsResult: (QueryResult | Account)[]
 ): Promise<ClassifiedElement[]> {
   try {
@@ -285,7 +285,7 @@ async function getTransactionCategories(
 // Takes: A database 'For Review' transaction and the Tax Codes.
 // Returns: An array of Classified Elements for the related Tax Codes.
 async function getTransactionTaxCodes(
-  forReviewTransaction: databaseForReviewTransaction,
+  forReviewTransaction: DatabaseForReviewTransaction,
   taxCodesResponse: (QueryResult | TaxCode)[]
 ): Promise<ClassifiedElement[]> {
   try {
