@@ -97,7 +97,10 @@ export async function getDatabaseTransactions(): Promise<{
       const classifiedForReviewTransactions = await db
         .select()
         .from(ForReviewTransaction)
-        .where(eq(ForReviewTransaction.companyId, session!.realmId));
+        .where(
+          eq(ForReviewTransaction.companyId, session!.realmId) &&
+            eq(ForReviewTransaction.recentlySaved, false)
+        );
 
       // Iterate through the fetched 'For Review' transactions.
       for (const forReviewTransaction of classifiedForReviewTransactions) {

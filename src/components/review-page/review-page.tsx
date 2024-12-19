@@ -21,6 +21,7 @@ import {
   ErrorLoadingTransactionsModal,
   SaveClassifiedTransactionsModal,
   SaveProcessModal,
+  UndoSaveModal,
 } from '@/components/modals/index';
 
 import type {
@@ -205,6 +206,9 @@ export default function ReviewPage({
     setOpenSaveModal(true);
   }
 
+  // Define state used to display the undo last save modal.
+  const [showUndoSaveModal, setShowUndoSaveModal] = useState(false);
+
   return (
     <>
       <h1 className="mx-auto mb-6 text-center text-4xl font-extrabold text-gray-800">
@@ -226,6 +230,7 @@ export default function ReviewPage({
         handleCategoryChange={handleCategoryChange}
         handleTaxCodeChange={handleTaxCodeChange}
         handleSave={handleSave}
+        showUndoSaveModal={setShowUndoSaveModal}
       />
 
       {
@@ -241,6 +246,13 @@ export default function ReviewPage({
         <SaveClassifiedTransactionsModal
           displayState={openSaveModal}
           errorMessage={savingErrorMessage}
+        />
+      }
+
+      {
+        <UndoSaveModal
+          displayState={showUndoSaveModal}
+          setDisplayState={setShowUndoSaveModal}
         />
       }
 

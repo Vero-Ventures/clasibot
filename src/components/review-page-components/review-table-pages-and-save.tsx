@@ -17,7 +17,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/index';
-import { undoForReviewSave } from '@/actions/quickbooks/for-review/undo-for-review';
 
 // Takes: The Table component, the selected rows, the Classified Transactions,
 //        If saving is in progess and the handler function for saving.
@@ -28,6 +27,7 @@ export function ReviewTablePagesAndSave({
   classifiedTransactions,
   isSaving,
   handleSave,
+  showUndoSaveModal,
 }: Readonly<{
   table: Table<ClassifiedForReviewTransaction>;
   pageSize: number;
@@ -41,6 +41,7 @@ export function ReviewTablePagesAndSave({
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
+  showUndoSaveModal: (newState: boolean) => void;
 }>) {
   // Define state to track if there are recently saved 'For Review' transactions to undo.
   const [enableUndo, setEnableUndo] = useState<boolean>(false);
@@ -94,7 +95,7 @@ export function ReviewTablePagesAndSave({
 
       <div className="flex w-full justify-evenly md:w-1/2">
         <Button
-          onClick={() => undoForReviewSave()}
+          onClick={() => showUndoSaveModal(true)}
           disabled={!enableUndo}
           className="h-12 w-1/3 rounded-md border-2 border-gray-300 bg-white p-2 py-2 font-sans text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:min-w-32 md:max-w-52">
           Undo Save

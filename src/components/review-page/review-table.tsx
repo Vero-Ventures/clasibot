@@ -45,6 +45,7 @@ export function ReviewTable({
   handleCategoryChange,
   handleTaxCodeChange,
   handleSave,
+  showUndoSaveModal,
 }: Readonly<{
   loadingTransactions: boolean;
   isSaving: boolean;
@@ -61,6 +62,7 @@ export function ReviewTable({
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
+  showUndoSaveModal: (newState: boolean) => void;
 }>) {
   // Define states for the start and end values of date range filtering.
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -211,6 +213,7 @@ export function ReviewTable({
         classifiedTransactions={classifiedTransactions}
         isSaving={isSaving}
         handleSave={handleSave}
+        showUndoSaveModal={showUndoSaveModal}
       />
     </div>
   );
