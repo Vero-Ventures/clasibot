@@ -7,6 +7,8 @@ import { db } from '@/db/index';
 import { ForReviewTransaction } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
+import type { RawForReviewTransaction, QueryResult } from '@/types/index';
+
 // Returns: A boolean indicating if 'For Review' transactions to undo were found.
 export async function checkForUndoTransactions(): Promise<boolean> {
   try {
@@ -46,5 +48,72 @@ export async function checkForUndoTransactions(): Promise<boolean> {
     }
     // On error return false to indicate no 'For Review' transactions to undo were found.
     return false;
+  }
+}
+
+// Takes:  An array of Raw 'For Review' transactions.
+// Returns: A Query Result for updating the 'For Review' transactions.
+export async function setSavedForReviewTransactions(
+  savedTransactions: {
+    forReviewTransaction: RawForReviewTransaction;
+    categoryId: string;
+    taxCodeId: string;
+  }[]
+): Promise<QueryResult> {
+  try {
+    // Get the session and extract the realm Id.
+    const session = await getServerSession(options);
+    const realmId = session?.realmId;
+
+    // Check if a valid realm Id was found.
+    if (realmId) {
+      // Iterate over the passed 'For Review' transactions.
+      for (const savedTransaction of savedTransactions) {
+        // Set the 'For Review' transaction to be recently saved by the unique combo of realm Id and QuickBooks Transaction Id.
+        await db
+          .update(ForReviewTransaction)
+          .set({ recentlySaved: true })
+          .where(
+            eq(ForReviewTransaction.companyId, realmId) &&
+              eq(
+                ForReviewTransaction.reviewTransactionId,
+                savedTransaction.forReviewTransaction.olbTxnId
+              )
+          );
+      }
+
+      // Return a success Query Result.
+      return {
+        result: 'Success',
+        message:
+          'Setting "For Review" transactions as recently saved was successful.',
+        detail:
+          'All passed "For Review" transactions were set as recently saved.',
+      };
+    } else {
+      // Return an error Query Result indicating the realm Id could not be found.
+      return {
+        result: 'Error',
+        message: 'Company Id for current User could not be found.',
+        detail: 'Identifier Company Id Could Not Be Found In The Session.',
+      };
+    }
+  } catch (error) {
+    // Catch any errors and return an error Query Response, include the error message if it is present.
+    if (error instanceof Error && error.message) {
+      return {
+        result: 'Error',
+        message:
+          'An error was encountered setting a "For Review" transaction as recently saved.',
+        detail: error.message,
+      };
+    } else {
+      return {
+        result: 'Error',
+        message:
+          'An error was encountered setting a "For Review" transaction as recently saved.',
+        detail: 'Unknown Error Occured.',
+      };
+    }
   }
 }

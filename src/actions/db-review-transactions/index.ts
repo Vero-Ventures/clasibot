@@ -6,9 +6,9 @@ export { addDatabaseForReviewTransactions } from './add-db-for-review';
 
 export { getDatabaseTransactions } from './get-db-for-review';
 
-export {
-  removeSelectedForReviewTransaction,
-  removeAllForReviewTransactions,
-} from './remove-db-for-review';
+export { removeAllForReviewTransactions } from './remove-db-for-review';
 
-export { checkForUndoTransactions } from './submitted-db-for-review';
+export {
+  checkForUndoTransactions,
+  setSavedForReviewTransactions,
+} from './submitted-db-for-review';

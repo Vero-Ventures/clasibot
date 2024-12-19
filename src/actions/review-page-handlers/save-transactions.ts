@@ -2,7 +2,7 @@
 
 import { addDatabaseTransactions } from '@/actions/db-transactions';
 
-import { removeSelectedForReviewTransaction } from '@/actions/db-review-transactions/index';
+import { setSavedForReviewTransactions } from '@/actions/db-review-transactions/index';
 
 import { getAccounts, addForReview } from '@/actions/quickbooks/index';
 
@@ -69,9 +69,9 @@ export async function saveSelectedTransactions(
       throw new Error(addResult.message);
     }
 
-    // Remove the added 'For Review' transactions and their connections.
+    // Update the added 'For Review' transactions to be saved.
     const removeResult =
-      await removeSelectedForReviewTransaction(batchAddTransactions);
+      await setSavedForReviewTransactions(batchAddTransactions);
 
     // If removing the Transaction resulted in an error, throw the Query Result message as an error.
     if (removeResult.result === 'Error') {
