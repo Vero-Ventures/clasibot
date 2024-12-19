@@ -137,7 +137,7 @@ export const options: NextAuthOptions = {
         }
 
         // Only reach this point if realm Id is present so define it as not null.
-        const companyId = cookies().get('realmId')!.value;
+        const realmId = cookies().get('realmId')!.value;
 
         // Check if the Email was successfuly found from the passed User.
         if (!email) {
@@ -174,7 +174,7 @@ export const options: NextAuthOptions = {
 
             // Create a Company that is assosaited with the new User.
             const newCompany = {
-              realmId: companyId,
+              realmId: realmId,
               userId: newUser[0].id,
               name: 'unset',
               industry: '',
@@ -197,7 +197,7 @@ export const options: NextAuthOptions = {
                   firmName: null,
                   bookkeeperConnected: false,
                 })
-                .where(eq(Company.id, companyId));
+                .where(eq(Company.id, realmId));
             }
 
             // Create a blank Subscription for the new User.
@@ -241,10 +241,10 @@ export const options: NextAuthOptions = {
             .where(eq(Company.userId, userData[0].id));
 
           // Use the current realm Id to check if it present in the list of the User Companies.
-          if (!companies.some((company) => company.realmId === companyId)) {
+          if (!companies.some((company) => company.realmId === realmId)) {
             // Create a new Company that is assosaited with the new User.
             const newCompany = {
-              realmId: companyId,
+              realmId: realmId,
               userId: userData[0].id,
               name: 'unset',
               industry: '',

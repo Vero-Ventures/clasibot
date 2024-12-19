@@ -25,10 +25,10 @@ export async function removeSelectedForReviewTransaction(
   try {
     // Get the session and extract the realm Id.
     const session = await getServerSession(options);
-    const companyId = session?.realmId;
+    const realmId = session?.realmId;
 
     // Check if a valid realm Id was found.
-    if (companyId) {
+    if (realmId) {
       // Iterate over the passed 'For Review' transactions.
       for (const savedTransaction of savedTransactions) {
         // Get the 'For Review' transaction by the unique combo of realm Id and QuickBooks Transaction Id.
@@ -36,7 +36,7 @@ export async function removeSelectedForReviewTransaction(
           .select()
           .from(DatabaseForReviewTransaction)
           .where(
-            eq(DatabaseForReviewTransaction.companyId, companyId) &&
+            eq(DatabaseForReviewTransaction.companyId, realmId) &&
               eq(
                 DatabaseForReviewTransaction.reviewTransactionId,
                 savedTransaction.forReviewTransaction.olbTxnId
