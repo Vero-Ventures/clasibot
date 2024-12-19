@@ -51,15 +51,16 @@ export const UndoSaveModal: React.FC<UndoSaveModalProps> = ({
     <>
       {displayState && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
-          <div className="relative mx-4 w-full max-w-lg rounded-2xl bg-white p-6 px-4 shadow-2xl mb:p-8">
-            <h2 className="mb-4 text-center text-4xl font-extrabold text-red-600 opacity-90">
-              Confirm Undo Last Save
-            </h2>
-            <p className="mb-6 text-center text-xl font-semibold text-gray-700">
-              Are you sure you want to undo your last save. The transactions
-              will be removed from the categorized section on QuickBooks.
-            </p>
-            {!showLoadingAnimation ? (
+          {!showLoadingAnimation ? (
+            <div className="relative mx-4 w-full max-w-lg rounded-2xl bg-white p-6 px-4 shadow-2xl mb:p-8">
+              <h2 className="mb-4 text-center text-4xl font-extrabold text-red-600 opacity-90">
+                Confirm Undo Last Save
+              </h2>
+              <p className="mb-6 text-center text-xl font-semibold text-gray-700">
+                Are you sure you want to undo your last save. The transactions
+                will be removed from the categorized section on QuickBooks.
+              </p>
+
               <div className="mx-auto flex w-full flex-row justify-evenly mb:gap-6">
                 <Button
                   className="min-w-28 space-x-4 rounded-md bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-lg font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mb:min-w-32 sm:min-w-40 sm:px-6 sm:py-4 sm:text-xl"
@@ -72,10 +73,16 @@ export const UndoSaveModal: React.FC<UndoSaveModalProps> = ({
                   Cancel
                 </Button>
               </div>
-            ) : (
+            </div>
+          ) : (
+            <div className="relative mx-4 w-full max-w-lg rounded-2xl bg-white p-6 px-4 shadow-2xl mb:p-8">
+              <h2 className="mb-4 text-center text-3xl font-extrabold">
+                Undoing Your Last{' '}
+                <span className="block">Save To QuickBooks</span>
+              </h2>
               <MiniSpinner success={undoSaveResult} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </>
