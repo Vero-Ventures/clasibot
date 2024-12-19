@@ -51,6 +51,7 @@ export async function addDatabaseForReviewTransactions(
         transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
         topCategoryClassification: categoryPredictionType,
         topTaxCodeClassification: taxCodePredictionType,
+        recentlySaved: false,
       };
 
       // Save the new 'For Review' transaction.
