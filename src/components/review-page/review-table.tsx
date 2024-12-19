@@ -45,6 +45,7 @@ export function ReviewTable({
   handleCategoryChange,
   handleTaxCodeChange,
   handleSave,
+  showUndoSaveModal,
 }: Readonly<{
   loadingTransactions: boolean;
   isSaving: boolean;
@@ -61,6 +62,7 @@ export function ReviewTable({
     selectedRows: Record<number, boolean>,
     transactions: (ClassifiedForReviewTransaction | RawForReviewTransaction)[][]
   ) => void;
+  showUndoSaveModal: (newState: boolean) => void;
 }>) {
   // Define states for the start and end values of date range filtering.
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -108,10 +110,21 @@ export function ReviewTable({
   }, [classifiedTransactions]);
 
   // Create states to track and set key Table values.
-  // Column to sort by, Column filtering rules, and selected Rows.
+  // Column to sort by, Column filtering rules, selected Rows, and Rows per page.
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const handlePageSizeChange = (size: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageSize: size,
+    }));
+  };
 
   // Creates the React Table using the passed data, helper functions, and states.
   const table = useReactTable({
@@ -132,11 +145,13 @@ export function ReviewTable({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     // Pass the relevant states to the Table.
     state: {
       sorting,
       columnFilters,
       rowSelection,
+      pagination,
     },
   });
 
@@ -178,11 +193,13 @@ export function ReviewTable({
         startDate={startDate}
         endDate={endDate}
         accountNames={accountNames}
+        pageSize={pagination.pageSize}
         selectedAccounts={selectedAccounts}
         table={table}
         changeStartDate={changeStartDate}
         changeEndDate={changeEndDate}
         updateAccountSelection={updateAccountSelection}
+        setPageSize={handlePageSizeChange}
       />
 
       <ReviewTableDisplay
@@ -192,10 +209,12 @@ export function ReviewTable({
 
       <ReviewTablePagesAndSave
         table={table}
+        pageSize={pagination.pageSize}
         rowSelection={rowSelection}
         classifiedTransactions={classifiedTransactions}
         isSaving={isSaving}
         handleSave={handleSave}
+        showUndoSaveModal={showUndoSaveModal}
       />
     </div>
   );

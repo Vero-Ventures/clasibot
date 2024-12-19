@@ -120,6 +120,7 @@ export const TransactionToTaxCodesRelationship = relations(
  * payeeNameId: Value used only in re-submitting the FR Transaction.
  * topCategoryClassification: The method used to idenfity the best Category Classification.
  * topCategoryClassification: The method used to idenfity the best Tax Code Classification.
+ * recentlySaved: Tags transactions recently saved to QBO for potential undo.
  */
 export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   id: uuid('id').primaryKey().defaultRandom().notNull(),
@@ -137,6 +138,7 @@ export const ForReviewTransaction = pgTable('ForReviewTransaction', {
   payeeNameId: text('payee_name_id'),
   topCategoryClassification: text('top_category_classification').notNull(),
   topTaxCodeClassification: text('top_tax_code_classification').notNull(),
+  recentlySaved: boolean('recently_saved').notNull(),
 });
 
 export const ForReviewTransactionToCategoriesRelationship = relations(

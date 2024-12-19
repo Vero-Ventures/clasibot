@@ -27,7 +27,7 @@ import type {
 // Returns: An array of Sub-arrays for the 'For Review' transactions in the format: [FormattedForReviewTransaction, ForReviewTransaction]
 export async function getForReviewTransactions(
   loginTokens: LoginTokens,
-  companyId: string
+  realmId: string
 ): Promise<
   (FormattedForReviewTransaction | RawForReviewTransaction)[][] | QueryResult
 > {
@@ -63,7 +63,7 @@ export async function getForReviewTransactions(
         const forReviewResults = await getForReview(
           account.id,
           loginTokens,
-          companyId
+          realmId
         );
 
         // Check if the 'For Review' transaction fetch resulted in error.

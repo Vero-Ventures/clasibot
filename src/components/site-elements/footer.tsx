@@ -11,7 +11,8 @@ export const Footer = () => {
             key={'/connection-instructions'}
             href={'/connection-instructions'}
             className="text-center text-lg font-semibold hover:underline md:w-[150px]">
-            Connection Instructions
+            Connection
+            <span className="block">Instructions</span>
           </Link>
 
           <Link

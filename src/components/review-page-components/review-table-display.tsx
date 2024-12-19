@@ -71,8 +71,38 @@ export function ReviewTableDisplay({
                 colSpan={table.getAllColumns().length}
                 className="py-8"></TableCell>
               {loadingTransactions ? (
-                <div className="absolute inset-x-1/2 text-xl font-semibold text-black">
-                  <p className="mt-5 w-40 -translate-x-20">Loading ...</p>
+                <div className="absolute inset-x-1/2 flex w-fit -translate-x-[52px] translate-y-6 flex-row">
+                  <div
+                    id="SpinnerCircle1"
+                    className={`m-1 h-5 w-5 animate-bounce rounded-full bg-blue-500`}
+                    style={{
+                      animationDelay: '0s',
+                      animationDuration: '1s',
+                    }}></div>
+
+                  <div
+                    id="SpinnerCircle2"
+                    className={`m-1 h-5 w-5 animate-bounce rounded-full bg-blue-500`}
+                    style={{
+                      animationDelay: '0.1s',
+                      animationDuration: '1s',
+                    }}></div>
+
+                  <div
+                    id="SpinnerCircle3"
+                    className={`m-1 h-5 w-5 animate-bounce rounded-full bg-blue-500`}
+                    style={{
+                      animationDelay: '0.2s',
+                      animationDuration: '1s',
+                    }}></div>
+
+                  <div
+                    id="SpinnerCircle4"
+                    className={`m-1animate-bounce h-5 w-5 rounded-full bg-blue-500`}
+                    style={{
+                      animationDelay: '0.3s',
+                      animationDuration: '1s',
+                    }}></div>
                 </div>
               ) : (
                 <div className="absolute inset-x-1/2 text-xl font-semibold text-red-400">

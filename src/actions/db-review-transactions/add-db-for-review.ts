@@ -2,7 +2,7 @@
 
 import { db } from '@/db/index';
 import {
-  ForReviewTransaction as DatabaseForReviewTransaction,
+  ForReviewTransaction,
   Category,
   ForReviewTransactionToCategories,
   TaxCode,
@@ -51,11 +51,12 @@ export async function addDatabaseForReviewTransactions(
         transactionTypeId: rawTransaction.addAsQboTxn.txnTypeId,
         topCategoryClassification: categoryPredictionType,
         topTaxCodeClassification: taxCodePredictionType,
+        recentlySaved: false,
       };
 
       // Save the new 'For Review' transaction.
       const databaseForReviewTransaction = await db
-        .insert(DatabaseForReviewTransaction)
+        .insert(ForReviewTransaction)
         .values(databaseObject)
         .returning();
 

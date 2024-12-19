@@ -18,3 +18,5 @@ export {
   ErrorLoadingTransactionsModal,
   SaveClassifiedTransactionsModal,
 } from './transaction-modals';
+
+export { UndoSaveModal } from './undo-save-modal';
