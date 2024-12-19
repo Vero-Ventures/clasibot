@@ -12,7 +12,7 @@ import { syntheticLogin } from '@/actions/synthetic-login';
 import type { QueryResult } from '@/types/index';
 
 // Returns: A Query Result for undoing the recently save of 'For Review' Transactions.
-export async function addForReview(): Promise<QueryResult> {
+export async function undoForReviewSave(): Promise<QueryResult> {
   try {
     // Get the current session for the realm Id of the currently logged in Company.
     const session = await getServerSession(options);
@@ -67,6 +67,12 @@ export async function addForReview(): Promise<QueryResult> {
               'Call made to "Undo For Review Save" endpoint did not return a valid response.',
             detail: JSON.stringify(errorText),
           };
+        } else {
+          // If the update was successful, update the related 'For Review' transactions in the database.
+          updateUndoneForReviewTransactions(
+            session.realmId,
+            body.nextTxnInfo.accountId
+          );
         }
       }
     } else {
@@ -182,5 +188,39 @@ async function createSaveUndoObjects(realmId: string): Promise<UndoBody[]> {
     }
     // Return an empty array for the bodies on failure.
     return [];
+  }
+}
+
+// Takes: The realm Id and the Account Id of the 'For Review' transactions to mark as unsaved.
+async function updateUndoneForReviewTransactions(
+  realmId: string,
+  accountId: string
+): Promise<boolean> {
+  try {
+    // Update all 'For Review' transaction for the company with the specified Account.
+    // Set the recently saved value to false due to save being undone.
+    await db
+      .update(ForReviewTransaction)
+      .set({ recentlySaved: false })
+      .where(
+        eq(ForReviewTransaction.companyId, realmId) &&
+          eq(ForReviewTransaction.accountId, accountId)
+      );
+    // If no error occurred during the update, return a success value.
+    return true;
+  } catch (error) {
+    // Catch any errors and log an error, include the error message if it is present.
+    if (error instanceof Error) {
+      console.error(
+        'Error While Marking Database "For Review" Transactions As Unsaved: ' +
+          error.message
+      );
+    } else {
+      console.error(
+        'Unexpected Error While Marking Database "For Review" Transactions As Unsaved.'
+      );
+    }
+    // Return an failure value.
+    return false;
   }
 }
