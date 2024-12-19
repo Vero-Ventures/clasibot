@@ -1,0 +1,1 @@
+ALTER TABLE "ForReviewTransaction" ADD COLUMN "recently_saved" boolean NOT NULL;
