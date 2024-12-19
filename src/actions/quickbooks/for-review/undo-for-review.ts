@@ -154,6 +154,15 @@ async function createSaveUndoObjects(realmId: string): Promise<UndoBody[]> {
 
     // Iterate over the found 'For Review' transactions to create the bodies.
     for (const undoTransaction of undoTransactions) {
+      console.log('Transaction: ' + undoTransaction.description);
+      console.log('Transaction Account: ' + undoTransaction.accountId);
+
+      console.log('Bodies');
+      console.log(undoBodies);
+
+      console.log('Accounts');
+      console.log(bodyAccounts)
+
       // Get the Id of the current 'For Review' transaction without the ':ofx'.
       const splitId = undoTransaction.reviewTransactionId.split(':')[0];
 
@@ -177,6 +186,9 @@ async function createSaveUndoObjects(realmId: string): Promise<UndoBody[]> {
             txnIdPairs: [],
           },
         };
+
+        // Add the Account to the list of Accounts with existing bodies.
+        bodyAccounts.push(undoTransaction.accountId);
       }
     }
 
