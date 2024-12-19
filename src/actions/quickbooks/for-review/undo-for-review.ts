@@ -47,9 +47,6 @@ export async function undoForReviewSave(): Promise<QueryResult> {
     if (undoBodies.length > 0) {
       // Iterate over the bodies and call the undo save endpoint for each one.
       for (const body of undoBodies) {
-        console.log('Add Body');
-        console.log(body);
-
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
@@ -71,8 +68,6 @@ export async function undoForReviewSave(): Promise<QueryResult> {
             detail: JSON.stringify(errorText),
           };
         } else {
-          console.log('Add Response');
-          console.log(response);
           // If the update was successful, update the related 'For Review' transactions in the database.
           updateUndoneForReviewTransactions(
             session.realmId,
@@ -154,15 +149,6 @@ async function createSaveUndoObjects(realmId: string): Promise<UndoBody[]> {
 
     // Iterate over the found 'For Review' transactions to create the bodies.
     for (const undoTransaction of undoTransactions) {
-      console.log('Transaction: ' + undoTransaction.description);
-      console.log('Transaction Account: ' + undoTransaction.accountId);
-
-      console.log('Bodies');
-      console.log(undoBodies);
-
-      console.log('Accounts');
-      console.log(bodyAccounts)
-
       // Get the Id of the current 'For Review' transaction without the ':ofx'.
       const splitId = undoTransaction.reviewTransactionId.split(':')[0];
 
