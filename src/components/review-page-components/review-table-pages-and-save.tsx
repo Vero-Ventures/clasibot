@@ -7,18 +7,25 @@ import type {
   RawForReviewTransaction,
 } from '@/types/index';
 
-import { Button } from '@/components/ui/index';
+import {
+  Button,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/index';
 
 // Takes: The Table component, the selected rows, the Classified Transactions,
 //        If saving is in progess and the handler function for saving.
 export function ReviewTablePagesAndSave({
   table,
+  pageSize,
   rowSelection,
   classifiedTransactions,
   isSaving,
   handleSave,
 }: Readonly<{
   table: Table<ClassifiedForReviewTransaction>;
+  pageSize: number;
   rowSelection: Record<number, boolean>;
   classifiedTransactions: (
     | ClassifiedForReviewTransaction
@@ -36,24 +43,36 @@ export function ReviewTablePagesAndSave({
         <div className="mr-2 mt-1 h-fit min-w-[75px] py-2 text-center text-sm text-muted-foreground mb:mr-4 mb:min-w-[90px] sm:mr-0 sm:w-1/5 sm:min-w-[110px] sm:pr-6 lg:w-1/6">
           {table.getState().pagination.pageIndex < 0
             ? 0
-            : table.getState().pagination.pageIndex * 10}{' '}
-          - {table.getState().pagination.pageIndex * 10 + 10} of{' '}
+            : table.getState().pagination.pageIndex * pageSize}{' '}
+          - {(table.getState().pagination.pageIndex + 1) * pageSize} of{' '}
           {table.getFilteredRowModel().rows.length}
         </div>
         <div className="sm:max-w-1/2 flex h-fit flex-grow flex-row justify-evenly gap-x-4">
-          <Button
-            className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
+          <HoverCard openDelay={150} closeDelay={150}>
+            <HoverCardContent>
+              {'View Previous 10 Transactions'}
+            </HoverCardContent>
+            <HoverCardTrigger asChild>
+              <Button
+                className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}>
+                Previous
+              </Button>
+            </HoverCardTrigger>
+          </HoverCard>
 
-          <Button
-            className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 font-sans text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
+          <HoverCard openDelay={150} closeDelay={150}>
+            <HoverCardContent>{'View Next 10 Transactions'}</HoverCardContent>
+            <HoverCardTrigger asChild>
+              <Button
+                className="w-full min-w-20 max-w-36 rounded-md border-2 border-gray-300 bg-white p-2 py-2 font-sans text-base font-semibold text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-blue-100 hover:bg-blue-300 hover:ring md:h-11 md:max-w-40 md:text-lg lg:max-w-48"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}>
+                Next
+              </Button>
+            </HoverCardTrigger>
+          </HoverCard>
         </div>
       </div>
 

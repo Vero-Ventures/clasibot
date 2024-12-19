@@ -108,10 +108,21 @@ export function ReviewTable({
   }, [classifiedTransactions]);
 
   // Create states to track and set key Table values.
-  // Column to sort by, Column filtering rules, and selected Rows.
+  // Column to sort by, Column filtering rules, selected Rows, and Rows per page.
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const handlePageSizeChange = (size: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageSize: size, // Set the new page size
+    }));
+  };
 
   // Creates the React Table using the passed data, helper functions, and states.
   const table = useReactTable({
@@ -137,6 +148,7 @@ export function ReviewTable({
       sorting,
       columnFilters,
       rowSelection,
+      pagination,
     },
   });
 
@@ -178,11 +190,13 @@ export function ReviewTable({
         startDate={startDate}
         endDate={endDate}
         accountNames={accountNames}
+        pageSize={pagination.pageSize}
         selectedAccounts={selectedAccounts}
         table={table}
         changeStartDate={changeStartDate}
         changeEndDate={changeEndDate}
         updateAccountSelection={updateAccountSelection}
+        setPageSize={handlePageSizeChange}
       />
 
       <ReviewTableDisplay
@@ -192,6 +206,7 @@ export function ReviewTable({
 
       <ReviewTablePagesAndSave
         table={table}
+        pageSize={pagination.pageIndex}
         rowSelection={rowSelection}
         classifiedTransactions={classifiedTransactions}
         isSaving={isSaving}
