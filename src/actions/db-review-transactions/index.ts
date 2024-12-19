@@ -10,3 +10,5 @@ export {
   removeSelectedForReviewTransaction,
   removeAllForReviewTransactions,
 } from './remove-db-for-review';
+
+export { checkForUndoTransactions } from './submitted-db-for-review';
