@@ -35,6 +35,7 @@ export const UndoSaveModal: React.FC<UndoSaveModalProps> = ({
 
     // Check the result and set the result state accordingly to update the Mini Spinner.
     if (undoSaveReponse.result === 'Error') {
+      console.error(undoSaveReponse.message);
       setUndoSaveResult(false);
     } else {
       setUndoSaveResult(true);
