@@ -62,7 +62,7 @@ PS C:\Users\user> aws ecr create-repository --repository-name syntheticauth
 
 PS C:\Users\user\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0
 
-PS C:\Users\user\clasibot\src\server-auth-lambda> podman build --format docker -t syntheticauth .
+PS C:\Users\user\clasibot\src\server-auth-lambda> podman build -t syntheticauth .
 
 ### AWS Login For Deployment
 
@@ -74,7 +74,7 @@ PS C:\Users\user> aws ecr get-login-password --region us-east-1 | podman login -
 
 PS C:\Users\user\clasibot\src\server-auth-lambda> podman tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
-PS C:\Users\user\clasibot\src\server-auth-lambda> podman push --format docker "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+PS C:\Users\user\clasibot\src\server-auth-lambda> podman push "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
 ### AWS Lambda Update Status Check & URL Get Command
 
