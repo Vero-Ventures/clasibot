@@ -62,13 +62,23 @@ PS C:\Users\user> aws ecr create-repository --repository-name syntheticauth
 
 PS C:\Users\user\clasibot\src\server-auth-lambda> $Env:DOCKER_BUILDKIT = 0
 
-PS C:\Users\user\clasibot\src\server-auth-lambda> docker build -t syntheticauth .
+PS C:\Users\user\clasibot\src\server-auth-lambda> podman build --format docker -t syntheticauth .
 
 ### AWS Login For Deployment
 
 PS C:\Users\user> $ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
 
-PS C:\Users\user> aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
+PS C:\Users\user> aws ecr get-login-password --region us-east-1 | podman login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
+
+### Docker Deployment To AWS
+
+PS C:\Users\user\clasibot\src\server-auth-lambda> podman tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+
+PS C:\Users\user\clasibot\src\server-auth-lambda> podman push --format docker "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
+
+### AWS Lambda Update Status Check & URL Get Command
+
+PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda update-function-code --function-name syntheticauth --image-uri "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
 
 ### Alternative AWS Login
 
@@ -76,15 +86,9 @@ PS C:\Users\user> $ACCOUNT_ID = aws sts get-caller-identity --query Account --ou
 
 PS C:\Users\user> $AWS_PASS = aws ecr get-login-password --region us-east-1
 
-PS C:\Users\user> docker login -u AWS -p $AWS_PASS 980921738004.dkr.ecr.us-east-1.amazonaws.com
+PS C:\Users\user> podman login -u AWS -p $AWS_PASS 980921738004.dkr.ecr.us-east-1.amazonaws.com
 
-### Docker Deployment To AWS
-
-PS C:\Users\user\clasibot\src\server-auth-lambda> docker tag syntheticauth:latest "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
-
-PS C:\Users\user\clasibot\src\server-auth-lambda> docker push "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
-
-### AWS Lambda Function Creation
+### AWS Lambda Function Creation / URL Fetch
 
 PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda create-function `--function-name syntheticauth`
 --package-type Image `--code ImageUri="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"`
@@ -93,34 +97,25 @@ PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda create-function `--
 
 PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda create-function-url-config --function-name syntheticauth --auth-type NONE
 
-### AWS Lambda Update Status Check & URL Get Command
-
-PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda update-function-code --function-name syntheticauth --image-uri "$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/syntheticauth:latest"
-
 PS C:\Users\user\clasibot\src\server-auth-lambda> aws lambda get-function-url-config --function-name syntheticauth
 
-# Env.Example
+## Env.Example
 
-## Clasibot email credentials used for email monitoring.
+### Clasibot email credentials used for email monitoring
 
 EMAIL_PASSWORD=
 EMAIL_USER=
 
-## IMAP host and port used for email monitoring.
+### IMAP host and port used for email monitoring
 
 IMAP_HOST=
 IMAP_PORT=
 
-## Url visited when preforming synthetic login (not invite accepting which uses passed url).
+### Url visited when preforming synthetic login (not invite accepting which uses passed url)
 
 LOGIN_URL=
 
-## Quickbooks synthetic bookkeeper credentials.
+### Quickbooks synthetic bookkeeper credentials
 
 QB_EMAIL_ADDRESS=
 QB_PASSWORD=
-
-## Phone Number Id and API Key For MFA Code Handler.
-
-MFA_NUMBER_ID=
-MFA_API_KEY=
