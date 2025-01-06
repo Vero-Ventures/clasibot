@@ -6,10 +6,6 @@ export const CONFIG = {
     port: parseInt(process.env.IMAP_PORT!),
     tls: true,
   },
-  myMfa: {
-    numberId: process.env.MFA_NUMBER_ID,
-    mfaApiKey: process.env.MFA_API_KEY,
-  },
   quickbooks: {
     loginUrl: process.env.LOGIN_URL!,
     email: process.env.QB_EMAIL_ADDRESS!,
