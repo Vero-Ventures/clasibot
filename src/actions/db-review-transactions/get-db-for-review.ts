@@ -11,7 +11,7 @@ import {
   TaxCode as DatabaseTaxCode,
   ForReviewTransactionToTaxCodes,
 } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 import { checkConfidenceValue } from '@/actions/helpers/index';
 
@@ -98,8 +98,10 @@ export async function getDatabaseTransactions(): Promise<{
         .select()
         .from(ForReviewTransaction)
         .where(
-          eq(ForReviewTransaction.companyId, session!.realmId) &&
+          and(
+            eq(ForReviewTransaction.companyId, session!.realmId),
             eq(ForReviewTransaction.recentlySaved, false)
+          )
         );
 
       // Iterate through the fetched 'For Review' transactions.

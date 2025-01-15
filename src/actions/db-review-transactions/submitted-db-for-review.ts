@@ -5,7 +5,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 
 import { db } from '@/db/index';
 import { ForReviewTransaction } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 import type { RawForReviewTransaction, QueryResult } from '@/types/index';
 
@@ -23,8 +23,10 @@ export async function checkForUndoTransactions(): Promise<boolean> {
         .select()
         .from(ForReviewTransaction)
         .where(
-          eq(ForReviewTransaction.companyId, realmId) &&
+          and(
+            eq(ForReviewTransaction.companyId, realmId),
             eq(ForReviewTransaction.recentlySaved, true)
+          )
         );
 
       // Return if recently saved (undo-able) 'For Review' transactions were found.
@@ -74,11 +76,13 @@ export async function setSavedForReviewTransactions(
           .update(ForReviewTransaction)
           .set({ recentlySaved: true })
           .where(
-            eq(ForReviewTransaction.companyId, realmId) &&
+            and(
+              eq(ForReviewTransaction.companyId, realmId),
               eq(
                 ForReviewTransaction.reviewTransactionId,
                 savedTransaction.forReviewTransaction.olbTxnId
               )
+            )
           );
       }
 

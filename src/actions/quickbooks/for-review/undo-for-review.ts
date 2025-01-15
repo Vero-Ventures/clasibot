@@ -5,7 +5,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 
 import { db } from '@/db/index';
 import { ForReviewTransaction } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 import { syntheticLogin } from '@/actions/synthetic-login';
 
@@ -137,8 +137,10 @@ async function createSaveUndoObjects(realmId: string): Promise<UndoBody[]> {
       .select()
       .from(ForReviewTransaction)
       .where(
-        eq(ForReviewTransaction.companyId, realmId) &&
+        and(
+          eq(ForReviewTransaction.companyId, realmId),
           eq(ForReviewTransaction.recentlySaved, true)
+        )
       );
 
     // Define a record to relate the bodies needed for the undo calls to their Account Id.
@@ -206,8 +208,10 @@ async function updateUndoneForReviewTransactions(
       .update(ForReviewTransaction)
       .set({ recentlySaved: false })
       .where(
-        eq(ForReviewTransaction.companyId, realmId) &&
+        and(
+          eq(ForReviewTransaction.companyId, realmId),
           eq(ForReviewTransaction.accountId, accountId)
+        )
       );
     // If no error occurred during the update, return a success value.
     return true;

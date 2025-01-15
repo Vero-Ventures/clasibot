@@ -5,7 +5,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options';
 
 import { db } from '@/db/index';
 import { Company, User, Firm, Subscription } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 import { Stripe } from 'stripe';
 
@@ -112,7 +112,9 @@ export async function addAccountingFirmConnection(
     const existingFirm = await db
       .select()
       .from(Firm)
-      .where(eq(Firm.name, connectedFirmName) && eq(Firm.userName, userName));
+      .where(
+        and(eq(Firm.name, connectedFirmName), eq(Firm.userName, userName))
+      );
 
     // Check if an existing Firm was found.
     if (!existingFirm[0]) {
